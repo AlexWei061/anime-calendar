@@ -7,3 +7,5 @@ dist/
 .next/
 node_modules/
 .npm-cache/
+.env*
+!.env.example
