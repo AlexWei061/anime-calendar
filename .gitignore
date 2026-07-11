@@ -1,0 +1,9 @@
+work/
+outputs/
+.superpowers/
+.site-archives/
+.wrangler/
+dist/
+.next/
+node_modules/
+.npm-cache/
