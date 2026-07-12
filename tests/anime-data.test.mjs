@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { access } from "node:fs/promises";
 import test from "node:test";
 
 import { anime, season } from "../data/anime.js";
@@ -21,15 +20,17 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.ok(anime.every(({ titleZh }) => typeof titleZh === "string" && titleZh.length > 0));
   assert.ok(anime.every(({ coverUrl }) => typeof coverUrl === "string" && coverUrl.length > 0));
   assert.ok(anime.every(({ coverAlt }) => typeof coverAlt === "string" && coverAlt.length > 0));
-  assert.ok(anime.every(({ sourceUrl }) => sourceUrl.startsWith("https://")));
+  assert.ok(anime.every(({ coverUrl }) => coverUrl.startsWith("https://i0.hdslb.com/bfs/new_dyn/")));
+  assert.ok(anime.every(({ sourceUrl }) => sourceUrl === season.sourceUrl));
 
   for (const record of anime) {
     assert.deepEqual(Object.keys(record).sort(), [
+      "beijingTime",
       "coverAlt",
       "coverUrl",
       "id",
-      "jstTime",
-      "premiereDateJst",
+      "premiereDateBeijing",
+      "scheduleWeekday",
       "sourceUrl",
       "station",
       "titleJa",
@@ -39,8 +40,18 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
 
   const yumeMita = anime.find(({ id }) => id === "yume-mita");
   assert.deepEqual(
-    { titleZh: yumeMita?.titleZh, coverUrl: yumeMita?.coverUrl },
-    { titleZh: "梦限大 μ!", coverUrl: "/covers/yume-mita.png" },
+    {
+      titleZh: yumeMita?.titleZh,
+      coverUrl: yumeMita?.coverUrl,
+      scheduleWeekday: yumeMita?.scheduleWeekday,
+      beijingTime: yumeMita?.beijingTime,
+    },
+    {
+      titleZh: "BanG Dream! YUME∞MITA",
+      coverUrl: "https://i0.hdslb.com/bfs/new_dyn/39ee0f846560cdf5f63c9ddfee8d21ac512995925.jpg",
+      scheduleWeekday: "Thu",
+      beijingTime: "22:00",
+    },
   );
 
   const ids = new Set(anime.map(({ id }) => id));
@@ -71,15 +82,10 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   }
 });
 
-test("keeps records without confirmed times in the Beijing pending group", () => {
+test("keeps only YUC network releases without listed clock times in the pending group", () => {
   const { pending } = groupByBeijingWeekday(anime);
   const pendingIds = new Set(pending.map(({ id }) => id));
 
-  assert.ok(pendingIds.has("koko-ni-makase"));
-  assert.ok(pendingIds.has("taiari-deshita"));
-  assert.ok(pendingIds.has("yume-mita"));
-});
-
-test("ships the local Dream Mita cover", async () => {
-  await access(new URL("../public/covers/yume-mita.png", import.meta.url));
+  assert.deepEqual([...pendingIds].sort(), ["baki-dou-2", "cyborg-009-nemesis"]);
+  assert.equal(anime.filter(({ beijingTime }) => beijingTime !== null).length, 64);
 });

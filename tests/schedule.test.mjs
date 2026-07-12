@@ -24,6 +24,19 @@ test("carries 25:35 JST into the next Beijing date", () => {
   );
 });
 
+test("keeps a direct YUC Beijing schedule in its listed weekday and clock time", () => {
+  assert.deepEqual(
+    toBeijingAiring({
+      premiereDateBeijing: "2026-07-05",
+      scheduleWeekday: "Sun",
+      beijingTime: "24:45",
+      premiereDateJst: null,
+      jstTime: null,
+    }),
+    { date: "2026-07-05", weekday: "Sun", time: "24:45" },
+  );
+});
+
 test("groups aired and pending records by Beijing weekday", () => {
   const grouped = groupByBeijingWeekday([
     { id: "late", premiereDateJst: "2026-07-07", jstTime: "24:00" },

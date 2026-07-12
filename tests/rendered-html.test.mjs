@@ -52,18 +52,19 @@ test("server-renders the Beijing weekly anime calendar", async () => {
   assert.match(html, /<title>番时表｜2026 夏番<\/title>/);
   assert.match(
     html,
-    /<meta name="description" content="按北京时间查看 2026 年 7 月日本 TV 动画的最早首播。"\s*\/>/,
+    /<meta name="description" content="按 YUC 排期查看 2026 年 7 月动画的首播与周播时间。"\s*\/>/,
   );
   assert.match(html, /2026 夏番/);
   assert.match(html, /北京时间（UTC\+8）/);
   assert.match(withoutReactMarkers(html), /66 部夏番/);
-  assert.match(html, /梦限大 μ!/);
+  assert.match(html, /BanG Dream! YUME∞MITA/);
   assert.match(html, /バンドリ！ ゆめ∞みた/);
-  assert.match(html, /src="\/covers\/yume-mita\.png"/);
-  assert.match(html, /alt="梦限大 μ! 主视觉"/);
+  assert.match(html, /src="https:\/\/i0\.hdslb\.com\/bfs\/new_dyn\/39ee0f846560cdf5f63c9ddfee8d21ac512995925\.jpg"/);
+  assert.match(html, /alt="BanG Dream! YUME∞MITA 主视觉"/);
   assert.match(html, /二十世纪电气目录/);
   assert.match(html, /二十世紀電氣目録/);
-  assert.match(html, /本季收录／播出待确认/);
+  assert.match(html, /YUC 排期／北京时间/);
+  assert.match(html, /网络放送／具体时刻未列出/);
   assert.match(html, /loading="lazy"/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
   assert.doesNotMatch(html, /codex-preview/i);
@@ -93,11 +94,14 @@ test("renders ordered weekday columns, dialog cards, and a separate pending sect
   );
   assert.ok(transparentNight, "missing known scheduled card");
   assert.match(transparentNight, /anime-card-date">2026-07-06<\/span>/);
-  assert.match(withoutReactMarkers(transparentNight), /北京时间 · 周一 21:00/);
+  assert.match(withoutReactMarkers(transparentNight), /YUC 排期／北京时间 · 周一 20:30/);
   assert.match(
     withoutReactMarkers(transparentNight),
-    /aria-label="查看《.+／透明な夜に駆ける君と、目に見えない恋をした。》详情：北京时间 · 周一 21:00"/,
+    /aria-label="查看《.+／透明な夜に駆ける君と、目に見えない恋をした。》详情：YUC 排期／北京时间 · 周一 20:30"/,
   );
+  const bisoku = cards.find((card) => card.includes("碧蓝航线 微速前行 第2期"));
+  assert.ok(bisoku, "missing YUC 24:45 card");
+  assert.match(withoutReactMarkers(bisoku), /YUC 排期／北京时间 · 周日 24:45/);
 
   assert.doesNotMatch(html, /class="week-column is-today"/);
 
@@ -151,9 +155,10 @@ test("keeps dialog wiring, responsive layout, and starter cleanup durable", asyn
   );
   assert.match(page, /aria-label="关闭详情"/);
   assert.match(page, /dialogRef\.current\?\.close\(\)/);
-  assert.match(page, /北京时间/);
-  assert.match(page, /原始日本时间/);
-  assert.match(page, /首播平台/);
+  assert.match(page, /YUC 排期／北京时间/);
+  assert.match(page, /YUC 首播排期/);
+  assert.match(page, /排期来源/);
+  assert.doesNotMatch(page, /原始日本时间|首播平台/);
   assert.match(
     page,
     /className="detail-source-link"[\s\S]*?href=\{selected\.sourceUrl\}[\s\S]*?target="_blank"[\s\S]*?rel="noreferrer"/,

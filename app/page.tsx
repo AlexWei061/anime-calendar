@@ -101,9 +101,9 @@ export default function Home() {
       <header className="calendar-header">
         <div>
           <p className="season-kicker">{season.label}</p>
-          <h1>日本 TV 动画首播周历</h1>
+          <h1>2026 夏番播出周历</h1>
           <p className="intro">
-            共 {season.catalogCount} 部夏番；周历仅显示可可靠换算的 7 月日本 TV 首播。
+            共 {season.catalogCount} 部夏番；周视图按 YUC 公开周表展示北京时间。
           </p>
         </div>
         <a
@@ -120,9 +120,9 @@ export default function Home() {
         <div className="section-heading">
           <div>
             <p className="section-kicker">周视图</p>
-            <h2 id="weekly-heading">北京时间首播</h2>
+            <h2 id="weekly-heading">YUC 排期／北京时间</h2>
           </div>
-          <p>点击节目可查看封面、首播平台与官方资料页。</p>
+          <p>点击节目可查看 YUC 封面、首播排期与资料来源。</p>
         </div>
 
         <div className="week-grid">
@@ -139,7 +139,11 @@ export default function Home() {
                   {records.map((record) => {
                     const airing = toBeijingAiring(record);
                     return airing
-                      ? renderAnimeCard(record, airing, `北京时间 · ${weekday.label} ${airing.time}`)
+                      ? renderAnimeCard(
+                          record,
+                          airing,
+                          `YUC 排期／北京时间 · ${weekday.label} ${airing.time}`,
+                        )
                       : null;
                   })}
                 </div>
@@ -152,9 +156,9 @@ export default function Home() {
       <section className="catalog-section" aria-labelledby="catalog-heading">
         <div>
           <p className="section-kicker">完整季表</p>
-          <h2 id="catalog-heading">本季收录／播出待确认</h2>
+          <h2 id="catalog-heading">网络放送／具体时刻未列出</h2>
           <p>
-            {season.catalogCount} 部夏番中，以下作品不具备可放入 7 月北京时间周历的完整首播信息。
+            以下作品在 YUC 季表中列有首播日期，但没有固定的周播时刻。
           </p>
         </div>
         <div className="catalog-grid">
@@ -162,11 +166,11 @@ export default function Home() {
             renderAnimeCard(
               record,
               null,
-              record.premiereDateJst
-                ? `日本首播 · ${record.premiereDateJst}${record.station ? ` · ${record.station}` : ""}`
+              record.premiereDateBeijing
+                ? `YUC 首播 · ${record.premiereDateBeijing}${record.station ? ` · ${record.station}` : ""}`
                 : record.station
-                  ? `首播时间待确认 · ${record.station}`
-                  : "首播时间待确认",
+                  ? `YUC 排期 · ${record.station}`
+                  : "YUC 未列出具体时刻",
             ),
           )}
         </div>
@@ -180,7 +184,7 @@ export default function Home() {
           </a>
           ，更新于 {season.updatedAt}。
         </p>
-        <p>仅列出日本 TV 最早首播，时间已换算为 {season.timeZoneLabel}。</p>
+        <p>周表时刻按 YUC 公开排期展示为 {season.timeZoneLabel}。</p>
       </footer>
 
       {selected ? (
@@ -209,7 +213,7 @@ export default function Home() {
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
           <dl>
             <div>
-              <dt>北京时间</dt>
+              <dt>YUC 排期／北京时间</dt>
               <dd>
                 {selectedAiring
                   ? `${selectedAiring.weekday} · ${selectedAiring.date} ${selectedAiring.time}`
@@ -217,15 +221,15 @@ export default function Home() {
               </dd>
             </div>
             <div>
-              <dt>原始日本时间</dt>
+              <dt>YUC 首播排期</dt>
               <dd>
-                {selected.premiereDateJst
-                  ? `${selected.premiereDateJst} ${selected.jstTime ?? "时间待确认"}`
+                {selected.premiereDateBeijing
+                  ? `${selected.premiereDateBeijing} ${selected.beijingTime ?? "具体时刻未列出"}`
                   : "待确认"}
               </dd>
             </div>
             <div>
-              <dt>首播平台</dt>
+              <dt>排期来源</dt>
               <dd>{selected.station ?? "待确认"}</dd>
             </div>
           </dl>

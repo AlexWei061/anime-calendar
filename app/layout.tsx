@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "番时表｜2026 夏番",
-  description: "按北京时间查看 2026 年 7 月日本 TV 动画的最早首播。",
+  description: "按 YUC 排期查看 2026 年 7 月动画的首播与周播时间。",
 };
 
 export default function RootLayout({
