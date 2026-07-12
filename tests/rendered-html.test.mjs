@@ -117,6 +117,19 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   assert.ok(sourceLinks.every((tag) => /rel="noreferrer"/.test(tag)));
 });
 
+test("renders a crowded same-time group with three readable event cards", async () => {
+  const cleanHtml = withoutReactMarkers(await (await render()).text());
+  const crowdedGroup = cleanHtml.match(
+    /<section class="time-group"><time class="time-group-label">次日 00:30<\/time><div class="time-group-events is-crowded" style="--same-time-count:3">([\s\S]*?)<\/div><\/section>/,
+  );
+
+  assert.ok(crowdedGroup);
+  assert.equal([...crowdedGroup[1].matchAll(/<button class="calendar-event"/g)].length, 3);
+  assert.match(crowdedGroup[1], /正后方的神威/);
+  assert.match(crowdedGroup[1], /我家的弟弟们真是让您费心了/);
+  assert.match(crowdedGroup[1], /地狱模式/);
+});
+
 test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
   const [page, layout, styles, packageJson] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

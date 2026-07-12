@@ -273,6 +273,22 @@ h1 {
   padding: 0.35rem;
 }
 
+.time-group-events.is-crowded .calendar-event {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  gap: 0.25rem;
+}
+
+.time-group-events.is-crowded .calendar-event-cover {
+  align-self: start;
+  width: 100%;
+}
+
+.time-group-events.is-crowded .calendar-event-content {
+  align-content: start;
+}
+
 .calendar-event {
   position: static;
   display: grid;

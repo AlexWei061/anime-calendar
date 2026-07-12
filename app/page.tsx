@@ -227,7 +227,9 @@ export default function Home() {
                       <section className="time-group" key={time}>
                         <time className="time-group-label">{formatBroadcastTime(time)}</time>
                         <div
-                          className="time-group-events"
+                          className={
+                            "time-group-events" + (groupedEvents.length >= 3 ? " is-crowded" : "")
+                          }
                           style={{ "--same-time-count": groupedEvents.length } as CSSProperties}
                         >
                           {groupedEvents.map(eventButton)}
@@ -262,7 +264,9 @@ export default function Home() {
               <section className="time-group" key={time}>
                 <time className="time-group-label">{formatBroadcastTime(time)}</time>
                 <div
-                  className="time-group-events"
+                  className={
+                    "time-group-events" + (groupedEvents.length >= 3 ? " is-crowded" : "")
+                  }
                   style={{ "--same-time-count": groupedEvents.length } as CSSProperties}
                 >
                   {groupedEvents.map(eventButton)}
