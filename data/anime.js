@@ -10,6 +10,7 @@ export const season = {
 export const anime = [
   {
     "id": "sayonara-lara",
+    "episodeCount": 12,
     "titleZh": "再见 拉拉",
     "titleJa": "さよならララ",
     "coverUrl": "/covers/yuc/sayonara-lara.jpg",
@@ -22,6 +23,7 @@ export const anime = [
   },
   {
     "id": "mobius-dust",
+    "episodeCount": 12,
     "titleZh": "梅比乌斯之尘",
     "titleJa": "メビウス・ダスト/Mevius Dust",
     "coverUrl": "/covers/yuc/mobius-dust.jpg",
@@ -34,6 +36,7 @@ export const anime = [
   },
   {
     "id": "grow-up-show",
+    "episodeCount": 12,
     "titleZh": "GrowUpShow向日葵马戏团",
     "titleJa": "グロウアップショウ ～ひまわりのサーカス団～",
     "coverUrl": "/covers/yuc/grow-up-show.jpg",
@@ -46,6 +49,7 @@ export const anime = [
   },
   {
     "id": "yume-mita",
+    "episodeCount": 12,
     "titleZh": "BanG Dream! YUME∞MITA",
     "titleJa": "バンドリ！ ゆめ∞みた",
     "coverUrl": "/covers/yuc/yume-mita.jpg",
@@ -58,6 +62,7 @@ export const anime = [
   },
   {
     "id": "nanoha-exceeds",
+    "episodeCount": 12,
     "titleZh": "魔法少女奈叶 EXCEEDS Gun Blaze Vengeance",
     "titleJa": "魔法少女リリカルなのは EXCEEDS Gun Blaze Vengeance",
     "coverUrl": "/covers/yuc/nanoha-exceeds.jpg",
@@ -70,6 +75,7 @@ export const anime = [
   },
   {
     "id": "samurai-troopers-2",
+    "episodeCount": 12,
     "titleZh": "新 魔神坛斗士 Part.2",
     "titleJa": "鎧真伝サムライトルーパー",
     "coverUrl": "/covers/yuc/samurai-troopers-2.jpg",
@@ -82,6 +88,7 @@ export const anime = [
   },
   {
     "id": "ghost-in-the-shell",
+    "episodeCount": 12,
     "titleZh": "新 攻壳机动队",
     "titleJa": "攻殻機動隊 THE GHOST IN THE SHELL",
     "coverUrl": "/covers/yuc/ghost-in-the-shell.jpg",
@@ -94,6 +101,7 @@ export const anime = [
   },
   {
     "id": "cyborg-009-nemesis",
+    "episodeCount": 3,
     "titleZh": "人造人009 涅墨西斯",
     "titleJa": "サイボーグ009 ネメシス",
     "coverUrl": "/covers/yuc/cyborg-009-nemesis.jpg",
@@ -106,6 +114,7 @@ export const anime = [
   },
   {
     "id": "bleach-tybw-kashin",
+    "episodeCount": 12,
     "titleZh": "死神 千年血战篇 Part.4 祸进谭",
     "titleJa": "BLEACH 千年血戦篇-禍進譚-",
     "coverUrl": "/covers/yuc/bleach-tybw-kashin.jpg",
@@ -118,6 +127,7 @@ export const anime = [
   },
   {
     "id": "grand-blue-3",
+    "episodeCount": 12,
     "titleZh": "碧蓝之海 第3期",
     "titleJa": "ぐらんぶる Season 3",
     "coverUrl": "/covers/yuc/grand-blue-3.jpg",
@@ -130,6 +140,7 @@ export const anime = [
   },
   {
     "id": "baki-dou-2",
+    "episodeCount": 12,
     "titleZh": "刃牙道 Part.2",
     "titleJa": "刃牙道 第2クール",
     "coverUrl": "/covers/yuc/baki-dou-2.jpg",
@@ -142,6 +153,7 @@ export const anime = [
   },
   {
     "id": "clevatess-2",
+    "episodeCount": 12,
     "titleZh": "Clevatess 第2期 魔兽之王与虚假的勇者传承",
     "titleJa": "クレバテスⅡ-魔獣の王と偽りの勇者伝承-",
     "coverUrl": "/covers/yuc/clevatess-2.jpg",
@@ -154,6 +166,7 @@ export const anime = [
   },
   {
     "id": "nigejouzu-2",
+    "episodeCount": 12,
     "titleZh": "擅长逃跑的殿下 第2期",
     "titleJa": "逃げ上手の若君 第二期",
     "coverUrl": "/covers/yuc/nigejouzu-2.jpg",
@@ -166,6 +179,7 @@ export const anime = [
   },
   {
     "id": "magilumiere-2",
+    "episodeCount": 12,
     "titleZh": "柔光魔女股份有限公司 第2期",
     "titleJa": "株式会社マジルミエ 第2期",
     "coverUrl": "/covers/yuc/magilumiere-2.jpg",
@@ -178,6 +192,7 @@ export const anime = [
   },
   {
     "id": "hanazakari-2",
+    "episodeCount": 12,
     "titleZh": "花样少年少女 第2期",
     "titleJa": "花ざかりの君たちへ 第2期",
     "coverUrl": "/covers/yuc/hanazakari-2.jpg",
@@ -190,6 +205,7 @@ export const anime = [
   },
   {
     "id": "seihantai-kimi-boku",
+    "episodeCount": 12,
     "titleZh": "相反的你和我 第2期",
     "titleJa": "正反対な君と僕 第2期",
     "coverUrl": "/covers/yuc/seihantai-kimi-boku.jpg",
@@ -202,6 +218,7 @@ export const anime = [
   },
   {
     "id": "100-girlfriends-3",
+    "episodeCount": 12,
     "titleZh": "超超超超喜欢你的 100个女孩子 第3期",
     "titleJa": "君のことが大大大大大好きな100人の彼女 第3期",
     "coverUrl": "/covers/yuc/100-girlfriends-3.jpg",
@@ -214,6 +231,7 @@ export const anime = [
   },
   {
     "id": "azur-lane-bisoku-2",
+    "episodeCount": 12,
     "titleZh": "碧蓝航线 微速前行 第2期",
     "titleJa": "アズールレーン びそくぜんしんっ！にっ！！",
     "coverUrl": "/covers/yuc/azur-lane-bisoku-2.jpg",
@@ -226,6 +244,7 @@ export const anime = [
   },
   {
     "id": "bungo-wan-2",
+    "episodeCount": 12,
     "titleZh": "文豪野犬 汪 第2期",
     "titleJa": "文豪ストレイドッグス わん！2",
     "coverUrl": "/covers/yuc/bungo-wan-2.jpg",
@@ -238,6 +257,7 @@ export const anime = [
   },
   {
     "id": "dodge-danko",
+    "episodeCount": 12,
     "titleZh": "炎之斗球女 弹子",
     "titleJa": "炎の闘球女 ドッジ弾子",
     "coverUrl": "/covers/yuc/dodge-danko.jpg",
@@ -250,6 +270,7 @@ export const anime = [
   },
   {
     "id": "thunder-3",
+    "episodeCount": 12,
     "titleZh": "雷霆三人行",
     "titleJa": "サンダー3",
     "coverUrl": "/covers/yuc/thunder-3.jpg",
@@ -262,6 +283,7 @@ export const anime = [
   },
   {
     "id": "temmaku-jardugar",
+    "episodeCount": 12,
     "titleZh": "穹庐下的魔女",
     "titleJa": "天幕のジャードゥーガル",
     "coverUrl": "/covers/yuc/temmaku-jardugar.jpg",
@@ -274,6 +296,7 @@ export const anime = [
   },
   {
     "id": "red-river",
+    "episodeCount": 12,
     "titleZh": "天是红河岸",
     "titleJa": "天は赤い河のほとり",
     "coverUrl": "/covers/yuc/red-river.jpg",
@@ -286,6 +309,7 @@ export const anime = [
   },
   {
     "id": "world-is-dancing",
+    "episodeCount": 12,
     "titleZh": "世界舞动",
     "titleJa": "ワールド イズ ダンシング",
     "coverUrl": "/covers/yuc/world-is-dancing.jpg",
@@ -298,6 +322,7 @@ export const anime = [
   },
   {
     "id": "tetsunabe-jan",
+    "episodeCount": 12,
     "titleZh": "炒翻天",
     "titleJa": "鉄鍋のジャン！",
     "coverUrl": "/covers/yuc/tetsunabe-jan.jpg",
@@ -310,6 +335,7 @@ export const anime = [
   },
   {
     "id": "lets-go-kaiki",
+    "episodeCount": 12,
     "titleZh": "Let's Go 怪奇组",
     "titleJa": "レッツゴー怪奇組",
     "coverUrl": "/covers/yuc/lets-go-kaiki.jpg",
@@ -322,6 +348,7 @@ export const anime = [
   },
   {
     "id": "iwamoto-senpai",
+    "episodeCount": 12,
     "titleZh": "岩元前辈的推荐",
     "titleJa": "岩元先輩ノ推薦",
     "coverUrl": "/covers/yuc/iwamoto-senpai.jpg",
@@ -334,6 +361,7 @@ export const anime = [
   },
   {
     "id": "reiwa-no-darasan",
+    "episodeCount": 12,
     "titleZh": "令和的斑小姐",
     "titleJa": "令和のタラさん",
     "coverUrl": "/covers/yuc/reiwa-no-darasan.jpg",
@@ -346,6 +374,7 @@ export const anime = [
   },
   {
     "id": "kamui-san",
+    "episodeCount": 12,
     "titleZh": "正后方的神威",
     "titleJa": "うしろの正面カムイさん",
     "coverUrl": "/covers/yuc/kamui-san.jpg",
@@ -358,6 +387,7 @@ export const anime = [
   },
   {
     "id": "black-torch",
+    "episodeCount": 12,
     "titleZh": "暗黑灯火",
     "titleJa": "BLACK TORCH",
     "coverUrl": "/covers/yuc/black-torch.jpg",
@@ -370,6 +400,7 @@ export const anime = [
   },
   {
     "id": "haniori-san",
+    "episodeCount": 12,
     "titleZh": "花织同学转生后还是想干架",
     "titleJa": "花織さんは転生しても喧嘩がしたい",
     "coverUrl": "/covers/yuc/haniori-san.jpg",
@@ -382,6 +413,7 @@ export const anime = [
   },
   {
     "id": "otome-kaiju-caramelize",
+    "episodeCount": 12,
     "titleZh": "少女怪兽焦糖味",
     "titleJa": "乙女怪獣キャラメリゼ",
     "coverUrl": "/covers/yuc/otome-kaiju-caramelize.jpg",
@@ -394,6 +426,7 @@ export const anime = [
   },
   {
     "id": "no-bullying-stepmother",
+    "episodeCount": 12,
     "titleZh": "不虐待我的继母与继姐",
     "titleJa": "いびってこない義母と義姉",
     "coverUrl": "/covers/yuc/no-bullying-stepmother.jpg",
@@ -406,6 +439,7 @@ export const anime = [
   },
   {
     "id": "uchioto",
+    "episodeCount": 12,
     "titleZh": "我家的弟弟们真是让您费心了",
     "titleJa": "うちの弟どもがすみません",
     "coverUrl": "/covers/yuc/uchioto.jpg",
@@ -418,6 +452,7 @@ export const anime = [
   },
   {
     "id": "super-yani",
+    "episodeCount": 12,
     "titleZh": "躲在超市后门抽烟的两人",
     "titleJa": "スーパーの裏でヤニ吸うふたり",
     "coverUrl": "/covers/yuc/super-yani.jpg",
@@ -430,6 +465,7 @@ export const anime = [
   },
   {
     "id": "yani-neko",
+    "episodeCount": 12,
     "titleZh": "尼古喵喵",
     "titleJa": "ヤニねこ",
     "coverUrl": "/covers/yuc/yani-neko.jpg",
@@ -442,6 +478,7 @@ export const anime = [
   },
   {
     "id": "taiari-deshita",
+    "episodeCount": 12,
     "titleZh": "感谢对战 大小姐才不玩格斗游戏",
     "titleJa": "対ありでした。 〜お嬢さまは格闘ゲームなんてしない〜",
     "coverUrl": "/covers/yuc/taiari-deshita.jpg",
@@ -454,6 +491,7 @@ export const anime = [
   },
   {
     "id": "korekaite-shine",
+    "episodeCount": 12,
     "titleZh": "画完这个再去死",
     "titleJa": "これ描いて死ね",
     "coverUrl": "/covers/yuc/korekaite-shine.jpg",
@@ -466,6 +504,7 @@ export const anime = [
   },
   {
     "id": "kimi-shinu-koi",
+    "episodeCount": 12,
     "titleZh": "与你相恋到生命尽头",
     "titleJa": "きみが死ぬまで恋をしたい",
     "coverUrl": "/covers/yuc/kimi-shinu-koi.jpg",
@@ -478,6 +517,7 @@ export const anime = [
   },
   {
     "id": "jiki-koshaku",
+    "episodeCount": 12,
     "titleZh": "声称不爱我的下任公爵为何会溺爱我",
     "titleJa": "「きみを愛する気はない」と言った次期公爵様がなぜか溺愛してきます",
     "coverUrl": "/covers/yuc/jiki-koshaku.jpg",
@@ -490,6 +530,7 @@ export const anime = [
   },
   {
     "id": "rezero-4-part-2",
+    "episodeCount": 8,
     "titleZh": "Re:从零开始的异世界生活 第4期 Part.2 夺还篇",
     "titleJa": "Re:ゼロから始める異世界生活 4th season",
     "coverUrl": "/covers/yuc/rezero-4-part-2.jpg",
@@ -502,6 +543,7 @@ export const anime = [
   },
   {
     "id": "mushoku-3",
+    "episodeCount": 12,
     "titleZh": "无职转生 第3期",
     "titleJa": "無職転生 ～異世界行ったら本気だす～ 第3期",
     "coverUrl": "/covers/yuc/mushoku-3.jpg",
@@ -514,6 +556,7 @@ export const anime = [
   },
   {
     "id": "mobuseka-2",
+    "episodeCount": 12,
     "titleZh": "乙女游戏世界对路人角色 很不友好 第2期",
     "titleJa": "乙女ゲー世界はモブに厳しい世界です2",
     "coverUrl": "/covers/yuc/mobuseka-2.jpg",
@@ -526,6 +569,7 @@ export const anime = [
   },
   {
     "id": "youjo-senki-2",
+    "episodeCount": 12,
     "titleZh": "幼女战记 第2期",
     "titleJa": "幼女戦記Ⅱ",
     "coverUrl": "/covers/yuc/youjo-senki-2.jpg",
@@ -538,6 +582,7 @@ export const anime = [
   },
   {
     "id": "ossan-kensei-2",
+    "episodeCount": 12,
     "titleZh": "乡下大叔成为剑圣 第2期",
     "titleJa": "片田舎のおっさん、剣聖になる",
     "coverUrl": "/covers/yuc/ossan-kensei-2.jpg",
@@ -550,6 +595,7 @@ export const anime = [
   },
   {
     "id": "skeleton-knight-2",
+    "episodeCount": 12,
     "titleZh": "骸骨骑士大人异世界冒险中 第2期",
     "titleJa": "骸骨騎士様、只今異世界へお出掛け中 第2期",
     "coverUrl": "/covers/yuc/skeleton-knight-2.jpg",
@@ -562,6 +608,7 @@ export const anime = [
   },
   {
     "id": "hellmode-2",
+    "episodeCount": 12,
     "titleZh": "地狱模式 喜欢速通游戏的玩家在废设定异世界无双 第2期",
     "titleJa": "ヘルモード ～やり込み好きのゲーマーは廃設定の異世界で無双する～",
     "coverUrl": "/covers/yuc/hellmode-2.jpg",
@@ -574,6 +621,7 @@ export const anime = [
   },
   {
     "id": "rakudai-kenja",
+    "episodeCount": 12,
     "titleZh": "落第贤者的学院无双",
     "titleJa": "落第賢者の学院無双 ～二度目の転生、Sランクチート魔術師冒険録～",
     "coverUrl": "/covers/yuc/rakudai-kenja.jpg",
@@ -586,6 +634,7 @@ export const anime = [
   },
   {
     "id": "sekai-saikyo-kouei",
+    "episodeCount": 12,
     "titleZh": "世界最强后卫 迷宫国的新人探索者",
     "titleJa": "世界最強の後衛 ～迷宮国の新人探索者～",
     "coverUrl": "/covers/yuc/sekai-saikyo-kouei.jpg",
@@ -598,6 +647,7 @@ export const anime = [
   },
   {
     "id": "tsuiho-juki",
+    "episodeCount": 12,
     "titleZh": "被追放的转生重骑士 用游戏知识开无双",
     "titleJa": "追放された転生重騎士はゲーム知識で無双する",
     "coverUrl": "/covers/yuc/tsuiho-juki.jpg",
@@ -610,6 +660,7 @@ export const anime = [
   },
   {
     "id": "henkyou-ryumin",
+    "episodeCount": 12,
     "titleZh": "从0位居民开始的边境领主大人",
     "titleJa": "領民0人スタートの辺境領主様",
     "coverUrl": "/covers/yuc/henkyou-ryumin.jpg",
@@ -622,6 +673,7 @@ export const anime = [
   },
   {
     "id": "lv999-villager",
+    "episodeCount": 12,
     "titleZh": "LV999的村民",
     "titleJa": "LV999の村人",
     "coverUrl": "/covers/yuc/lv999-villager.jpg",
@@ -634,6 +686,7 @@ export const anime = [
   },
   {
     "id": "koko-ni-makase",
+    "episodeCount": 12,
     "titleZh": "说出你们先走我断后的十年后 我成为了传说",
     "titleJa": "ここは俺に任せて先に行けと言ってから10年がたったら 伝説になっていた。",
     "coverUrl": "/covers/yuc/koko-ni-makase.jpg",
@@ -646,6 +699,7 @@ export const anime = [
   },
   {
     "id": "saikyo-degare",
+    "episodeCount": 12,
     "titleZh": "最强出涸皇子的暗跃帝位争夺",
     "titleJa": "最強出涸らし皇子の暗躍帝位争い",
     "coverUrl": "/covers/yuc/saikyo-degare.jpg",
@@ -658,6 +712,7 @@ export const anime = [
   },
   {
     "id": "buchigire-reijo",
+    "episodeCount": 12,
     "titleZh": "暴怒千金誓要复仇",
     "titleJa": "ブチ切れ令嬢は報復を誓いました。",
     "coverUrl": "/covers/yuc/buchigire-reijo.jpg",
@@ -670,6 +725,7 @@ export const anime = [
   },
   {
     "id": "futsutsuka-akujo",
+    "episodeCount": 12,
     "titleZh": "虽然我是不完美恶女",
     "titleJa": "ふつつかな悪女ではございますが～雛宮蝶鼠とりかえ伝～",
     "coverUrl": "/covers/yuc/futsutsuka-akujo.jpg",
@@ -682,6 +738,7 @@ export const anime = [
   },
   {
     "id": "all-works-maid",
+    "episodeCount": 12,
     "titleZh": "女主角？圣女？ 不，我是杂役女仆（自豪）！",
     "titleJa": "ヒロイン？聖女？いいえ、オールワークスメイドです（誇）！",
     "coverUrl": "/covers/yuc/all-works-maid.jpg",
@@ -694,6 +751,7 @@ export const anime = [
   },
   {
     "id": "suterare-seijo-camp",
+    "episodeCount": 12,
     "titleZh": "被遗弃圣女的异世界美食之旅",
     "titleJa": "捨てられ聖女の異世界ごはん旅 隠れスキルでキャンピングカーを召喚しました",
     "coverUrl": "/covers/yuc/suterare-seijo-camp.jpg",
@@ -706,6 +764,7 @@ export const anime = [
   },
   {
     "id": "unaware-saint",
+    "episodeCount": 12,
     "titleZh": "无自觉圣女今天也无意识地释放力量",
     "titleJa": "無自覚聖女は今日も無意識に力を垂れ流す",
     "coverUrl": "/covers/yuc/unaware-saint.jpg",
@@ -718,6 +777,7 @@ export const anime = [
   },
   {
     "id": "oni-no-hanayome",
+    "episodeCount": 12,
     "titleZh": "鬼的新娘",
     "titleJa": "鬼の花嫁",
     "coverUrl": "/covers/yuc/oni-no-hanayome.jpg",
@@ -730,6 +790,7 @@ export const anime = [
   },
   {
     "id": "neko-to-ryu",
+    "episodeCount": 12,
     "titleZh": "猫与龙",
     "titleJa": "猫と竜",
     "coverUrl": "/covers/yuc/neko-to-ryu.jpg",
@@ -742,6 +803,7 @@ export const anime = [
   },
   {
     "id": "victoria",
+    "episodeCount": 12,
     "titleZh": "底牌很多的维多利亚",
     "titleJa": "手札が多めのビクトリア",
     "coverUrl": "/covers/yuc/victoria.jpg",
@@ -754,6 +816,7 @@ export const anime = [
   },
   {
     "id": "saijo-no-osewa",
+    "episodeCount": 12,
     "titleZh": "才女的侍从",
     "titleJa": "才女のお世話 高嶺の花だらけな名門校で、学院一のお嬢様 （生活能力皆無）を陰ながらお世話することになりました",
     "coverUrl": "/covers/yuc/saijo-no-osewa.jpg",
@@ -766,6 +829,7 @@ export const anime = [
   },
   {
     "id": "tenko-saki-osananajimi",
+    "episodeCount": 12,
     "titleZh": "转学后班上的清纯可爱美少女 竟是小时候玩在一起的哥们",
     "titleJa": "転校先の清楚可憐な美少女が、 昔男子と思って一緒に遊んだ幼馴染だった件",
     "coverUrl": "/covers/yuc/tenko-saki-osananajimi.jpg",
@@ -778,6 +842,7 @@ export const anime = [
   },
   {
     "id": "transparent-night",
+    "episodeCount": 12,
     "titleZh": "与奔跑在透明之夜的你 谈一场看不见的恋爱",
     "titleJa": "透明な夜に駆ける君と、目に見えない恋をした。",
     "coverUrl": "/covers/yuc/transparent-night.jpg",
@@ -790,6 +855,7 @@ export const anime = [
   },
   {
     "id": "20th-century-electric-catalog",
+    "episodeCount": 12,
     "titleZh": "二十世纪电气目录",
     "titleJa": "二十世紀電氣目録 -ユーレカ・エヴリカ-",
     "coverUrl": "/covers/yuc/20th-century-electric-catalog.jpg",

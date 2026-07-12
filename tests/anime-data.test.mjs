@@ -29,6 +29,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
       "beijingTime",
       "coverAlt",
       "coverUrl",
+      "episodeCount",
       "id",
       "premiereDateBeijing",
       "scheduleWeekday",
@@ -89,6 +90,14 @@ test("keeps only YUC network releases without listed clock times in the pending 
 
   assert.deepEqual([...pendingIds].sort(), ["baki-dou-2", "cyborg-009-nemesis"]);
   assert.equal(anime.filter(({ beijingTime }) => beijingTime !== null).length, 64);
+});
+
+test("uses YUC episode totals when available and defaults every other show to 12 episodes", () => {
+  assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount)), true);
+  assert.equal(anime.every(({ episodeCount }) => episodeCount > 0), true);
+  assert.equal(anime.find(({ id }) => id === "baki-dou-2")?.episodeCount, 12);
+  assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
+  assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);
 });
 
 test("ships every YUC cover as a local static asset", async () => {

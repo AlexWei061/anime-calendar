@@ -9,6 +9,7 @@
   --blue-soft: #dceff1;
   --mint: #b9ded1;
   --mint-deep: #2f6d60;
+  --hour-height: 3.45rem;
 }
 
 * {
@@ -32,6 +33,10 @@ a {
   font: inherit;
 }
 
+button {
+  color: inherit;
+}
+
 a {
   color: var(--blue);
 }
@@ -42,14 +47,13 @@ a {
 }
 
 .calendar-page {
-  width: min(1480px, 100%);
+  width: min(1680px, 100%);
   margin: 0 auto;
   padding: 3rem clamp(1rem, 3vw, 3.5rem) 2rem;
 }
 
 .calendar-header,
 .section-heading,
-.weekday-header,
 .detail-dialog-heading {
   display: flex;
   align-items: flex-start;
@@ -97,11 +101,12 @@ h1 {
 .intro,
 .section-heading > p,
 .calendar-footer,
-.catalog-section > div > p {
+.network-section > div > p {
   color: var(--muted-ink);
 }
 
 .intro {
+  max-width: 44rem;
   margin-bottom: 0;
 }
 
@@ -126,7 +131,7 @@ h1 {
 }
 
 .section-heading h2,
-.catalog-section h2,
+.network-section h2,
 .detail-dialog h2 {
   margin-bottom: 0;
   font-size: clamp(1.45rem, 2vw, 2rem);
@@ -138,111 +143,189 @@ h1 {
   text-align: right;
 }
 
-.week-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.65rem;
+.week-pager {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
 }
 
-.week-column {
-  min-width: 0;
-  padding: 0.85rem;
+.week-pager button,
+.mobile-day-picker button,
+.dialog-close {
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.week-pager button {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.week-pager button:hover,
+.dialog-close:hover {
+  border-color: var(--blue);
+}
+
+.week-pager p {
+  flex: 1;
+  margin: 0;
+  color: var(--blue);
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.time-grid-scroll {
+  overflow-x: auto;
+  border-radius: 0.9rem;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: 4.75rem repeat(7, minmax(9rem, 1fr));
+  min-width: 1080px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
+  background: var(--line);
+  gap: 1px;
+}
+
+.time-axis,
+.time-column {
+  min-width: 0;
+  background: var(--card);
+}
+
+.time-axis-header,
+.time-column-header {
+  height: 4.35rem;
+  padding: 0.72rem;
+  border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
 }
 
-.anime-card.is-today {
+.time-axis-header {
+  display: grid;
+  place-items: center;
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.time-column-header {
+  position: relative;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.time-column-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.time-column-header span {
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+}
+
+.time-column-header b {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.55rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  background: var(--mint);
+  font-size: 0.65rem;
+}
+
+.time-axis-hours,
+.timeline {
+  min-height: 45rem;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--hour-height) - 1px),
+    var(--line) calc(var(--hour-height) - 1px),
+    var(--line) var(--hour-height)
+  );
+}
+
+.time-axis-hours {
+  display: grid;
+  grid-template-rows: repeat(13, var(--hour-height));
+}
+
+.time-axis-hours span {
+  padding: 0.35rem 0.5rem;
+  color: var(--muted-ink);
+  font-size: 0.67rem;
+  text-align: right;
+}
+
+.timeline {
+  position: relative;
+}
+
+.time-column.is-today .time-column-header {
+  background: var(--mint);
+}
+
+.calendar-event {
+  position: absolute;
+  top: calc(var(--event-start) * var(--hour-height) + 0.25rem);
+  display: grid;
+  gap: 0.1rem;
+  min-height: 2.45rem;
+  padding: 0.35rem 0.4rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--blue) 55%, var(--line));
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--blue-soft) 78%, var(--card));
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.calendar-event:hover {
+  z-index: 2;
+  border-color: var(--blue);
+  box-shadow: 0 0.35rem 0.8rem rgb(31 41 51 / 15%);
+  transform: translateY(-1px);
+}
+
+.calendar-event.is-today {
   border-color: var(--mint-deep);
   box-shadow: inset 0 0 0 1px var(--mint);
 }
 
-.weekday-header {
-  align-items: center;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid var(--line);
-}
-
-.weekday-header h3 {
-  margin-bottom: 0;
-  font-size: 1.05rem;
-}
-
-.weekday-header span {
-  color: var(--mint-deep);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.anime-list {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.anime-card {
-  display: grid;
-  width: 100%;
-  gap: 0.28rem;
-  padding: 0.75rem;
-  border: 1px solid transparent;
-  border-radius: 0.65rem;
-  background: var(--card);
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 150ms ease, transform 150ms ease;
-}
-
-.anime-card:hover {
-  border-color: var(--blue);
-  transform: translateY(-1px);
-}
-
-.anime-card-date,
-.anime-card-time,
-.anime-card-ja {
+.calendar-event-time,
+.calendar-event-episode {
   color: var(--muted-ink);
-  font-size: 0.72rem;
-  line-height: 1.35;
+  font-size: 0.65rem;
+  line-height: 1.2;
 }
 
-.today-marker {
-  width: fit-content;
-  padding: 0.1rem 0.38rem;
-  border-radius: 999px;
-  background: var(--mint);
-  color: var(--ink);
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
-.anime-card strong {
-  overflow-wrap: anywhere;
-  font-size: 0.95rem;
-  line-height: 1.35;
-}
-
-.anime-card-ja {
-  font-size: 0.72rem;
-  line-height: 1.35;
-}
-
-.cover-frame {
-  aspect-ratio: 3 / 4;
+.calendar-event strong {
   overflow: hidden;
-  border-radius: 0.45rem;
-  background: var(--blue-soft);
+  font-size: 0.75rem;
+  line-height: 1.18;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.cover-frame img,
-.detail-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.mobile-calendar {
+  display: none;
 }
 
-.catalog-section {
+.network-section {
   display: grid;
   gap: 1.25rem;
   padding: 1.5rem;
@@ -250,15 +333,67 @@ h1 {
   background: var(--blue-soft);
 }
 
-.catalog-section > div > p:last-child {
+.network-section > div > p:last-child {
   max-width: 44rem;
   margin-bottom: 0;
 }
 
-.catalog-grid {
+.network-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 0.75rem;
+}
+
+.network-card {
+  display: grid;
+  grid-template-columns: 4.4rem 1fr;
+  min-width: 0;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  background: var(--card);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.network-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.network-card img {
+  width: 4.4rem;
+  height: 5.8rem;
+  border-radius: 0.45rem;
+  object-fit: cover;
+}
+
+.network-card > span {
+  display: grid;
+  align-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.network-card strong,
+.network-card small,
+.network-card em {
+  overflow-wrap: anywhere;
+}
+
+.network-card strong {
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.network-card small,
+.network-card em {
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+  font-style: normal;
+  line-height: 1.35;
 }
 
 .calendar-footer {
@@ -300,11 +435,6 @@ h1 {
 
 .dialog-close {
   padding: 0.42rem 0.7rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
 }
 
 .detail-dialog h2 {
@@ -314,10 +444,12 @@ h1 {
 
 .detail-cover {
   display: block;
+  width: 100%;
   aspect-ratio: 3 / 4;
   max-height: 18rem;
   margin-bottom: 1rem;
   border-radius: 0.75rem;
+  object-fit: cover;
 }
 
 .detail-title-zh {
@@ -363,17 +495,89 @@ h1 {
     text-align: left;
   }
 
-  .week-grid {
-    grid-template-columns: 1fr;
+  .week-pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
-  .catalog-grid {
-    grid-template-columns: 1fr 1fr;
+  .week-pager p {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: left;
+  }
+
+  .time-grid {
+    display: none;
+  }
+
+  .time-grid-scroll {
+    display: none;
+  }
+
+  .mobile-calendar {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .mobile-day-picker {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(4.75rem, 1fr));
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding-bottom: 0.3rem;
+  }
+
+  .mobile-day-picker button {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.5rem;
+    color: var(--muted-ink);
+    font-size: 0.72rem;
+  }
+
+  .mobile-day-picker button.is-selected {
+    border-color: var(--blue);
+    background: var(--blue-soft);
+    color: var(--ink);
+  }
+
+  .mobile-agenda {
+    display: grid;
+    gap: 0.55rem;
+    min-height: 16rem;
+    padding: 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 0.75rem;
+    background: var(--card);
+  }
+
+  .mobile-agenda .calendar-event {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    min-height: 3.6rem;
+  }
+
+  .mobile-agenda .calendar-event strong {
+    font-size: 0.92rem;
+  }
+
+  .mobile-agenda > p {
+    align-self: center;
+    margin: 0;
+    color: var(--muted-ink);
+    text-align: center;
+  }
+
+  .network-list {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .anime-card {
+  .calendar-event,
+  .network-card {
     transition: none;
   }
 }

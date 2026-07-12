@@ -1,22 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  type CSSProperties,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { anime, season } from "../data/anime.js";
-import { groupByBeijingWeekday, toBeijingAiring } from "../lib/schedule.js";
+import {
+  addDays,
+  eventsForWeek,
+  layoutEventsForDay,
+  startOfWeek,
+  weekDays,
+} from "../lib/calendar.js";
 
-const weekdays = [
-  { key: "Mon", label: "周一" },
-  { key: "Tue", label: "周二" },
-  { key: "Wed", label: "周三" },
-  { key: "Thu", label: "周四" },
-  { key: "Fri", label: "周五" },
-  { key: "Sat", label: "周六" },
-  { key: "Sun", label: "周日" },
-] as const;
+const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+const timelineStartHour = 15;
+const timelineHours = Array.from({ length: 13 }, (_, index) => timelineStartHour + index);
+const initialWeekStart = "2026-07-06";
 
 type Anime = (typeof anime)[number];
+type CalendarEvent = Anime & {
+  date: string;
+  episode: number;
+  time: string;
+};
+type SelectedAnime = Anime & {
+  selectedDate?: string;
+  selectedEpisode?: number;
+};
 
-const grouped = groupByBeijingWeekday(anime);
 const beijingDateFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Shanghai",
   year: "numeric",
@@ -31,7 +46,7 @@ function getBeijingDate() {
       .filter(({ type }) => type !== "literal")
       .map(({ type, value }) => [type, value]),
   );
-  return `${parts.year}-${parts.month}-${parts.day}`;
+  return String(parts.year) + "-" + parts.month + "-" + parts.day;
 }
 
 function subscribeToBeijingDate(onStoreChange: () => void) {
@@ -43,21 +58,43 @@ function getServerBeijingDate() {
   return null;
 }
 
+function shortDate(isoDate: string) {
+  const [, month, day] = isoDate.split("-");
+  return Number(month) + "月" + Number(day) + "日";
+}
+
+function weekLabel(dates: string[]) {
+  return shortDate(dates[0]) + " — " + shortDate(dates[dates.length - 1]);
+}
+
+function timeOffset(time: string) {
+  const [hour, minute] = time.split(":").map(Number);
+  return String(hour + minute / 60 - timelineStartHour);
+}
+
 export default function Home() {
-  const [selected, setSelected] = useState<Anime | null>(null);
+  const [selected, setSelected] = useState<SelectedAnime | null>(null);
+  const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
+  const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
+  const didSetInitialWeek = useRef(false);
   const currentBeijingDate = useSyncExternalStore<string | null>(
     subscribeToBeijingDate,
     getBeijingDate,
     getServerBeijingDate,
   );
-  const selectedAiring = selected ? toBeijingAiring(selected) : null;
+  const dates = weekDays(activeWeekStart);
+  const events = eventsForWeek(anime, activeWeekStart) as CalendarEvent[];
+  const networkOnly = anime.filter(({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime);
 
-  const handleDialogClose = () => {
-    setSelected(null);
-    openerRef.current?.focus();
-  };
+  useEffect(() => {
+    if (!currentBeijingDate || didSetInitialWeek.current) return;
+
+    didSetInitialWeek.current = true;
+    setActiveWeekStart(startOfWeek(currentBeijingDate));
+    setActiveMobileDate(currentBeijingDate);
+  }, [currentBeijingDate]);
 
   useEffect(() => {
     if (selected && dialogRef.current && !dialogRef.current.open) {
@@ -65,33 +102,67 @@ export default function Home() {
     }
   }, [selected]);
 
-  const renderAnimeCard = (
+  const changeWeek = (days: number) => {
+    const nextWeekStart = addDays(activeWeekStart, days);
+    setActiveWeekStart(nextWeekStart);
+    setActiveMobileDate(nextWeekStart);
+  };
+
+  const returnToCurrentWeek = () => {
+    const date = currentBeijingDate ?? initialWeekStart;
+    setActiveWeekStart(startOfWeek(date));
+    setActiveMobileDate(date);
+  };
+
+  const openDetail = (
     record: Anime,
-    airing: ReturnType<typeof toBeijingAiring>,
-    contextLabel: string,
+    opener: HTMLButtonElement,
+    selectedDate?: string,
+    selectedEpisode?: number,
   ) => {
-    const isToday = airing?.date === currentBeijingDate;
+    openerRef.current = opener;
+    setSelected({ ...record, selectedDate, selectedEpisode });
+  };
+
+  const handleDialogClose = () => {
+    setSelected(null);
+    openerRef.current?.focus();
+  };
+
+  const eventButton = (event: CalendarEvent, lane: number, laneCount: number) => {
+    const isToday = event.date === currentBeijingDate;
+    const style = {
+      "--event-start": timeOffset(event.time),
+      left: "calc(" + ((lane * 100) / laneCount) + "% + 0.18rem)",
+      width: "calc(" + 100 / laneCount + "% - 0.36rem)",
+    } as CSSProperties;
 
     return (
       <button
-        className={`anime-card${isToday ? " is-today" : ""}`}
-        key={record.id}
+        className={"calendar-event" + (isToday ? " is-today" : "")}
+        key={event.id + "-" + event.episode}
         type="button"
+        style={style}
         aria-haspopup="dialog"
-        aria-label={`查看《${record.titleZh}／${record.titleJa}》详情：${contextLabel}`}
-        onClick={(event) => {
-          openerRef.current = event.currentTarget;
-          setSelected(record);
-        }}
+        aria-label={
+          "查看《" +
+          event.titleZh +
+          "／" +
+          event.titleJa +
+          "》第" +
+          event.episode +
+          "集详情：" +
+          event.date +
+          " " +
+          event.time
+        }
+        onClick={(clickEvent) =>
+          openDetail(event, clickEvent.currentTarget, event.date, event.episode)
+        }
       >
-        <span className="cover-frame">
-          <img src={record.coverUrl} alt={record.coverAlt} loading="lazy" />
-        </span>
-        {airing ? <span className="anime-card-date">{airing.date}</span> : null}
-        {isToday ? <span className="today-marker">今天</span> : null}
-        <strong>{record.titleZh}</strong>
-        <span className="anime-card-ja">{record.titleJa}</span>
-        <span className="anime-card-time">{contextLabel}</span>
+        <span className="calendar-event-time">{event.time}</span>
+        <strong>{event.titleZh}</strong>
+        <span className="calendar-event-episode">第 {event.episode} 集</span>
       </button>
     );
   };
@@ -101,9 +172,10 @@ export default function Home() {
       <header className="calendar-header">
         <div>
           <p className="season-kicker">{season.label}</p>
-          <h1>2026 夏番播出周历</h1>
+          <h1>2026 夏番时间表</h1>
           <p className="intro">
-            共 {season.catalogCount} 部夏番；周视图按 YUC 公开周表展示北京时间。
+            共 {season.catalogCount} 部夏番，从首播日起按周显示；未明确集数的作品暂按 12
+            集安排，时间均为北京时间。
           </p>
         </div>
         <a
@@ -119,60 +191,119 @@ export default function Home() {
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">
           <div>
-            <p className="section-kicker">周视图</p>
-            <h2 id="weekly-heading">YUC 排期／北京时间</h2>
+            <p className="section-kicker">时间轴</p>
+            <h2 id="weekly-heading">一周放送安排</h2>
           </div>
-          <p>点击节目可查看 YUC 封面、首播排期与资料来源。</p>
+          <p>节目以首播日期起每周重复，播满对应集数后不再显示。</p>
         </div>
 
-        <div className="week-grid">
-          {weekdays.map((weekday) => {
-            const records: Anime[] = grouped.byWeekday[weekday.key];
+        <nav className="week-pager" aria-label="日历周导航">
+          <button type="button" onClick={() => changeWeek(-7)} aria-label="上一周">
+            上一周
+          </button>
+          <p aria-live="polite">{weekLabel(dates)}</p>
+          <button type="button" onClick={returnToCurrentWeek}>
+            回到本周
+          </button>
+          <button type="button" onClick={() => changeWeek(7)} aria-label="下一周">
+            下一周
+          </button>
+        </nav>
 
-            return (
-              <article className="week-column" key={weekday.key} aria-label={weekday.label}>
-                <header className="weekday-header">
-                  <h3>{weekday.label}</h3>
-                  <span>{records.length} 部</span>
-                </header>
-                <div className="anime-list">
-                  {records.map((record) => {
-                    const airing = toBeijingAiring(record);
-                    return airing
-                      ? renderAnimeCard(
-                          record,
-                          airing,
-                          `YUC 排期／北京时间 · ${weekday.label} ${airing.time}`,
-                        )
-                      : null;
-                  })}
-                </div>
-              </article>
-            );
-          })}
+        <div className="time-grid-scroll">
+          <div className="time-grid" aria-label={weekLabel(dates) + " 放送时间轴"}>
+            <div className="time-axis" aria-hidden="true">
+              <div className="time-axis-header">北京时间</div>
+              <div className="time-axis-hours">
+                {timelineHours.map((hour) => (
+                  <span key={hour}>{String(hour).padStart(2, "0")}:00</span>
+                ))}
+              </div>
+            </div>
+
+            {dates.map((date, index) => {
+              const dayEvents = layoutEventsForDay(
+                events.filter((event) => event.date === date),
+              );
+              const isToday = date === currentBeijingDate;
+
+              return (
+                <section
+                  className={"time-column" + (isToday ? " is-today" : "")}
+                  key={date}
+                  aria-label={weekdays[index] + " " + date}
+                >
+                  <header className="time-column-header">
+                    <h3>{weekdays[index]}</h3>
+                    <span>{shortDate(date)}</span>
+                    {isToday ? <b>今天</b> : null}
+                  </header>
+                  <div className="timeline">
+                    {dayEvents.map(({ event, lane, laneCount }) =>
+                      eventButton(event, lane, laneCount),
+                    )}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mobile-calendar" aria-label="移动端日程">
+          <div className="mobile-day-picker" role="tablist" aria-label="选择日期">
+            {dates.map((date, index) => (
+              <button
+                className={date === activeMobileDate ? "is-selected" : ""}
+                key={date}
+                type="button"
+                role="tab"
+                aria-selected={date === activeMobileDate}
+                onClick={() => setActiveMobileDate(date)}
+              >
+                <span>{weekdays[index]}</span>
+                <b>{shortDate(date)}</b>
+              </button>
+            ))}
+          </div>
+          <div className="mobile-agenda">
+            {events
+              .filter((event) => event.date === activeMobileDate)
+              .map((event) => eventButton(event, 0, 1))}
+            {!events.some((event) => event.date === activeMobileDate) ? (
+              <p>当天没有排定放送。</p>
+            ) : null}
+          </div>
         </div>
       </section>
 
-      <section className="catalog-section" aria-labelledby="catalog-heading">
+      <section className="network-section" aria-labelledby="network-heading">
         <div>
           <p className="section-kicker">完整季表</p>
-          <h2 id="catalog-heading">网络放送／具体时刻未列出</h2>
-          <p>
-            以下作品在 YUC 季表中列有首播日期，但没有固定的周播时刻。
-          </p>
+          <h2 id="network-heading">网络放送／固定时刻未列出</h2>
+          <p>YUC 列有首播日期，但未给出固定周播时刻的作品。</p>
         </div>
-        <div className="catalog-grid">
-          {[...grouped.seasonal, ...grouped.pending].map((record) =>
-            renderAnimeCard(
-              record,
-              null,
-              record.premiereDateBeijing
-                ? `YUC 首播 · ${record.premiereDateBeijing}${record.station ? ` · ${record.station}` : ""}`
-                : record.station
-                  ? `YUC 排期 · ${record.station}`
-                  : "YUC 未列出具体时刻",
-            ),
-          )}
+        <div className="network-list">
+          {networkOnly.map((record) => (
+            <button
+              className="network-card"
+              key={record.id}
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={"查看《" + record.titleZh + "／" + record.titleJa + "》详情"}
+              onClick={(clickEvent) => openDetail(record, clickEvent.currentTarget)}
+            >
+              <img src={record.coverUrl} alt={record.coverAlt} loading="lazy" />
+              <span>
+                <strong>{record.titleZh}</strong>
+                <small>{record.titleJa}</small>
+                <em>
+                  {record.premiereDateBeijing
+                    ? "YUC 首播 · " + record.premiereDateBeijing
+                    : "YUC 未列出首播日期"}
+                </em>
+              </span>
+            </button>
+          ))}
         </div>
       </section>
 
@@ -213,18 +344,23 @@ export default function Home() {
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
           <dl>
             <div>
-              <dt>YUC 排期／北京时间</dt>
+              <dt>本次放送</dt>
               <dd>
-                {selectedAiring
-                  ? `${selectedAiring.weekday} · ${selectedAiring.date} ${selectedAiring.time}`
-                  : "待确认"}
+                {selected.selectedDate
+                  ? selected.selectedDate +
+                    " " +
+                    (selected.beijingTime ?? "具体时刻未列出") +
+                    (selected.selectedEpisode ? " · 第 " + selected.selectedEpisode + " 集" : "")
+                  : "从 " +
+                    (selected.premiereDateBeijing ?? "待确认") +
+                    " 起每周放送"}
               </dd>
             </div>
             <div>
               <dt>YUC 首播排期</dt>
               <dd>
                 {selected.premiereDateBeijing
-                  ? `${selected.premiereDateBeijing} ${selected.beijingTime ?? "具体时刻未列出"}`
+                  ? selected.premiereDateBeijing + " " + (selected.beijingTime ?? "具体时刻未列出")
                   : "待确认"}
               </dd>
             </div>
