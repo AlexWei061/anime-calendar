@@ -56,11 +56,13 @@ test("server-renders the Beijing weekly anime calendar", async () => {
   );
   assert.match(html, /2026 夏番/);
   assert.match(html, /北京时间（UTC\+8）/);
-  assert.match(withoutReactMarkers(html), /63 部夏番/);
+  assert.match(withoutReactMarkers(html), /66 部夏番/);
   assert.match(html, /梦限大 μ!/);
-  assert.match(html, /夢限大みゅーたいぷ/);
+  assert.match(html, /バンドリ！ ゆめ∞みた/);
   assert.match(html, /src="\/covers\/yume-mita\.png"/);
   assert.match(html, /alt="梦限大 μ! 主视觉"/);
+  assert.match(html, /二十世纪电气目录/);
+  assert.match(html, /二十世紀電氣目録/);
   assert.match(html, /本季收录／播出待确认/);
   assert.match(html, /loading="lazy"/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
@@ -107,9 +109,9 @@ test("renders ordered weekday columns, dialog cards, and a separate pending sect
   }
 
   const sourceLinks = [
-    ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/www\.oricon\.co\.jp\/anime\/[^\"]+")[^>]*>/g),
+    ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/yuc\.wiki\/202607\/")[^>]*>/g),
   ].map(([tag]) => tag);
-  assert.ok(sourceLinks.length >= 2);
+  assert.equal(sourceLinks.length, 2);
   assert.ok(sourceLinks.every((tag) => /target="_blank"/.test(tag)));
   assert.ok(sourceLinks.every((tag) => /rel="noreferrer"/.test(tag)));
 });

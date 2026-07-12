@@ -2,9 +2,9 @@ export const season = {
   label: "2026 夏番",
   timeZoneLabel: "北京时间（UTC+8）",
   updatedAt: "2026-07-12",
-  catalogCount: 63,
-  sourceName: "ORICON 夏アニメ2026",
-  sourceUrl: "https://www.oricon.co.jp/anime/2026_summer/",
+  catalogCount: 66,
+  sourceName: "YUC 2026年7月新番表",
+  sourceUrl: "https://yuc.wiki/202607/",
 };
 
 const baseAnime = [
@@ -31,14 +31,6 @@ const baseAnime = [
     jstTime: null,
     station: null,
     sourceUrl: "https://www.oricon.co.jp/anime/1048/",
-  },
-  {
-    id: "cold-prince",
-    titleJa: "身代わり令嬢を救ったのは冷酷無慈悲な氷の王子の愛でした",
-    premiereDateJst: "2026-07-07",
-    jstTime: "21:55",
-    station: "tvk（テレビ神奈川）",
-    sourceUrl: "https://www.oricon.co.jp/anime/1084/",
   },
   {
     id: "ghost-in-the-shell",
@@ -79,14 +71,6 @@ const baseAnime = [
     jstTime: null,
     station: "AT-X",
     sourceUrl: "https://www.oricon.co.jp/anime/1061/",
-  },
-  {
-    id: "kikkun",
-    titleJa: "地球大好き！きっくん",
-    premiereDateJst: "2026-07-01",
-    jstTime: "17:00",
-    station: "TOKYO MX",
-    sourceUrl: "https://www.oricon.co.jp/anime/1109/",
   },
   {
     id: "youjo-senki-2",
@@ -135,14 +119,6 @@ const baseAnime = [
     jstTime: "24:45",
     station: "フジテレビ「+Ultra」",
     sourceUrl: "https://www.oricon.co.jp/anime/1053/",
-  },
-  {
-    id: "tomb-raider-king",
-    titleJa: "盗掘王",
-    premiereDateJst: "2026-07-08",
-    jstTime: "25:15",
-    station: "フジテレビ",
-    sourceUrl: "https://www.oricon.co.jp/anime/1091/",
   },
   {
     id: "bungo-wan-2",
@@ -225,14 +201,6 @@ const baseAnime = [
     sourceUrl: "https://www.oricon.co.jp/anime/1097/",
   },
   {
-    id: "pan-baby",
-    titleJa: "パンの赤ちゃん",
-    premiereDateJst: "2026-07-04",
-    jstTime: "08:30",
-    station: "カンテレ・フジテレビ系",
-    sourceUrl: "https://www.oricon.co.jp/anime/1114/",
-  },
-  {
     id: "neko-to-ryu",
     titleJa: "猫と竜",
     premiereDateJst: "2026-07-04",
@@ -289,14 +257,6 @@ const baseAnime = [
     sourceUrl: "https://www.oricon.co.jp/anime/1050/",
   },
   {
-    id: "planosaurus",
-    titleJa: "プラノサウルス ガチコセイブツ部",
-    premiereDateJst: "2026-07-12",
-    jstTime: "07:00",
-    station: "テレビ東京",
-    sourceUrl: "https://www.oricon.co.jp/anime/1095/",
-  },
-  {
     id: "lets-go-kaiki",
     titleJa: "レッツゴー怪奇組",
     premiereDateJst: "2026-07-05",
@@ -343,14 +303,6 @@ const baseAnime = [
     jstTime: "24:30",
     station: "TOKYO MX",
     sourceUrl: "https://www.oricon.co.jp/anime/1052/",
-  },
-  {
-    id: "someya-sexy-actress",
-    titleJa: "同じゼミの染谷さんがセクシー女優だった話。",
-    premiereDateJst: "2026-07-05",
-    jstTime: "25:00",
-    station: "TOKYO MX",
-    sourceUrl: "https://www.oricon.co.jp/anime/959/",
   },
   {
     id: "azur-lane-bisoku-2",
@@ -497,20 +449,92 @@ const baseAnime = [
     sourceUrl: "https://www.oricon.co.jp/anime/1007/",
   },
   {
-    id: "perfect-addiction",
-    titleJa: "パーフェクトアディクション",
-    premiereDateJst: null,
+    id: "yume-mita",
+    titleJa: "バンドリ！ ゆめ∞みた",
+    premiereDateJst: "2026-07-02",
     jstTime: null,
     station: null,
-    sourceUrl: "https://www.oricon.co.jp/anime/1080/",
+    sourceUrl: "https://anime.bang-dream.com/yumemita/",
   },
   {
-    id: "yume-mita",
-    titleJa: "夢限大みゅーたいぷ",
-    premiereDateJst: null,
+    id: "cyborg-009-nemesis",
+    titleJa: "サイボーグ009 ネメシス",
+    premiereDateJst: "2026-07-19",
+    jstTime: null,
+    station: "网络放送",
+    sourceUrl: "https://cyborg009.jp/",
+  },
+  {
+    id: "baki-dou-2",
+    titleJa: "刃牙道 第2クール",
+    premiereDateJst: "2026-06-18",
+    jstTime: null,
+    station: "网络放送",
+    sourceUrl: "https://baki-anime.jp/",
+  },
+  {
+    id: "hanazakari-2",
+    titleJa: "花ざかりの君たちへ 第2期",
+    premiereDateJst: "2026-07-01",
     jstTime: null,
     station: null,
-    sourceUrl: "https://bang-dream.com/yumemita/",
+    sourceUrl: "https://hanakimi-anime.com/",
+  },
+  {
+    id: "100-girlfriends-3",
+    titleJa: "君のことが大大大大大好きな100人の彼女 第3期",
+    premiereDateJst: "2026-07-05",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://hyakkano.com/",
+  },
+  {
+    id: "world-is-dancing",
+    titleJa: "ワールド イズ ダンシング",
+    premiereDateJst: "2026-06-29",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://sh-anime.shochiku.co.jp/worldisdancing-anime/",
+  },
+  {
+    id: "kimi-shinu-koi",
+    titleJa: "きみが死ぬまで恋をしたい",
+    premiereDateJst: "2026-07-07",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://kimishinu-anime.com/",
+  },
+  {
+    id: "rezero-4-part-2",
+    titleJa: "Re:ゼロから始める異世界生活 4th season",
+    premiereDateJst: "2026-08-12",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://re-zero-anime.jp/tv/",
+  },
+  {
+    id: "lv999-villager",
+    titleJa: "LV999の村人",
+    premiereDateJst: "2026-07-01",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://lv999-anime.com/",
+  },
+  {
+    id: "futsutsuka-akujo",
+    titleJa: "ふつつかな悪女ではございますが～雛宮蝶鼠とりかえ伝～",
+    premiereDateJst: "2026-07-12",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://futsutsuka.net/",
+  },
+  {
+    id: "20th-century-electric-catalog",
+    titleJa: "二十世紀電氣目録 -ユーレカ・エヴリカ-",
+    premiereDateJst: "2026-07-05",
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://denkimokuroku.jp/",
   },
 ];
 
@@ -526,10 +550,6 @@ const catalogDetails = {
   "koko-ni-makase": {
     titleZh: "这里交给我你先走，十年后我成了传说",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1048/base/img1200/tv-program-image-769db5227df765ca0024508160229d026c1f0a2eb7504493c79e212df7b03ff4.jpg",
-  },
-  "cold-prince": {
-    titleZh: "拯救替身千金的是冷酷无情冰之王子的爱",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1084/base/img1200/tv-program-image-aa7befe621dbf9d94e98fb17de2c75a6d884e1402cb269bdf0f5a0a919c3db8d.jpg",
   },
   "ghost-in-the-shell": {
     titleZh: "攻壳机动队 THE GHOST IN THE SHELL",
@@ -550,10 +570,6 @@ const catalogDetails = {
   "taiari-deshita": {
     titleZh: "对局开始了：大小姐可不会玩格斗游戏",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1061/base/img1200/tv-program-image-7ef2557e3e47a8e982d7ec621370033771739fa5d2a5be5f851efcb457fcef7f.jpg",
-  },
-  kikkun: {
-    titleZh: "最爱地球！小君",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1109/base/img1200/tv-program-image-0e111338a312ef670d4214bb14e74aeff1c80183bbc45ce926d38be0792c0ec0.jpg",
   },
   "youjo-senki-2": {
     titleZh: "幼女战记 II",
@@ -578,10 +594,6 @@ const catalogDetails = {
   "thunder-3": {
     titleZh: "雷霆3",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1053/base/img1200/tv-program-image-36a72ae43998b50b340eef4381cf523fb1275cfdacb6e57bb3da2e24d05e925b.jpg",
-  },
-  "tomb-raider-king": {
-    titleZh: "盗墓王",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1091/base/img1200/tv-program-image-86f2572e3ab7292e4101bd2ff22273493fb737361ac01a78be17de42105e4d00.jpg",
   },
   "bungo-wan-2": {
     titleZh: "文豪野犬 汪！2",
@@ -623,10 +635,6 @@ const catalogDetails = {
     titleZh: "地狱模式：痴迷刷本的玩家在废设定异世界无双 第2季",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1097/base/img1200/tv-program-image-2048c15d1986f74555080cc0db276ee6ea067b3d444a24ece711a1c6257946b8.jpg",
   },
-  "pan-baby": {
-    titleZh: "面包宝宝",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1114/base/img1200/tv-program-image-09ec061481908f7f4867ae9e6f98b91a6136edc281d83ed23ced12770140e11a.jpg",
-  },
   "neko-to-ryu": {
     titleZh: "猫与龙",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1079/base/img1200/tv-program-image-f25fdcf9f9201c3317c08d80fb4ddcc997a1f07c4c484d1a6c57485820772ac5.jpg",
@@ -655,10 +663,6 @@ const catalogDetails = {
     titleZh: "才女的侍奉：在满是高岭之花的名门学校里，我开始暗中照顾学院第一的大小姐（生活能力为零）",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1050/base/img1200/tv-program-image-6383d3c412cb3b244fb04618eebdc74bcd8955a1db15bc7ecc7d90babebcf0cf.jpg",
   },
-  planosaurus: {
-    titleZh: "普拉诺龙：硬核生物部",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1095/base/img1200/tv-program-image-808a9952453320ccba78964bac87d07719c55c4ee298a3996cd066c4e8a01906.jpg",
-  },
   "lets-go-kaiki": {
     titleZh: "Let's Go 怪奇组",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1062/base/img1200/tv-program-image-c315f16c9684255775c2eabe3c62e9250358ba2bd1449bdd6bdf7738299f801b.jpg",
@@ -682,10 +686,6 @@ const catalogDetails = {
   "sayonara-lara": {
     titleZh: "再见，拉拉",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1052/base/img1200/tv-program-image-9259aac5bcf33720adbd850fed049e83b9c368f34f7957f480c5cb53dafaaaea.jpg",
-  },
-  "someya-sexy-actress": {
-    titleZh: "同个研讨班的染谷同学原来是性感女演员",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/0/959/base/img1200/tv-program-image-69b215a0b86d1357ada1d391d789c41e123f2545eeb175dd11201c6b3e05d29f.jpg",
   },
   "azur-lane-bisoku-2": {
     titleZh: "碧蓝航线 微速前进！再来！！",
@@ -759,13 +759,49 @@ const catalogDetails = {
     titleZh: "花织小姐即使转生也想吵架",
     coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1007/base/img1200/tv-program-image-fea790c63dab5f749fe62cd8db34b09ba301dbe304c51522f26e555f3803da0c.jpg",
   },
-  "perfect-addiction": {
-    titleZh: "完美成瘾",
-    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1080/base/img1200/tv-program-image-ea9890bdcd276a4483278186a7d16551dc10a3400d118116b3d14b666291e393.jpg",
-  },
   "yume-mita": {
     titleZh: "梦限大 μ!",
     coverUrl: "/covers/yume-mita.png",
+  },
+  "cyborg-009-nemesis": {
+    titleZh: "人造人009 涅墨西斯",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/9b28dba13543264543b03fd271eb7d5a512995925.jpg",
+  },
+  "baki-dou-2": {
+    titleZh: "刃牙道 Part.2",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/ce93161f8aebb57e6437bbfe2c2b9f9f512995925.jpg",
+  },
+  "hanazakari-2": {
+    titleZh: "花样少年少女 第2期",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/f6fd144e178bc398971b6a24294ef061512995925.jpg",
+  },
+  "100-girlfriends-3": {
+    titleZh: "超超超超喜欢你的100个女孩子 第3期",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/474899f247a75f593180d0759a783635512995925.jpg",
+  },
+  "world-is-dancing": {
+    titleZh: "世界舞动",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/e2cf0e4959454310e6390adaa601408e512995925.jpg",
+  },
+  "kimi-shinu-koi": {
+    titleZh: "与你相恋到生命尽头",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/5e56eb53f26add20de1049642088ae14512995925.jpg",
+  },
+  "rezero-4-part-2": {
+    titleZh: "Re:从零开始的异世界生活 第4期 Part.2 夺还篇",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/e5498ee6e63f87ba626eb1a643692635512995925.jpg",
+  },
+  "lv999-villager": {
+    titleZh: "LV999的村民",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/28a51ffa05536c0f7605980cfc3aafbf512995925.jpg",
+  },
+  "futsutsuka-akujo": {
+    titleZh: "虽然我是不完美恶女",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/df5578fc4cc578805e5c356fe0c07c6c512995925.jpg",
+  },
+  "20th-century-electric-catalog": {
+    titleZh: "二十世纪电气目录",
+    coverUrl: "https://i0.hdslb.com/bfs/new_dyn/5691179311a0702b8d5fbec57ed5d05d512995925.jpg",
   },
 };
 

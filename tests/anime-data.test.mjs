@@ -10,26 +10,18 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
     label: "2026 夏番",
     timeZoneLabel: "北京时间（UTC+8）",
     updatedAt: "2026-07-12",
-    catalogCount: 63,
-    sourceName: "ORICON 夏アニメ2026",
-    sourceUrl: "https://www.oricon.co.jp/anime/2026_summer/",
+    catalogCount: 66,
+    sourceName: "YUC 2026年7月新番表",
+    sourceUrl: "https://yuc.wiki/202607/",
   });
   assert.equal(season.timeZoneLabel, "北京时间（UTC+8）");
-  assert.equal(season.catalogCount, 63);
-  assert.equal(anime.length, 63);
+  assert.equal(season.catalogCount, 66);
+  assert.equal(anime.length, 66);
   assert.equal(new Set(anime.map(({ id }) => id)).size, anime.length);
   assert.ok(anime.every(({ titleZh }) => typeof titleZh === "string" && titleZh.length > 0));
   assert.ok(anime.every(({ coverUrl }) => typeof coverUrl === "string" && coverUrl.length > 0));
   assert.ok(anime.every(({ coverAlt }) => typeof coverAlt === "string" && coverAlt.length > 0));
-  assert.ok(
-    anime.every(({ id, sourceUrl }) =>
-      id === "yume-mita"
-        ? sourceUrl === "https://bang-dream.com/yumemita/"
-        : sourceUrl.startsWith("https://www.oricon.co.jp/anime/"),
-    ),
-  );
-  assert.ok(anime.every(({ station }) => station !== "ABEMAプレミアム"));
-  assert.ok(anime.every(({ station }) => !station?.includes("ABEMA")));
+  assert.ok(anime.every(({ sourceUrl }) => sourceUrl.startsWith("https://")));
 
   for (const record of anime) {
     assert.deepEqual(Object.keys(record).sort(), [
@@ -50,6 +42,33 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
     { titleZh: yumeMita?.titleZh, coverUrl: yumeMita?.coverUrl },
     { titleZh: "梦限大 μ!", coverUrl: "/covers/yume-mita.png" },
   );
+
+  const ids = new Set(anime.map(({ id }) => id));
+  for (const id of [
+    "cyborg-009-nemesis",
+    "baki-dou-2",
+    "hanazakari-2",
+    "100-girlfriends-3",
+    "world-is-dancing",
+    "kimi-shinu-koi",
+    "rezero-4-part-2",
+    "lv999-villager",
+    "futsutsuka-akujo",
+    "20th-century-electric-catalog",
+  ]) {
+    assert.ok(ids.has(id), `missing YUC catalog title: ${id}`);
+  }
+  for (const id of [
+    "cold-prince",
+    "kikkun",
+    "tomb-raider-king",
+    "pan-baby",
+    "planosaurus",
+    "someya-sexy-actress",
+    "perfect-addiction",
+  ]) {
+    assert.equal(ids.has(id), false, `unexpected non-YUC title: ${id}`);
+  }
 });
 
 test("keeps records without confirmed times in the Beijing pending group", () => {
