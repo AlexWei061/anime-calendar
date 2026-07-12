@@ -4,7 +4,9 @@ import test from "node:test";
 import {
   addDays,
   eventsForWeek,
+  formatBroadcastTime,
   layoutEventsForDay,
+  stackEventsForDay,
   startOfWeek,
   weekDays,
 } from "../lib/calendar.js";
@@ -50,22 +52,28 @@ test("stops generating after the configured episode count", () => {
   assert.deepEqual(eventsForWeek([threeEpisodeShow], "2026-07-27"), []);
 });
 
-test("keeps 24-hour YUC labels in their source Sunday column", () => {
+test("formats normal and overnight YUC broadcast times", () => {
+  assert.equal(formatBroadcastTime("20:30"), "20:30");
+  assert.equal(formatBroadcastTime("24:00"), "次日 00:00");
+  assert.equal(formatBroadcastTime("27:08"), "次日 03:08");
+});
+
+test("keeps a 25:00 YUC label in its source Sunday column", () => {
   const [event] = eventsForWeek(
     [
       {
         ...weeklyShow,
         premiereDateBeijing: "2026-07-05",
         scheduleWeekday: "Sun",
-        beijingTime: "24:45",
+        beijingTime: "25:00",
       },
     ],
     "2026-06-29",
   );
 
   assert.deepEqual(
-    { date: event.date, weekday: event.scheduleWeekday, time: event.time },
-    { date: "2026-07-05", weekday: "Sun", time: "24:45" },
+    { date: event.date, weekday: event.scheduleWeekday, time: event.time, label: formatBroadcastTime(event.time) },
+    { date: "2026-07-05", weekday: "Sun", time: "25:00", label: "次日 01:00" },
   );
 });
 
@@ -93,6 +101,24 @@ test("puts events with overlapping short time blocks into separate lanes", () =>
       { id: "first", lane: 0, laneCount: 2 },
       { id: "second", lane: 1, laneCount: 2 },
       { id: "third", lane: 0, laneCount: 2 },
+    ],
+  );
+});
+
+test("stacks dense events after the previous visual block", () => {
+  const dayEvents = [
+    { ...weeklyShow, id: "second", time: "20:40" },
+    { ...weeklyShow, id: "first", time: "20:30" },
+  ];
+
+  assert.deepEqual(
+    stackEventsForDay(dayEvents).map(({ event, visualStartMinutes }) => ({
+      id: event.id,
+      visualStartMinutes,
+    })),
+    [
+      { id: "first", visualStartMinutes: 1230 },
+      { id: "second", visualStartMinutes: 1290 },
     ],
   );
 });
