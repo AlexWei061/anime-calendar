@@ -100,7 +100,7 @@ export default function Home() {
   );
   const timelineEndMinutes = Math.max(
     timelineStartMinutes + 60,
-    Math.ceil((latestVisualEndMinutes + 60) / 60) * 60,
+    Math.ceil(latestVisualEndMinutes / 60) * 60,
   );
   const timelineHours = Array.from(
     { length: (timelineEndMinutes - timelineStartMinutes) / 60 },

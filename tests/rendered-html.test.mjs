@@ -54,6 +54,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
   assert.match(html, /class="time-grid"/);
+  assert.match(html, /class="time-grid" style="--timeline-hours:17"/);
   assert.match(html, /class="time-axis"/);
   assert.match(html, /class="time-column"/);
   assert.match(cleanHtml, /15:00/);
@@ -72,6 +73,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /Your site is taking shape/i);
   assert.doesNotMatch(html, /react-loading-skeleton/i);
   assert.doesNotMatch(cleanHtml, /25:00|27:08/);
+  assert.doesNotMatch(cleanHtml, /次日 08:00/);
 });
 
 test("renders one Monday-through-Sunday grid with timed and network-only program details", async () => {
