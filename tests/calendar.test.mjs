@@ -5,6 +5,7 @@ import {
   addDays,
   eventsForWeek,
   formatBroadcastTime,
+  groupEventsByTime,
   layoutEventsForDay,
   stackEventsForDay,
   startOfWeek,
@@ -74,6 +75,27 @@ test("keeps a 25:00 YUC label in its source Sunday column", () => {
   assert.deepEqual(
     { date: event.date, weekday: event.scheduleWeekday, time: event.time, label: formatBroadcastTime(event.time) },
     { date: "2026-07-05", weekday: "Sun", time: "25:00", label: "次日 01:00" },
+  );
+});
+
+test("groups same-time overnight broadcasts without changing their source date", () => {
+  const groups = groupEventsByTime([
+    { ...weeklyShow, id: "later", date: "2026-07-05", time: "25:30" },
+    { ...weeklyShow, id: "second", date: "2026-07-05", time: "25:00" },
+    { ...weeklyShow, id: "first", date: "2026-07-05", time: "25:00" },
+  ]);
+
+  assert.deepEqual(
+    groups.map(({ time }) => formatBroadcastTime(time)),
+    ["次日 01:00", "次日 01:30"],
+  );
+  assert.deepEqual(
+    groups[0].events.map(({ id }) => id),
+    ["second", "first"],
+  );
+  assert.deepEqual(
+    groups.flatMap(({ events }) => events.map(({ date }) => date)),
+    ["2026-07-05", "2026-07-05", "2026-07-05"],
   );
 });
 
