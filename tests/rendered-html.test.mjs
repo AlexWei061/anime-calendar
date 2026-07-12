@@ -59,7 +59,7 @@ test("server-renders the Beijing weekly anime calendar", async () => {
   assert.match(withoutReactMarkers(html), /66 部夏番/);
   assert.match(html, /BanG Dream! YUME∞MITA/);
   assert.match(html, /バンドリ！ ゆめ∞みた/);
-  assert.match(html, /src="https:\/\/i0\.hdslb\.com\/bfs\/new_dyn\/39ee0f846560cdf5f63c9ddfee8d21ac512995925\.jpg"/);
+  assert.match(html, /src="\/covers\/yuc\/yume-mita\.jpg"/);
   assert.match(html, /alt="BanG Dream! YUME∞MITA 主视觉"/);
   assert.match(html, /二十世纪电气目录/);
   assert.match(html, /二十世紀電氣目録/);
