@@ -1,26 +1,356 @@
-@import "tailwindcss";
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f5f0e5;
+  --paper-deep: #e9dfcf;
+  --card: #fffdf8;
+  --ink: #1f2933;
+  --muted-ink: #5d6870;
+  --line: #d6c9b8;
+  --blue: #155e75;
+  --blue-soft: #dceff1;
+  --mint: #b9ded1;
+  --mint-deep: #2f6d60;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+a {
+  color: var(--blue);
+}
+
+:focus-visible {
+  outline: 3px solid var(--mint-deep);
+  outline-offset: 3px;
+}
+
+.calendar-page {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: 3rem clamp(1rem, 3vw, 3.5rem) 2rem;
+}
+
+.calendar-header,
+.section-heading,
+.weekday-header,
+.detail-dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.calendar-header {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.season-kicker,
+.section-kicker {
+  margin: 0 0 0.5rem;
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+strong {
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+}
+
+h1 {
+  max-width: 12ch;
+  margin-bottom: 0.7rem;
+  font-size: clamp(2.15rem, 5vw, 4.4rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.intro,
+.section-heading > p,
+.calendar-footer,
+.pending-section span {
+  color: var(--muted-ink);
+}
+
+.intro {
+  margin-bottom: 0;
+}
+
+.source-link,
+.detail-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-bottom: 1px solid currentColor;
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.weekly-section {
+  padding: 2.25rem 0;
+}
+
+.section-heading {
+  margin-bottom: 1rem;
+}
+
+.section-heading h2,
+.pending-section h2,
+.detail-dialog h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+}
+
+.section-heading > p {
+  max-width: 28rem;
+  margin: 0;
+  text-align: right;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.week-column {
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
+}
+
+.anime-card.is-today {
+  border-color: var(--mint-deep);
+  box-shadow: inset 0 0 0 1px var(--mint);
+}
+
+.weekday-header {
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.weekday-header h3 {
+  margin-bottom: 0;
+  font-size: 1.05rem;
+}
+
+.weekday-header span {
+  color: var(--mint-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.anime-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.anime-card {
+  display: grid;
+  width: 100%;
+  gap: 0.28rem;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  background: var(--card);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.anime-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.anime-card-date,
+.anime-card-time {
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.today-marker {
+  width: fit-content;
+  padding: 0.1rem 0.38rem;
+  border-radius: 999px;
+  background: var(--mint);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.anime-card strong {
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.pending-section {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.65fr) 1.35fr;
+  gap: 2rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--blue-soft);
+}
+
+.pending-section ul {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pending-section li {
+  display: grid;
+  gap: 0.16rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--blue) 20%, transparent);
+}
+
+.pending-section li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.calendar-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.calendar-footer p {
+  margin-bottom: 0;
+}
+
+.detail-dialog {
+  width: min(34rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 1.5rem 4rem rgb(31 41 51 / 30%);
+}
+
+.detail-dialog::backdrop {
+  background: rgb(31 41 51 / 52%);
+}
+
+.detail-dialog-heading {
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.detail-dialog-heading .section-kicker {
+  margin-bottom: 0;
+}
+
+.dialog-close {
+  padding: 0.42rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.detail-dialog h2 {
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.detail-dialog dl {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1.5rem;
+}
+
+.detail-dialog dl div {
+  display: grid;
+  gap: 0.2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-dialog dt {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+}
+
+.detail-dialog dd {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .calendar-page {
+    padding-top: 1.5rem;
+  }
+
+  .calendar-header,
+  .section-heading,
+  .calendar-footer {
+    display: grid;
+  }
+
+  .section-heading > p {
+    text-align: left;
+  }
+
+  .week-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-card {
+    transition: none;
+  }
 }

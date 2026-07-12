@@ -5,6 +5,7 @@ outputs/
 .wrangler/
 dist/
 .next/
+tsconfig.tsbuildinfo
 node_modules/
 .npm-cache/
 .env*
