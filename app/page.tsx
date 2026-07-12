@@ -11,14 +11,13 @@ import { anime, season } from "../data/anime.js";
 import {
   addDays,
   eventsForWeek,
-  layoutEventsForDay,
+  formatBroadcastTime,
+  stackEventsForDay,
   startOfWeek,
   weekDays,
 } from "../lib/calendar.js";
 
 const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-const timelineStartHour = 15;
-const timelineHours = Array.from({ length: 13 }, (_, index) => timelineStartHour + index);
 const initialWeekStart = "2026-07-06";
 
 type Anime = (typeof anime)[number];
@@ -67,9 +66,9 @@ function weekLabel(dates: string[]) {
   return shortDate(dates[0]) + " — " + shortDate(dates[dates.length - 1]);
 }
 
-function timeOffset(time: string) {
+function timeToMinutes(time: string) {
   const [hour, minute] = time.split(":").map(Number);
-  return String(hour + minute / 60 - timelineStartHour);
+  return hour * 60 + minute;
 }
 
 export default function Home() {
@@ -86,6 +85,28 @@ export default function Home() {
   );
   const dates = weekDays(activeWeekStart);
   const events = eventsForWeek(anime, activeWeekStart) as CalendarEvent[];
+  const dayEventStreams = dates.map((date) =>
+    stackEventsForDay(events.filter((event) => event.date === date)),
+  );
+  const sourceMinutes = events.map((event) => timeToMinutes(event.time));
+  const timelineStartMinutes = Math.floor(
+    (sourceMinutes.length ? Math.min(...sourceMinutes) : 15 * 60) / 60,
+  ) * 60;
+  const latestVisualEndMinutes = Math.max(
+    timelineStartMinutes + 60,
+    ...dayEventStreams.flatMap((dayEvents) =>
+      dayEvents.map(({ visualStartMinutes }) => visualStartMinutes + 60),
+    ),
+  );
+  const timelineEndMinutes = Math.max(
+    timelineStartMinutes + 60,
+    Math.ceil((latestVisualEndMinutes + 60) / 60) * 60,
+  );
+  const timelineHours = Array.from(
+    { length: (timelineEndMinutes - timelineStartMinutes) / 60 },
+    (_, index) => timelineStartMinutes + index * 60,
+  );
+  const timelineStyle = { "--timeline-hours": timelineHours.length } as CSSProperties;
   const networkOnly = anime.filter(({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime);
 
   useEffect(() => {
@@ -129,12 +150,11 @@ export default function Home() {
     openerRef.current?.focus();
   };
 
-  const eventButton = (event: CalendarEvent, lane: number, laneCount: number) => {
+  const eventButton = (event: CalendarEvent, visualStartMinutes = timeToMinutes(event.time)) => {
     const isToday = event.date === currentBeijingDate;
+    const displayTime = formatBroadcastTime(event.time);
     const style = {
-      "--event-start": timeOffset(event.time),
-      left: "calc(" + ((lane * 100) / laneCount) + "% + 0.18rem)",
-      width: "calc(" + 100 / laneCount + "% - 0.36rem)",
+      "--event-start": String((visualStartMinutes - timelineStartMinutes) / 60),
     } as CSSProperties;
 
     return (
@@ -154,15 +174,18 @@ export default function Home() {
           "集详情：" +
           event.date +
           " " +
-          event.time
+          displayTime
         }
         onClick={(clickEvent) =>
           openDetail(event, clickEvent.currentTarget, event.date, event.episode)
         }
       >
-        <span className="calendar-event-time">{event.time}</span>
-        <strong>{event.titleZh}</strong>
-        <span className="calendar-event-episode">第 {event.episode} 集</span>
+        <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
+        <span className="calendar-event-content">
+          <span className="calendar-event-time">{displayTime}</span>
+          <strong>{event.titleZh}</strong>
+          <span className="calendar-event-episode">第 {event.episode} 集</span>
+        </span>
       </button>
     );
   };
@@ -211,20 +234,24 @@ export default function Home() {
         </nav>
 
         <div className="time-grid-scroll">
-          <div className="time-grid" aria-label={weekLabel(dates) + " 放送时间轴"}>
+          <div
+            className="time-grid"
+            style={timelineStyle}
+            aria-label={weekLabel(dates) + " 放送时间轴"}
+          >
             <div className="time-axis" aria-hidden="true">
               <div className="time-axis-header">北京时间</div>
               <div className="time-axis-hours">
-                {timelineHours.map((hour) => (
-                  <span key={hour}>{String(hour).padStart(2, "0")}:00</span>
+                {timelineHours.map((minutes) => (
+                  <span key={minutes}>
+                    {formatBroadcastTime(String(Math.floor(minutes / 60)).padStart(2, "0") + ":00")}
+                  </span>
                 ))}
               </div>
             </div>
 
             {dates.map((date, index) => {
-              const dayEvents = layoutEventsForDay(
-                events.filter((event) => event.date === date),
-              );
+              const dayEvents = dayEventStreams[index];
               const isToday = date === currentBeijingDate;
 
               return (
@@ -239,8 +266,8 @@ export default function Home() {
                     {isToday ? <b>今天</b> : null}
                   </header>
                   <div className="timeline">
-                    {dayEvents.map(({ event, lane, laneCount }) =>
-                      eventButton(event, lane, laneCount),
+                    {dayEvents.map(({ event, visualStartMinutes }) =>
+                      eventButton(event, visualStartMinutes),
                     )}
                   </div>
                 </section>
@@ -268,7 +295,7 @@ export default function Home() {
           <div className="mobile-agenda">
             {events
               .filter((event) => event.date === activeMobileDate)
-              .map((event) => eventButton(event, 0, 1))}
+              .map((event) => eventButton(event))}
             {!events.some((event) => event.date === activeMobileDate) ? (
               <p>当天没有排定放送。</p>
             ) : null}
@@ -349,7 +376,9 @@ export default function Home() {
                 {selected.selectedDate
                   ? selected.selectedDate +
                     " " +
-                    (selected.beijingTime ?? "具体时刻未列出") +
+                    (selected.beijingTime
+                      ? formatBroadcastTime(selected.beijingTime)
+                      : "具体时刻未列出") +
                     (selected.selectedEpisode ? " · 第 " + selected.selectedEpisode + " 集" : "")
                   : "从 " +
                     (selected.premiereDateBeijing ?? "待确认") +
@@ -360,7 +389,11 @@ export default function Home() {
               <dt>YUC 首播排期</dt>
               <dd>
                 {selected.premiereDateBeijing
-                  ? selected.premiereDateBeijing + " " + (selected.beijingTime ?? "具体时刻未列出")
+                  ? selected.premiereDateBeijing +
+                    " " +
+                    (selected.beijingTime
+                      ? formatBroadcastTime(selected.beijingTime)
+                      : "具体时刻未列出")
                   : "待确认"}
               </dd>
             </div>

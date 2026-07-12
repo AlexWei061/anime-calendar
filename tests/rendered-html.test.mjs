@@ -57,8 +57,11 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="time-axis"/);
   assert.match(html, /class="time-column"/);
   assert.match(cleanHtml, /15:00/);
-  assert.match(cleanHtml, /27:00/);
+  assert.match(cleanHtml, /次日 01:00/);
+  assert.match(cleanHtml, /次日 03:08/);
   assert.match(html, /class="calendar-event/);
+  assert.match(html, /class="calendar-event-cover"/);
+  assert.match(html, /src="\/covers\/yuc\/transparent-night\.jpg"/);
   assert.match(html, /第 <!-- -->1<!-- --> 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
@@ -68,6 +71,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /codex-preview/i);
   assert.doesNotMatch(html, /Your site is taking shape/i);
   assert.doesNotMatch(html, /react-loading-skeleton/i);
+  assert.doesNotMatch(cleanHtml, /25:00|27:08/);
 });
 
 test("renders one Monday-through-Sunday grid with timed and network-only program details", async () => {
@@ -78,12 +82,14 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   assert.deepEqual(weekdayHeadings, ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]);
 
   const timedEvents = [
-    ...html.matchAll(/<button\b(?=[^>]*class="[^"]*\bcalendar-event\b[^"]*")[^>]*>/g),
-  ].map(([tag]) => tag);
+    ...html.matchAll(
+      /<button\b(?=[^>]*class="[^"]*\bcalendar-event\b[^"]*")[^>]*>[\s\S]*?<\/button>/g,
+    ),
+  ].map(([card]) => card);
   assert.ok(timedEvents.length > 20);
   assert.ok(timedEvents.every((tag) => /aria-haspopup="dialog"/.test(tag)));
-  assert.ok(timedEvents.filter((tag) => /--event-start:5\.5/.test(tag)).length >= 2);
-  assert.match(html, /24:00/);
+  assert.ok(timedEvents.every((card) => /class="calendar-event-cover"/.test(card)));
+  assert.ok(timedEvents.every((card) => /loading="lazy"/.test(card)));
 
   const networkCards = [
     ...html.matchAll(/<button\b(?=[^>]*class="[^"]*\bnetwork-card\b[^"]*")[^>]*>[\s\S]*?<\/button>/g),
@@ -118,6 +124,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
   assert.match(page, /eventsForWeek\(anime, activeWeekStart\)/);
+  assert.match(page, /formatBroadcastTime/);
+  assert.match(page, /stackEventsForDay/);
+  assert.doesNotMatch(page, /layoutEventsForDay|laneCount/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
@@ -154,7 +163,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.time-grid-scroll/);
   assert.match(styles, /\.time-axis/);
   assert.match(styles, /\.calendar-event/);
+  assert.match(styles, /\.calendar-event-cover/);
   assert.match(styles, /--event-start/);
+  assert.match(styles, /--timeline-hours/);
+  assert.doesNotMatch(styles, /--event-lane|--event-lanes/);
   assert.match(styles, /\.mobile-calendar/);
   assert.match(
     styles,
