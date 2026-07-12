@@ -54,10 +54,12 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
   assert.match(html, /class="time-grid"/);
-  assert.match(html, /class="time-grid" style="--timeline-hours:17"/);
-  assert.match(html, /class="time-axis"/);
   assert.match(html, /class="time-column"/);
-  assert.match(cleanHtml, /15:00/);
+  assert.match(html, /class="time-groups"/);
+  assert.match(html, /class="time-group"/);
+  assert.match(html, /class="time-group-label"/);
+  assert.match(html, /class="time-group-events"/);
+  assert.match(cleanHtml, /<time class="time-group-label">20:30<\/time>/);
   assert.match(cleanHtml, /次日 01:00/);
   assert.match(cleanHtml, /次日 03:08/);
   assert.match(html, /class="calendar-event/);
@@ -74,6 +76,9 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /react-loading-skeleton/i);
   assert.doesNotMatch(cleanHtml, /25:00|27:08/);
   assert.doesNotMatch(cleanHtml, /次日 08:00/);
+  assert.doesNotMatch(html, /class="time-axis"/);
+  assert.doesNotMatch(html, /--timeline-hours/);
+  assert.doesNotMatch(html, /--event-start/);
 });
 
 test("renders one Monday-through-Sunday grid with timed and network-only program details", async () => {
@@ -127,8 +132,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
   assert.match(page, /eventsForWeek\(anime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
-  assert.match(page, /stackEventsForDay/);
-  assert.doesNotMatch(page, /layoutEventsForDay|laneCount/);
+  assert.match(page, /groupEventsByTime/);
+  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineStartMinutes|timelineEndMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
@@ -163,16 +168,24 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /:focus-visible/);
   assert.match(styles, /\.time-grid/);
   assert.match(styles, /\.time-grid-scroll/);
-  assert.match(styles, /\.time-axis/);
+  assert.match(styles, /\.time-groups/);
+  assert.match(styles, /\.time-group/);
+  assert.match(styles, /\.time-group-label/);
+  assert.match(styles, /\.time-group-events/);
   assert.match(styles, /\.calendar-event/);
   assert.match(styles, /\.calendar-event-cover/);
-  assert.match(styles, /--event-start/);
-  assert.match(styles, /--timeline-hours/);
+  assert.doesNotMatch(styles, /\.time-axis/);
+  assert.doesNotMatch(styles, /--event-start/);
+  assert.doesNotMatch(styles, /--timeline-hours/);
   assert.doesNotMatch(styles, /--event-lane|--event-lanes/);
   assert.match(styles, /\.mobile-calendar/);
   assert.match(
     styles,
     /@media \(max-width: 860px\) \{[\s\S]*?\.time-grid \{[\s\S]*?display: none/,
+  );
+  assert.match(
+    styles,
+    /\.mobile-agenda \.time-group-events \{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/,
   );
   assert.match(styles, /\.detail-dialog::backdrop/);
   assert.match(styles, /\.network-card/);
