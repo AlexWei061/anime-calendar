@@ -8,7 +8,7 @@ import { groupByBeijingWeekday } from "../lib/schedule.js";
 const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
 const tsBuildInfo = new URL("../tsconfig.tsbuildinfo", import.meta.url);
-const { pending } = groupByBeijingWeekday(anime);
+const { pending, seasonal } = groupByBeijingWeekday(anime);
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -56,8 +56,14 @@ test("server-renders the Beijing weekly anime calendar", async () => {
   );
   assert.match(html, /2026 夏番/);
   assert.match(html, /北京时间（UTC\+8）/);
+  assert.match(withoutReactMarkers(html), /63 部夏番/);
+  assert.match(html, /梦限大 μ!/);
+  assert.match(html, /夢限大みゅーたいぷ/);
+  assert.match(html, /src="\/covers\/yume-mita\.png"/);
+  assert.match(html, /alt="梦限大 μ! 主视觉"/);
+  assert.match(html, /本季收录／播出待确认/);
+  assert.match(html, /loading="lazy"/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
-  assert.match(html, /时间待确认/);
   assert.doesNotMatch(html, /codex-preview/i);
   assert.doesNotMatch(html, /Your site is taking shape/i);
   assert.doesNotMatch(html, /react-loading-skeleton/i);
@@ -73,7 +79,7 @@ test("renders ordered weekday columns, dialog cards, and a separate pending sect
   const cardTags = [...html.matchAll(/<button\b(?=[^>]*class="[^"]*\banime-card\b[^"]*")[^>]*>/g)].map(
     ([tag]) => tag,
   );
-  assert.equal(cardTags.length, anime.length - pending.length);
+  assert.equal(cardTags.length, anime.length);
   assert.ok(cardTags.every((tag) => /aria-haspopup="dialog"/.test(tag)));
 
   const cards = [...html.matchAll(/<button\b(?=[^>]*class="[^"]*\banime-card\b[^"]*")[^>]*>[\s\S]*?<\/button>/g)].map(
@@ -88,15 +94,15 @@ test("renders ordered weekday columns, dialog cards, and a separate pending sect
   assert.match(withoutReactMarkers(transparentNight), /北京时间 · 周一 21:00/);
   assert.match(
     withoutReactMarkers(transparentNight),
-    /aria-label="查看《透明な夜に駆ける君と、目に見えない恋をした。》详情：北京时间 2026-07-06 21:00"/,
+    /aria-label="查看《.+／透明な夜に駆ける君と、目に見えない恋をした。》详情：北京时间 · 周一 21:00"/,
   );
 
   assert.doesNotMatch(html, /class="week-column is-today"/);
 
   const weeklySection = sectionMarkup(html, "weekly-section");
-  const pendingSection = sectionMarkup(html, "pending-section");
-  for (const record of pending) {
-    assert.match(pendingSection, new RegExp(record.titleJa));
+  const catalogSection = sectionMarkup(html, "catalog-section");
+  for (const record of [...seasonal, ...pending]) {
+    assert.match(catalogSection, new RegExp(record.titleJa));
     assert.doesNotMatch(weeklySection, new RegExp(record.titleJa));
   }
 
@@ -122,13 +128,15 @@ test("keeps dialog wiring, responsive layout, and starter cleanup durable", asyn
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
   assert.match(page, /const currentBeijingDate = useSyncExternalStore/);
-  assert.match(page, /airing\.date === currentBeijingDate/);
+  assert.match(page, /airing\?\.date === currentBeijingDate/);
   assert.doesNotMatch(page, /currentWeekday === weekday\.key/);
   assert.match(
     page,
     /onClick=\{\(event\) => \{[\s\S]*?openerRef\.current = event\.currentTarget;[\s\S]*?setSelected\(record\);/,
   );
-  assert.match(page, /\{selected && selectedAiring \? \(/);
+  assert.match(page, /\{selected \? \(/);
+  assert.match(page, /selected\.titleZh/);
+  assert.match(page, /selected\.coverUrl/);
   assert.match(page, /dialogRef\.current\.showModal\(\)/);
   assert.match(
     page,
@@ -160,6 +168,8 @@ test("keeps dialog wiring, responsive layout, and starter cleanup durable", asyn
   assert.doesNotMatch(styles, /\.dialog-backdrop/);
   assert.match(styles, /\.detail-dialog/);
   assert.match(styles, /\.detail-dialog::backdrop/);
+  assert.match(styles, /\.cover-frame/);
+  assert.match(styles, /\.catalog-grid/);
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
   assert.match(styles, /grid-template-columns:\s*repeat\(7,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(

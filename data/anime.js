@@ -1,12 +1,13 @@
 export const season = {
   label: "2026 夏番",
   timeZoneLabel: "北京时间（UTC+8）",
-  updatedAt: "2026-07-11",
+  updatedAt: "2026-07-12",
+  catalogCount: 63,
   sourceName: "ORICON 夏アニメ2026",
   sourceUrl: "https://www.oricon.co.jp/anime/2026_summer/",
 };
 
-export const anime = [
+const baseAnime = [
   {
     id: "transparent-night",
     titleJa: "透明な夜に駆ける君と、目に見えない恋をした。",
@@ -359,4 +360,427 @@ export const anime = [
     station: "TOKYO MX",
     sourceUrl: "https://www.oricon.co.jp/anime/952/",
   },
+  {
+    id: "unaware-saint",
+    titleJa: "無自覚聖女は今日も無意識に力を垂れ流す",
+    premiereDateJst: "2026-06-30",
+    jstTime: "22:00",
+    station: "AT-X",
+    sourceUrl: "https://www.oricon.co.jp/anime/1098/",
+  },
+  {
+    id: "skeleton-knight-2",
+    titleJa: "骸骨騎士様、只今異世界へお出掛け中II",
+    premiereDateJst: "2026-05-28",
+    jstTime: null,
+    station: "TOKYO MX",
+    sourceUrl: "https://www.oricon.co.jp/anime/961/",
+  },
+  {
+    id: "grand-blue-3",
+    titleJa: "ぐらんぶる Season 3",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1036/",
+  },
+  {
+    id: "grow-up-show",
+    titleJa: "グロウアップショウ ～ひまわりのサーカス団～",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1039/",
+  },
+  {
+    id: "no-bullying-stepmother",
+    titleJa: "いびってこない義母と義姉",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/953/",
+  },
+  {
+    id: "iwamoto-senpai",
+    titleJa: "岩元先輩ノ推薦",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/954/",
+  },
+  {
+    id: "kamui-san",
+    titleJa: "うしろの正面カムイさん",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/955/",
+  },
+  {
+    id: "otome-kaiju-caramelize",
+    titleJa: "乙女怪獣キャラメリゼ",
+    premiereDateJst: null,
+    jstTime: null,
+    station: "TBS",
+    sourceUrl: "https://www.oricon.co.jp/anime/957/",
+  },
+  {
+    id: "saikyo-degare",
+    titleJa: "最強出涸らし皇子の暗躍帝位争い",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1049/",
+  },
+  {
+    id: "oni-no-hanayome",
+    titleJa: "鬼の花嫁",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/960/",
+  },
+  {
+    id: "suterare-seijo-camp",
+    titleJa: "捨てられ聖女の異世界ごはん旅 隠れスキルでキャンピングカーを召喚しました",
+    premiereDateJst: null,
+    jstTime: null,
+    station: "TOKYO MX",
+    sourceUrl: "https://www.oricon.co.jp/anime/993/",
+  },
+  {
+    id: "tenko-saki-osananajimi",
+    titleJa: "転校先の清楚可憐な美少女が、昔男子と思って一緒に遊んだ幼馴染だった件",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1014/",
+  },
+  {
+    id: "reiwa-no-darasan",
+    titleJa: "令和のダラさん",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1010/",
+  },
+  {
+    id: "bleach-tybw-kashin",
+    titleJa: "BLEACH 千年血戦篇-禍進譚-",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/983/",
+  },
+  {
+    id: "rakudai-kenja",
+    titleJa: "落第賢者の学院無双～二度目の転生、Sランクチート魔術師冒険録～",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1009/",
+  },
+  {
+    id: "buchigire-reijo",
+    titleJa: "ブチ切れ令嬢は報復を誓いました。 ～魔導書の力で祖国を叩き潰します～",
+    premiereDateJst: null,
+    jstTime: null,
+    station: "テレビ東京",
+    sourceUrl: "https://www.oricon.co.jp/anime/1008/",
+  },
+  {
+    id: "haniori-san",
+    titleJa: "花織さんは転生しても喧嘩がしたい",
+    premiereDateJst: null,
+    jstTime: null,
+    station: "ABCテレビ",
+    sourceUrl: "https://www.oricon.co.jp/anime/1007/",
+  },
+  {
+    id: "perfect-addiction",
+    titleJa: "パーフェクトアディクション",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://www.oricon.co.jp/anime/1080/",
+  },
+  {
+    id: "yume-mita",
+    titleJa: "夢限大みゅーたいぷ",
+    premiereDateJst: null,
+    jstTime: null,
+    station: null,
+    sourceUrl: "https://bang-dream.com/yumemita/",
+  },
 ];
+
+const catalogDetails = {
+  "transparent-night": {
+    titleZh: "在透明之夜奔向你，与看不见的恋爱",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/996/base/img1200/tv-program-image-32edd6f78d2666acdad007efff539c4c3d0b3dd50a7664836f29ed8ee0ce8438.jpg",
+  },
+  "dodge-danko": {
+    titleZh: "炎之斗球女 躲避弹子",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1083/base/img1200/tv-program-image-8994e3b2159f6be740457fca6bf6eef2e31b7d9cd2ef2e808230298641c96e73.jpg",
+  },
+  "koko-ni-makase": {
+    titleZh: "这里交给我你先走，十年后我成了传说",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1048/base/img1200/tv-program-image-769db5227df765ca0024508160229d026c1f0a2eb7504493c79e212df7b03ff4.jpg",
+  },
+  "cold-prince": {
+    titleZh: "拯救替身千金的是冷酷无情冰之王子的爱",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1084/base/img1200/tv-program-image-aa7befe621dbf9d94e98fb17de2c75a6d884e1402cb269bdf0f5a0a919c3db8d.jpg",
+  },
+  "ghost-in-the-shell": {
+    titleZh: "攻壳机动队 THE GHOST IN THE SHELL",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/982/base/img1200/tv-program-image-34de69a78072bc16eab3c52c5f6309093cb20020d8fca87f28768b6ec354cd5b.jpg",
+  },
+  "samurai-troopers-2": {
+    titleZh: "铠真传 武士斗士 第2季度",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1100/base/img1200/tv-program-image-6603e14e712a060aa6140a4bf476057b2033fb0507d49b43ca2c88028746d86f.jpg",
+  },
+  victoria: {
+    titleZh: "手牌很多的维多利亚",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1070/base/img1200/tv-program-image-59977748482671cb08c53a312bf782ca191f14bb4df920d3f5b21fb20b48b311.jpg",
+  },
+  "red-river": {
+    titleZh: "天是红河之畔",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1054/base/img1200/tv-program-image-0824c28cc8750c09dd8a76f07f87db52b7481d735d9575741214746f789cd1e6.jpg",
+  },
+  "taiari-deshita": {
+    titleZh: "对局开始了：大小姐可不会玩格斗游戏",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1061/base/img1200/tv-program-image-7ef2557e3e47a8e982d7ec621370033771739fa5d2a5be5f851efcb457fcef7f.jpg",
+  },
+  kikkun: {
+    titleZh: "最爱地球！小君",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1109/base/img1200/tv-program-image-0e111338a312ef670d4214bb14e74aeff1c80183bbc45ce926d38be0792c0ec0.jpg",
+  },
+  "youjo-senki-2": {
+    titleZh: "幼女战记 II",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1059/base/img1200/tv-program-image-fc29a52290aebe8047af1834dd9f81b860ef72d613627708340340c03280638e.jpg",
+  },
+  "all-works-maid": {
+    titleZh: "女主？圣女？不，我是全能女仆（骄傲）！",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1074/base/img1200/tv-program-image-4a251b67f9bf4a049af16f6d7896e30e04b70a62fe7aa121a501a6c9b271451c.jpg",
+  },
+  "clevatess-2": {
+    titleZh: "克雷瓦提斯 II：魔兽之王与伪勇者传说",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1037/base/img1200/tv-program-image-9ee9779152fbd3bbd4df0db8a620ea0295caeb0d30d257745b25389a9648b658.jpg",
+  },
+  "mobuseka-2": {
+    titleZh: "女性向游戏世界对路人角色很不友好 2",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/958/base/img1200/tv-program-image-2ec74df58fcf09765df11b68112694caea429d863eeae82de88999bafa14101f.jpg",
+  },
+  "ossan-kensei-2": {
+    titleZh: "乡下大叔成为剑圣 II",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/973/base/img1200/tv-program-image-f24ceff7742ff3b0e09e020e21e243b1921de1da81da3147ad93bf16b4200b42.jpg",
+  },
+  "thunder-3": {
+    titleZh: "雷霆3",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1053/base/img1200/tv-program-image-36a72ae43998b50b340eef4381cf523fb1275cfdacb6e57bb3da2e24d05e925b.jpg",
+  },
+  "tomb-raider-king": {
+    titleZh: "盗墓王",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1091/base/img1200/tv-program-image-86f2572e3ab7292e4101bd2ff22273493fb737361ac01a78be17de42105e4d00.jpg",
+  },
+  "bungo-wan-2": {
+    titleZh: "文豪野犬 汪！2",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1096/base/img1200/tv-program-image-55893963bcb7bbfe5a9b10fdf4464dbd6cec3b477c6db84047953a954a3fad13.jpg",
+  },
+  "mobius-dust": {
+    titleZh: "莫比乌斯·尘埃",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/986/base/img1200/tv-program-image-01df9109e168c04a2c400349be25001ba5e6b52013eb6544443e362036b2e833.jpg",
+  },
+  "super-yani": {
+    titleZh: "在超市后门吸烟的两人",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1090/base/img1200/tv-program-image-f5725a8d0c618744e350a79979946eae76a4ad90e5d0240d0ff042f6ab20311b.jpg",
+  },
+  "tsuiho-juki": {
+    titleZh: "被流放的转生重骑士凭游戏知识无双",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/995/base/img1200/tv-program-image-ce6ce0d38d6333bc586fb2f2cc783c64c451ebe2f8e6d32dcf54416735445fbc.jpg",
+  },
+  "yani-neko": {
+    titleZh: "烟猫",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1099/base/img1200/tv-program-image-936375c6f6e5a2945985f7561e518f52bf3cba0d3a373f4f055c9570e084e099.jpg",
+  },
+  "henkyou-ryumin": {
+    titleZh: "从领民0人开始的边境领主大人",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1105/base/img1200/tv-program-image-f038b5da7ae40a195616d43cbcabffb4898b41b883fa0dd5fb3e45b0e485541a.jpg",
+  },
+  "korekaite-shine": {
+    titleZh: "画完这个再去死",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1017/base/img1200/tv-program-image-ad2b669f3c1b4a8d643bab63157f1330a81a077f63cd97386e00669851f5ca8e.jpg",
+  },
+  "nigejouzu-2": {
+    titleZh: "擅长逃跑的殿下 第二季",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1078/base/img1200/tv-program-image-bdfc0f9af1037643eb0da15a7a18d77001553b14f21a2482b39275df97a4baa4.jpg",
+  },
+  uchioto: {
+    titleZh: "我家的弟弟们请多指教",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/956/base/img1200/tv-program-image-5389a5113e4b22f524878e09727cd162db0e12e0b5efef7163eb923d1fa8deab.jpg",
+  },
+  "hellmode-2": {
+    titleZh: "地狱模式：痴迷刷本的玩家在废设定异世界无双 第2季",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1097/base/img1200/tv-program-image-2048c15d1986f74555080cc0db276ee6ea067b3d444a24ece711a1c6257946b8.jpg",
+  },
+  "pan-baby": {
+    titleZh: "面包宝宝",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1114/base/img1200/tv-program-image-09ec061481908f7f4867ae9e6f98b91a6136edc281d83ed23ced12770140e11a.jpg",
+  },
+  "neko-to-ryu": {
+    titleZh: "猫与龙",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1079/base/img1200/tv-program-image-f25fdcf9f9201c3317c08d80fb4ddcc997a1f07c4c484d1a6c57485820772ac5.jpg",
+  },
+  "black-torch": {
+    titleZh: "黑色火炬",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1081/base/img1200/tv-program-image-9519b0d9a2b83fe8ccedce36d6af87b7adb21520cb059642a243d0c809029dc4.jpg",
+  },
+  "temmaku-jardugar": {
+    titleZh: "天幕的贾德古尔",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1055/base/img1200/tv-program-image-d04496f48c23ae12ae0984d3eb58cbd482f16a6a68ec11ff30f685bf6155f753.jpg",
+  },
+  "magilumiere-2": {
+    titleZh: "魔法光源株式会社 第二季",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/975/base/img1200/tv-program-image-d033321e87499a5bc1b8b15268cd51f970e9240610fb3aff4937bb08107a6a8a.jpg",
+  },
+  "nanoha-exceeds": {
+    titleZh: "魔法少女奈叶 EXCEEDS Gun Blaze Vengeance",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/990/base/img1200/tv-program-image-7413ba7150d30f7d49f9ae219c181c07ef27dfda49a48133989d00f74df0015f.jpg",
+  },
+  "jiki-koshaku": {
+    titleZh: "说了“不打算爱你”的下任公爵不知为何开始溺爱我",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1035/base/img1200/tv-program-image-8c0f84cf2500e92e4a10dab7ceedd39ccc7b25ba255696dee3f72ae187381780.jpg",
+  },
+  "saijo-no-osewa": {
+    titleZh: "才女的侍奉：在满是高岭之花的名门学校里，我开始暗中照顾学院第一的大小姐（生活能力为零）",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1050/base/img1200/tv-program-image-6383d3c412cb3b244fb04618eebdc74bcd8955a1db15bc7ecc7d90babebcf0cf.jpg",
+  },
+  planosaurus: {
+    titleZh: "普拉诺龙：硬核生物部",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1095/base/img1200/tv-program-image-808a9952453320ccba78964bac87d07719c55c4ee298a3996cd066c4e8a01906.jpg",
+  },
+  "lets-go-kaiki": {
+    titleZh: "Let's Go 怪奇组",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1062/base/img1200/tv-program-image-c315f16c9684255775c2eabe3c62e9250358ba2bd1449bdd6bdf7738299f801b.jpg",
+  },
+  "seihantai-kimi-boku": {
+    titleZh: "截然相反的你与我 第二季",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1060/base/img1200/tv-program-image-a7297b9d5097cdac0b642d621c118c5392273ba80db1e264853eeebc133ed9b3.jpg",
+  },
+  "tetsunabe-jan": {
+    titleZh: "铁锅的阿章！",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1069/base/img1200/tv-program-image-3dc794256fa1a3a71894525724dfd50fe7c5284c1affd79c79855dbac042f096.jpg",
+  },
+  "sekai-saikyo-kouei": {
+    titleZh: "世界最强后卫：迷宫国的新手探索者",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/994/base/img1200/tv-program-image-62ca3823245eec087f48e0af20776777d64eb1d91351275ed017bddfcc12e9f8.jpg",
+  },
+  "mushoku-3": {
+    titleZh: "无职转生 III：到了异世界就拿出真本事",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/985/base/img1200/tv-program-image-e421125e00d6594ab0fdcd7be45ae89a562a8414ae798c74024cf4468b953696.jpg",
+  },
+  "sayonara-lara": {
+    titleZh: "再见，拉拉",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1052/base/img1200/tv-program-image-9259aac5bcf33720adbd850fed049e83b9c368f34f7957f480c5cb53dafaaaea.jpg",
+  },
+  "someya-sexy-actress": {
+    titleZh: "同个研讨班的染谷同学原来是性感女演员",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/959/base/img1200/tv-program-image-69b215a0b86d1357ada1d391d789c41e123f2545eeb175dd11201c6b3e05d29f.jpg",
+  },
+  "azur-lane-bisoku-2": {
+    titleZh: "碧蓝航线 微速前进！再来！！",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/952/base/img1200/tv-program-image-41ffc9dffd224183ec90d0b17dba89e92d649cb9da15946ec59e303fae1c2271.jpg",
+  },
+  "unaware-saint": {
+    titleZh: "无自觉圣女今天也在无意识地释放力量",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1098/base/img1200/tv-program-image-f3fcfacb103853039f2b7ab32e1d041cf8adc7f4d5c4a421e0269bb534412907.jpg",
+  },
+  "skeleton-knight-2": {
+    titleZh: "骸骨骑士大人，如今正出门前往异世界 II",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/961/base/img1200/tv-program-image-ef297e83ae4b61370096c188c80e6f76a49370f111e39567c243ba3b15c57ca4.jpg",
+  },
+  "grand-blue-3": {
+    titleZh: "碧蓝之海 第三季",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1036/base/img1200/tv-program-image-76e1401fa7d5b9b42b555eb04c09e8eccf55922c8402ef510802b408fd3b6603.jpg",
+  },
+  "grow-up-show": {
+    titleZh: "成长秀：向日葵马戏团",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1039/base/img1200/tv-program-image-db62538b358bdf8cfba4decfd2d1ff6122bb8069d51dea5704a1b08c32f4851b.jpg",
+  },
+  "no-bullying-stepmother": {
+    titleZh: "不欺负我的继母与继姐",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/953/base/img1200/tv-program-image-396a0c9ed9dc65c4194ea69bc793077931c34c66079eaf282a935745081f2232.jpg",
+  },
+  "iwamoto-senpai": {
+    titleZh: "岩元前辈的推荐",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/954/base/img1200/tv-program-image-323a5d45a5f9fcd3c8b2d86758de5a5043b81b346883ebe7d875c941d8e8858f.jpg",
+  },
+  "kamui-san": {
+    titleZh: "身后的正面神威同学",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/955/base/img1200/tv-program-image-f7f99b5d20628eaff37874580949f8a0c1b5ce99cf5c59750375770b03440ff5.jpg",
+  },
+  "otome-kaiju-caramelize": {
+    titleZh: "少女怪兽焦糖化",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/957/base/img1200/tv-program-image-24992e0e70db3b6480230daff4455ec6bc1ca41b2509266d8c4a66c784b5c4a4.jpg",
+  },
+  "saikyo-degare": {
+    titleZh: "最强吊车尾皇子的暗中帝位争夺",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1049/base/img1200/tv-program-image-95b1c89319d4a59134fc571591e78e87d0e773f3866616e40ad1f82a71974136.jpg",
+  },
+  "oni-no-hanayome": {
+    titleZh: "鬼的新娘",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/960/base/img1200/tv-program-image-4a63aae797458c18f9ff2c5049fefed2b743c793e909402d02434c6a791e80d1.jpg",
+  },
+  "suterare-seijo-camp": {
+    titleZh: "被遗弃圣女的异世界美食之旅：用隐藏技能召唤露营车",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/993/base/img1200/tv-program-image-a526135fa67fbadf3d8419665a883e572bf93d7d143ba5bbb3eccb2185fda8a1.jpg",
+  },
+  "tenko-saki-osananajimi": {
+    titleZh: "转学后的清纯可怜美少女，竟是曾被我当成男孩一起玩耍的青梅竹马",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1014/base/img1200/tv-program-image-74109e9099d85678538a9564ba281e5b39d8588d10e133090f34fd8e03d2df07.jpg",
+  },
+  "reiwa-no-darasan": {
+    titleZh: "令和的达拉小姐",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1010/base/img1200/tv-program-image-37abcd2f5b4c0462de13652ae6c34320c5f7dffd40f7c34553a6a33affef8eaf.jpg",
+  },
+  "bleach-tybw-kashin": {
+    titleZh: "BLEACH 千年血战篇—祸进谭—",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/0/983/base/img1200/tv-program-image-e2c29023ec8b84dd6d7b170b6c9c0b9583e861415958ffec325851b50c2bf20b.jpg",
+  },
+  "rakudai-kenja": {
+    titleZh: "落第贤者的学院无双：第二次转生，S级外挂魔术师冒险录",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1009/base/img1200/tv-program-image-0f3a517b5b33de5128105312fc880e2727db931c30d57aef34fdeb1a0f3e57e1.jpg",
+  },
+  "buchigire-reijo": {
+    titleZh: "暴怒千金发誓报复：用魔导书的力量摧毁祖国",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1008/base/img1200/tv-program-image-324cacd33a3e9f5515009e818fe7415aa0c672bde719f48c5b12f947113cef4f.jpg",
+  },
+  "haniori-san": {
+    titleZh: "花织小姐即使转生也想吵架",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1007/base/img1200/tv-program-image-fea790c63dab5f749fe62cd8db34b09ba301dbe304c51522f26e555f3803da0c.jpg",
+  },
+  "perfect-addiction": {
+    titleZh: "完美成瘾",
+    coverUrl: "https://contents.oricon.co.jp/anime/img/1000/1080/base/img1200/tv-program-image-ea9890bdcd276a4483278186a7d16551dc10a3400d118116b3d14b666291e393.jpg",
+  },
+  "yume-mita": {
+    titleZh: "梦限大 μ!",
+    coverUrl: "/covers/yume-mita.png",
+  },
+};
+
+export const anime = baseAnime.map((record) => {
+  const { titleZh, coverUrl } = catalogDetails[record.id];
+
+  return {
+    id: record.id,
+    titleZh,
+    titleJa: record.titleJa,
+    premiereDateJst: record.premiereDateJst,
+    jstTime: record.jstTime,
+    station: record.station,
+    sourceUrl: record.sourceUrl,
+    coverUrl,
+    coverAlt: `${titleZh} 主视觉`,
+  };
+});

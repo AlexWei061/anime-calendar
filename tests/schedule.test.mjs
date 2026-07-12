@@ -34,6 +34,19 @@ test("groups aired and pending records by Beijing weekday", () => {
   assert.equal(grouped.pending[0].id, "pending");
 });
 
+test("separates non-July and time-pending seasonal entries from the July calendar", () => {
+  const grouped = groupByBeijingWeekday([
+    { id: "july", titleJa: "July", premiereDateJst: "2026-07-06", jstTime: "22:00" },
+    { id: "june", titleJa: "June", premiereDateJst: "2026-06-30", jstTime: "22:00" },
+    { id: "july-jst", titleJa: "JST July", premiereDateJst: "2026-07-01", jstTime: "00:00" },
+    { id: "unknown", titleJa: "Unknown", premiereDateJst: null, jstTime: null },
+  ]);
+
+  assert.deepEqual(grouped.byWeekday.Mon.map(({ id }) => id), ["july"]);
+  assert.deepEqual(grouped.seasonal.map(({ id }) => id), ["june", "july-jst"]);
+  assert.deepEqual(grouped.pending.map(({ id }) => id), ["unknown"]);
+});
+
 test("rejects an empty JST time", () => {
   assert.throws(
     () => toBeijingAiring({ premiereDateJst: "2026-07-07", jstTime: "" }),

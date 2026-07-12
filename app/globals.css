@@ -97,7 +97,7 @@ h1 {
 .intro,
 .section-heading > p,
 .calendar-footer,
-.pending-section span {
+.catalog-section > div > p {
   color: var(--muted-ink);
 }
 
@@ -126,7 +126,7 @@ h1 {
 }
 
 .section-heading h2,
-.pending-section h2,
+.catalog-section h2,
 .detail-dialog h2 {
   margin-bottom: 0;
   font-size: clamp(1.45rem, 2vw, 2rem);
@@ -200,7 +200,8 @@ h1 {
 }
 
 .anime-card-date,
-.anime-card-time {
+.anime-card-time,
+.anime-card-ja {
   color: var(--muted-ink);
   font-size: 0.72rem;
   line-height: 1.35;
@@ -222,33 +223,42 @@ h1 {
   line-height: 1.35;
 }
 
-.pending-section {
+.anime-card-ja {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.cover-frame {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 0.45rem;
+  background: var(--blue-soft);
+}
+
+.cover-frame img,
+.detail-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catalog-section {
   display: grid;
-  grid-template-columns: minmax(12rem, 0.65fr) 1.35fr;
-  gap: 2rem;
+  gap: 1.25rem;
   padding: 1.5rem;
   border-radius: 1rem;
   background: var(--blue-soft);
 }
 
-.pending-section ul {
-  display: grid;
-  gap: 0.7rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.catalog-section > div > p:last-child {
+  max-width: 44rem;
+  margin-bottom: 0;
 }
 
-.pending-section li {
+.catalog-grid {
   display: grid;
-  gap: 0.16rem;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--blue) 20%, transparent);
-}
-
-.pending-section li:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.75rem;
 }
 
 .calendar-footer {
@@ -302,6 +312,20 @@ h1 {
   line-height: 1.2;
 }
 
+.detail-cover {
+  display: block;
+  aspect-ratio: 3 / 4;
+  max-height: 18rem;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+}
+
+.detail-title-zh {
+  margin-bottom: 0.35rem;
+  color: var(--blue);
+  font-weight: 800;
+}
+
 .detail-dialog dl {
   display: grid;
   gap: 0.8rem;
@@ -343,9 +367,8 @@ h1 {
     grid-template-columns: 1fr;
   }
 
-  .pending-section {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .catalog-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

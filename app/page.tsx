@@ -65,13 +65,46 @@ export default function Home() {
     }
   }, [selected]);
 
+  const renderAnimeCard = (
+    record: Anime,
+    airing: ReturnType<typeof toBeijingAiring>,
+    contextLabel: string,
+  ) => {
+    const isToday = airing?.date === currentBeijingDate;
+
+    return (
+      <button
+        className={`anime-card${isToday ? " is-today" : ""}`}
+        key={record.id}
+        type="button"
+        aria-haspopup="dialog"
+        aria-label={`查看《${record.titleZh}／${record.titleJa}》详情：${contextLabel}`}
+        onClick={(event) => {
+          openerRef.current = event.currentTarget;
+          setSelected(record);
+        }}
+      >
+        <span className="cover-frame">
+          <img src={record.coverUrl} alt={record.coverAlt} loading="lazy" />
+        </span>
+        {airing ? <span className="anime-card-date">{airing.date}</span> : null}
+        {isToday ? <span className="today-marker">今天</span> : null}
+        <strong>{record.titleZh}</strong>
+        <span className="anime-card-ja">{record.titleJa}</span>
+        <span className="anime-card-time">{contextLabel}</span>
+      </button>
+    );
+  };
+
   return (
     <main className="calendar-page">
       <header className="calendar-header">
         <div>
           <p className="season-kicker">{season.label}</p>
           <h1>日本 TV 动画首播周历</h1>
-          <p className="intro">按 {season.timeZoneLabel} 查看最早首播时段。</p>
+          <p className="intro">
+            共 {season.catalogCount} 部夏番；周历仅显示可可靠换算的 7 月日本 TV 首播。
+          </p>
         </div>
         <a
           className="source-link"
@@ -89,7 +122,7 @@ export default function Home() {
             <p className="section-kicker">周视图</p>
             <h2 id="weekly-heading">北京时间首播</h2>
           </div>
-          <p>点击节目可查看首播平台与官方资料页。</p>
+          <p>点击节目可查看封面、首播平台与官方资料页。</p>
         </div>
 
         <div className="week-grid">
@@ -105,30 +138,9 @@ export default function Home() {
                 <div className="anime-list">
                   {records.map((record) => {
                     const airing = toBeijingAiring(record);
-                    if (!airing) return null;
-                    const isToday =
-                      currentBeijingDate !== null && airing.date === currentBeijingDate;
-
-                    return (
-                      <button
-                        className={`anime-card${isToday ? " is-today" : ""}`}
-                        key={record.id}
-                        type="button"
-                        aria-haspopup="dialog"
-                        aria-label={`查看《${record.titleJa}》详情：北京时间 ${airing.date} ${airing.time}`}
-                        onClick={(event) => {
-                          openerRef.current = event.currentTarget;
-                          setSelected(record);
-                        }}
-                      >
-                        <span className="anime-card-date">{airing.date}</span>
-                        {isToday ? <span className="today-marker">今天</span> : null}
-                        <strong>{record.titleJa}</strong>
-                        <span className="anime-card-time">
-                          北京时间 · {weekday.label} {airing.time}
-                        </span>
-                      </button>
-                    );
+                    return airing
+                      ? renderAnimeCard(record, airing, `北京时间 · ${weekday.label} ${airing.time}`)
+                      : null;
                   })}
                 </div>
               </article>
@@ -137,19 +149,27 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="pending-section" aria-labelledby="pending-heading">
+      <section className="catalog-section" aria-labelledby="catalog-heading">
         <div>
-          <p className="section-kicker">待更新</p>
-          <h2 id="pending-heading">时间待确认</h2>
+          <p className="section-kicker">完整季表</p>
+          <h2 id="catalog-heading">本季收录／播出待确认</h2>
+          <p>
+            {season.catalogCount} 部夏番中，以下作品不具备可放入 7 月北京时间周历的完整首播信息。
+          </p>
         </div>
-        <ul>
-          {grouped.pending.map((record) => (
-            <li key={record.id}>
-              <strong>{record.titleJa}</strong>
-              <span>{record.station ? `首播平台：${record.station}` : "首播平台待确认"}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="catalog-grid">
+          {[...grouped.seasonal, ...grouped.pending].map((record) =>
+            renderAnimeCard(
+              record,
+              null,
+              record.premiereDateJst
+                ? `日本首播 · ${record.premiereDateJst}${record.station ? ` · ${record.station}` : ""}`
+                : record.station
+                  ? `首播时间待确认 · ${record.station}`
+                  : "首播时间待确认",
+            ),
+          )}
+        </div>
       </section>
 
       <footer className="calendar-footer">
@@ -163,7 +183,7 @@ export default function Home() {
         <p>仅列出日本 TV 最早首播，时间已换算为 {season.timeZoneLabel}。</p>
       </footer>
 
-      {selected && selectedAiring ? (
+      {selected ? (
         <dialog
           ref={dialogRef}
           className="detail-dialog"
@@ -184,18 +204,24 @@ export default function Home() {
               关闭
             </button>
           </div>
+          <img className="detail-cover" src={selected.coverUrl} alt={selected.coverAlt} />
+          <p className="detail-title-zh">{selected.titleZh}</p>
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
           <dl>
             <div>
               <dt>北京时间</dt>
               <dd>
-                {selectedAiring.weekday} · {selectedAiring.date} {selectedAiring.time}
+                {selectedAiring
+                  ? `${selectedAiring.weekday} · ${selectedAiring.date} ${selectedAiring.time}`
+                  : "待确认"}
               </dd>
             </div>
             <div>
               <dt>原始日本时间</dt>
               <dd>
-                {selected.premiereDateJst} {selected.jstTime}
+                {selected.premiereDateJst
+                  ? `${selected.premiereDateJst} ${selected.jstTime ?? "时间待确认"}`
+                  : "待确认"}
               </dd>
             </div>
             <div>
@@ -209,7 +235,7 @@ export default function Home() {
             target="_blank"
             rel="noreferrer"
           >
-            查看官方资料 <span aria-hidden="true">↗</span>
+            查看资料来源 <span aria-hidden="true">↗</span>
           </a>
         </dialog>
       ) : null}
