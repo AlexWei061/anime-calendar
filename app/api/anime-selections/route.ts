@@ -18,7 +18,7 @@ export async function GET() {
   }
 
   try {
-    const rows = await getDb()
+    const rows = await (await getDb())
       .select({ animeId: animeSelections.animeId })
       .from(animeSelections)
       .where(eq(animeSelections.userEmail, user.email));
@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const db = getDb();
+    const db = await getDb();
     await db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email));
     if (animeIds.length) {
       await db.insert(animeSelections).values(
