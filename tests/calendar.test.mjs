@@ -7,8 +7,10 @@ import {
   formatBroadcastTime,
   groupEventsByTime,
   layoutEventsForDay,
+  layoutTimelineEvents,
   stackEventsForDay,
   startOfWeek,
+  timelineOffsetMinutes,
   weekDays,
 } from "../lib/calendar.js";
 
@@ -141,6 +143,36 @@ test("stacks dense events after the previous visual block", () => {
     [
       { id: "first", visualStartMinutes: 1230 },
       { id: "second", visualStartMinutes: 1290 },
+    ],
+  );
+});
+
+test("maps YUC times onto the 15:00 timeline and rejects out-of-range times", () => {
+  assert.equal(timelineOffsetMinutes("15:00"), 0);
+  assert.equal(timelineOffsetMinutes("20:30"), 330);
+  assert.equal(timelineOffsetMinutes("25:00"), 600);
+  assert.throws(() => timelineOffsetMinutes("14:59"), RangeError);
+  assert.throws(() => timelineOffsetMinutes("28:01"), RangeError);
+});
+
+test("lays out same-time timeline events in parallel lanes without shifting their starts", () => {
+  const dayEvents = [
+    { ...weeklyShow, id: "third", time: "20:40" },
+    { ...weeklyShow, id: "second", time: "20:30" },
+    { ...weeklyShow, id: "first", time: "20:30" },
+  ];
+
+  assert.deepEqual(
+    layoutTimelineEvents(dayEvents).map(({ event, startMinutes, lane, laneCount }) => ({
+      id: event.id,
+      startMinutes,
+      lane,
+      laneCount,
+    })),
+    [
+      { id: "second", startMinutes: 1230, lane: 0, laneCount: 3 },
+      { id: "first", startMinutes: 1230, lane: 1, laneCount: 3 },
+      { id: "third", startMinutes: 1240, lane: 2, laneCount: 3 },
     ],
   );
 });
