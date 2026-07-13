@@ -222,6 +222,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   await assert.rejects(access(previewRoot), { code: "ENOENT" });
   assert.equal(templateRoot.pathname.endsWith("/"), true);
 
+  assert.match(
+    styles,
+    /\.detail-cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*auto;[\s\S]*?max-height:\s*none;[\s\S]*?object-fit:\s*contain;/,
+  );
   assert.match(styles, /:focus-visible/);
   assert.match(
     styles,
