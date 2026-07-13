@@ -241,6 +241,17 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /:focus-visible/);
   assert.match(
     styles,
+    /\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*13rem minmax\(0, 1fr\);/,
+  );
+  assert.match(styles, /\.page-sidebar button\.is-active/);
+  assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
+  assert.match(styles, /\.my-schedule-empty/);
+  assert.match(
+    styles,
+    /@media \(max-width: 860px\) \{[\s\S]*?\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*1fr;/,
+  );
+  assert.match(
+    styles,
     /\.timeline-grid\s*\{[\s\S]*?grid-template-columns:\s*3\.5rem repeat\(7, minmax\(0, 1fr\)\);[\s\S]*?overflow:\s*(?:hidden|clip)/,
   );
   assert.match(
