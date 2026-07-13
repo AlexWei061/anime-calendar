@@ -180,6 +180,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
+  assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
+  assert.match(page, /window\.history\.pushState\(null, "", url\);/);
+  assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
+  assert.match(page, /<details className="anime-selection-details">/);
+  assert.match(page, /<summary className="anime-selection-summary">/);
+  assert.match(page, /本季度想追什么？/);
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
@@ -247,6 +253,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(styles, /\.page-sidebar button\.is-active/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
+  assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
   assert.match(styles, /\.my-schedule-empty/);
   assert.match(
     styles,

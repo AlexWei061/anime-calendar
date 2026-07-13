@@ -121,6 +121,17 @@ export default function Home() {
   }, [selected]);
 
   useEffect(() => {
+    const syncPageFromUrl = () =>
+      setActivePage(
+        new URLSearchParams(window.location.search).get("page") === "mine" ? "mine" : "all",
+      );
+
+    syncPageFromUrl();
+    window.addEventListener("popstate", syncPageFromUrl);
+    return () => window.removeEventListener("popstate", syncPageFromUrl);
+  }, []);
+
+  useEffect(() => {
     if (activePage !== "mine" || selectedAnimeIds !== null) return;
 
     let cancelled = false;
@@ -144,6 +155,19 @@ export default function Home() {
       cancelled = true;
     };
   }, [activePage, selectedAnimeIds]);
+
+  const changePage = (page: Page) => {
+    if (page === activePage) return;
+
+    const url = new URL(window.location.href);
+    if (page === "mine") {
+      url.searchParams.set("page", "mine");
+    } else {
+      url.searchParams.delete("page");
+    }
+    window.history.pushState(null, "", url);
+    setActivePage(page);
+  };
 
   const changeWeek = (days: number) => {
     const nextWeekStart = addDays(activeWeekStart, days);
@@ -253,7 +277,7 @@ export default function Home() {
           className={activePage === "all" ? "is-active" : ""}
           type="button"
           aria-current={activePage === "all" ? "page" : undefined}
-          onClick={() => setActivePage("all")}
+          onClick={() => changePage("all")}
         >
           全部夏番
         </button>
@@ -261,7 +285,7 @@ export default function Home() {
           className={activePage === "mine" ? "is-active" : ""}
           type="button"
           aria-current={activePage === "mine" ? "page" : undefined}
-          onClick={() => setActivePage("mine")}
+          onClick={() => changePage("mine")}
         >
           我的番剧{selectedAnimeIds ? " · " + selectedAnimeIds.length + " 部" : ""}
         </button>
@@ -291,37 +315,41 @@ export default function Home() {
 
       {activePage === "mine" ? (
         <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
-          <div className="section-heading">
-            <div>
-              <p className="section-kicker">选择番剧</p>
-              <h2 id="anime-selection-heading">本季度想追什么？</h2>
-            </div>
-            <p>选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。</p>
-          </div>
-          {selectedAnimeIds ? (
-            <div className="anime-selection-list">
-              {anime.map((record) => (
-                <label className="anime-selection" key={record.id}>
-                  <input
-                    type="checkbox"
-                    checked={selectedAnimeIds.includes(record.id)}
-                    disabled={isSavingSelection}
-                    onChange={() => void toggleAnimeSelection(record.id)}
-                  />
-                  <span>{record.titleZh}</span>
-                </label>
-              ))}
-            </div>
-          ) : (
-            <p className="selection-status" aria-live="polite">
-              {selectionError ?? "正在读取你的追番列表…"}
-            </p>
-          )}
-          {selectedAnimeIds && selectionError ? (
-            <p className="selection-status" aria-live="polite">
-              {selectionError}
-            </p>
-          ) : null}
+          <details className="anime-selection-details">
+            <summary className="anime-selection-summary">
+              <span className="section-kicker">选择番剧</span>
+              <span className="anime-selection-title" id="anime-selection-heading">
+                本季度想追什么？
+              </span>
+              <span className="anime-selection-summary-copy">
+                选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。
+              </span>
+            </summary>
+            {selectedAnimeIds ? (
+              <div className="anime-selection-list">
+                {anime.map((record) => (
+                  <label className="anime-selection" key={record.id}>
+                    <input
+                      type="checkbox"
+                      checked={selectedAnimeIds.includes(record.id)}
+                      disabled={isSavingSelection}
+                      onChange={() => void toggleAnimeSelection(record.id)}
+                    />
+                    <span>{record.titleZh}</span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="selection-status" aria-live="polite">
+                {selectionError ?? "正在读取你的追番列表…"}
+              </p>
+            )}
+            {selectedAnimeIds && selectionError ? (
+              <p className="selection-status" aria-live="polite">
+                {selectionError}
+              </p>
+            ) : null}
+          </details>
         </section>
       ) : null}
 

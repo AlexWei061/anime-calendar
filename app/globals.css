@@ -179,6 +179,36 @@ h1 {
   background: color-mix(in srgb, var(--card) 80%, var(--paper-deep));
 }
 
+.anime-selection-details {
+  display: grid;
+}
+
+.anime-selection-summary {
+  cursor: pointer;
+}
+
+.anime-selection-summary > span {
+  display: block;
+}
+
+.anime-selection-summary .section-kicker {
+  margin-bottom: 0.35rem;
+}
+
+.anime-selection-title {
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.anime-selection-summary-copy {
+  color: var(--muted-ink);
+}
+
+.anime-selection-details[open] .anime-selection-list {
+  margin-top: 1.25rem;
+}
+
 .anime-selection-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
