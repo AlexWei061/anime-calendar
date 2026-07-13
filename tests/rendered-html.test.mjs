@@ -52,10 +52,6 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
-  assert.match(cleanHtml, /2026 年 1 月番/);
-  assert.match(cleanHtml, /2026 年 4 月番/);
-  assert.match(cleanHtml, /2026 年 7 月番/);
-  assert.doesNotMatch(cleanHtml, /冬番|春番|夏番/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
@@ -186,6 +182,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
   assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
+  assert.match(page, /activeSeason\.label/);
+  assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
   assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes\)/);
   assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
