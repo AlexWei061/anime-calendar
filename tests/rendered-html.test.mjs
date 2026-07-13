@@ -183,6 +183,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
   assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
   assert.match(page, /activeSeason\.label/);
+  assert.match(page, /2026 年 1 月番/);
+  assert.match(page, /2026 年 4 月番/);
+  assert.match(page, /2026 年 7 月番/);
   assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
   assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes\)/);
