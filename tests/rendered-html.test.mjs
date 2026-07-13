@@ -53,12 +53,14 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /上一周/);
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
-  assert.match(html, /class="time-grid"/);
-  assert.match(html, /class="time-column"/);
-  assert.match(html, /class="time-groups"/);
-  assert.match(html, /class="time-group"/);
-  assert.match(html, /class="time-group-label"/);
-  assert.match(html, /class="time-group-events"/);
+  assert.match(html, /class="timeline-grid"/);
+  assert.match(html, /class="timeline-axis"/);
+  assert.match(html, /class="timeline-day"/);
+  assert.match(html, /class="calendar-event timeline-event/);
+  assert.match(html, /次日 01:00/);
+  assert.match(html, /--event-top:528px/);
+  assert.match(html, /--event-width:33\.333/);
+  assert.doesNotMatch(html, /class="time-grid"/);
   assert.match(cleanHtml, /<time class="time-group-label">20:30<\/time>/);
   assert.match(cleanHtml, /次日 01:00/);
   assert.match(cleanHtml, /次日 03:08/);
@@ -76,7 +78,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /react-loading-skeleton/i);
   assert.doesNotMatch(cleanHtml, /25:00|27:08/);
   assert.doesNotMatch(cleanHtml, /次日 08:00/);
-  assert.doesNotMatch(html, /class="time-axis"/);
+  assert.doesNotMatch(html, /class="time-column"/);
   assert.doesNotMatch(html, /--timeline-hours/);
   assert.doesNotMatch(html, /--event-start/);
 });
@@ -117,17 +119,27 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   assert.ok(sourceLinks.every((tag) => /rel="noreferrer"/.test(tag)));
 });
 
-test("renders a crowded same-time group with three readable event cards", async () => {
+test("renders three same-time events side by side on one timeline day", async () => {
   const cleanHtml = withoutReactMarkers(await (await render()).text());
-  const crowdedGroup = cleanHtml.match(
-    /<section class="time-group"><time class="time-group-label">次日 00:30<\/time><div class="time-group-events is-crowded" style="--same-time-count:3">([\s\S]*?)<\/div><\/section>/,
-  );
+  const sameTimeEvents = [
+    ...cleanHtml.matchAll(
+      /<button\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*aria-label="[^"]*2026-07-10 次日 00:30")[^>]*style="([^"]*)"[^>]*>([\s\S]*?)<\/button>/g,
+    ),
+  ];
 
-  assert.ok(crowdedGroup);
-  assert.equal([...crowdedGroup[1].matchAll(/<button class="calendar-event"/g)].length, 3);
-  assert.match(crowdedGroup[1], /正后方的神威/);
-  assert.match(crowdedGroup[1], /我家的弟弟们真是让您费心了/);
-  assert.match(crowdedGroup[1], /地狱模式/);
+  assert.equal(sameTimeEvents.length, 3);
+  assert.equal(
+    new Set(sameTimeEvents.map(([, style]) => style.match(/--event-top:([^;]+)/)?.[1])).size,
+    1,
+  );
+  assert.equal(
+    new Set(sameTimeEvents.map(([, style]) => style.match(/--event-width:([^;]+)/)?.[1])).size,
+    1,
+  );
+  assert.ok(sameTimeEvents.every(([, , card]) => /class="calendar-event-cover"/.test(card)));
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /正后方的神威/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /我家的弟弟们真是让您费心了/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /地狱模式/);
 });
 
 test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
@@ -146,6 +158,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /eventsForWeek\(anime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
   assert.match(page, /groupEventsByTime/);
+  assert.match(page, /layoutTimelineEvents/);
+  assert.match(page, /timelineOffsetMinutes/);
   assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineStartMinutes|timelineEndMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);

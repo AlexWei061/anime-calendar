@@ -13,12 +13,15 @@ import {
   eventsForWeek,
   formatBroadcastTime,
   groupEventsByTime,
+  layoutTimelineEvents,
   startOfWeek,
+  timelineOffsetMinutes,
   weekDays,
 } from "../lib/calendar.js";
 
 const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 const initialWeekStart = "2026-07-06";
+const timelineHours = Array.from({ length: 14 }, (_, index) => 15 + index);
 
 type Anime = (typeof anime)[number];
 type CalendarEvent = Anime & {
@@ -127,13 +130,22 @@ export default function Home() {
     openerRef.current?.focus();
   };
 
-  const eventButton = (event: CalendarEvent) => {
+  const eventButton = (event: CalendarEvent, layout?: { lane: number; laneCount: number }) => {
     const isToday = event.date === currentBeijingDate;
     const displayTime = formatBroadcastTime(event.time);
+    const eventStyle = layout
+      ? ({
+          "--event-top": timelineOffsetMinutes(event.time) * 1.6 + "px",
+          "--event-left": (layout.lane / layout.laneCount) * 100 + "%",
+          "--event-width": 100 / layout.laneCount + "%",
+        } as CSSProperties)
+      : undefined;
 
     return (
       <button
-        className={"calendar-event" + (isToday ? " is-today" : "")}
+        className={
+          "calendar-event" + (layout ? " timeline-event" : "") + (isToday ? " is-today" : "")
+        }
         key={event.id + "-" + event.episode}
         type="button"
         aria-haspopup="dialog"
@@ -152,6 +164,7 @@ export default function Home() {
         onClick={(clickEvent) =>
           openDetail(event, clickEvent.currentTarget, event.date, event.episode)
         }
+        style={eventStyle}
       >
         <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
         <span className="calendar-event-content">
@@ -206,37 +219,48 @@ export default function Home() {
         </nav>
 
         <div className="time-grid-scroll">
-          <div className="time-grid" aria-label={weekLabel(dates) + " 放送安排"}>
+          <div className="timeline-grid" aria-label={weekLabel(dates) + " 放送安排"}>
+            <div className="timeline-corner" aria-hidden="true" />
             {dates.map((date, index) => {
-              const timeGroups = dayEventGroups[index];
               const isToday = date === currentBeijingDate;
 
               return (
-                <section
-                  className={"time-column" + (isToday ? " is-today" : "")}
+                <header
+                  className={"timeline-day-header" + (isToday ? " is-today" : "")}
                   key={date}
                   aria-label={weekdays[index] + " " + date}
                 >
-                  <header className="time-column-header">
-                    <h3>{weekdays[index]}</h3>
-                    <span>{shortDate(date)}</span>
-                    {isToday ? <b>今天</b> : null}
-                  </header>
-                  <div className="time-groups">
-                    {timeGroups.map(({ time, events: groupedEvents }) => (
-                      <section className="time-group" key={time}>
-                        <time className="time-group-label">{formatBroadcastTime(time)}</time>
-                        <div
-                          className={
-                            "time-group-events" + (groupedEvents.length >= 3 ? " is-crowded" : "")
-                          }
-                          style={{ "--same-time-count": groupedEvents.length } as CSSProperties}
-                        >
-                          {groupedEvents.map(eventButton)}
-                        </div>
-                      </section>
-                    ))}
-                  </div>
+                  <h3>{weekdays[index]}</h3>
+                  <span>{shortDate(date)}</span>
+                  {isToday ? <b>今天</b> : null}
+                </header>
+              );
+            })}
+            <div className="timeline-axis" aria-hidden="true">
+              {timelineHours.map((hour) => (
+                <time
+                  className={"timeline-hour" + (hour === 28 ? " is-timeline-end" : "")}
+                  key={hour}
+                >
+                  {formatBroadcastTime(String(hour).padStart(2, "0") + ":00")}
+                </time>
+              ))}
+            </div>
+            {dates.map((date, index) => {
+              const isToday = date === currentBeijingDate;
+              const positionedEvents = layoutTimelineEvents(
+                events.filter((event) => event.date === date),
+              );
+
+              return (
+                <section
+                  className={"timeline-day" + (isToday ? " is-today" : "")}
+                  key={date}
+                  aria-label={weekdays[index] + " " + date}
+                >
+                  {positionedEvents.map(({ event, lane, laneCount }) =>
+                    eventButton(event, { lane, laneCount }),
+                  )}
                 </section>
               );
             })}
