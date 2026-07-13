@@ -875,13 +875,13 @@ export const seasons = [
   {
     id: "2026-january",
     firstWeekStart: "2026-01-05",
-    timelineStartHour: 7,
+    timelineStartHour: 5,
     ...january2026,
   },
   {
     id: "2026-april",
     firstWeekStart: "2026-03-30",
-    timelineStartHour: 7,
+    timelineStartHour: 5,
     ...april2026,
   },
   {

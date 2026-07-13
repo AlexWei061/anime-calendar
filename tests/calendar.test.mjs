@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import * as calendar from "../lib/calendar.js";
@@ -108,8 +109,94 @@ test("keeps a 25:00 YUC label in its source Sunday column", () => {
   );
 
   assert.deepEqual(
-    { date: event.date, weekday: event.scheduleWeekday, time: event.time, label: formatBroadcastTime(event.time) },
-    { date: "2026-07-05", weekday: "Sun", time: "25:00", label: "次日 01:00" },
+    {
+      date: event.date,
+      weekday: event.scheduleWeekday,
+      time: event.time,
+      broadcastTime: event.broadcastTime,
+      label: formatBroadcastTime(event.time),
+    },
+    {
+      date: "2026-07-05",
+      weekday: "Sun",
+      time: "25:00",
+      broadcastTime: "25:00",
+      label: "次日 01:00",
+    },
+  );
+});
+
+test("passes an event's original broadcast time to the detail dialog", () => {
+  const pageSource = readFileSync(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(pageSource, /selectedTime: event\.broadcastTime/);
+  assert.match(pageSource, /selected\.selectedTime \?\? selected\.beijingTime/);
+});
+
+test("renders a midnight historical broadcast in the preceding visual day", () => {
+  const [event] = eventsForWeek(
+    [
+      {
+        ...weeklyShow,
+        premiereDateBeijing: "2026-01-08",
+        scheduleWeekday: "Thu",
+        beijingTime: "00:00",
+      },
+    ],
+    "2026-01-05",
+  );
+
+  assert.deepEqual(
+    {
+      date: event.date,
+      broadcastDate: event.broadcastDate,
+      time: event.time,
+      broadcastTime: event.broadcastTime,
+    },
+    {
+      date: "2026-01-07",
+      broadcastDate: "2026-01-08",
+      time: "24:00",
+      broadcastTime: "00:00",
+    },
+  );
+});
+
+test("renders a 04:59 historical broadcast at the end of the preceding day", () => {
+  const [event] = eventsForWeek(
+    [
+      {
+        ...weeklyShow,
+        premiereDateBeijing: "2026-01-08",
+        scheduleWeekday: "Thu",
+        beijingTime: "04:59",
+      },
+    ],
+    "2026-01-05",
+  );
+
+  assert.deepEqual(
+    { date: event.date, broadcastDate: event.broadcastDate, time: event.time, broadcastTime: event.broadcastTime },
+    { date: "2026-01-07", broadcastDate: "2026-01-08", time: "28:59", broadcastTime: "04:59" },
+  );
+});
+
+test("includes Monday midnight broadcasts in the preceding displayed week", () => {
+  const [event] = eventsForWeek(
+    [
+      {
+        ...weeklyShow,
+        premiereDateBeijing: "2026-01-12",
+        scheduleWeekday: "Mon",
+        beijingTime: "00:00",
+      },
+    ],
+    "2026-01-05",
+  );
+
+  assert.deepEqual(
+    { date: event.date, broadcastDate: event.broadcastDate, time: event.time, broadcastTime: event.broadcastTime },
+    { date: "2026-01-11", broadcastDate: "2026-01-12", time: "24:00", broadcastTime: "00:00" },
   );
 });
 
@@ -185,13 +272,17 @@ test("maps YUC times onto the 15:00 timeline and rejects out-of-range times", ()
   assert.equal(timelineOffsetMinutes("20:30"), 330);
   assert.equal(timelineOffsetMinutes("25:00"), 600);
   assert.throws(() => timelineOffsetMinutes("14:59"), RangeError);
-  assert.throws(() => timelineOffsetMinutes("28:01"), RangeError);
+  assert.throws(() => timelineOffsetMinutes("29:00"), RangeError);
 });
 
-test("supports midnight pilot broadcasts on historical calendars", () => {
-  assert.equal(timelineOffsetMinutes("00:00", 0), 0);
-  assert.equal(timelineOffsetMinutes("03:59", 0), 239);
-  assert.throws(() => timelineOffsetMinutes("28:01", 0), RangeError);
+test("accepts 28:59 but rejects 29:00 on the historical timeline", () => {
+  const historicalStartMinutes = 5 * 60;
+  const historicalEndMinutes = 28 * 60 + 59;
+
+  assert.equal(timelineOffsetMinutes("05:00", historicalStartMinutes, historicalEndMinutes), 0);
+  assert.equal(timelineOffsetMinutes("06:00", historicalStartMinutes, historicalEndMinutes), 60);
+  assert.equal(timelineOffsetMinutes("28:59", historicalStartMinutes, historicalEndMinutes), 1439);
+  assert.throws(() => timelineOffsetMinutes("29:00", historicalStartMinutes, historicalEndMinutes), RangeError);
 });
 
 test("lays out same-time timeline events in parallel lanes without shifting their starts", () => {

@@ -27,12 +27,15 @@ const initialWeekStart = "2026-07-06";
 type Anime = (typeof allAnime)[number];
 type CalendarEvent = Anime & {
   date: string;
+  broadcastDate: string;
+  broadcastTime: string;
   episodeStart: number;
   episode: number;
   time: string;
 };
 type SelectedAnime = Anime & {
   selectedDate?: string;
+  selectedTime?: string;
   selectedEpisodeStart?: number;
   selectedEpisode?: number;
 };
@@ -97,8 +100,10 @@ export default function Home() {
   );
   const activeSeason = seasons.find(({ id }) => id === activeSeasonId) ?? seasons.at(-1)!;
   const timelineStartMinutes = activeSeason.timelineStartHour * 60;
+  const timelineEndHour = activeSeason.timelineStartHour < 15 ? 29 : 28;
+  const timelineEndMinutes = activeSeason.timelineStartHour < 15 ? 28 * 60 + 59 : 28 * 60;
   const timelineHours = Array.from(
-    { length: 29 - activeSeason.timelineStartHour },
+    { length: timelineEndHour - activeSeason.timelineStartHour + 1 },
     (_, index) => activeSeason.timelineStartHour + index,
   );
   const timelineStyle = {
@@ -118,6 +123,9 @@ export default function Home() {
   const networkOnly = displayedAnime.filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
+  const selectedBroadcastTime = selected
+    ? selected.selectedTime ?? selected.beijingTime
+    : undefined;
 
   useEffect(() => {
     if (!currentBeijingDate || didSetInitialWeek.current) return;
@@ -234,12 +242,13 @@ export default function Home() {
   const openDetail = (
     record: Anime,
     opener: HTMLButtonElement,
-    selectedDate?: string,
-    selectedEpisodeStart?: number,
-    selectedEpisode?: number,
+    selection: Pick<
+      SelectedAnime,
+      "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode"
+    > = {},
   ) => {
     openerRef.current = opener;
-    setSelected({ ...record, selectedDate, selectedEpisodeStart, selectedEpisode });
+    setSelected({ ...record, ...selection });
   };
 
   const handleDialogClose = () => {
@@ -253,7 +262,7 @@ export default function Home() {
     const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
     const eventStyle = layout
       ? ({
-          "--event-top": timelineOffsetMinutes(event.time, timelineStartMinutes) * 1.6 + "px",
+          "--event-top": timelineOffsetMinutes(event.time, timelineStartMinutes, timelineEndMinutes) * 1.6 + "px",
           "--event-left": (layout.lane / layout.laneCount) * 100 + "%",
           "--event-width": 100 / layout.laneCount + "%",
         } as CSSProperties)
@@ -280,7 +289,12 @@ export default function Home() {
           displayTime
         }
         onClick={(clickEvent) =>
-          openDetail(event, clickEvent.currentTarget, event.date, event.episodeStart, event.episode)
+          openDetail(event, clickEvent.currentTarget, {
+            selectedDate: event.broadcastDate,
+            selectedTime: event.broadcastTime,
+            selectedEpisodeStart: event.episodeStart,
+            selectedEpisode: event.episode,
+          })
         }
         style={eventStyle}
       >
@@ -446,7 +460,7 @@ export default function Home() {
             <div className="timeline-axis" aria-hidden="true">
               {timelineHours.map((hour) => (
                 <time
-                  className={"timeline-hour" + (hour === 28 ? " is-timeline-end" : "")}
+                  className={"timeline-hour" + (hour === timelineEndHour ? " is-timeline-end" : "")}
                   key={hour}
                 >
                   {formatBroadcastTime(String(hour).padStart(2, "0") + ":00")}
@@ -602,8 +616,8 @@ export default function Home() {
                 {selected.selectedDate
                   ? selected.selectedDate +
                     " " +
-                    (selected.beijingTime
-                      ? formatBroadcastTime(selected.beijingTime)
+                    (selectedBroadcastTime
+                      ? formatBroadcastTime(selectedBroadcastTime)
                       : "具体时刻未列出") +
                     (selected.selectedEpisode
                       ? " · " +
@@ -625,8 +639,8 @@ export default function Home() {
                 {selected.premiereDateBeijing
                   ? selected.premiereDateBeijing +
                     " " +
-                    (selected.beijingTime
-                      ? formatBroadcastTime(selected.beijingTime)
+                    (selectedBroadcastTime
+                      ? formatBroadcastTime(selectedBroadcastTime)
                       : "具体时刻未列出")
                   : "待确认"}
               </dd>

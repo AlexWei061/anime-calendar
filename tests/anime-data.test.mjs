@@ -124,6 +124,10 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
     ["2026 年 1 月番", "2026 年 4 月番", "2026 年 7 月番"],
   );
   assert.deepEqual(
+    seasons.slice(0, 2).map(({ timelineStartHour }) => timelineStartHour),
+    [5, 5],
+  );
+  assert.deepEqual(
     seasons.slice(0, 2).map(({ sourceName, sourceUrl }) => ({ sourceName, sourceUrl })),
     [
       { sourceName: "YUC 2026年1月新番表", sourceUrl: "https://yuc.wiki/202601/" },

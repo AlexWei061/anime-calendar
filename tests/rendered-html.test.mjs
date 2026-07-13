@@ -185,7 +185,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /activeSeason\.label/);
   assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
-  assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes\)/);
+  assert.match(
+    page,
+    /const timelineEndMinutes = activeSeason\.timelineStartHour < 15 \? 28 \* 60 \+ 59 : 28 \* 60;/,
+  );
+  assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes, timelineEndMinutes\)/);
   assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
   assert.match(page, /window\.history\.pushState\(null, "", url\);/);
   assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
@@ -210,7 +214,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
   assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
-  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineEndMinutes/);
+  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
@@ -221,7 +225,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /selectedEpisode/);
   assert.match(
     page,
-    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, event\.date, event\.episodeStart, event\.episode\)/,
+    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, \{\s*selectedDate: event\.broadcastDate,\s*selectedTime: event\.broadcastTime,/,
   );
   assert.match(page, /\{selected \? \(/);
   assert.match(page, /selected\.titleZh/);
