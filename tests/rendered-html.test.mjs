@@ -212,6 +212,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /onClose=\{handleDialogClose\}/);
   assert.match(
     page,
+    /onClick=\{\(clickEvent\) => \{[\s\S]*?const rect = clickEvent\.currentTarget\.getBoundingClientRect\(\);[\s\S]*?clickEvent\.clientX < rect\.left[\s\S]*?\|\|[\s\S]*?clickEvent\.clientX > rect\.right[\s\S]*?\|\|[\s\S]*?clickEvent\.clientY < rect\.top[\s\S]*?\|\|[\s\S]*?clickEvent\.clientY > rect\.bottom[\s\S]*?clickEvent\.currentTarget\.close\(\);/,
+  );
+  assert.match(
+    page,
     /const handleDialogClose = \(\) => \{[\s\S]*?setSelected\(null\);[\s\S]*?openerRef\.current\?\.focus\(\);/,
   );
   assert.match(page, /aria-label="关闭详情"/);

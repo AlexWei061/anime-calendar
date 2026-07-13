@@ -359,6 +359,17 @@ export default function Home() {
           aria-modal="true"
           aria-labelledby="anime-detail-title"
           onClose={handleDialogClose}
+          onClick={(clickEvent) => {
+            const rect = clickEvent.currentTarget.getBoundingClientRect();
+            if (
+              clickEvent.clientX < rect.left ||
+              clickEvent.clientX > rect.right ||
+              clickEvent.clientY < rect.top ||
+              clickEvent.clientY > rect.bottom
+            ) {
+              clickEvent.currentTarget.close();
+            }
+          }}
         >
           <div className="detail-dialog-heading">
             <p className="section-kicker">节目详情</p>
