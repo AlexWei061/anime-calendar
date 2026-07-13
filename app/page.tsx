@@ -65,6 +65,11 @@ function shortDate(isoDate: string) {
   return Number(month) + "月" + Number(day) + "日";
 }
 
+function compactDate(isoDate: string) {
+  const [, month, day] = isoDate.split("-");
+  return Number(month) + "/" + Number(day);
+}
+
 function weekLabel(dates: string[]) {
   return shortDate(dates[0]) + " — " + shortDate(dates[dates.length - 1]);
 }
@@ -279,7 +284,7 @@ export default function Home() {
                 onClick={() => setActiveMobileDate(date)}
               >
                 <span>{weekdays[index]}</span>
-                <b>{shortDate(date)}</b>
+                <b>{compactDate(date)}</b>
               </button>
             ))}
           </div>
@@ -293,7 +298,7 @@ export default function Home() {
                   }
                   style={{ "--same-time-count": groupedEvents.length } as CSSProperties}
                 >
-                  {groupedEvents.map(eventButton)}
+                  {groupedEvents.map((event) => eventButton(event))}
                 </div>
               </section>
             ))}

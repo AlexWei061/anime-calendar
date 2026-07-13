@@ -46,6 +46,18 @@ test("puts each weekly episode in the requested Monday-based week", () => {
   );
 });
 
+test("orders same-time events by immutable ID", () => {
+  const events = eventsForWeek(
+    [
+      { ...weeklyShow, id: "z", titleZh: "A" },
+      { ...weeklyShow, id: "a", titleZh: "Z" },
+    ],
+    "2026-07-06",
+  );
+
+  assert.deepEqual(events.map(({ id }) => id), ["a", "z"]);
+});
+
 test("stops generating after the configured episode count", () => {
   const threeEpisodeShow = { ...weeklyShow, episodeCount: 3 };
 

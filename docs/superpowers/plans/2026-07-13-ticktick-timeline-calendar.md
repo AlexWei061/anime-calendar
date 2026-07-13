@@ -118,7 +118,7 @@
   在 `app/page.tsx`：
 
   1. 用 `layoutTimelineEvents`、`timelineOffsetMinutes`、`TIMELINE_END_MINUTES` 和 `TIMELINE_START_MINUTES` 替换桌面周视图的 `groupEventsByTime` import；保留 `groupEventsByTime` 只给移动端议程使用。
-  2. 添加 `const timelineMinutesPerPixel = 1.6;` 和从 15:00 到 28:00（每小时）生成 `timelineLabels` 的数组，标签用现有 `formatBroadcastTime`；将 28:00 的最终标签锚定在画布底部，避免超出 1248px 高度。
+  2. 添加 `const timelineMinutesPerPixel = 1.6;` 和从 15:00 到 28:00（每小时）生成 `timelineLabels` 的数组，标签用现有 `formatBroadcastTime`；将 28:00 的最终标签锚定在 1248px 位置，随后保留 40px（约 25 分钟）末端缓冲，使画布总高为 1288px，避免最后一张卡片被裁切。
   3. 用 `layoutTimelineEvents(events.filter((event) => event.date === date))` 生成 `dayTimelineEvents`；移动端仍由原有 `dayEventGroups` 驱动。
   4. 把 `.time-grid-scroll > .time-grid` 替换为 `.timeline-grid`：第一格是角落，接着渲染 7 个日期头；第二行先渲染 `.timeline-axis`，再渲染 7 个 `.timeline-day`。
   5. `eventButton` 接受可选的 `{ lane, laneCount }` 定位信息，桌面事件按钮使用 `timeline-event` 类和以下样式变量：
@@ -188,7 +188,7 @@
     border-radius: 0.9rem;
   }
 
-  .timeline-day { position: relative; min-width: 0; height: 1248px; }
+  .timeline-day { position: relative; min-width: 0; height: 1288px; } /* 末端另留 40px（约 25 分钟）缓冲 */
   .timeline-event {
     position: absolute;
     top: var(--event-top);

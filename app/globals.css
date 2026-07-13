@@ -179,15 +179,22 @@ h1 {
   text-align: center;
 }
 
-.time-grid-scroll {
-  overflow-x: auto;
-  border-radius: 0.9rem;
-}
-
-.time-grid {
+.timeline-grid {
+  --timeline-event-gutter: 0.15rem;
+  --timeline-lines:
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--line) 65%, transparent) 0 1px,
+      transparent 1px 48px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--line) 95%, var(--ink)) 0 1px,
+      transparent 1px 96px
+    );
   display: grid;
-  grid-template-columns: repeat(7, minmax(15rem, 1fr));
-  min-width: 105rem;
+  grid-template-columns: 3.5rem repeat(7, minmax(0, 1fr));
+  grid-template-rows: 4.35rem auto;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
@@ -195,40 +202,35 @@ h1 {
   gap: 1px;
 }
 
-.time-column {
+.timeline-corner,
+.timeline-day-header {
   min-width: 0;
-  background: var(--card);
-}
-
-.time-column {
-  display: grid;
-  align-content: start;
-}
-
-.time-column-header {
-  height: 4.35rem;
-  padding: 0.72rem;
-  border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
 }
 
-.time-column-header {
+.timeline-day-header {
   position: relative;
   display: grid;
+  align-content: center;
   gap: 0.12rem;
+  padding: 0.72rem;
 }
 
-.time-column-header h3 {
+.timeline-day-header.is-today {
+  background: var(--mint);
+}
+
+.timeline-day-header h3 {
   margin: 0;
   font-size: 1rem;
 }
 
-.time-column-header span {
+.timeline-day-header span {
   color: var(--muted-ink);
   font-size: 0.72rem;
 }
 
-.time-column-header b {
+.timeline-day-header b {
   position: absolute;
   top: 0.7rem;
   right: 0.55rem;
@@ -236,6 +238,42 @@ h1 {
   border-radius: 999px;
   background: var(--mint);
   font-size: 0.65rem;
+}
+
+.timeline-axis {
+  display: grid;
+  grid-template-rows: repeat(13, 96px) 40px;
+  height: 1288px;
+  min-width: 0;
+  background-color: var(--card);
+  background-image: var(--timeline-lines);
+}
+
+.timeline-hour {
+  z-index: 1;
+  align-self: start;
+  transform: translateY(-0.55rem);
+  padding-left: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.timeline-hour.is-timeline-end {
+  transform: translateY(-0.85rem);
+}
+
+.timeline-day {
+  position: relative;
+  height: 1288px;
+  min-width: 0;
+  background-color: var(--card);
+  background-image: var(--timeline-lines);
+}
+
+.timeline-day.is-today {
+  background-color: color-mix(in srgb, var(--mint) 28%, var(--card));
 }
 
 .time-groups {
@@ -259,10 +297,6 @@ h1 {
   font-size: 0.78rem;
   font-weight: 700;
   text-align: center;
-}
-
-.time-column.is-today .time-column-header {
-  background: var(--mint);
 }
 
 .time-group-events {
@@ -306,6 +340,18 @@ h1 {
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 
+.timeline-event {
+  position: absolute;
+  top: var(--event-top);
+  left: calc(var(--event-left) + var(--timeline-event-gutter));
+  width: calc(var(--event-width) - var(--timeline-event-gutter));
+  height: 40px;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.85rem) minmax(0, 1fr);
+  gap: 0.25rem;
+  padding: 0.2rem;
+}
+
 .calendar-event:hover {
   border-color: var(--blue);
   box-shadow: 0 0.35rem 0.8rem rgb(31 41 51 / 15%);
@@ -324,6 +370,15 @@ h1 {
   aspect-ratio: 3 / 4;
   border-radius: 0.3rem;
   object-fit: cover;
+}
+
+.timeline-event .calendar-event-cover {
+  align-self: stretch;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
 }
 
 .calendar-event-content {
@@ -346,6 +401,15 @@ h1 {
   -webkit-line-clamp: 2;
   font-size: 0.75rem;
   line-height: 1.18;
+}
+
+.timeline-event strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  line-height: 1.2;
 }
 
 .mobile-calendar {
@@ -533,11 +597,7 @@ h1 {
     text-align: left;
   }
 
-  .time-grid {
-    display: none;
-  }
-
-  .time-grid-scroll {
+  .timeline-grid {
     display: none;
   }
 
@@ -548,18 +608,18 @@ h1 {
 
   .mobile-day-picker {
     display: grid;
-    grid-template-columns: repeat(7, minmax(4.75rem, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.4rem;
-    overflow-x: auto;
-    padding-bottom: 0.3rem;
   }
 
   .mobile-day-picker button {
     display: grid;
     gap: 0.15rem;
-    padding: 0.5rem;
+    padding: 0.35rem 0.1rem;
     color: var(--muted-ink);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   .mobile-day-picker button.is-selected {

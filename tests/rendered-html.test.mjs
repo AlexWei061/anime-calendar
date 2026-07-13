@@ -63,6 +63,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /class="time-grid"/);
   assert.match(cleanHtml, /<time class="time-group-label">20:30<\/time>/);
   assert.match(cleanHtml, /次日 01:00/);
+  assert.match(cleanHtml, /次日 04:00/);
   assert.match(cleanHtml, /次日 03:08/);
   assert.match(html, /class="calendar-event/);
   assert.match(html, /class="calendar-event-cover"/);
@@ -85,6 +86,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
 
 test("renders one Monday-through-Sunday grid with timed and network-only program details", async () => {
   const html = await (await render()).text();
+  const cleanHtml = withoutReactMarkers(html);
   const weekdayHeadings = [...html.matchAll(/<h3>(周[一二三四五六日])<\/h3>/g)].map(
     ([, heading]) => heading,
   );
@@ -99,6 +101,21 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   assert.ok(timedEvents.every((tag) => /aria-haspopup="dialog"/.test(tag)));
   assert.ok(timedEvents.every((card) => /class="calendar-event-cover"/.test(card)));
   assert.ok(timedEvents.every((card) => /loading="lazy"/.test(card)));
+
+  const mobilePicker = cleanHtml.slice(
+    cleanHtml.indexOf('<div class="mobile-day-picker"'),
+    cleanHtml.indexOf('<div class="mobile-agenda"'),
+  );
+  assert.match(mobilePicker, /<b>7\/6<\/b>/);
+  const mobileAgendaStart = html.indexOf('<div class="mobile-agenda"');
+  assert.ok(mobileAgendaStart >= 0);
+  const mobileAgenda = html.slice(
+    mobileAgendaStart,
+    html.indexOf('<section class="network-section"'),
+  );
+  assert.match(mobileAgenda, /\bcalendar-event\b/);
+  assert.doesNotMatch(mobileAgenda, /\btimeline-event\b/);
+  assert.doesNotMatch(mobileAgenda, /NaN/);
 
   const networkCards = [
     ...html.matchAll(/<button\b(?=[^>]*class="[^"]*\bnetwork-card\b[^"]*")[^>]*>[\s\S]*?<\/button>/g),
@@ -167,6 +184,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /groupEventsByTime/);
   assert.match(page, /layoutTimelineEvents/);
   assert.match(page, /timelineOffsetMinutes/);
+  assert.match(
+    page,
+    /function compactDate\(isoDate: string\) \{[\s\S]*?return Number\(month\) \+ "\/" \+ Number\(day\);/,
+  );
+  assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
+  assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
   assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineStartMinutes|timelineEndMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
@@ -200,8 +223,43 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.equal(templateRoot.pathname.endsWith("/"), true);
 
   assert.match(styles, /:focus-visible/);
-  assert.match(styles, /\.time-grid/);
-  assert.match(styles, /\.time-grid-scroll/);
+  assert.match(
+    styles,
+    /\.timeline-grid\s*\{[\s\S]*?grid-template-columns:\s*3\.5rem repeat\(7, minmax\(0, 1fr\)\);[\s\S]*?overflow:\s*(?:hidden|clip)/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(13, 96px\) 40px;[\s\S]*?height:\s*1288px;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+  );
+  assert.match(
+    styles,
+    /--timeline-lines:\s*repeating-linear-gradient\([\s\S]*?transparent 1px 48px[\s\S]*?repeating-linear-gradient\([\s\S]*?transparent 1px 96px/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-day\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*1288px;[\s\S]*?min-width:\s*0;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-day\.is-today\s*\{[\s\S]*?background-color:\s*color-mix\(/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*var\(--event-top\);[\s\S]*?left:\s*calc\(var\(--event-left\) \+ var\(--timeline-event-gutter\)\);[\s\S]*?width:\s*calc\(var\(--event-width\) - var\(--timeline-event-gutter\)\);[\s\S]*?height:\s*40px;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event \.calendar-event-cover\s*\{[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;[\s\S]*?object-fit:\s*contain;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event strong\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
+  );
+  assert.doesNotMatch(styles, /\.time-grid-scroll/);
+  assert.doesNotMatch(styles, /\.time-grid\s*\{/);
+  assert.doesNotMatch(styles, /\.time-column\b/);
+  assert.doesNotMatch(styles, /\.timeline-grid\s*\{[^}]*\bmin-width\s*:/);
+  assert.doesNotMatch(styles, /overflow-x:\s*auto/);
   assert.match(styles, /\.time-groups/);
   assert.match(styles, /\.time-group/);
   assert.match(styles, /\.time-group-label/);
@@ -215,7 +273,15 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.mobile-calendar/);
   assert.match(
     styles,
-    /@media \(max-width: 860px\) \{[\s\S]*?\.time-grid \{[\s\S]*?display: none/,
+    /@media \(max-width: 860px\) \{[\s\S]*?\.timeline-grid \{[\s\S]*?display: none/,
+  );
+  assert.match(
+    styles,
+    /\.mobile-day-picker\s*\{[\s\S]*?grid-template-columns:\s*repeat\(7, minmax\(0, 1fr\)\);/,
+  );
+  assert.match(
+    styles,
+    /\.mobile-day-picker button\s*\{[\s\S]*?padding:\s*0\.35rem 0\.1rem;[\s\S]*?font-size:\s*0\.68rem;[\s\S]*?line-height:\s*1\.2;[\s\S]*?white-space:\s*nowrap;/,
   );
   assert.match(
     styles,
