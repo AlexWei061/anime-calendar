@@ -116,6 +116,7 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
     ["2026 年 1 月番", "2026 年 4 月番", "2026 年 7 月番"],
   );
   assert.equal(seasons[0].sourceName, "YUC 2026年1月新番表");
+  assert.equal(seasons[1].sourceName, "YUC 2026年4月新番表");
 
   const historicalAnime = seasons.slice(0, 2).flatMap(({ anime: records }) => records);
   assert.ok(historicalAnime.length > 0);
