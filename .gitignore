@@ -1,6 +1,7 @@
 work/
 outputs/
 .superpowers/
+.worktrees/
 .site-archives/
 .wrangler/
 dist/
