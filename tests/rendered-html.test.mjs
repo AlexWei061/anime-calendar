@@ -136,6 +136,13 @@ test("renders three same-time events side by side on one timeline day", async ()
     new Set(sameTimeEvents.map(([, style]) => style.match(/--event-width:([^;]+)/)?.[1])).size,
     1,
   );
+  const laneOffsets = sameTimeEvents.map(
+    ([, style]) => style.match(/--event-left:([^;]+)/)?.[1],
+  );
+  assert.equal(new Set(laneOffsets).size, 3);
+  assert.ok(laneOffsets.includes("0%"));
+  assert.ok(laneOffsets.some((offset) => /^33\.333/.test(offset ?? "")));
+  assert.ok(laneOffsets.some((offset) => /^66\.666/.test(offset ?? "")));
   assert.ok(sameTimeEvents.every(([, , card]) => /class="calendar-event-cover"/.test(card)));
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /正后方的神威/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /我家的弟弟们真是让您费心了/);
