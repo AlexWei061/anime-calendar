@@ -1,4 +1,10 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
+import { primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const animeSelections = sqliteTable(
+  "anime_selections",
+  {
+    userEmail: text("user_email").notNull(),
+    animeId: text("anime_id").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userEmail, table.animeId] })],
+);
