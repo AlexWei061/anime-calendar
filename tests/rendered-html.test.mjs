@@ -265,6 +265,22 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
+    /\.week-pager\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0;[\s\S]*?z-index:\s*3;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-corner,\s*\.timeline-day-header\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*var\(--week-pager-height\);[\s\S]*?z-index:\s*2;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-grid\s*\{[\s\S]*?overflow:\s*clip;/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width: 860px\) \{[\s\S]*?\.week-pager\s*\{[\s\S]*?position:\s*static;/,
+  );
+  assert.match(
+    styles,
     /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(13, 96px\) 40px;[\s\S]*?height:\s*1288px;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(

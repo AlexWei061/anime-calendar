@@ -168,6 +168,7 @@ h1 {
 }
 
 .weekly-section {
+  --week-pager-height: 3.25rem;
   padding: 2.25rem 0;
 }
 
@@ -280,10 +281,16 @@ h1 {
 }
 
 .week-pager {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 1rem;
+  min-height: var(--week-pager-height);
+  margin-bottom: 0;
+  padding: 0.5rem 0;
+  background: var(--paper);
 }
 
 .week-pager button,
@@ -332,7 +339,7 @@ h1 {
   display: grid;
   grid-template-columns: 3.5rem repeat(7, minmax(0, 1fr));
   grid-template-rows: 4.35rem auto;
-  overflow: hidden;
+  overflow: clip;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
   background: var(--line);
@@ -341,12 +348,14 @@ h1 {
 
 .timeline-corner,
 .timeline-day-header {
+  position: sticky;
+  top: var(--week-pager-height);
+  z-index: 2;
   min-width: 0;
   background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
 }
 
 .timeline-day-header {
-  position: relative;
   display: grid;
   align-content: center;
   gap: 0.12rem;
@@ -710,6 +719,14 @@ h1 {
 }
 
 @media (max-width: 860px) {
+  .week-pager {
+    position: static;
+    min-height: 0;
+    margin-bottom: 1rem;
+    padding: 0;
+    background: transparent;
+  }
+
   .site-shell {
     grid-template-columns: 1fr;
   }
