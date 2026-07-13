@@ -46,6 +46,19 @@ test("puts each weekly episode in the requested Monday-based week", () => {
   );
 });
 
+test("starts a multi-episode premiere at its last released episode", () => {
+  const multiEpisodePremiere = { ...weeklyShow, premiereEpisodeCount: 3 };
+
+  assert.deepEqual(
+    eventsForWeek([multiEpisodePremiere], "2026-06-29").map(({ episode, date }) => ({ episode, date })),
+    [{ episode: 3, date: "2026-07-01" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([multiEpisodePremiere], "2026-07-06").map(({ episode, date }) => ({ episode, date })),
+    [{ episode: 4, date: "2026-07-08" }],
+  );
+});
+
 test("orders same-time events by immutable ID", () => {
   const events = eventsForWeek(
     [

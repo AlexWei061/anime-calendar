@@ -25,7 +25,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.ok(anime.every(({ sourceUrl }) => sourceUrl === season.sourceUrl));
 
   for (const record of anime) {
-    assert.deepEqual(Object.keys(record).sort(), [
+    assert.deepEqual(Object.keys(record).filter((key) => key !== "premiereEpisodeCount").sort(), [
       "beijingTime",
       "coverAlt",
       "coverUrl",
@@ -47,12 +47,14 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
       coverUrl: yumeMita?.coverUrl,
       scheduleWeekday: yumeMita?.scheduleWeekday,
       beijingTime: yumeMita?.beijingTime,
+      premiereEpisodeCount: yumeMita?.premiereEpisodeCount,
     },
     {
       titleZh: "BanG Dream! YUME∞MITA",
       coverUrl: "/covers/yuc/yume-mita.jpg",
       scheduleWeekday: "Thu",
       beijingTime: "22:00",
+      premiereEpisodeCount: 3,
     },
   );
 
@@ -95,6 +97,7 @@ test("keeps only YUC network releases without listed clock times in the pending 
 test("uses YUC episode totals when available and defaults every other show to 12 episodes", () => {
   assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount)), true);
   assert.equal(anime.every(({ episodeCount }) => episodeCount > 0), true);
+  assert.equal(anime.find(({ id }) => id === "yume-mita")?.premiereEpisodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "baki-dou-2")?.episodeCount, 12);
   assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);

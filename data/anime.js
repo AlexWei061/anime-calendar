@@ -50,6 +50,7 @@ export const anime = [
   {
     "id": "yume-mita",
     "episodeCount": 12,
+    "premiereEpisodeCount": 3,
     "titleZh": "BanG Dream! YUME∞MITA",
     "titleJa": "バンドリ！ ゆめ∞みた",
     "coverUrl": "/covers/yuc/yume-mita.jpg",
