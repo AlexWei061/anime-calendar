@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
-import { anime } from "../../../data/anime.js";
+import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
 import { validateAnimeIds } from "../../../lib/anime-selections.js";
 import { getChatGPTUser } from "../../chatgpt-auth";
 
-const validAnimeIds = new Set(anime.map(({ id }) => id));
+const validAnimeIds = new Set(allAnime.map(({ id }) => id));
 
 async function currentUser() {
   return getChatGPTUser();

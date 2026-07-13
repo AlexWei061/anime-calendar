@@ -49,8 +49,12 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /2026 夏番时间表/);
   assert.match(withoutReactMarkers(html), /66 部夏番/);
   assert.match(html, /class="page-sidebar"/);
-  assert.match(html, /全部夏番/);
+  assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
+  assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /2026 冬番/);
+  assert.match(html, /2026 春番/);
+  assert.match(html, /AniList 历史放送记录（试点）/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
@@ -74,7 +78,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
-  assert.match(html, /YUC 首播/);
+  assert.match(html, /YUC 2026年7月新番表.*首播/);
   assert.match(html, /网络放送／固定时刻未列出/);
   assert.doesNotMatch(html, /class="week-grid"|class="week-column"|class="anime-card"/);
   assert.doesNotMatch(html, /codex-preview/i);
@@ -180,6 +184,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
+  assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
+  assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
+  assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes\)/);
   assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
   assert.match(page, /window\.history\.pushState\(null, "", url\);/);
   assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
@@ -204,7 +211,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
   assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
-  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineStartMinutes|timelineEndMinutes/);
+  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineEndMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
@@ -252,6 +259,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     /\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*13rem minmax\(0, 1fr\);/,
   );
   assert.match(styles, /\.page-sidebar button\.is-active/);
+  assert.match(styles, /\.season-picker\s*\{/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
   assert.match(styles, /\.my-schedule-empty/);
@@ -281,7 +289,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(13, 96px\) 40px;[\s\S]*?height:\s*1288px;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) 40px;[\s\S]*?height:\s*var\(--timeline-height\);[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
@@ -289,7 +297,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-day\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*1288px;[\s\S]*?min-width:\s*0;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-day\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*var\(--timeline-height\);[\s\S]*?min-width:\s*0;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,

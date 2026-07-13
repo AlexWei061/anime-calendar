@@ -188,6 +188,12 @@ test("maps YUC times onto the 15:00 timeline and rejects out-of-range times", ()
   assert.throws(() => timelineOffsetMinutes("28:01"), RangeError);
 });
 
+test("supports midnight pilot broadcasts on historical calendars", () => {
+  assert.equal(timelineOffsetMinutes("00:00", 0), 0);
+  assert.equal(timelineOffsetMinutes("03:59", 0), 239);
+  assert.throws(() => timelineOffsetMinutes("28:01", 0), RangeError);
+});
+
 test("lays out same-time timeline events in parallel lanes without shifting their starts", () => {
   const dayEvents = [
     { ...weeklyShow, id: "third", time: "20:40" },
