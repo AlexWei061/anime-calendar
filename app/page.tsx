@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { allAnime, seasons } from "../data/anime.js";
+import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import {
   addDays,
   eventsForWeek,
@@ -21,7 +22,7 @@ import {
 } from "../lib/calendar.js";
 
 const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-const initialSeasonId = "2026-summer";
+const initialSeasonId = "2026-july";
 const initialWeekStart = "2026-07-06";
 
 type Anime = (typeof allAnime)[number];
@@ -99,6 +100,7 @@ export default function Home() {
     getServerBeijingDate,
   );
   const activeSeason = seasons.find(({ id }) => id === activeSeasonId) ?? seasons.at(-1)!;
+  const isHistoricalSeason = activeSeason.id !== initialSeasonId;
   const timelineStartMinutes = activeSeason.timelineStartHour * 60;
   const timelineEndHour = activeSeason.timelineStartHour < 15 ? 29 : 28;
   const timelineEndMinutes = activeSeason.timelineStartHour < 15 ? 28 * 60 + 59 : 28 * 60;
@@ -206,7 +208,7 @@ export default function Home() {
   };
 
   const returnToCurrentWeek = () => {
-    const date = activeSeason.id === initialSeasonId
+    const date = !isHistoricalSeason
       ? currentBeijingDate ?? initialWeekStart
       : activeSeason.firstWeekStart;
     setActiveWeekStart(startOfWeek(date));
@@ -337,20 +339,19 @@ export default function Home() {
             {activePage === "all"
               ? "共 " +
                 activeSeason.catalogCount +
-                " 部" +
-                (activeSeason.id === initialSeasonId ? "夏番" : "动画") +
+                " 部番剧" +
                 "，从首播日起按周显示；未明确集数的作品暂按 12 集安排，时间均为北京时间。"
               : "勾选想追的番剧，只查看属于你的播出时间表。"}
           </p>
-          {activeSeason.id !== initialSeasonId ? (
+          {isHistoricalSeason ? (
             <p className="pilot-note">
-              试点名称采用 AniList 原文与罗马音；排期按首集播出时间在北京时间展示。
+              名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。
             </p>
           ) : null}
         </div>
         <div className="calendar-header-controls">
           <label className="season-picker">
-            季度
+            月份
             <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
               {seasons.map((candidate) => (
                 <option key={candidate.id} value={candidate.id}>
@@ -358,7 +359,7 @@ export default function Home() {
                 </option>
               ))}
             </select>
-            <span>2026 冬、春番使用 AniList 历史放送记录（试点）。</span>
+            <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
           </label>
           <a
             className="source-link"
@@ -377,7 +378,7 @@ export default function Home() {
             <summary className="anime-selection-summary">
               <span className="section-kicker">选择番剧</span>
               <span className="anime-selection-title" id="anime-selection-heading">
-                本季度想追什么？
+                本月番想追什么？
               </span>
               <span className="anime-selection-summary-copy">
                 选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。
@@ -428,7 +429,7 @@ export default function Home() {
           </button>
           <p aria-live="polite">{weekLabel(dates)}</p>
           <button type="button" onClick={returnToCurrentWeek}>
-            {activeSeason.id === initialSeasonId ? "回到本周" : "回到本季首周"}
+            {!isHistoricalSeason ? "回到本周" : "回到本月首周"}
           </button>
           <button type="button" onClick={() => changeWeek(7)} aria-label="下一周">
             下一周
@@ -527,9 +528,9 @@ export default function Home() {
 
       {networkOnly.length ? <section className="network-section" aria-labelledby="network-heading">
         <div>
-          <p className="section-kicker">完整季表</p>
+          <p className="section-kicker">完整番表</p>
           <h2 id="network-heading">网络放送／固定时刻未列出</h2>
-          <p>{activeSeason.sourceName} 列有首播日期，但未给出固定周播时刻的作品。</p>
+          <p>已收录作品，但暂未确认固定的每周播出时刻。</p>
         </div>
         <div className="network-list">
           {networkOnly.map((record) => (
@@ -546,9 +547,11 @@ export default function Home() {
                 <strong>{record.titleZh}</strong>
                 <small>{record.titleJa}</small>
                 <em>
-                  {record.premiereDateBeijing
-                    ? activeSeason.sourceName + " 首播 · " + record.premiereDateBeijing
-                    : activeSeason.sourceName + " 未列出首播日期"}
+                  {networkBroadcastLabel({
+                    isHistoricalSeason,
+                    sourceName: activeSeason.sourceName,
+                    premiereDateBeijing: record.premiereDateBeijing,
+                  })}
                 </em>
               </span>
             </button>
@@ -565,7 +568,11 @@ export default function Home() {
           </a>
           ，更新于 {activeSeason.updatedAt}。
         </p>
-        <p>周表时刻按资料来源公开排期展示为 {activeSeason.timeZoneLabel}。</p>
+        {isHistoricalSeason ? (
+          <p>YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。</p>
+        ) : (
+          <p>周表时刻按资料来源公开排期展示为 {activeSeason.timeZoneLabel}。</p>
+        )}
       </footer>
         </>
       ) : selectedAnimeIds ? (

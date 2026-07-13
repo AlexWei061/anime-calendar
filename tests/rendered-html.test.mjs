@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { anime } from "../data/anime.js";
+import { anime, seasons } from "../data/anime.js";
 
 const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
@@ -41,17 +41,20 @@ test("server-renders a paged Beijing episode calendar", async () => {
   const html = await response.text();
   const cleanHtml = withoutReactMarkers(html);
   assert.match(html, /<html lang="zh-CN">/);
-  assert.match(html, /<title>番时表｜2026 夏番<\/title>/);
+  assert.match(html, /<title>番时表｜2026 年新番<\/title>/);
   assert.match(
     html,
-    /<meta name="description" content="按 YUC 排期查看 2026 年夏季动画的首播、集数与周播时间。"\s*\/>/,
+    /<meta name="description" content="按北京时间查看 2026 年 1 月、4 月和 7 月番的首播、集数与周播时间。"\s*\/>/,
   );
-  assert.match(html, /2026 夏番时间表/);
-  assert.match(withoutReactMarkers(html), /66 部夏番/);
+  assert.match(html, /2026 年 7 月番时间表/);
+  assert.match(withoutReactMarkers(html), /66 部番剧/);
   assert.match(html, /class="page-sidebar"/);
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /<option value="2026-january">2026 年 1 月番<\/option>/);
+  assert.match(html, /<option value="2026-april">2026 年 4 月番<\/option>/);
+  assert.match(html, /<option value="2026-july" selected="">2026 年 7 月番<\/option>/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
@@ -182,8 +185,19 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
   assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
+  assert.match(page, /const initialSeasonId = "2026-july";/);
   assert.match(page, /activeSeason\.label/);
-  assert.doesNotMatch(page, /冬番|春番|夏番/);
+  assert.doesNotMatch(page, /冬番|春番|夏番|季度/);
+  assert.doesNotMatch(layout, /冬番|春番|夏番/);
+  assert.match(page, /月份/);
+  assert.match(
+    page,
+    /名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。/,
+  );
+  assert.doesNotMatch(page, /AniList 原文与罗马音|AniList 历史放送记录/);
+  assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
+  assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
+  assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
   assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
   assert.match(
     page,
@@ -195,7 +209,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
   assert.match(page, /<details className="anime-selection-details">/);
   assert.match(page, /<summary className="anime-selection-summary">/);
-  assert.match(page, /本季度想追什么？/);
+  assert.match(page, /本月番想追什么？/);
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
@@ -251,6 +265,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(previewRoot), { code: "ENOENT" });
   assert.equal(templateRoot.pathname.endsWith("/"), true);
+  assert.deepEqual(
+    seasons.map(({ id, label }) => ({ id, label })),
+    [
+      { id: "2026-january", label: "2026 年 1 月番" },
+      { id: "2026-april", label: "2026 年 4 月番" },
+      { id: "2026-july", label: "2026 年 7 月番" },
+    ],
+  );
 
   assert.match(
     styles,
