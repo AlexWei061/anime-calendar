@@ -33,6 +33,7 @@ type SelectedAnime = Anime & {
   selectedDate?: string;
   selectedEpisode?: number;
 };
+type Page = "all" | "mine";
 
 const beijingDateFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Shanghai",
@@ -75,7 +76,11 @@ function weekLabel(dates: string[]) {
 }
 
 export default function Home() {
+  const [activePage, setActivePage] = useState<Page>("all");
   const [selected, setSelected] = useState<SelectedAnime | null>(null);
+  const [selectedAnimeIds, setSelectedAnimeIds] = useState<string[] | null>(null);
+  const [selectionError, setSelectionError] = useState<string | null>(null);
+  const [isSavingSelection, setIsSavingSelection] = useState(false);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -87,12 +92,16 @@ export default function Home() {
     getServerBeijingDate,
   );
   const dates = weekDays(activeWeekStart);
-  const events = eventsForWeek(anime, activeWeekStart) as CalendarEvent[];
+  const displayedAnime =
+    activePage === "mine" ? anime.filter((record) => selectedAnimeIds?.includes(record.id)) : anime;
+  const events = eventsForWeek(displayedAnime, activeWeekStart) as CalendarEvent[];
   const dayEventGroups = dates.map((date) =>
     groupEventsByTime(events.filter((event) => event.date === date)),
   );
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
-  const networkOnly = anime.filter(({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime);
+  const networkOnly = displayedAnime.filter(
+    ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
+  );
 
   useEffect(() => {
     if (!currentBeijingDate || didSetInitialWeek.current) return;
@@ -108,6 +117,31 @@ export default function Home() {
     }
   }, [selected]);
 
+  useEffect(() => {
+    if (activePage !== "mine" || selectedAnimeIds !== null) return;
+
+    let cancelled = false;
+    async function loadAnimeSelections() {
+      try {
+        const response = await fetch("/api/anime-selections");
+        if (!response.ok) throw new Error("Unable to load anime selections");
+
+        const payload = (await response.json()) as { animeIds?: unknown };
+        if (!Array.isArray(payload.animeIds) || payload.animeIds.some((id) => typeof id !== "string")) {
+          throw new Error("Invalid anime selections");
+        }
+        if (!cancelled) setSelectedAnimeIds(payload.animeIds);
+      } catch {
+        if (!cancelled) setSelectionError("无法读取你的追番列表。请稍后重试。");
+      }
+    }
+
+    void loadAnimeSelections();
+    return () => {
+      cancelled = true;
+    };
+  }, [activePage, selectedAnimeIds]);
+
   const changeWeek = (days: number) => {
     const nextWeekStart = addDays(activeWeekStart, days);
     setActiveWeekStart(nextWeekStart);
@@ -118,6 +152,32 @@ export default function Home() {
     const date = currentBeijingDate ?? initialWeekStart;
     setActiveWeekStart(startOfWeek(date));
     setActiveMobileDate(date);
+  };
+
+  const toggleAnimeSelection = async (animeId: string) => {
+    if (!selectedAnimeIds || isSavingSelection) return;
+
+    const previousAnimeIds = selectedAnimeIds;
+    const nextAnimeIds = selectedAnimeIds.includes(animeId)
+      ? selectedAnimeIds.filter((id) => id !== animeId)
+      : [...selectedAnimeIds, animeId];
+
+    setSelectedAnimeIds(nextAnimeIds);
+    setSelectionError(null);
+    setIsSavingSelection(true);
+    try {
+      const response = await fetch("/api/anime-selections", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ animeIds: nextAnimeIds }),
+      });
+      if (!response.ok) throw new Error("Unable to save anime selections");
+    } catch {
+      setSelectedAnimeIds(previousAnimeIds);
+      setSelectionError("保存失败，请重试。");
+    } finally {
+      setIsSavingSelection(false);
+    }
   };
 
   const openDetail = (
@@ -181,14 +241,37 @@ export default function Home() {
   };
 
   return (
-    <main className="calendar-page">
+    <div className="site-shell">
+      <nav className="page-sidebar" aria-label="页面导航">
+        <p className="site-name">番时表</p>
+        <button
+          className={activePage === "all" ? "is-active" : ""}
+          type="button"
+          aria-current={activePage === "all" ? "page" : undefined}
+          onClick={() => setActivePage("all")}
+        >
+          全部夏番
+        </button>
+        <button
+          className={activePage === "mine" ? "is-active" : ""}
+          type="button"
+          aria-current={activePage === "mine" ? "page" : undefined}
+          onClick={() => setActivePage("mine")}
+        >
+          我的番剧{selectedAnimeIds ? " · " + selectedAnimeIds.length + " 部" : ""}
+        </button>
+      </nav>
+      <main className="calendar-page">
       <header className="calendar-header">
         <div>
-          <p className="season-kicker">{season.label}</p>
-          <h1>2026 夏番时间表</h1>
+          <p className="season-kicker">{activePage === "all" ? season.label : "我的番剧"}</p>
+          <h1>{activePage === "all" ? "2026 夏番时间表" : "我的番剧时间表"}</h1>
           <p className="intro">
-            共 {season.catalogCount} 部夏番，从首播日起按周显示；未明确集数的作品暂按 12
-            集安排，时间均为北京时间。
+            {activePage === "all"
+              ? "共 " +
+                season.catalogCount +
+                " 部夏番，从首播日起按周显示；未明确集数的作品暂按 12 集安排，时间均为北京时间。"
+              : "勾选想追的番剧，只查看属于你的播出时间表。"}
           </p>
         </div>
         <a
@@ -201,6 +284,44 @@ export default function Home() {
         </a>
       </header>
 
+      {activePage === "mine" ? (
+        <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
+          <div className="section-heading">
+            <div>
+              <p className="section-kicker">选择番剧</p>
+              <h2 id="anime-selection-heading">本季度想追什么？</h2>
+            </div>
+            <p>选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。</p>
+          </div>
+          {selectedAnimeIds ? (
+            <div className="anime-selection-list">
+              {anime.map((record) => (
+                <label className="anime-selection" key={record.id}>
+                  <input
+                    type="checkbox"
+                    checked={selectedAnimeIds.includes(record.id)}
+                    disabled={isSavingSelection}
+                    onChange={() => void toggleAnimeSelection(record.id)}
+                  />
+                  <span>{record.titleZh}</span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className="selection-status" aria-live="polite">
+              {selectionError ?? "正在读取你的追番列表…"}
+            </p>
+          )}
+          {selectedAnimeIds && selectionError ? (
+            <p className="selection-status" aria-live="polite">
+              {selectionError}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {activePage === "all" || displayedAnime.length ? (
+        <>
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">
           <div>
@@ -350,6 +471,12 @@ export default function Home() {
         </p>
         <p>周表时刻按 YUC 公开排期展示为 {season.timeZoneLabel}。</p>
       </footer>
+        </>
+      ) : selectedAnimeIds ? (
+        <p className="my-schedule-empty">
+          勾选上方的番剧后，这里会显示你的专属时间表。
+        </p>
+      ) : null}
 
       {selected ? (
         <dialog
@@ -429,6 +556,7 @@ export default function Home() {
           </a>
         </dialog>
       ) : null}
-    </main>
+      </main>
+    </div>
   );
 }

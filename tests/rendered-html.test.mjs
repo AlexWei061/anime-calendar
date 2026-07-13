@@ -48,6 +48,9 @@ test("server-renders a paged Beijing episode calendar", async () => {
   );
   assert.match(html, /2026 夏番时间表/);
   assert.match(withoutReactMarkers(html), /66 部夏番/);
+  assert.match(html, /class="page-sidebar"/);
+  assert.match(html, /全部夏番/);
+  assert.match(html, /我的番剧/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
@@ -176,10 +179,15 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
+  assert.match(page, /const \[activePage, setActivePage\] = useState/);
+  assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
+  assert.match(page, /fetch\("\/api\/anime-selections"/);
+  assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
+  assert.match(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
-  assert.match(page, /eventsForWeek\(anime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
   assert.match(page, /groupEventsByTime/);
   assert.match(page, /layoutTimelineEvents/);
