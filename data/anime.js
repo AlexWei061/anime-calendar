@@ -1,7 +1,7 @@
-import { spring2026, winter2026 } from "./anilist-2026.js";
+import { april2026, january2026 } from "./yuc-history-2026.js";
 
 export const season = {
-  "label": "2026 夏番",
+  "label": "2026 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
   "updatedAt": "2026-07-12",
   "catalogCount": 66,
@@ -873,21 +873,19 @@ export const anime = [
 
 export const seasons = [
   {
-    id: "2026-winter",
-    label: "2026 冬番",
+    id: "2026-january",
     firstWeekStart: "2026-01-05",
-    timelineStartHour: 0,
-    ...winter2026,
+    timelineStartHour: 7,
+    ...january2026,
   },
   {
-    id: "2026-spring",
-    label: "2026 春番",
+    id: "2026-april",
     firstWeekStart: "2026-03-30",
-    timelineStartHour: 0,
-    ...spring2026,
+    timelineStartHour: 7,
+    ...april2026,
   },
   {
-    id: "2026-summer",
+    id: "2026-july",
     firstWeekStart: "2026-06-29",
     timelineStartHour: 15,
     ...season,

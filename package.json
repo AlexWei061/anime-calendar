@@ -12,7 +12,8 @@
     "test": "npm run build && node --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "generate:anilist-pilot": "node scripts/generate-anilist-pilot.mjs"
+    "generate:anilist-pilot": "node scripts/generate-anilist-pilot.mjs",
+    "generate:yuc-history-pilot": "node scripts/generate-yuc-history-pilot.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
