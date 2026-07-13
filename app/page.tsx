@@ -12,6 +12,7 @@ import {
   addDays,
   eventsForWeek,
   formatBroadcastTime,
+  formatEpisodeLabel,
   groupEventsByTime,
   layoutTimelineEvents,
   startOfWeek,
@@ -26,11 +27,13 @@ const timelineHours = Array.from({ length: 14 }, (_, index) => 15 + index);
 type Anime = (typeof anime)[number];
 type CalendarEvent = Anime & {
   date: string;
+  episodeStart: number;
   episode: number;
   time: string;
 };
 type SelectedAnime = Anime & {
   selectedDate?: string;
+  selectedEpisodeStart?: number;
   selectedEpisode?: number;
 };
 type Page = "all" | "mine";
@@ -184,10 +187,11 @@ export default function Home() {
     record: Anime,
     opener: HTMLButtonElement,
     selectedDate?: string,
+    selectedEpisodeStart?: number,
     selectedEpisode?: number,
   ) => {
     openerRef.current = opener;
-    setSelected({ ...record, selectedDate, selectedEpisode });
+    setSelected({ ...record, selectedDate, selectedEpisodeStart, selectedEpisode });
   };
 
   const handleDialogClose = () => {
@@ -198,6 +202,7 @@ export default function Home() {
   const eventButton = (event: CalendarEvent, layout?: { lane: number; laneCount: number }) => {
     const isToday = event.date === currentBeijingDate;
     const displayTime = formatBroadcastTime(event.time);
+    const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
     const eventStyle = layout
       ? ({
           "--event-top": timelineOffsetMinutes(event.time) * 1.6 + "px",
@@ -219,22 +224,22 @@ export default function Home() {
           event.titleZh +
           "／" +
           event.titleJa +
-          "》第" +
-          event.episode +
-          "集详情：" +
+          "》" +
+          episodeLabel +
+          "详情：" +
           event.date +
           " " +
           displayTime
         }
         onClick={(clickEvent) =>
-          openDetail(event, clickEvent.currentTarget, event.date, event.episode)
+          openDetail(event, clickEvent.currentTarget, event.date, event.episodeStart, event.episode)
         }
         style={eventStyle}
       >
         <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
         <span className="calendar-event-content">
           <strong>{event.titleZh}</strong>
-          <span className="calendar-event-episode">第 {event.episode} 集</span>
+          <span className="calendar-event-episode">{episodeLabel}</span>
         </span>
       </button>
     );
@@ -523,7 +528,13 @@ export default function Home() {
                     (selected.beijingTime
                       ? formatBroadcastTime(selected.beijingTime)
                       : "具体时刻未列出") +
-                    (selected.selectedEpisode ? " · 第 " + selected.selectedEpisode + " 集" : "")
+                    (selected.selectedEpisode
+                      ? " · " +
+                        formatEpisodeLabel(
+                          selected.selectedEpisodeStart ?? selected.selectedEpisode,
+                          selected.selectedEpisode,
+                        )
+                      : "")
                   : "从 " +
                     (selected.premiereDateBeijing ?? "待确认") +
                     " 起每周放送"}

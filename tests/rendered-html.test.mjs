@@ -71,7 +71,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="calendar-event/);
   assert.match(html, /class="calendar-event-cover"/);
   assert.match(html, /src="\/covers\/yuc\/transparent-night\.jpg"/);
-  assert.match(html, /第 <!-- -->1<!-- --> 集/);
+  assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
   assert.match(html, /YUC 首播/);
@@ -203,11 +203,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
   assert.match(page, /startOfWeek\(currentBeijingDate\)/);
+  assert.match(page, /formatEpisodeLabel\(event\.episodeStart, event\.episode\)/);
   assert.match(page, /event\.episode/);
+  assert.match(page, /selectedEpisodeStart/);
   assert.match(page, /selectedEpisode/);
   assert.match(
     page,
-    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, event\.date, event\.episode\)/,
+    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, event\.date, event\.episodeStart, event\.episode\)/,
   );
   assert.match(page, /\{selected \? \(/);
   assert.match(page, /selected\.titleZh/);

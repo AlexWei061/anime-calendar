@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
+import * as calendar from "../lib/calendar.js";
+
+const {
   addDays,
   eventsForWeek,
   formatBroadcastTime,
@@ -12,7 +14,7 @@ import {
   startOfWeek,
   timelineOffsetMinutes,
   weekDays,
-} from "../lib/calendar.js";
+} = calendar;
 
 const weeklyShow = {
   id: "demo",
@@ -46,17 +48,23 @@ test("puts each weekly episode in the requested Monday-based week", () => {
   );
 });
 
-test("starts a multi-episode premiere at its last released episode", () => {
+test("keeps the full episode range for a multi-episode premiere", () => {
   const multiEpisodePremiere = { ...weeklyShow, premiereEpisodeCount: 3 };
 
   assert.deepEqual(
-    eventsForWeek([multiEpisodePremiere], "2026-06-29").map(({ episode, date }) => ({ episode, date })),
-    [{ episode: 3, date: "2026-07-01" }],
+    eventsForWeek([multiEpisodePremiere], "2026-06-29").map(({ episodeStart, episode, date }) => ({ episodeStart, episode, date })),
+    [{ episodeStart: 1, episode: 3, date: "2026-07-01" }],
   );
   assert.deepEqual(
-    eventsForWeek([multiEpisodePremiere], "2026-07-06").map(({ episode, date }) => ({ episode, date })),
-    [{ episode: 4, date: "2026-07-08" }],
+    eventsForWeek([multiEpisodePremiere], "2026-07-06").map(({ episodeStart, episode, date }) => ({ episodeStart, episode, date })),
+    [{ episodeStart: 4, episode: 4, date: "2026-07-08" }],
   );
+});
+
+test("formats single episodes and premiere episode ranges", () => {
+  assert.equal(typeof calendar.formatEpisodeLabel, "function");
+  assert.equal(calendar.formatEpisodeLabel(1, 3), "第 1-3 集");
+  assert.equal(calendar.formatEpisodeLabel(4, 4), "第 4 集");
 });
 
 test("orders same-time events by immutable ID", () => {
