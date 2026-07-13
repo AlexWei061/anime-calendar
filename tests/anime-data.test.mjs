@@ -109,49 +109,39 @@ test("ships every YUC cover as a local static asset", async () => {
   );
 });
 
-test("ships static AniList trial catalogs for 2026 winter and spring", () => {
+test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", () => {
   assert.deepEqual(seasons.map(({ id }) => id), ["2026-winter", "2026-spring", "2026-summer"]);
+  assert.deepEqual(
+    seasons.map(({ label }) => label),
+    ["2026 年 1 月番", "2026 年 4 月番", "2026 年 7 月番"],
+  );
+  assert.equal(seasons[0].sourceName, "YUC 2026年1月新番表");
 
-  for (const id of ["2026-winter", "2026-spring"]) {
-    const season = seasons.find((candidate) => candidate.id === id);
-    assert.ok(season);
-    assert.equal(season.sourceName, "AniList 历史放送记录（试点）");
-    assert.ok(season.anime.length > 50);
-    assert.ok(season.anime.every(({ id: animeId }) => animeId.startsWith("anilist-")));
-    assert.ok(
-      season.anime.every(
-        ({ titleZh, titleJa, coverUrl, premiereDateBeijing, scheduleWeekday, beijingTime, episodeCount }) =>
-          typeof titleZh === "string" &&
-          titleZh.length > 0 &&
-          typeof titleJa === "string" &&
-          titleJa.length > 0 &&
-          /^https:\/\//.test(coverUrl) &&
-          /^\d{4}-\d{2}-\d{2}$/.test(premiereDateBeijing) &&
-          ((/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/.test(scheduleWeekday) &&
-            /^\d{2}:\d{2}$/.test(beijingTime)) ||
-            (scheduleWeekday === null && beijingTime === null)) &&
-          Number.isInteger(episodeCount) &&
-          episodeCount > 0,
-      ),
-    );
-  }
+  const historicalAnime = seasons.slice(0, 2).flatMap(({ anime: records }) => records);
+  assert.ok(historicalAnime.length > 0);
+  assert.ok(
+    historicalAnime.every(
+      ({ titleZh, coverUrl }) =>
+        typeof titleZh === "string" &&
+        /[\u3400-\u9fff]/u.test(titleZh) &&
+        typeof coverUrl === "string" &&
+        coverUrl.startsWith("https://i0.hdslb.com/"),
+    ),
+  );
+  assert.ok(
+    historicalAnime.every(
+      ({ titleJa, premiereDateBeijing, scheduleWeekday, beijingTime, episodeCount }) =>
+        typeof titleJa === "string" &&
+        titleJa.length > 0 &&
+        /^\d{4}-\d{2}-\d{2}$/.test(premiereDateBeijing) &&
+        ((/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/.test(scheduleWeekday) && /^\d{2}:\d{2}$/.test(beijingTime)) ||
+          (scheduleWeekday === null && beijingTime === null)) &&
+        Number.isInteger(episodeCount) &&
+        episodeCount > 0,
+    ),
+  );
 
   assert.ok(seasons[1].anime.some(({ beijingTime }) => beijingTime === null));
-  assert.equal(seasons[0].timelineStartHour, 0);
-  assert.deepEqual(
-    (({ id, premiereDateBeijing, scheduleWeekday, beijingTime }) => ({
-      id,
-      premiereDateBeijing,
-      scheduleWeekday,
-      beijingTime,
-    }))(seasons[0].anime.find(({ id }) => id === "anilist-189259")),
-    {
-      id: "anilist-189259",
-      premiereDateBeijing: "2026-01-05",
-      scheduleWeekday: "Mon",
-      beijingTime: "00:00",
-    },
-  );
   assert.ok(
     seasons[0].anime.some(
       ({ episodeCount, episodeCountStatus }) => episodeCount === 12 && episodeCountStatus === "estimated",

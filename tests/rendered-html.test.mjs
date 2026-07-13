@@ -52,9 +52,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
-  assert.match(html, /2026 冬番/);
-  assert.match(html, /2026 春番/);
-  assert.match(html, /AniList 历史放送记录（试点）/);
+  assert.match(cleanHtml, /2026 年 1 月番/);
+  assert.match(cleanHtml, /2026 年 4 月番/);
+  assert.match(cleanHtml, /2026 年 7 月番/);
+  assert.doesNotMatch(cleanHtml, /冬番|春番|夏番/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
