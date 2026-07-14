@@ -9,6 +9,7 @@ import {
 } from "react";
 import { allAnime, seasons } from "../data/anime.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
+import { episodeViewKey } from "../lib/anime-episode-views.js";
 import {
   addDays,
   eventsForWeek,
@@ -41,6 +42,7 @@ type SelectedAnime = Anime & {
   selectedEpisodeStart?: number;
   selectedEpisode?: number;
 };
+type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine";
 
 const beijingDateFormatter = new Intl.DateTimeFormat("en-CA", {
@@ -90,6 +92,9 @@ export default function Home() {
   const [selectedAnimeIds, setSelectedAnimeIds] = useState<string[] | null>(null);
   const [selectionError, setSelectionError] = useState<string | null>(null);
   const [isSavingSelection, setIsSavingSelection] = useState(false);
+  const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisode[] | null>(null);
+  const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
+  const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -184,6 +189,39 @@ export default function Home() {
     };
   }, [activePage, selectedAnimeIds]);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadWatchedEpisodes() {
+      try {
+        const response = await fetch("/api/anime-episode-views");
+        if (!response.ok) throw new Error("Unable to load watched episodes");
+
+        const payload = (await response.json()) as { watchedEpisodes?: unknown };
+        if (
+          !Array.isArray(payload.watchedEpisodes) ||
+          payload.watchedEpisodes.some(
+            (watchedEpisode) =>
+              !watchedEpisode ||
+              typeof watchedEpisode !== "object" ||
+              typeof watchedEpisode.animeId !== "string" ||
+              !Number.isInteger(watchedEpisode.episodeStart) ||
+              !Number.isInteger(watchedEpisode.episode),
+          )
+        ) {
+          throw new Error("Invalid watched episodes");
+        }
+        if (!cancelled) setWatchedEpisodes(payload.watchedEpisodes as WatchedEpisode[]);
+      } catch {
+        if (!cancelled) setWatchedEpisodeError("无法读取已看记录。请稍后重试。");
+      }
+    }
+
+    void loadWatchedEpisodes();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const changePage = (page: Page) => {
     if (page === activePage) return;
 
@@ -246,6 +284,38 @@ export default function Home() {
     }
   };
 
+  const toggleEpisodeView = async (watchedEpisode: WatchedEpisode) => {
+    if (watchedEpisodes === null) return;
+
+    const key = episodeViewKey(watchedEpisode);
+    if (savingEpisodeKeys.includes(key)) return;
+
+    const previousWatchedEpisodes = watchedEpisodes;
+    const isWatched = watchedEpisodes.some(
+      (candidate) => episodeViewKey(candidate) === key,
+    );
+    const nextWatchedEpisodes = isWatched
+      ? watchedEpisodes.filter((candidate) => episodeViewKey(candidate) !== key)
+      : [...watchedEpisodes, watchedEpisode];
+
+    setWatchedEpisodes(nextWatchedEpisodes);
+    setWatchedEpisodeError(null);
+    setSavingEpisodeKeys((keys) => [...keys, key]);
+    try {
+      const response = await fetch("/api/anime-episode-views", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ...watchedEpisode, watched: !isWatched }),
+      });
+      if (!response.ok) throw new Error("Unable to save watched episode");
+    } catch {
+      setWatchedEpisodes(previousWatchedEpisodes);
+      setWatchedEpisodeError("保存已看状态失败，请重试。");
+    } finally {
+      setSavingEpisodeKeys((keys) => keys.filter((candidate) => candidate !== key));
+    }
+  };
+
   const openDetail = (
     record: Anime,
     opener: HTMLButtonElement,
@@ -267,6 +337,14 @@ export default function Home() {
     const isToday = event.date === currentBeijingDate;
     const displayTime = formatBroadcastTime(event.time);
     const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
+    const watchedEpisode = {
+      animeId: event.id,
+      episodeStart: event.episodeStart,
+      episode: event.episode,
+    };
+    const key = episodeViewKey(watchedEpisode);
+    const isWatched = watchedEpisodes?.some((candidate) => episodeViewKey(candidate) === key) ?? false;
+    const isSavingWatch = savingEpisodeKeys.includes(key);
     const eventStyle = layout
       ? ({
           "--event-top": timelineOffsetMinutes(event.time, timelineStartMinutes, timelineEndMinutes) * 1.6 + "px",
@@ -276,41 +354,60 @@ export default function Home() {
       : undefined;
 
     return (
-      <button
+      <div
         className={
-          "calendar-event" + (layout ? " timeline-event" : "") + (isToday ? " is-today" : "")
+          "calendar-event" +
+          (layout ? " timeline-event" : "") +
+          (isToday ? " is-today" : "") +
+          (isWatched ? " is-watched" : "")
         }
-        key={event.id + "-" + event.episode}
-        type="button"
-        aria-haspopup="dialog"
-        aria-label={
-          "查看《" +
-          event.titleZh +
-          "／" +
-          event.titleJa +
-          "》" +
-          episodeLabel +
-          "详情：" +
-          event.date +
-          " " +
-          displayTime
-        }
-        onClick={(clickEvent) =>
-          openDetail(event, clickEvent.currentTarget, {
-            selectedDate: event.broadcastDate,
-            selectedTime: event.broadcastTime,
-            selectedEpisodeStart: event.episodeStart,
-            selectedEpisode: event.episode,
-          })
-        }
+        key={event.id + "-" + event.episodeStart + "-" + event.episode}
         style={eventStyle}
       >
-        <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
-        <span className="calendar-event-content">
-          <strong>{event.titleZh}</strong>
-          <span className="calendar-event-episode">{episodeLabel}</span>
-        </span>
-      </button>
+        <button
+          className="calendar-event-detail"
+          type="button"
+          aria-haspopup="dialog"
+          aria-label={
+            "查看《" +
+            event.titleZh +
+            "／" +
+            event.titleJa +
+            "》" +
+            episodeLabel +
+            "详情：" +
+            event.date +
+            " " +
+            displayTime
+          }
+          onClick={(clickEvent) =>
+            openDetail(event, clickEvent.currentTarget, {
+              selectedDate: event.broadcastDate,
+              selectedTime: event.broadcastTime,
+              selectedEpisodeStart: event.episodeStart,
+              selectedEpisode: event.episode,
+            })
+          }
+        >
+          <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
+          <span className="calendar-event-content">
+            <strong>{event.titleZh}</strong>
+            <span className="calendar-event-episode">{episodeLabel}</span>
+          </span>
+        </button>
+        <button
+          className="episode-watch-toggle"
+          type="button"
+          aria-pressed={isWatched}
+          aria-label={
+            (isWatched ? "取消标记《" : "标记《") + event.titleZh + "》" + episodeLabel + "已看"
+          }
+          disabled={watchedEpisodes === null || isSavingWatch}
+          onClick={() => void toggleEpisodeView(watchedEpisode)}
+        >
+          {isWatched ? "✓" : null}
+        </button>
+      </div>
     );
   };
 
@@ -427,6 +524,11 @@ export default function Home() {
           </div>
           <p>节目以首播日期起每周重复，播满对应集数后不再显示。</p>
         </div>
+        {watchedEpisodeError ? (
+          <p className="selection-status" aria-live="polite">
+            {watchedEpisodeError}
+          </p>
+        ) : null}
 
         <nav className="week-pager" aria-label="日历周导航">
           <button type="button" onClick={() => changeWeek(-7)} aria-label="上一周">

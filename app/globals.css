@@ -488,7 +488,7 @@ h1 {
   padding: 0.35rem;
 }
 
-.time-group-events.is-crowded .calendar-event {
+.time-group-events.is-crowded .calendar-event-detail {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   align-content: start;
@@ -505,9 +505,16 @@ h1 {
 }
 
 .calendar-event {
-  position: static;
+  position: relative;
+  min-width: 0;
+  min-height: 4.5rem;
+}
+
+.calendar-event-detail {
   display: grid;
   grid-template-columns: 2.6rem minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
   min-height: 4.5rem;
   gap: 0.4rem;
   padding: 0.35rem;
@@ -528,20 +535,73 @@ h1 {
   width: calc(var(--event-width) - var(--timeline-event-gutter));
   height: 40px;
   min-height: 0;
+}
+
+.timeline-event .calendar-event-detail {
   grid-template-columns: minmax(0, 1.85rem) minmax(0, 1fr);
+  min-height: 0;
   gap: 0.25rem;
   padding: 0.2rem;
 }
 
-.calendar-event:hover {
+.calendar-event-detail:hover {
   border-color: var(--blue);
   box-shadow: 0 0.35rem 0.8rem rgb(31 41 51 / 15%);
   transform: translateY(-1px);
 }
 
-.calendar-event.is-today {
+.calendar-event.is-today .calendar-event-detail {
   border-color: var(--mint-deep);
   box-shadow: inset 0 0 0 1px var(--mint);
+}
+
+.calendar-event.is-watched .calendar-event-detail {
+  border-color: color-mix(in srgb, var(--muted-ink) 42%, var(--line));
+  background: color-mix(in srgb, var(--paper-deep) 64%, var(--card));
+  color: var(--muted-ink);
+}
+
+.calendar-event.is-watched .calendar-event-cover {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+
+.episode-watch-toggle {
+  position: absolute;
+  z-index: 1;
+  top: 0.35rem;
+  right: 0.35rem;
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--muted-ink);
+  border-radius: 0.25rem;
+  background: var(--card);
+  color: var(--muted-ink);
+  cursor: pointer;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.episode-watch-toggle[aria-pressed="true"] {
+  border-color: var(--muted-ink);
+  background: var(--muted-ink);
+  color: var(--card);
+}
+
+.episode-watch-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.timeline-event .episode-watch-toggle {
+  top: 0.13rem;
+  right: 0.13rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  font-size: 0.65rem;
 }
 
 .calendar-event-cover {
@@ -567,6 +627,11 @@ h1 {
   align-content: center;
   gap: 0.08rem;
   min-width: 0;
+  padding-right: 1.45rem;
+}
+
+.timeline-event .calendar-event-content {
+  padding-right: 0.9rem;
 }
 
 .calendar-event-episode {
@@ -575,7 +640,7 @@ h1 {
   line-height: 1.2;
 }
 
-.calendar-event strong {
+.calendar-event-detail strong {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -584,7 +649,7 @@ h1 {
   line-height: 1.18;
 }
 
-.timeline-event strong {
+.timeline-event .calendar-event-detail strong {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -860,7 +925,7 @@ h1 {
     gap: 0.18rem;
   }
 
-  .mobile-agenda .calendar-event strong {
+  .mobile-agenda .calendar-event-detail strong {
     font-size: 0.92rem;
   }
 
@@ -881,7 +946,7 @@ h1 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .calendar-event,
+  .calendar-event-detail,
   .network-card {
     transition: none;
   }

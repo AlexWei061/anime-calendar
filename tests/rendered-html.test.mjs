@@ -104,7 +104,7 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
 
   const timedEvents = [
     ...html.matchAll(
-      /<button\b(?=[^>]*class="[^"]*\bcalendar-event\b[^"]*")[^>]*>[\s\S]*?<\/button>/g,
+      /<button\b(?=[^>]*class="[^"]*\bcalendar-event-detail\b[^"]*")[^>]*>[\s\S]*?<\/button>/g,
     ),
   ].map(([card]) => card);
   assert.ok(timedEvents.length > 20);
@@ -146,13 +146,34 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   assert.ok(sourceLinks.every((tag) => /rel="noreferrer"/.test(tag)));
 });
 
+test("renders separate accessible watched controls without nesting calendar buttons", async () => {
+  const html = await (await render()).text();
+  const watchedControls = [
+    ...html.matchAll(
+      /<button\b(?=[^>]*class="[^"]*\bepisode-watch-toggle\b[^"]*")(?=[^>]*aria-pressed="false")(?=[^>]*aria-label="标记《[^"]+")(?=[^>]*disabled="")[^>]*>/g,
+    ),
+  ];
+  const detailButtons = [
+    ...html.matchAll(
+      /<button\b(?=[^>]*class="[^"]*\bcalendar-event-detail\b[^"]*")(?=[^>]*aria-haspopup="dialog")[^>]*>/g,
+    ),
+  ];
+
+  assert.ok(watchedControls.length > 20);
+  assert.equal(watchedControls.length, detailButtons.length);
+  const buttonClasses = [...html.matchAll(/<button\b[^>]*class="([^"]*)"[^>]*>/g)].map(
+    ([, className]) => className.split(" "),
+  );
+  assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
+});
+
 test("renders three same-time events side by side on one timeline day", async () => {
   const cleanHtml = withoutReactMarkers(await (await render()).text());
   const sameTimeEvents = [
     ...cleanHtml.matchAll(
-      /<button\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*aria-label="[^"]*2026-07-10 次日 00:30")[^>]*style="([^"]*)"[^>]*>([\s\S]*?)<\/button>/g,
+      /<div\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*style="([^"]*)")[^>]*>([\s\S]*?)<\/div>/g,
     ),
-  ];
+  ].filter(([, , card]) => /aria-label="[^"]*2026-07-10 次日 00:30/.test(card));
 
   assert.equal(sameTimeEvents.length, 3);
   assert.equal(
@@ -244,6 +265,19 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
+  assert.match(
+    page,
+    /import\s*\{\s*episodeViewKey\s*\}\s*from "\.\.\/lib\/anime-episode-views\.js";/,
+  );
+  assert.match(page, /const \[watchedEpisodes, setWatchedEpisodes\] = useState<WatchedEpisode\[\] \| null>\(null\);/);
+  assert.match(page, /const \[watchedEpisodeError, setWatchedEpisodeError\] = useState<string \| null>\(null\);/);
+  assert.match(page, /const \[savingEpisodeKeys, setSavingEpisodeKeys\] = useState<string\[\]>\(\[\]\);/);
+  assert.match(page, /fetch\("\/api\/anime-episode-views"/);
+  assert.match(page, /episodeViewKey\(watchedEpisode\)/);
+  assert.match(page, /savingEpisodeKeys\.includes\(key\)/);
+  assert.match(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
+  assert.match(page, /无法读取已看记录。请稍后重试。/);
+  assert.match(page, /保存已看状态失败，请重试。/);
   assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
@@ -370,7 +404,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event strong\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
+    /\.timeline-event \.calendar-event-detail strong\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
   );
   assert.doesNotMatch(styles, /\.time-grid-scroll/);
   assert.doesNotMatch(styles, /\.time-grid\s*\{/);
@@ -382,6 +416,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.time-group-label/);
   assert.match(styles, /\.time-group-events/);
   assert.match(styles, /\.calendar-event/);
+  assert.match(styles, /\.calendar-event-detail/);
+  assert.match(styles, /\.episode-watch-toggle/);
+  assert.match(
+    styles,
+    /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?filter:\s*grayscale\(1\);/,
+  );
   assert.match(styles, /\.calendar-event-cover/);
   assert.doesNotMatch(styles, /\.time-axis/);
   assert.doesNotMatch(styles, /--event-start/);
