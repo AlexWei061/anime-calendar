@@ -289,6 +289,16 @@ test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
   assert.deepEqual(eventsForWeek([partTwo], "2026-10-05"), []);
 });
 
+test("keeps all recorded seasons available while navigating calendar weeks", () => {
+  const marchToAprilEvents = eventsForWeek(allAnime, "2026-03-30");
+  const juneToJulyEvents = eventsForWeek(allAnime, "2026-06-29");
+
+  assert.ok(marchToAprilEvents.some(({ id, episode }) => id === "anilist-202957" && episode === 10));
+  assert.ok(marchToAprilEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 1));
+  assert.ok(juneToJulyEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 14));
+  assert.ok(juneToJulyEvents.some(({ id, episode }) => id === "lets-go-kaiki" && episode === 1));
+});
+
 test("treats zero and ambiguous AniList title matches as YUC-only records", () => {
   const card = { titleJa: "Alpha", titleZh: "示例番", coverUrl: "https://i0.hdslb.com/example.jpg" };
 
