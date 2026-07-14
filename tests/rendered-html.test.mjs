@@ -275,7 +275,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewKey\(watchedEpisode\)/);
   assert.match(page, /savingEpisodeKeys\.includes\(key\)/);
-  assert.match(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
+  assert.match(page, /catch \{\s*setWatchedEpisodes\(\(current\) =>/);
+  assert.doesNotMatch(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
   assert.match(page, /无法读取已看记录。请稍后重试。/);
   assert.match(page, /保存已看状态失败，请重试。/);
   assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);

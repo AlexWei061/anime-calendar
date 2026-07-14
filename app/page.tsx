@@ -290,7 +290,6 @@ export default function Home() {
     const key = episodeViewKey(watchedEpisode);
     if (savingEpisodeKeys.includes(key)) return;
 
-    const previousWatchedEpisodes = watchedEpisodes;
     const isWatched = watchedEpisodes.some(
       (candidate) => episodeViewKey(candidate) === key,
     );
@@ -309,7 +308,15 @@ export default function Home() {
       });
       if (!response.ok) throw new Error("Unable to save watched episode");
     } catch {
-      setWatchedEpisodes(previousWatchedEpisodes);
+      setWatchedEpisodes((current) => {
+        if (current === null) return null;
+        if (!isWatched) {
+          return current.filter((candidate) => episodeViewKey(candidate) !== key);
+        }
+        return current.some((candidate) => episodeViewKey(candidate) === key)
+          ? current
+          : [...current, watchedEpisode];
+      });
       setWatchedEpisodeError("保存已看状态失败，请重试。");
     } finally {
       setSavingEpisodeKeys((keys) => keys.filter((candidate) => candidate !== key));
