@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
-import { filterKnownAnimeIds, validateAnimeIds } from "../../../lib/anime-selections.js";
+import { filterKnownAnimeIds } from "../../../lib/anime-selections.js";
 import { getChatGPTUser } from "../../chatgpt-auth";
 
 const validAnimeIds = new Set(allAnime.map(({ id }) => id));
@@ -39,7 +39,7 @@ export async function PUT(request: Request) {
   let animeIds: string[];
   try {
     const payload = (await request.json()) as { animeIds?: unknown };
-    animeIds = validateAnimeIds(filterKnownAnimeIds(payload.animeIds, validAnimeIds), validAnimeIds);
+    animeIds = filterKnownAnimeIds(payload.animeIds, validAnimeIds);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Invalid animeIds";
     return Response.json({ error: message }, { status: 400 });

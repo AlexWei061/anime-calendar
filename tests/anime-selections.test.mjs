@@ -19,6 +19,11 @@ test("filters removed anime IDs from saved selections", () => {
   );
 });
 
+test("rejects invalid saved selection payloads", () => {
+  assert.throws(() => filterKnownAnimeIds("sayonara-lara", validIds), /animeIds/);
+  assert.throws(() => filterKnownAnimeIds(["sayonara-lara", 1], validIds), /animeIds/);
+});
+
 test("rejects invalid selection payloads", () => {
   assert.throws(() => validateAnimeIds("sayonara-lara", validIds), /animeIds/);
   assert.throws(() => validateAnimeIds(["unknown"], validIds), /unknown/);
