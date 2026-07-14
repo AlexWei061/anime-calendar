@@ -3,6 +3,48 @@ import { extname } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const seasonsByYear = Object.freeze({
+  2024: Object.freeze([
+    Object.freeze({
+      month: "1",
+      label: "2024 年 1 月番",
+      url: "https://yuc.wiki/202401/",
+      catalogName: "YUC 2024年1月新番表",
+      exportName: "january2024",
+      aniListExportName: "winter2024",
+      expectedCardCount: 52,
+      sentinelTitles: Object.freeze(["METALLIC ROUGE", "暗芝居 第12期"]),
+    }),
+    Object.freeze({
+      month: "4",
+      label: "2024 年 4 月番",
+      url: "https://yuc.wiki/202404/",
+      catalogName: "YUC 2024年4月新番表",
+      exportName: "april2024",
+      aniListExportName: "spring2024",
+      expectedCardCount: 62,
+      sentinelTitles: Object.freeze(["GIRLS BAND CRY", "我的英雄学院 第7期"]),
+    }),
+    Object.freeze({
+      month: "7",
+      label: "2024 年 7 月番",
+      url: "https://yuc.wiki/202407/",
+      catalogName: "YUC 2024年7月新番表",
+      exportName: "july2024",
+      aniListExportName: "summer2024",
+      expectedCardCount: 55,
+      sentinelTitles: Object.freeze(["菜一般 花一般", "暗芝居 第13期"]),
+    }),
+    Object.freeze({
+      month: "10",
+      label: "2024 年 10 月番",
+      url: "https://yuc.wiki/202410/",
+      catalogName: "YUC 2024年10月新番表",
+      exportName: "october2024",
+      aniListExportName: "fall2024",
+      expectedCardCount: 69,
+      sentinelTitles: Object.freeze(["没能成为魔法使的女孩子", "噗尼轮轮 第2期"]),
+    }),
+  ]),
   2025: Object.freeze([
     Object.freeze({
       month: "1",

@@ -52,6 +52,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /<option value="2024-january">2024 年 1 月番<\/option>/);
+  assert.match(html, /<option value="2024-april">2024 年 4 月番<\/option>/);
+  assert.match(html, /<option value="2024-july">2024 年 7 月番<\/option>/);
+  assert.match(html, /<option value="2024-october">2024 年 10 月番<\/option>/);
   assert.match(html, /<option value="2025-january">2025 年 1 月番<\/option>/);
   assert.match(html, /<option value="2025-april">2025 年 4 月番<\/option>/);
   assert.match(html, /<option value="2025-july">2025 年 7 月番<\/option>/);
@@ -353,6 +357,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.deepEqual(
     seasons.map(({ id, label }) => ({ id, label })),
     [
+      { id: "2024-january", label: "2024 年 1 月番" },
+      { id: "2024-april", label: "2024 年 4 月番" },
+      { id: "2024-july", label: "2024 年 7 月番" },
+      { id: "2024-october", label: "2024 年 10 月番" },
       { id: "2025-january", label: "2025 年 1 月番" },
       { id: "2025-april", label: "2025 年 4 月番" },
       { id: "2025-july", label: "2025 年 7 月番" },

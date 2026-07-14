@@ -1,5 +1,6 @@
 import { april2026, january2026 } from "./yuc-history-2026.js";
 import { april2025, january2025, july2025, october2025 } from "./yuc-history-2025.js";
+import { april2024, january2024, july2024, october2024 } from "./yuc-history-2024.js";
 
 export const season = {
   "label": "2026 年 7 月番",
@@ -874,6 +875,30 @@ export const anime = [
 ];
 
 export const seasons = [
+  {
+    id: "2024-january",
+    firstWeekStart: "2024-01-01",
+    timelineStartHour: 5,
+    ...january2024,
+  },
+  {
+    id: "2024-april",
+    firstWeekStart: "2024-04-01",
+    timelineStartHour: 5,
+    ...april2024,
+  },
+  {
+    id: "2024-july",
+    firstWeekStart: "2024-07-01",
+    timelineStartHour: 5,
+    ...july2024,
+  },
+  {
+    id: "2024-october",
+    firstWeekStart: "2024-09-30",
+    timelineStartHour: 5,
+    ...october2024,
+  },
   {
     id: "2025-january",
     firstWeekStart: "2024-12-30",
