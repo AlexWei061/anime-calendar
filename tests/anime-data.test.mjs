@@ -127,6 +127,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.ok(anime.every(({ coverUrl }) => typeof coverUrl === "string" && coverUrl.length > 0));
   assert.ok(anime.every(({ coverAlt }) => typeof coverAlt === "string" && coverAlt.length > 0));
   assert.ok(anime.every(({ coverUrl }) => coverUrl.startsWith("/covers/yuc/")));
+  assert.ok(anime.every(({ coverUrl }) => coverUrl.endsWith(".webp")));
   assert.ok(anime.every(({ sourceUrl }) => sourceUrl === season.sourceUrl));
 
   for (const record of anime) {
@@ -156,7 +157,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
     },
     {
       titleZh: "BanG Dream! YUME∞MITA",
-      coverUrl: "/covers/yuc/yume-mita.jpg",
+      coverUrl: "/covers/yuc/yume-mita.webp",
       scheduleWeekday: "Thu",
       beijingTime: "22:00",
       premiereEpisodeCount: 3,
@@ -456,7 +457,7 @@ test("ships generated YUC historical catalogs with auditable source records", as
       episodeCountStatus: "estimated",
       titleZh: "一脸嫌弃表情的妹子给你看胖次R",
       titleJa: "嫌な顔されながらおパンツ見せてもらいたいR",
-      coverUrl: "/covers/yuc/history-2026-04-69.jpg",
+      coverUrl: "/covers/yuc/history-2026-04-69.webp",
       coverAlt: "一脸嫌弃表情的妹子给你看胖次R 封面",
       sourceUrl: "https://yuc.wiki/202604/",
       premiereDateBeijing: null,
