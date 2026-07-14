@@ -378,7 +378,7 @@ export default function Home() {
             <summary className="anime-selection-summary">
               <span className="section-kicker">选择番剧</span>
               <span className="anime-selection-title" id="anime-selection-heading">
-                本月番想追什么？
+                本季度想追什么？
               </span>
               <span className="anime-selection-summary-copy">
                 选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。

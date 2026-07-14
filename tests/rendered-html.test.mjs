@@ -187,7 +187,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
   assert.match(page, /const initialSeasonId = "2026-july";/);
   assert.match(page, /activeSeason\.label/);
-  assert.doesNotMatch(page, /冬番|春番|夏番|季度/);
+  assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.doesNotMatch(layout, /冬番|春番|夏番/);
   assert.match(page, /月份/);
   assert.match(
@@ -209,7 +209,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
   assert.match(page, /<details className="anime-selection-details">/);
   assert.match(page, /<summary className="anime-selection-summary">/);
-  assert.match(page, /本月番想追什么？/);
+  assert.match(page, /本季度想追什么？/);
+  assert.doesNotMatch(page, /本月番想追什么？/);
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
