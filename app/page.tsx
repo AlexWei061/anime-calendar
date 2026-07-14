@@ -9,7 +9,7 @@ import {
 } from "react";
 import { allAnime, seasons } from "../data/anime.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
-import { episodeViewKey } from "../lib/anime-episode-views.js";
+import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
 import {
   addDays,
   eventsForWeek,
@@ -293,9 +293,7 @@ export default function Home() {
     const isWatched = watchedEpisodes.some(
       (candidate) => episodeViewKey(candidate) === key,
     );
-    const nextWatchedEpisodes = isWatched
-      ? watchedEpisodes.filter((candidate) => episodeViewKey(candidate) !== key)
-      : [...watchedEpisodes, watchedEpisode];
+    const nextWatchedEpisodes = updateEpisodeViews(watchedEpisodes, watchedEpisode, !isWatched);
 
     setWatchedEpisodes(nextWatchedEpisodes);
     setWatchedEpisodeError(null);
@@ -310,12 +308,7 @@ export default function Home() {
     } catch {
       setWatchedEpisodes((current) => {
         if (current === null) return null;
-        if (!isWatched) {
-          return current.filter((candidate) => episodeViewKey(candidate) !== key);
-        }
-        return current.some((candidate) => episodeViewKey(candidate) === key)
-          ? current
-          : [...current, watchedEpisode];
+        return updateEpisodeViews(current, watchedEpisode, isWatched);
       });
       setWatchedEpisodeError("保存已看状态失败，请重试。");
     } finally {

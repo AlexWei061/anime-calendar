@@ -148,6 +148,7 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
 
 test("renders separate accessible watched controls without nesting calendar buttons", async () => {
   const html = await (await render()).text();
+  const cleanHtml = withoutReactMarkers(html);
   const watchedControls = [
     ...html.matchAll(
       /<button\b(?=[^>]*class="[^"]*\bepisode-watch-toggle\b[^"]*")(?=[^>]*aria-pressed="false")(?=[^>]*aria-label="标记《[^"]+")(?=[^>]*disabled="")[^>]*>/g,
@@ -161,6 +162,12 @@ test("renders separate accessible watched controls without nesting calendar butt
 
   assert.ok(watchedControls.length > 20);
   assert.equal(watchedControls.length, detailButtons.length);
+  const calendarEventWrappers = [
+    ...cleanHtml.matchAll(
+      /<div\b(?=[^>]*class="[^"]*\bcalendar-event\b[^"]*")[^>]*>\s*<button\b(?=[^>]*class="[^"]*\bcalendar-event-detail\b[^"]*")[^>]*>[\s\S]*?<\/button>\s*<button\b(?=[^>]*class="[^"]*\bepisode-watch-toggle\b[^"]*")[^>]*>[\s\S]*?<\/button>\s*<\/div>/g,
+    ),
+  ];
+  assert.ok(calendarEventWrappers.length > 20);
   const buttonClasses = [...html.matchAll(/<button\b[^>]*class="([^"]*)"[^>]*>/g)].map(
     ([, className]) => className.split(" "),
   );
@@ -267,7 +274,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
   assert.match(
     page,
-    /import\s*\{\s*episodeViewKey\s*\}\s*from "\.\.\/lib\/anime-episode-views\.js";/,
+    /import\s*\{(?=[^}]*\bepisodeViewKey\b)(?=[^}]*\bupdateEpisodeViews\b)[^}]*\}\s*from "\.\.\/lib\/anime-episode-views\.js";/,
   );
   assert.match(page, /const \[watchedEpisodes, setWatchedEpisodes\] = useState<WatchedEpisode\[\] \| null>\(null\);/);
   assert.match(page, /const \[watchedEpisodeError, setWatchedEpisodeError\] = useState<string \| null>\(null\);/);
@@ -275,7 +282,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewKey\(watchedEpisode\)/);
   assert.match(page, /savingEpisodeKeys\.includes\(key\)/);
-  assert.match(page, /catch \{\s*setWatchedEpisodes\(\(current\) =>/);
+  assert.match(
+    page,
+    /const nextWatchedEpisodes = updateEpisodeViews\(watchedEpisodes, watchedEpisode, !isWatched\);/,
+  );
+  assert.match(
+    page,
+    /catch \{\s*setWatchedEpisodes\(\(current\) => \{\s*if \(current === null\) return null;\s*return updateEpisodeViews\(current, watchedEpisode, isWatched\);/,
+  );
   assert.doesNotMatch(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
   assert.match(page, /无法读取已看记录。请稍后重试。/);
   assert.match(page, /保存已看状态失败，请重试。/);
@@ -419,6 +433,22 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.calendar-event/);
   assert.match(styles, /\.calendar-event-detail/);
   assert.match(styles, /\.episode-watch-toggle/);
+  assert.match(
+    styles,
+    /\.episode-watch-toggle\s*\{[\s\S]*?width:\s*1\.5rem;[\s\S]*?height:\s*1\.5rem;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event \.episode-watch-toggle\s*\{[\s\S]*?width:\s*1\.5rem;[\s\S]*?height:\s*1\.5rem;/,
+  );
+  assert.match(
+    styles,
+    /\.calendar-event-content\s*\{[\s\S]*?padding-right:\s*1\.85rem;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event \.calendar-event-content\s*\{[\s\S]*?padding-right:\s*1\.65rem;/,
+  );
   assert.match(
     styles,
     /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?filter:\s*grayscale\(1\);/,

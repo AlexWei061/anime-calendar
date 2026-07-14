@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   episodeViewKey,
   filterKnownEpisodeViews,
+  updateEpisodeViews,
   validateEpisodeView,
 } from "../lib/anime-episode-views.js";
 
@@ -37,6 +38,24 @@ test("filters removed and duplicate saved watched updates", () => {
       animeById,
     ),
     [{ animeId: "regular", episodeStart: 2, episode: 2 }],
+  );
+});
+
+test("preserves independently updated episodes through failed optimistic mutations", () => {
+  const firstEpisode = { animeId: "regular", episodeStart: 1, episode: 1 };
+  const secondEpisode = { animeId: "regular", episodeStart: 2, episode: 2 };
+
+  let watchedEpisodes = updateEpisodeViews([], firstEpisode, true);
+  watchedEpisodes = updateEpisodeViews(watchedEpisodes, secondEpisode, true);
+  watchedEpisodes = updateEpisodeViews(watchedEpisodes, firstEpisode, false);
+  assert.deepEqual(watchedEpisodes.map(episodeViewKey), [episodeViewKey(secondEpisode)]);
+
+  watchedEpisodes = updateEpisodeViews([firstEpisode], firstEpisode, false);
+  watchedEpisodes = updateEpisodeViews(watchedEpisodes, secondEpisode, true);
+  watchedEpisodes = updateEpisodeViews(watchedEpisodes, firstEpisode, true);
+  assert.deepEqual(
+    new Set(watchedEpisodes.map(episodeViewKey)),
+    new Set([episodeViewKey(firstEpisode), episodeViewKey(secondEpisode)]),
   );
 });
 

@@ -572,8 +572,8 @@ h1 {
   top: 0.35rem;
   right: 0.35rem;
   display: grid;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0;
   place-items: center;
   border: 1px solid var(--muted-ink);
@@ -599,8 +599,8 @@ h1 {
 .timeline-event .episode-watch-toggle {
   top: 0.13rem;
   right: 0.13rem;
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.5rem;
+  height: 1.5rem;
   font-size: 0.65rem;
 }
 
@@ -627,11 +627,11 @@ h1 {
   align-content: center;
   gap: 0.08rem;
   min-width: 0;
-  padding-right: 1.45rem;
+  padding-right: 1.85rem;
 }
 
 .timeline-event .calendar-event-content {
-  padding-right: 0.9rem;
+  padding-right: 1.65rem;
 }
 
 .calendar-event-episode {
