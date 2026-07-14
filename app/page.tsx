@@ -102,14 +102,15 @@ export default function Home() {
   );
   const activeSeason = seasons.find(({ id }) => id === activeSeasonId) ?? seasons.at(-1)!;
   const isHistoricalSeason = activeSeason.id !== initialSeasonId;
-  const defaultTimelineStartMinutes = activeSeason.timelineStartHour * 60;
-  const defaultTimelineEndMinutes = (activeSeason.timelineStartHour < 15 ? 29 : 28) * 60;
+  const defaultTimelineStartMinutes = 5 * 60;
+  const defaultTimelineEndMinutes = 29 * 60;
   const dates = weekDays(activeWeekStart);
-  const displayedAnime =
+  const calendarAnime =
     activePage === "mine"
-      ? activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id))
-      : activeSeason.anime;
-  const events = eventsForWeek(displayedAnime, activeWeekStart) as CalendarEvent[];
+      ? allAnime.filter((record) => selectedAnimeIds?.includes(record.id))
+      : allAnime;
+  const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
+  const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
     timelineBoundsForEvents(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes);
   const timelineHourCount = (timelineEndMinutes - timelineStartMinutes) / 60;
@@ -126,7 +127,7 @@ export default function Home() {
     groupEventsByTime(events.filter((event) => event.date === date)),
   );
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
-  const networkOnly = displayedAnime.filter(
+  const networkOnly = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
   const selectedBroadcastTime = selected
@@ -416,7 +417,7 @@ export default function Home() {
         </section>
       ) : null}
 
-      {activePage === "all" || displayedAnime.length ? (
+      {activePage === "all" || calendarAnime.length ? (
         <>
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">

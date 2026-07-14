@@ -63,10 +63,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:13;--timeline-height:1288px/);
+  assert.match(html, /--timeline-hour-count:22;--timeline-height:2152px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
-  assert.match(html, /--event-top:528px/);
+  assert.match(html, /--event-top:1392px/);
   assert.match(html, /--event-width:33\.333/);
   assert.doesNotMatch(html, /class="time-grid"/);
   assert.match(cleanHtml, /<time class="time-group-label">20:30<\/time>/);
@@ -79,6 +79,8 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
+  assert.match(html, /欺诈游戏/);
+  assert.match(html, /第 14 集/);
   assert.match(html, /YUC 2026年7月新番表.*首播/);
   assert.match(html, /网络放送／固定时刻未列出/);
   assert.doesNotMatch(html, /class="week-grid"|class="week-column"|class="anime-card"/);
@@ -204,13 +206,19 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /import\s*\{[\s\S]*?\btimelineBoundsForEvents,[\s\S]*?\}\s*from "\.\.\/lib\/calendar\.js";/,
   );
+  assert.match(page, /const defaultTimelineStartMinutes = 5 \* 60;/);
+  assert.match(page, /const defaultTimelineEndMinutes = 29 \* 60;/);
   assert.match(
     page,
-    /const defaultTimelineStartMinutes = activeSeason\.timelineStartHour \* 60;/,
+    /const calendarAnime =\s*activePage === "mine"\s*\?\s*allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\)\s*:\s*allAnime;/,
   );
   assert.match(
     page,
-    /const defaultTimelineEndMinutes = \(activeSeason\.timelineStartHour < 15 \? 29 : 28\) \* 60;/,
+    /const selectedSeasonAnime = activeSeason\.anime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/,
+  );
+  assert.match(
+    page,
+    /const networkOnly = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
   );
   assert.match(
     page,
@@ -236,11 +244,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
-  assert.match(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
-  assert.match(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
   assert.match(page, /groupEventsByTime/);
   assert.match(page, /layoutTimelineEvents/);
