@@ -7,11 +7,25 @@ import { groupByBeijingWeekday } from "../lib/schedule.js";
 import {
   TITLE_ALIASES,
   YUC_SEASONS,
+  coverExtension,
   enrichYucRecord,
   findMatch,
   indexAniList,
   parseCards,
 } from "../scripts/generate-yuc-history-pilot.mjs";
+
+test("rejects successful non-image YUC cover responses before choosing an extension", () => {
+  const coverUrl = "https://i0.hdslb.com/example.jpg";
+
+  assert.throws(
+    () => coverExtension(new Response("<html></html>", { headers: { "content-type": "text/html" } }), coverUrl),
+    (error) => {
+      assert.match(error.message, /YUC cover is not an image/);
+      assert.match(error.message, new RegExp(coverUrl));
+      return true;
+    },
+  );
+});
 
 test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.deepEqual(season, {

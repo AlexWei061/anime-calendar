@@ -179,8 +179,11 @@ async function fetchHtml(url) {
   return response.text();
 }
 
-function coverExtension(response, coverUrl) {
+export function coverExtension(response, coverUrl) {
   const contentType = response.headers.get("content-type")?.split(";", 1)[0].toLowerCase();
+  if (contentType && !COVER_EXTENSIONS.has(contentType)) {
+    throw new Error(`YUC cover is not an image (${contentType}): ${coverUrl}`);
+  }
   return COVER_EXTENSIONS.get(contentType) ?? (extname(new URL(coverUrl).pathname) || ".jpg");
 }
 
