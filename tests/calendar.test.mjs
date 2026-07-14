@@ -119,6 +119,13 @@ test("trims weekly timeline bounds to the visual event range", () => {
   });
 });
 
+test("keeps historical timeline bounds aligned to whole hours", () => {
+  assert.deepEqual(timelineBoundsForEvents([{ time: "28:30" }], 5 * 60, 28 * 60 + 59), {
+    startMinutes: 28 * 60,
+    endMinutes: 29 * 60,
+  });
+});
+
 test("keeps a 25:00 YUC label in its source Sunday column", () => {
   const [event] = eventsForWeek(
     [
