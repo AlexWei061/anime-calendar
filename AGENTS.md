@@ -2,7 +2,7 @@
 
 ## 项目定位
 
-这是一个展示 **2024 年、2025 年四季及 2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
+这是一个展示 **2022 年至 2025 年四季及 2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
 并允许连续跨季度前后翻周；移动端提供单日议程。登录同一 ChatGPT 账号的用户可以维护自己的追番列表，
 并永久保存逐集“已看”标记。
 
@@ -19,7 +19,7 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `app/chatgpt-auth.ts` | 读取 Sites 注入的 ChatGPT 身份，生成安全的登录/退出跳转地址。 |
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表保存 API。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的单集已看标记读取与单条更新 API。 |
-| `data/anime.js` | 2024 年、2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录和统一的 `allAnime` 目录。 |
+| `data/anime.js` | 2022 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录和统一的 `allAnime` 目录。 |
 | `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
 | `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
 | `scripts/generate-anilist-pilot.mjs` | 拉取指定年份的 AniList 首播、时刻与集数资料。 |

@@ -9,8 +9,10 @@ import {
   TITLE_ALIASES,
   YUC_SEASONS,
   coverExtension,
+  dedupeRecordId,
   enrichYucRecord,
   findMatch,
+  historicalCoverUrls,
   indexAniList,
   parseCards,
   yucSeasonsForYear,
@@ -36,6 +38,24 @@ test("falls back to the URL extension for unmapped YUC image MIME types", () => 
   );
 });
 
+test("checks all supported local filenames before redownloading a historical cover", () => {
+  assert.deepEqual(historicalCoverUrls(2023, "7", 6), [
+    "/covers/yuc/history-2023-07-07.jpg",
+    "/covers/yuc/history-2023-07-07.png",
+    "/covers/yuc/history-2023-07-07.webp",
+    "/covers/yuc/history-2023-07-07.gif",
+  ]);
+});
+
+test("keeps split YUC continuations distinct when they share an AniList ID", () => {
+  const usedIds = new Set();
+  const first = dedupeRecordId({ id: "anilist-146323" }, "https://yuc.wiki/202301/", 12, usedIds);
+  const continuation = dedupeRecordId({ id: "anilist-146323" }, "https://yuc.wiki/202307/", 7, usedIds);
+
+  assert.deepEqual(first, { id: "anilist-146323" });
+  assert.deepEqual(continuation, { id: "anilist-146323-202307-08" });
+});
+
 test("parses a YUC card whose clear-both separator is comment-suffixed", () => {
   const html = `
     <div style="float:left"><img width="180px" data-src="https://example.test/vigilante.jpg"></div>
@@ -51,6 +71,42 @@ test("parses a YUC card whose clear-both separator is comment-suffixed", () => {
       sentinelTitles: ["正义使者 我的英雄学院之非法英雄"],
     }).map(({ titleZh }) => titleZh),
     ["正义使者 我的英雄学院之非法英雄"],
+  );
+});
+
+test("parses a legacy YUC card without the modern title class suffix", () => {
+  const html = `
+    <div style="float:left"><img width="180px" data-src="https://example.test/tokyo24.jpg"></div>
+    <div><p class="title_cn">东京24区</p>
+    <p class="title_jp">東京24区</p></div>
+    <div style="clear:both"></div>
+  `;
+
+  assert.deepEqual(
+    parseCards(html, {
+      month: "1",
+      expectedCardCount: 1,
+      sentinelTitles: ["东京24区"],
+    }),
+    [{ titleZh: "东京24区", titleJa: "東京24区", coverUrl: "https://example.test/tokyo24.jpg" }],
+  );
+});
+
+test("parses a legacy YUC card with an underscore title class suffix", () => {
+  const html = `
+    <div style="float:left"><img width="180px" data-src="https://example.test/slow-loop.jpg"></div>
+    <div><p class="title_cn__">女孩的钓鱼慢活</p>
+    <p class="title_jp">スローループ</p></div>
+    <div style="clear:both"></div>
+  `;
+
+  assert.deepEqual(
+    parseCards(html, {
+      month: "1",
+      expectedCardCount: 1,
+      sentinelTitles: ["女孩的钓鱼慢活"],
+    }),
+    [{ titleZh: "女孩的钓鱼慢活", titleJa: "スローループ", coverUrl: "https://example.test/slow-loop.jpg" }],
   );
 });
 
@@ -161,6 +217,14 @@ test("ships every YUC cover as a local static asset", async () => {
 
 test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", async () => {
   assert.deepEqual(seasons.map(({ id }) => id), [
+    "2022-january",
+    "2022-april",
+    "2022-july",
+    "2022-october",
+    "2023-january",
+    "2023-april",
+    "2023-july",
+    "2023-october",
     "2024-january",
     "2024-april",
     "2024-july",
@@ -176,6 +240,14 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
   assert.deepEqual(
     seasons.map(({ label }) => label),
     [
+      "2022 年 1 月番",
+      "2022 年 4 月番",
+      "2022 年 7 月番",
+      "2022 年 10 月番",
+      "2023 年 1 月番",
+      "2023 年 4 月番",
+      "2023 年 7 月番",
+      "2023 年 10 月番",
       "2024 年 1 月番",
       "2024 年 4 月番",
       "2024 年 7 月番",
@@ -190,12 +262,20 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
     ],
   );
   assert.deepEqual(
-    seasons.slice(0, 10).map(({ timelineStartHour }) => timelineStartHour),
-    [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+    seasons.slice(0, 18).map(({ timelineStartHour }) => timelineStartHour),
+    [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
   );
   assert.deepEqual(
-    seasons.slice(0, 10).map(({ sourceName, sourceUrl }) => ({ sourceName, sourceUrl })),
+    seasons.slice(0, 18).map(({ sourceName, sourceUrl }) => ({ sourceName, sourceUrl })),
     [
+      { sourceName: "YUC 2022年1月新番表", sourceUrl: "https://yuc.wiki/202201/" },
+      { sourceName: "YUC 2022年4月新番表", sourceUrl: "https://yuc.wiki/202204/" },
+      { sourceName: "YUC 2022年7月新番表", sourceUrl: "https://yuc.wiki/202207/" },
+      { sourceName: "YUC 2022年10月新番表", sourceUrl: "https://yuc.wiki/202210/" },
+      { sourceName: "YUC 2023年1月新番表", sourceUrl: "https://yuc.wiki/202301/" },
+      { sourceName: "YUC 2023年4月新番表", sourceUrl: "https://yuc.wiki/202304/" },
+      { sourceName: "YUC 2023年7月新番表", sourceUrl: "https://yuc.wiki/202307/" },
+      { sourceName: "YUC 2023年10月新番表", sourceUrl: "https://yuc.wiki/202310/" },
       { sourceName: "YUC 2024年1月新番表", sourceUrl: "https://yuc.wiki/202401/" },
       { sourceName: "YUC 2024年4月新番表", sourceUrl: "https://yuc.wiki/202404/" },
       { sourceName: "YUC 2024年7月新番表", sourceUrl: "https://yuc.wiki/202407/" },
@@ -219,7 +299,7 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
         typeof titleZh === "string" &&
         titleZh.length > 0 &&
         typeof coverUrl === "string" &&
-        /^\/covers\/yuc\/history-202[456]-/.test(coverUrl),
+        /^\/covers\/yuc\/history-202[23456]-/.test(coverUrl),
     ),
   );
   await Promise.all(
@@ -258,20 +338,62 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
 });
 
 test("keeps the historical pilot as generated local data", async () => {
-  const [generated2024, generated2025, generated2026] = await Promise.all([
+  const [generated2022, generated2023, generated2024, generated2025, generated2026] = await Promise.all([
+    readFile(new URL("../data/anilist-2022.js", import.meta.url), "utf8"),
+    readFile(new URL("../data/anilist-2023.js", import.meta.url), "utf8"),
     readFile(new URL("../data/anilist-2024.js", import.meta.url), "utf8"),
     readFile(new URL("../data/anilist-2025.js", import.meta.url), "utf8"),
     readFile(new URL("../data/anilist-2026.js", import.meta.url), "utf8"),
   ]);
+  assert.match(generated2022, /Generated by scripts\/generate-anilist-pilot\.mjs/);
+  assert.match(generated2023, /Generated by scripts\/generate-anilist-pilot\.mjs/);
   assert.match(generated2024, /Generated by scripts\/generate-anilist-pilot\.mjs/);
   assert.match(generated2025, /Generated by scripts\/generate-anilist-pilot\.mjs/);
   assert.match(generated2026, /Generated by scripts\/generate-anilist-pilot\.mjs/);
   for (const [generated, seasonNames] of [
+    [generated2022, ["winter2022", "spring2022", "summer2022", "fall2022"]],
+    [generated2023, ["winter2023", "spring2023", "summer2023", "fall2023"]],
     [generated2024, ["winter2024", "spring2024", "summer2024", "fall2024"]],
     [generated2025, ["winter2025", "spring2025", "summer2025", "fall2025"]],
     [generated2026, ["winter2026", "spring2026"]],
   ]) {
     for (const seasonName of seasonNames) assert.match(generated, new RegExp(`export const ${seasonName}`));
+  }
+});
+
+test("ships the four generated YUC 2022 catalogs with auditable source records", async () => {
+  const generated = await readFile(new URL("../data/yuc-history-2022.js", import.meta.url), "utf8");
+  assert.match(generated, /Generated by scripts\/generate-yuc-history-pilot\.mjs/);
+
+  const { april2022, january2022, july2022, october2022 } = await import("../data/yuc-history-2022.js");
+  for (const [catalog, sourceUrl, catalogCount, sentinelTitle] of [
+    [january2022, "https://yuc.wiki/202201/", 42, "东京24区"],
+    [april2022, "https://yuc.wiki/202204/", 57, "群青幻想曲"],
+    [july2022, "https://yuc.wiki/202207/", 50, "契约之吻"],
+    [october2022, "https://yuc.wiki/202210/", 57, "机动战士高达 水星的魔女"],
+  ]) {
+    assert.equal(catalog.catalogCount, catalogCount);
+    assert.ok(catalog.anime.some(({ titleZh }) => titleZh === sentinelTitle));
+    assert.ok(catalog.anime.every(({ sourceUrl: recordSourceUrl }) => recordSourceUrl === sourceUrl));
+    assert.ok(catalog.anime.every(({ anilistId }) => typeof anilistId === "number" || anilistId === null));
+  }
+});
+
+test("ships the four generated YUC 2023 catalogs with auditable source records", async () => {
+  const generated = await readFile(new URL("../data/yuc-history-2023.js", import.meta.url), "utf8");
+  assert.match(generated, /Generated by scripts\/generate-yuc-history-pilot\.mjs/);
+
+  const { april2023, january2023, july2023, october2023 } = await import("../data/yuc-history-2023.js");
+  for (const [catalog, sourceUrl, catalogCount, sentinelTitle] of [
+    [january2023, "https://yuc.wiki/202301/", 62, "阿鲁斯的巨兽"],
+    [april2023, "https://yuc.wiki/202304/", 53, "机动战士高达 水星的魔女 Part.2"],
+    [july2023, "https://yuc.wiki/202307/", 53, "幻日的夜羽"],
+    [october2023, "https://yuc.wiki/202310/", 76, "GOD.app 神明选拔"],
+  ]) {
+    assert.equal(catalog.catalogCount, catalogCount);
+    assert.ok(catalog.anime.some(({ titleZh }) => titleZh === sentinelTitle));
+    assert.ok(catalog.anime.every(({ sourceUrl: recordSourceUrl }) => recordSourceUrl === sourceUrl));
+    assert.ok(catalog.anime.every(({ anilistId }) => typeof anilistId === "number" || anilistId === null));
   }
 });
 
@@ -391,6 +513,14 @@ test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
 });
 
 test("keeps all recorded seasons available while navigating calendar weeks", () => {
+  const january2022Events = eventsForWeek(allAnime, "2022-01-03");
+  const april2022Events = eventsForWeek(allAnime, "2022-03-28");
+  const july2022Events = eventsForWeek(allAnime, "2022-06-27");
+  const october2022Events = eventsForWeek(allAnime, "2022-09-26");
+  const january2023Events = eventsForWeek(allAnime, "2023-01-02");
+  const april2023Events = eventsForWeek(allAnime, "2023-03-27");
+  const july2023Events = eventsForWeek(allAnime, "2023-06-26");
+  const october2023Events = eventsForWeek(allAnime, "2023-09-25");
   const january2024Events = eventsForWeek(allAnime, "2024-01-01");
   const april2024Events = eventsForWeek(allAnime, "2024-04-01");
   const july2024Events = eventsForWeek(allAnime, "2024-07-01");
@@ -401,6 +531,14 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   const marchToAprilEvents = eventsForWeek(allAnime, "2026-03-30");
   const juneToJulyEvents = eventsForWeek(allAnime, "2026-06-29");
 
+  assert.ok(january2022Events.some(({ id, episode }) => id === "anilist-118465" && episode === 1));
+  assert.ok(april2022Events.some(({ id, episode }) => id === "anilist-137633" && episode === 1));
+  assert.ok(july2022Events.some(({ id, episode }) => id === "anilist-151128" && episode === 1));
+  assert.ok(october2022Events.some(({ id, episode }) => id === "anilist-155526" && episode === 1));
+  assert.ok(january2023Events.some(({ id, episode }) => id === "anilist-146850" && episode === 1));
+  assert.ok(april2023Events.some(({ id, episode }) => id === "anilist-162312" && episode === 1));
+  assert.ok(july2023Events.some(({ id, episode }) => id === "anilist-163137" && episode === 1));
+  assert.ok(october2023Events.some(({ id, episode }) => id === "anilist-158791" && episode === 1));
   assert.ok(january2024Events.some(({ id, episode }) => id === "anilist-143866" && episode === 1));
   assert.ok(april2024Events.some(({ id, episode }) => id === "anilist-155657" && episode === 1));
   assert.ok(july2024Events.some(({ id, episode }) => id === "anilist-165681" && episode === 1));
@@ -467,6 +605,24 @@ test("guards detailed YUC cards against malformed markup and catalog drift", () 
 });
 
 test("pins the YUC catalog baselines and sentinels", () => {
+  assert.deepEqual(
+    yucSeasonsForYear(2022).map(({ month, expectedCardCount, sentinelTitles }) => ({ month, expectedCardCount, sentinelTitles })),
+    [
+      { month: "1", expectedCardCount: 42, sentinelTitles: ["东京24区", "暗芝居 第10期"] },
+      { month: "4", expectedCardCount: 57, sentinelTitles: ["群青幻想曲", "INSECTLAND"] },
+      { month: "7", expectedCardCount: 50, sentinelTitles: ["契约之吻", "怪兽档案"] },
+      { month: "10", expectedCardCount: 57, sentinelTitles: ["机动战士高达 水星的魔女", "噗尼轮轮"] },
+    ],
+  );
+  assert.deepEqual(
+    yucSeasonsForYear(2023).map(({ month, expectedCardCount, sentinelTitles }) => ({ month, expectedCardCount, sentinelTitles })),
+    [
+      { month: "1", expectedCardCount: 62, sentinelTitles: ["阿鲁斯的巨兽", "怪兽档案 第2期"] },
+      { month: "4", expectedCardCount: 53, sentinelTitles: ["机动战士高达 水星的魔女 Part.2", "小哥斯拉的逆袭"] },
+      { month: "7", expectedCardCount: 53, sentinelTitles: ["幻日的夜羽", "暗芝居 第11期"] },
+      { month: "10", expectedCardCount: 76, sentinelTitles: ["GOD.app 神明选拔", "小鸡舞者 第3期"] },
+    ],
+  );
   assert.deepEqual(
     yucSeasonsForYear(2024).map(({ month, expectedCardCount, sentinelTitles }) => ({ month, expectedCardCount, sentinelTitles })),
     [
