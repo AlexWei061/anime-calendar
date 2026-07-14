@@ -117,7 +117,7 @@ test("ships every YUC cover as a local static asset", async () => {
   );
 });
 
-test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", () => {
+test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", async () => {
   assert.deepEqual(seasons.map(({ id }) => id), ["2026-january", "2026-april", "2026-july"]);
   assert.deepEqual(
     seasons.map(({ label }) => label),
@@ -143,8 +143,11 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
         typeof titleZh === "string" &&
         titleZh.length > 0 &&
         typeof coverUrl === "string" &&
-        coverUrl.startsWith("https://"),
+        coverUrl.startsWith("/covers/yuc/history-2026-"),
     ),
+  );
+  await Promise.all(
+    historicalAnime.map(({ coverUrl }) => access(new URL(`../public${coverUrl}`, import.meta.url))),
   );
   assert.ok(
     historicalAnime.every(
@@ -200,7 +203,7 @@ test("ships generated YUC historical catalogs with auditable source records", as
   assert.equal(january2026.catalogCount, 60);
   assert.equal(april2026.catalogCount, 70);
   assert.deepEqual(
-    april2026.anime.find(({ coverUrl }) => coverUrl === "https://i.imgs.ovh/2026/06/27/ccabfedb98e0519ed829d83fe38db277.jpg"),
+    april2026.anime.find(({ id }) => id === "yuc-202604-69"),
     {
       id: "yuc-202604-69",
       anilistId: null,
@@ -208,7 +211,7 @@ test("ships generated YUC historical catalogs with auditable source records", as
       episodeCountStatus: "estimated",
       titleZh: "一脸嫌弃表情的妹子给你看胖次R",
       titleJa: "嫌な顔されながらおパンツ見せてもらいたいR",
-      coverUrl: "https://i.imgs.ovh/2026/06/27/ccabfedb98e0519ed829d83fe38db277.jpg",
+      coverUrl: "/covers/yuc/history-2026-04-69.jpg",
       coverAlt: "一脸嫌弃表情的妹子给你看胖次R 封面",
       sourceUrl: "https://yuc.wiki/202604/",
       premiereDateBeijing: null,
