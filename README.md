@@ -1,98 +1,41 @@
-# vinext-starter
+# 2026 番剧日历
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+一个按北京时间展示 2026 年 1 月、4 月和 7 月新番的中文播出日历。
 
-## Prerequisites
+## 功能
 
-- Node.js `>=22.13.0`
+- 桌面端按周显示时间轴；手机端按天显示日程。
+- 可用“上一周／下一周”连续跨季度查看仍在播出的作品；右上角季度选择器只负责跳到所选季度的首周。
+- 0:00–4:59 的节目显示在前一天栏目的“次日”时段。
+- 时间轴按当前周最早和最晚的定时节目自动裁去上下空白；没有定时节目时显示 05:00 至次日 05:00。
+- 登录 ChatGPT 后可在“我的番剧”保存追番列表，并在周历中只查看已选择作品。
 
-## Quick Start
+## 数据与封面
+
+- 7 月番的中文名、封面与播出排期来自 YUC。
+- 1 月、4 月番使用 YUC 的中文名和本地保存的封面；首播日期、每周播出时间和集数来自 AniList 的历史资料。
+- 所有日历封面均保存在 `public/covers/yuc/`，页面运行时不依赖第三方图片链接。
+- 季度与统一作品目录入口在 `data/anime.js`；1 月、4 月的生成结果在 `data/yuc-history-2026.js`，由 `scripts/generate-yuc-history-pilot.mjs` 更新。
+
+## 本地运行
+
+需要 Node.js `>=22.13.0`。
 
 ```bash
 npm install
 npm run dev
+```
+
+## 验证与数据更新
+
+```bash
 npm run build
+npm test
+npm run lint -- --ignore-pattern .worktrees
+npm run generate:anilist-pilot
+npm run generate:yuc-history-pilot
 ```
 
-This starter does not use `wrangler.jsonc`.
+- `npm test`：构建应用并验证日历数据、集数排期和渲染后的时间表。
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the app and verify calendar data, episode scheduling, and the rendered paged time grid
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+最后两条命令用于重新生成 2026 年 1 月、4 月的历史资料；生成后应检查数据与封面变更，再运行测试。
