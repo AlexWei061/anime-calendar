@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
-import { anime } from "../../../data/anime.js";
+import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
-import { validateAnimeIds } from "../../../lib/anime-selections.js";
+import { filterKnownAnimeIds } from "../../../lib/anime-selections.js";
 import { getChatGPTUser } from "../../chatgpt-auth";
 
-const validAnimeIds = new Set(anime.map(({ id }) => id));
+const validAnimeIds = new Set(allAnime.map(({ id }) => id));
 
 async function currentUser() {
   return getChatGPTUser();
@@ -22,7 +22,9 @@ export async function GET() {
       .select({ animeId: animeSelections.animeId })
       .from(animeSelections)
       .where(eq(animeSelections.userEmail, user.email));
-    return Response.json({ animeIds: rows.map(({ animeId }) => animeId) });
+    return Response.json({
+      animeIds: filterKnownAnimeIds(rows.map(({ animeId }) => animeId), validAnimeIds),
+    });
   } catch {
     return Response.json({ error: "Unable to load anime selections" }, { status: 500 });
   }
@@ -37,7 +39,7 @@ export async function PUT(request: Request) {
   let animeIds: string[];
   try {
     const payload = (await request.json()) as { animeIds?: unknown };
-    animeIds = validateAnimeIds(payload.animeIds, validAnimeIds);
+    animeIds = filterKnownAnimeIds(payload.animeIds, validAnimeIds);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Invalid animeIds";
     return Response.json({ error: message }, { status: 400 });

@@ -111,6 +111,41 @@ a {
   border-bottom: 1px solid var(--line);
 }
 
+.calendar-header-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.9rem;
+}
+
+.season-picker {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.season-picker select {
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+}
+
+.season-picker span,
+.pilot-note {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.pilot-note {
+  margin: 0.75rem 0 0;
+}
+
 .season-kicker,
 .section-kicker {
   margin: 0 0 0.5rem;
@@ -388,8 +423,8 @@ h1 {
 
 .timeline-axis {
   display: grid;
-  grid-template-rows: repeat(13, 96px) 40px;
-  height: 1288px;
+  grid-template-rows: repeat(var(--timeline-hour-count), 96px) 40px;
+  height: var(--timeline-height);
   min-width: 0;
   background-color: var(--card);
   background-image: var(--timeline-lines);
@@ -412,7 +447,7 @@ h1 {
 
 .timeline-day {
   position: relative;
-  height: 1288px;
+  height: var(--timeline-height);
   min-width: 0;
   background-color: var(--card);
   background-image: var(--timeline-lines);

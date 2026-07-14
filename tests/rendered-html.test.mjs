@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { anime } from "../data/anime.js";
+import { anime, seasons } from "../data/anime.js";
 
 const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
@@ -41,16 +41,20 @@ test("server-renders a paged Beijing episode calendar", async () => {
   const html = await response.text();
   const cleanHtml = withoutReactMarkers(html);
   assert.match(html, /<html lang="zh-CN">/);
-  assert.match(html, /<title>番时表｜2026 夏番<\/title>/);
+  assert.match(html, /<title>番时表｜2026 年新番<\/title>/);
   assert.match(
     html,
-    /<meta name="description" content="按 YUC 排期查看 2026 年夏季动画的首播、集数与周播时间。"\s*\/>/,
+    /<meta name="description" content="按北京时间查看 2026 年 1 月、4 月和 7 月番的首播、集数与周播时间。"\s*\/>/,
   );
-  assert.match(html, /2026 夏番时间表/);
-  assert.match(withoutReactMarkers(html), /66 部夏番/);
+  assert.match(html, /2026 年 7 月番时间表/);
+  assert.match(withoutReactMarkers(html), /66 部番剧/);
   assert.match(html, /class="page-sidebar"/);
-  assert.match(html, /全部夏番/);
+  assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
+  assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /<option value="2026-january">2026 年 1 月番<\/option>/);
+  assert.match(html, /<option value="2026-april">2026 年 4 月番<\/option>/);
+  assert.match(html, /<option value="2026-july" selected="">2026 年 7 月番<\/option>/);
   assert.match(html, /北京时间/);
   assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
@@ -59,6 +63,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
+  assert.match(html, /--timeline-hour-count:13;--timeline-height:1288px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:528px/);
@@ -74,7 +79,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
-  assert.match(html, /YUC 首播/);
+  assert.match(html, /YUC 2026年7月新番表.*首播/);
   assert.match(html, /网络放送／固定时刻未列出/);
   assert.doesNotMatch(html, /class="week-grid"|class="week-column"|class="anime-card"/);
   assert.doesNotMatch(html, /codex-preview/i);
@@ -180,12 +185,54 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
+  assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
+  assert.match(page, /const initialSeasonId = "2026-july";/);
+  assert.match(page, /activeSeason\.label/);
+  assert.doesNotMatch(page, /冬番|春番|夏番/);
+  assert.doesNotMatch(layout, /冬番|春番|夏番/);
+  assert.match(page, /月份/);
+  assert.match(
+    page,
+    /名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。/,
+  );
+  assert.doesNotMatch(page, /AniList 原文与罗马音|AniList 历史放送记录/);
+  assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
+  assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
+  assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
+  assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
+  assert.match(
+    page,
+    /import\s*\{[\s\S]*?\btimelineBoundsForEvents,[\s\S]*?\}\s*from "\.\.\/lib\/calendar\.js";/,
+  );
+  assert.match(
+    page,
+    /const defaultTimelineStartMinutes = activeSeason\.timelineStartHour \* 60;/,
+  );
+  assert.match(
+    page,
+    /const defaultTimelineEndMinutes = \(activeSeason\.timelineStartHour < 15 \? 29 : 28\) \* 60;/,
+  );
+  assert.match(
+    page,
+    /timelineBoundsForEvents\(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes\)/,
+  );
+  assert.match(
+    page,
+    /const timelineHourCount = \(timelineEndMinutes - timelineStartMinutes\) \/ 60;/,
+  );
+  assert.match(page, /"--timeline-hour-count": String\(timelineHourCount\)/);
+  assert.doesNotMatch(
+    page,
+    /const timelineEndMinutes = activeSeason\.timelineStartHour < 15 \? 28 \* 60 \+ 59 : 28 \* 60;/,
+  );
+  assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes, timelineEndMinutes\)/);
   assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
   assert.match(page, /window\.history\.pushState\(null, "", url\);/);
   assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
   assert.match(page, /<details className="anime-selection-details">/);
   assert.match(page, /<summary className="anime-selection-summary">/);
   assert.match(page, /本季度想追什么？/);
+  assert.doesNotMatch(page, /本月番想追什么？/);
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
@@ -204,7 +251,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
   assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
-  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes|timelineStartMinutes|timelineEndMinutes/);
+  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
@@ -215,7 +262,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /selectedEpisode/);
   assert.match(
     page,
-    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, event\.date, event\.episodeStart, event\.episode\)/,
+    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, \{\s*selectedDate: event\.broadcastDate,\s*selectedTime: event\.broadcastTime,/,
   );
   assert.match(page, /\{selected \? \(/);
   assert.match(page, /selected\.titleZh/);
@@ -241,6 +288,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
   await assert.rejects(access(previewRoot), { code: "ENOENT" });
   assert.equal(templateRoot.pathname.endsWith("/"), true);
+  assert.deepEqual(
+    seasons.map(({ id, label }) => ({ id, label })),
+    [
+      { id: "2026-january", label: "2026 年 1 月番" },
+      { id: "2026-april", label: "2026 年 4 月番" },
+      { id: "2026-july", label: "2026 年 7 月番" },
+    ],
+  );
 
   assert.match(
     styles,
@@ -252,6 +307,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     /\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*13rem minmax\(0, 1fr\);/,
   );
   assert.match(styles, /\.page-sidebar button\.is-active/);
+  assert.match(styles, /\.season-picker\s*\{/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
   assert.match(styles, /\.my-schedule-empty/);
@@ -281,7 +337,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(13, 96px\) 40px;[\s\S]*?height:\s*1288px;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) 40px;[\s\S]*?height:\s*var\(--timeline-height\);[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
@@ -289,7 +345,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-day\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*1288px;[\s\S]*?min-width:\s*0;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-day\s*\{[\s\S]*?position:\s*relative;[\s\S]*?height:\s*var\(--timeline-height\);[\s\S]*?min-width:\s*0;[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
