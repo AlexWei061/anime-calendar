@@ -3,6 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { allAnime, anime, season, seasons } from "../data/anime.js";
+import { addDays, eventsForWeek } from "../lib/calendar.js";
 import { groupByBeijingWeekday } from "../lib/schedule.js";
 import {
   TITLE_ALIASES,
@@ -242,6 +243,50 @@ test("ships generated YUC historical catalogs with auditable source records", as
       station: "AniList 未匹配（试点）",
     },
   );
+});
+
+test("uses YUC's Re:Zero P1 episode count instead of the AniList total", () => {
+  const card = {
+    titleZh: "Re:从零开始的异世界生活 第4期",
+    titleJa: "Re:ゼロから始める異世界生活 4th season",
+    coverUrl: "https://example.test/rezero.jpg",
+  };
+  const matched = {
+    id: "anilist-189046",
+    episodeCount: 19,
+    episodeCountStatus: "exact",
+    premiereDateBeijing: "2026-04-08",
+    scheduleWeekday: "Wed",
+    beijingTime: "21:00",
+    timeStatus: "exact",
+    station: "AniList 首集排期（试点）",
+  };
+
+  assert.equal(enrichYucRecord(card, 48, "https://yuc.wiki/202604/", matched).episodeCount, 11);
+});
+
+test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
+  const aprilReZero = seasons
+    .find(({ id }) => id === "2026-april")
+    ?.anime.find(({ id }) => id === "anilist-189046");
+  const partTwo = anime.find(({ id }) => id === "rezero-4-part-2");
+
+  assert.equal(aprilReZero?.episodeCount, 11);
+  assert.equal(partTwo?.episodeCount, 8);
+  assert.equal(partTwo?.premiereDateBeijing, "2026-08-12");
+
+  const partOneEvents = Array.from({ length: 11 }, (_, index) =>
+    eventsForWeek([aprilReZero], addDays("2026-04-06", index * 7))[0],
+  );
+  const partTwoEvents = Array.from({ length: 8 }, (_, index) =>
+    eventsForWeek([partTwo], addDays("2026-08-10", index * 7))[0],
+  );
+
+  assert.deepEqual(partOneEvents.map(({ episode }) => episode), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  assert.deepEqual(eventsForWeek([aprilReZero], "2026-06-22"), []);
+  assert.equal(partTwoEvents[0].broadcastDate, "2026-08-12");
+  assert.deepEqual(partTwoEvents.map(({ episode }) => episode), [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepEqual(eventsForWeek([partTwo], "2026-10-05"), []);
 });
 
 test("treats zero and ambiguous AniList title matches as YUC-only records", () => {
