@@ -27,6 +27,13 @@ test("rejects successful non-image YUC cover responses before choosing an extens
   );
 });
 
+test("falls back to the URL extension for unmapped YUC image MIME types", () => {
+  assert.equal(
+    coverExtension(new Response("", { headers: { "content-type": "image/gif" } }), "https://example.test/cover.gif"),
+    ".gif",
+  );
+});
+
 test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.deepEqual(season, {
     label: "2026 年 7 月番",
