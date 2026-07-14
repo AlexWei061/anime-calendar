@@ -435,11 +435,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.episode-watch-toggle/);
   assert.match(
     styles,
-    /\.episode-watch-toggle\s*\{[\s\S]*?width:\s*1\.5rem;[\s\S]*?height:\s*1\.5rem;/,
+    /\.episode-watch-toggle\s*\{[\s\S]*?width:\s*0\.75rem;[\s\S]*?height:\s*0\.75rem;/,
   );
   assert.match(
     styles,
-    /\.timeline-event \.episode-watch-toggle\s*\{[\s\S]*?width:\s*1\.5rem;[\s\S]*?height:\s*1\.5rem;/,
+    /\.timeline-event \.episode-watch-toggle\s*\{[\s\S]*?width:\s*0\.75rem;[\s\S]*?height:\s*0\.75rem;/,
   );
   assert.match(
     styles,
@@ -451,7 +451,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?filter:\s*grayscale\(1\);/,
+    /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?opacity:\s*0\.85;/,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?filter:\s*grayscale/,
   );
   assert.match(styles, /\.calendar-event-cover/);
   assert.doesNotMatch(styles, /\.time-axis/);
