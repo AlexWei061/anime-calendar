@@ -2,7 +2,7 @@
 
 ## 项目定位
 
-这是一个展示 **2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
+这是一个展示 **2025 年四季及 2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
 并允许连续跨季度前后翻周；移动端提供单日议程。登录同一 ChatGPT 账号的用户可以维护自己的追番列表，
 并永久保存逐集“已看”标记。
 
@@ -19,10 +19,10 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `app/chatgpt-auth.ts` | 读取 Sites 注入的 ChatGPT 身份，生成安全的登录/退出跳转地址。 |
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表保存 API。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的单集已看标记读取与单条更新 API。 |
-| `data/anime.js` | 2026 年 1／4／7 月季度入口、7 月 YUC 目录和统一的 `allAnime` 目录。 |
-| `data/anilist-2026.js` | 由 AniList 导入脚本生成的 1 月／4 月历史排期原始资料。 |
-| `data/yuc-history-2026.js` | 由 YUC 历史导入脚本生成的 1 月／4 月目录；不得手工编辑。 |
-| `scripts/generate-anilist-pilot.mjs` | 拉取 AniList 的 2026 年 1 月／4 月首播、时刻与集数资料。 |
+| `data/anime.js` | 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录和统一的 `allAnime` 目录。 |
+| `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
+| `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
+| `scripts/generate-anilist-pilot.mjs` | 拉取指定年份的 AniList 首播、时刻与集数资料。 |
 | `scripts/generate-yuc-history-pilot.mjs` | 合并 YUC 中文名/封面与 AniList 排期，下载本地封面并生成历史目录。 |
 | `lib/calendar.js` | ISO 日期计算、每周集数展开、凌晨时刻显示、时间轴裁切与布局。 |
 | `lib/schedule.js` | JST 转北京时间和按星期归类的通用排期辅助函数。 |
@@ -33,19 +33,19 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `worker/index.ts` | vinext 的 Cloudflare Worker 入口和图片优化处理。 |
 | `vite.config.ts`、`build/sites-vite-plugin.ts` | 本地 Cloudflare 绑定模拟，以及构建后打包 Sites 元数据和迁移。 |
 | `.openai/hosting.json` | Sites 的逻辑资源声明；当前 D1 绑定名为 `DB`。 |
-| `public/covers/yuc/` | 全部本地封面：7 月目录使用稳定 slug，1 月／4 月目录使用 `history-2026-*` 文件名。 |
+| `public/covers/yuc/` | 全部本地封面：7 月目录使用稳定 slug，历史目录使用 `history-<year>-*` 文件名。 |
 | `tests/` | 数据、排期算法、存储校验和构建后 HTML 的回归测试。 |
 | `docs/superpowers/` | 历史设计和实施计划，仅作决策背景，不是运行时代码。 |
 
 ## 番剧数据规则
 
 - `data/anime.js` 是季度和 `allAnime` 的入口；每个 `id` 必须稳定且全局唯一，不能用标题作为身份标识。
-- 1 月、4 月目录由 `scripts/generate-yuc-history-pilot.mjs` 写入 `data/yuc-history-2026.js`；先运行
-  `scripts/generate-anilist-pilot.mjs` 更新 AniList 原始资料，再生成历史目录。不要手工编辑生成结果。
+- 历史目录由 `scripts/generate-yuc-history-pilot.mjs <year>` 写入 `data/yuc-history-<year>.js`；先运行
+  `scripts/generate-anilist-pilot.mjs <year>` 更新 AniList 原始资料，再生成历史目录。不要手工编辑生成结果。
 - 每个季度的 `catalogCount` 必须等于该季度 `anime.length`。每个条目都要有中日标题、集数、来源、封面路径和无障碍替代文本。
 - 所有封面必须随数据一起存入 `public/covers/yuc/`，页面使用本地 `/covers/yuc/...` 路径；7 月使用稳定 slug
-  文件名，历史目录使用 `history-2026-*`，扩展名以实际下载资源为准。不要让运行时依赖第三方图片链接。
-- 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；1 月／4 月番的中文名和封面来自 YUC，首播日期、周播时间和集数来自 AniList 历史资料。
+  文件名，历史目录使用 `history-<year>-*`，扩展名以实际下载资源为准。不要让运行时依赖第三方图片链接。
+- 2026 年 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；历史目录的中文名和封面来自 YUC，首播日期、周播时间和集数来自 AniList 历史资料。
 - 没有固定周播时刻的网络放送应保留 `null`，由页面放入“网络放送／固定时刻未列出”区域，不能虚构时间。
 - 凌晨 `00:00` 至 `04:59` 的节目在周历中显示在前一天栏目的“次日 HH:MM”时段；必须通过
   `formatBroadcastTime` 和现有日期布局逻辑处理，不要在页面中手工挪动日期。

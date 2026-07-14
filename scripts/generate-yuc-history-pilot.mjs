@@ -2,15 +2,57 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { extname } from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { spring2026, winter2026 } from "../data/anilist-2026.js";
-
-export const YUC_SEASONS = Object.freeze([
+const seasonsByYear = Object.freeze({
+  2025: Object.freeze([
+    Object.freeze({
+      month: "1",
+      label: "2025 年 1 月番",
+      url: "https://yuc.wiki/202501/",
+      catalogName: "YUC 2025年1月新番表",
+      exportName: "january2025",
+      aniListExportName: "winter2025",
+      expectedCardCount: 54,
+      sentinelTitles: Object.freeze(["BanG Dream! Ave Mujica", "暗芝居 第14期"]),
+    }),
+    Object.freeze({
+      month: "4",
+      label: "2025 年 4 月番",
+      url: "https://yuc.wiki/202504/",
+      catalogName: "YUC 2025年4月新番表",
+      exportName: "april2025",
+      aniListExportName: "spring2025",
+      expectedCardCount: 67,
+      sentinelTitles: Object.freeze(["机动战士高达GQuuuuuuX", "正义使者 我的英雄学院之非法英雄"]),
+    }),
+    Object.freeze({
+      month: "7",
+      label: "2025 年 7 月番",
+      url: "https://yuc.wiki/202507/",
+      catalogName: "YUC 2025年7月新番表",
+      exportName: "july2025",
+      aniListExportName: "summer2025",
+      expectedCardCount: 67,
+      sentinelTitles: Object.freeze(["新 吊带袜天使", "噗尼轮轮 第3期"]),
+    }),
+    Object.freeze({
+      month: "10",
+      label: "2025 年 10 月番",
+      url: "https://yuc.wiki/202510/",
+      catalogName: "YUC 2025年10月新番表",
+      exportName: "october2025",
+      aniListExportName: "fall2025",
+      expectedCardCount: 61,
+      sentinelTitles: Object.freeze(["永恒余晖", "我的英雄学院 第8期"]),
+    }),
+  ]),
+  2026: Object.freeze([
   Object.freeze({
     month: "1",
     label: "2026 年 1 月番",
     url: "https://yuc.wiki/202601/",
     catalogName: "YUC 2026年1月新番表",
     exportName: "january2026",
+    aniListExportName: "winter2026",
     expectedCardCount: 60,
     sentinelTitles: Object.freeze(["棱镜恋曲", "新 魔神坛斗士"]),
   }),
@@ -20,10 +62,20 @@ export const YUC_SEASONS = Object.freeze([
     url: "https://yuc.wiki/202604/",
     catalogName: "YUC 2026年4月新番表",
     exportName: "april2026",
+    aniListExportName: "spring2026",
     expectedCardCount: 70,
     sentinelTitles: Object.freeze(["幽灵音乐会 missing Songs", "魔法姐妹露露与莉莉"]),
   }),
-]);
+  ]),
+});
+
+export function yucSeasonsForYear(year) {
+  const seasons = seasonsByYear[year];
+  if (!seasons) throw new RangeError("No YUC season configuration for " + year);
+  return seasons;
+}
+
+export const YUC_SEASONS = yucSeasonsForYear(2026);
 
 function decodeHtml(value) {
   return value
@@ -73,7 +125,7 @@ const titleAliases = new Map(
 export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
   const cards = new Map();
   const candidates = [...html.matchAll(/<img\b(?=[^>]*\bwidth="180px")(?=[^>]*\bdata-src="[^"]+")[^>]*>/gi)];
-  const cardPattern = /<div style="float:left">([\s\S]*?)<div style="clear:both"><\/div>/g;
+  const cardPattern = /<div style="float:left">([\s\S]*?)<div style="clear:both"><\/div(?:>|-->)/g;
 
   for (const [, card] of html.matchAll(cardPattern)) {
     const image = card.match(/<img\b(?=[^>]*\bwidth="180px")(?=[^>]*\bdata-src="([^"]+)")[^>]*>/i);
@@ -118,7 +170,6 @@ export function indexAniList(anime) {
   return index;
 }
 
-const aniListIndex = indexAniList([...winter2026.anime, ...spring2026.anime]);
 const EPISODE_COUNT_OVERRIDES = Object.freeze({ 189046: 11 });
 const COVER_EXTENSIONS = new Map([
   ["image/jpeg", ".jpg"],
@@ -189,23 +240,23 @@ export function coverExtension(response, coverUrl) {
   return COVER_EXTENSIONS.get(contentType) ?? (extname(new URL(coverUrl).pathname) || ".jpg");
 }
 
-async function downloadCover(coverUrl, month, index) {
+async function downloadCover(coverUrl, year, month, index) {
   const response = await fetch(coverUrl);
   if (!response.ok) {
     throw new Error(`YUC cover request failed (${response.status} ${response.statusText}): ${coverUrl}`);
   }
 
-  const localCoverUrl = `/covers/yuc/history-2026-${month.padStart(2, "0")}-${String(index + 1).padStart(2, "0")}${coverExtension(response, coverUrl)}`;
+  const localCoverUrl = `/covers/yuc/history-${year}-${month.padStart(2, "0")}-${String(index + 1).padStart(2, "0")}${coverExtension(response, coverUrl)}`;
   await writeFile(new URL(`../public${localCoverUrl}`, import.meta.url), new Uint8Array(await response.arrayBuffer()));
   return localCoverUrl;
 }
 
-async function generateSeason(config) {
+async function generateSeason(config, aniListIndex, year) {
   const cards = parseCards(await fetchHtml(config.url), config);
   const anime = [];
   for (const [index, card] of cards.entries()) {
     const record = enrichYucRecord(card, index, config.url, findMatch(card, aniListIndex));
-    anime.push({ ...record, coverUrl: await downloadCover(card.coverUrl, config.month, index) });
+    anime.push({ ...record, coverUrl: await downloadCover(card.coverUrl, year, config.month, index) });
   }
 
   return {
@@ -220,15 +271,23 @@ async function generateSeason(config) {
 }
 
 async function main() {
+  const year = Number(process.argv[2] ?? "2026");
+  if (!Number.isInteger(year)) throw new RangeError("Year must be an integer");
+  const yucSeasons = yucSeasonsForYear(year);
+  const aniListCatalogs = await import(new URL(`../data/anilist-${year}.js`, import.meta.url));
+  const aniListIndex = indexAniList(
+    yucSeasons.flatMap(({ aniListExportName }) => aniListCatalogs[aniListExportName].anime),
+  );
+
   await mkdir(new URL("../public/covers/yuc/", import.meta.url), { recursive: true });
-  const catalogs = await Promise.all(YUC_SEASONS.map(generateSeason));
+  const catalogs = await Promise.all(yucSeasons.map((config) => generateSeason(config, aniListIndex, year)));
   const output = `// Generated by scripts/generate-yuc-history-pilot.mjs. Do not edit by hand.\n\n${catalogs
-    .map((catalog, index) => `export const ${YUC_SEASONS[index].exportName} = ${JSON.stringify(catalog, null, 2)};`)
+    .map((catalog, index) => `export const ${yucSeasons[index].exportName} = ${JSON.stringify(catalog, null, 2)};`)
     .join("\n\n")}`;
 
-  await writeFile(new URL("../data/yuc-history-2026.js", import.meta.url), `${output}\n`);
+  await writeFile(new URL(`../data/yuc-history-${year}.js`, import.meta.url), `${output}\n`);
   console.log(
-    catalogs.map((catalog, index) => `${YUC_SEASONS[index].month}月 ${catalog.anime.length} 部（AniList 匹配 ${catalog.anime.filter(({ anilistId }) => anilistId !== null).length} 部）`).join("；"),
+    catalogs.map((catalog, index) => `${yucSeasons[index].month}月 ${catalog.anime.length} 部（AniList 匹配 ${catalog.anime.filter(({ anilistId }) => anilistId !== null).length} 部）`).join("；"),
   );
 }
 

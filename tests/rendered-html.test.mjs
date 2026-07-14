@@ -41,10 +41,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
   const html = await response.text();
   const cleanHtml = withoutReactMarkers(html);
   assert.match(html, /<html lang="zh-CN">/);
-  assert.match(html, /<title>番时表｜2026 年新番<\/title>/);
+  assert.match(html, /<title>番时表｜新番日历<\/title>/);
   assert.match(
     html,
-    /<meta name="description" content="按北京时间查看 2026 年 1 月、4 月和 7 月番的首播、集数与周播时间。"\s*\/>/,
+    /<meta name="description" content="按北京时间查看收录番剧的首播、集数与周播时间。"\s*\/>/,
   );
   assert.match(html, /2026 年 7 月番时间表/);
   assert.match(withoutReactMarkers(html), /66 部番剧/);
@@ -52,6 +52,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /<option value="2025-january">2025 年 1 月番<\/option>/);
+  assert.match(html, /<option value="2025-april">2025 年 4 月番<\/option>/);
+  assert.match(html, /<option value="2025-july">2025 年 7 月番<\/option>/);
+  assert.match(html, /<option value="2025-october">2025 年 10 月番<\/option>/);
   assert.match(html, /<option value="2026-january">2026 年 1 月番<\/option>/);
   assert.match(html, /<option value="2026-april">2026 年 4 月番<\/option>/);
   assert.match(html, /<option value="2026-july" selected="">2026 年 7 月番<\/option>/);
@@ -349,6 +353,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.deepEqual(
     seasons.map(({ id, label }) => ({ id, label })),
     [
+      { id: "2025-january", label: "2025 年 1 月番" },
+      { id: "2025-april", label: "2025 年 4 月番" },
+      { id: "2025-july", label: "2025 年 7 月番" },
+      { id: "2025-october", label: "2025 年 10 月番" },
       { id: "2026-january", label: "2026 年 1 月番" },
       { id: "2026-april", label: "2026 年 4 月番" },
       { id: "2026-july", label: "2026 年 7 月番" },

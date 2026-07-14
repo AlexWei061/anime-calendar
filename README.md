@@ -1,6 +1,6 @@
-# 2026 番剧日历
+# 番剧日历
 
-一个按北京时间展示 2026 年 1 月、4 月和 7 月新番的中文播出日历。
+一个按北京时间展示 2025 年至今新番的中文播出日历；当前收录 2025 年四季及 2026 年 1 月、4 月、7 月番。
 
 ## 功能
 
@@ -19,10 +19,10 @@
 
 ## 数据与封面
 
-- 7 月番的中文名、封面与播出排期来自 YUC。
-- 1 月、4 月番使用 YUC 的中文名和本地保存的封面；首播日期、每周播出时间和集数来自 AniList 的历史资料。
+- 2026 年 7 月番的中文名、封面与播出排期来自 YUC。
+- 2025 年四季及 2026 年 1 月、4 月番使用 YUC 的中文名和本地保存的封面；首播日期、每周播出时间和集数来自 AniList 的历史资料。
 - 所有日历封面均保存在 `public/covers/yuc/`，页面运行时不依赖第三方图片链接。
-- 季度与统一作品目录入口在 `data/anime.js`；1 月、4 月的生成结果在 `data/yuc-history-2026.js`，由 `scripts/generate-yuc-history-pilot.mjs` 更新。
+- 季度与统一作品目录入口在 `data/anime.js`；历史目录分别在 `data/yuc-history-2025.js` 与 `data/yuc-history-2026.js`，由 `scripts/generate-yuc-history-pilot.mjs` 更新。
 
 ## 本地运行
 
@@ -41,8 +41,10 @@ npm test
 npm run lint -- --ignore-pattern .worktrees
 npm run generate:anilist-pilot
 npm run generate:yuc-history-pilot
+node scripts/generate-anilist-pilot.mjs 2025
+node scripts/generate-yuc-history-pilot.mjs 2025
 ```
 
 - `npm test`：构建应用并验证日历数据、集数排期和渲染后的时间表。
 
-最后两条命令用于重新生成 2026 年 1 月、4 月的历史资料；生成后应检查数据与封面变更，再运行测试。
+默认的生成命令用于重新生成 2026 年 1 月、4 月资料；带 `2025` 参数的命令用于四季历史资料。生成后应检查数据与封面变更，再运行测试。
