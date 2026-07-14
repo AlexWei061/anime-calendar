@@ -17,6 +17,7 @@ import {
   groupEventsByTime,
   layoutTimelineEvents,
   startOfWeek,
+  timelineBoundsForEvents,
   timelineOffsetMinutes,
   weekDays,
 } from "../lib/calendar.js";
@@ -101,23 +102,26 @@ export default function Home() {
   );
   const activeSeason = seasons.find(({ id }) => id === activeSeasonId) ?? seasons.at(-1)!;
   const isHistoricalSeason = activeSeason.id !== initialSeasonId;
-  const timelineStartMinutes = activeSeason.timelineStartHour * 60;
-  const timelineEndHour = activeSeason.timelineStartHour < 15 ? 29 : 28;
-  const timelineEndMinutes = activeSeason.timelineStartHour < 15 ? 28 * 60 + 59 : 28 * 60;
-  const timelineHours = Array.from(
-    { length: timelineEndHour - activeSeason.timelineStartHour + 1 },
-    (_, index) => activeSeason.timelineStartHour + index,
-  );
-  const timelineStyle = {
-    "--timeline-hour-count": String(timelineHours.length),
-    "--timeline-height": timelineHours.length * 96 + 40 + "px",
-  } as CSSProperties;
+  const defaultTimelineStartMinutes = activeSeason.timelineStartHour * 60;
+  const defaultTimelineEndMinutes = (activeSeason.timelineStartHour < 15 ? 29 : 28) * 60;
   const dates = weekDays(activeWeekStart);
   const displayedAnime =
     activePage === "mine"
       ? activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id))
       : activeSeason.anime;
   const events = eventsForWeek(displayedAnime, activeWeekStart) as CalendarEvent[];
+  const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
+    timelineBoundsForEvents(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes);
+  const timelineHourCount = (timelineEndMinutes - timelineStartMinutes) / 60;
+  const timelineEndHour = timelineEndMinutes / 60;
+  const timelineHours = Array.from(
+    { length: timelineHourCount + 1 },
+    (_, index) => timelineStartMinutes / 60 + index,
+  );
+  const timelineStyle = {
+    "--timeline-hour-count": String(timelineHourCount),
+    "--timeline-height": timelineHourCount * 96 + 40 + "px",
+  } as CSSProperties;
   const dayEventGroups = dates.map((date) =>
     groupEventsByTime(events.filter((event) => event.date === date)),
   );

@@ -63,6 +63,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
+  assert.match(html, /--timeline-hour-count:13;--timeline-height:1288px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:528px/);
@@ -200,6 +201,27 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
   assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
   assert.match(
+    page,
+    /import\s*\{[\s\S]*?\btimelineBoundsForEvents,[\s\S]*?\}\s*from "\.\.\/lib\/calendar\.js";/,
+  );
+  assert.match(
+    page,
+    /const defaultTimelineStartMinutes = activeSeason\.timelineStartHour \* 60;/,
+  );
+  assert.match(
+    page,
+    /const defaultTimelineEndMinutes = \(activeSeason\.timelineStartHour < 15 \? 29 : 28\) \* 60;/,
+  );
+  assert.match(
+    page,
+    /timelineBoundsForEvents\(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes\)/,
+  );
+  assert.match(
+    page,
+    /const timelineHourCount = \(timelineEndMinutes - timelineStartMinutes\) \/ 60;/,
+  );
+  assert.match(page, /"--timeline-hour-count": String\(timelineHourCount\)/);
+  assert.doesNotMatch(
     page,
     /const timelineEndMinutes = activeSeason\.timelineStartHour < 15 \? 28 \* 60 \+ 59 : 28 \* 60;/,
   );
