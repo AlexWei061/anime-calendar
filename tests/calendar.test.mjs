@@ -13,6 +13,7 @@ const {
   layoutTimelineEvents,
   stackEventsForDay,
   startOfWeek,
+  timelineBoundsForEvents,
   timelineOffsetMinutes,
   weekDays,
 } = calendar;
@@ -93,6 +94,29 @@ test("formats normal and overnight YUC broadcast times", () => {
   assert.equal(formatBroadcastTime("20:30"), "20:30");
   assert.equal(formatBroadcastTime("24:00"), "次日 00:00");
   assert.equal(formatBroadcastTime("27:08"), "次日 03:08");
+});
+
+test("trims weekly timeline bounds to the visual event range", () => {
+  assert.deepEqual(timelineBoundsForEvents([{ time: "16:00" }], 5 * 60, 29 * 60), {
+    startMinutes: 16 * 60,
+    endMinutes: 17 * 60,
+  });
+  assert.deepEqual(
+    timelineBoundsForEvents([{ time: "16:10" }, { time: "23:40" }], 5 * 60, 29 * 60),
+    { startMinutes: 16 * 60, endMinutes: 25 * 60 },
+  );
+  assert.deepEqual(timelineBoundsForEvents([{ time: "25:00" }], 5 * 60, 29 * 60), {
+    startMinutes: 25 * 60,
+    endMinutes: 26 * 60,
+  });
+  assert.deepEqual(timelineBoundsForEvents([], 5 * 60, 29 * 60), {
+    startMinutes: 5 * 60,
+    endMinutes: 29 * 60,
+  });
+  assert.deepEqual(timelineBoundsForEvents([{ time: "28:00" }], 15 * 60, 28 * 60), {
+    startMinutes: 27 * 60,
+    endMinutes: 28 * 60,
+  });
 });
 
 test("keeps a 25:00 YUC label in its source Sunday column", () => {
