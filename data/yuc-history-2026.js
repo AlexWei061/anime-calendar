@@ -1756,7 +1756,7 @@ export const april2026 = {
     {
       "id": "anilist-189046",
       "anilistId": 189046,
-      "episodeCount": 19,
+      "episodeCount": 11,
       "episodeCountStatus": "exact",
       "titleZh": "Re:从零开始的异世界生活 第4期",
       "titleJa": "Re:ゼロから始める異世界生活 4th season",

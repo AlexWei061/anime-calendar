@@ -119,6 +119,7 @@ export function indexAniList(anime) {
 }
 
 const aniListIndex = indexAniList([...winter2026.anime, ...spring2026.anime]);
+const EPISODE_COUNT_OVERRIDES = Object.freeze({ 189046: 11 });
 const COVER_EXTENSIONS = new Map([
   ["image/jpeg", ".jpg"],
   ["image/png", ".png"],
@@ -158,10 +159,11 @@ export function enrichYucRecord(card, index, sourceUrl, matched) {
   }
 
   const anilistId = Number(matched.id.replace("anilist-", ""));
+  const episodeCount = EPISODE_COUNT_OVERRIDES[anilistId] ?? matched.episodeCount;
   return {
     id: matched.id,
     anilistId,
-    episodeCount: matched.episodeCount,
+    episodeCount,
     episodeCountStatus: matched.episodeCountStatus,
     ...(matched.premiereEpisodeCount ? { premiereEpisodeCount: matched.premiereEpisodeCount } : {}),
     ...shared,
