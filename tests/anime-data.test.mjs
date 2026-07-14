@@ -128,6 +128,7 @@ test("uses YUC episode totals when available and defaults every other show to 12
   assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount)), true);
   assert.equal(anime.every(({ episodeCount }) => episodeCount > 0), true);
   assert.equal(anime.find(({ id }) => id === "yume-mita")?.premiereEpisodeCount, 3);
+  assert.equal(anime.find(({ id }) => id === "mushoku-3")?.premiereEpisodeCount, 2);
   assert.equal(anime.find(({ id }) => id === "baki-dou-2")?.episodeCount, 12);
   assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);

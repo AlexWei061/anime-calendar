@@ -547,6 +547,7 @@ export const anime = [
   {
     "id": "mushoku-3",
     "episodeCount": 12,
+    "premiereEpisodeCount": 2,
     "titleZh": "无职转生 第3期",
     "titleJa": "無職転生 ～異世界行ったら本気だす～ 第3期",
     "coverUrl": "/covers/yuc/mushoku-3.jpg",
