@@ -7,7 +7,7 @@ import { april2022, january2022, july2022, october2022 } from "./yuc-history-202
 export const season = {
   "label": "2026 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-12",
+  "updatedAt": "2026-07-15",
   "catalogCount": 66,
   "sourceName": "YUC 2026年7月新番表",
   "sourceUrl": "https://yuc.wiki/202607/"
@@ -556,7 +556,8 @@ export const anime = [
     "titleJa": "無職転生 ～異世界行ったら本気だす～ 第3期",
     "coverUrl": "/covers/yuc/mushoku-3.webp",
     "coverAlt": "无职转生 第3期 主视觉",
-    "premiereDateBeijing": "2026-07-12",
+    "premiereDateBeijing": "2026-07-04",
+    "regularBroadcastStartDateBeijing": "2026-07-12",
     "scheduleWeekday": "Sun",
     "beijingTime": "23:00",
     "station": "YUC 周表",

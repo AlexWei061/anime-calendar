@@ -115,7 +115,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.deepEqual(season, {
     label: "2026 年 7 月番",
     timeZoneLabel: "北京时间（UTC+8）",
-    updatedAt: "2026-07-12",
+    updatedAt: "2026-07-15",
     catalogCount: 66,
     sourceName: "YUC 2026年7月新番表",
     sourceUrl: "https://yuc.wiki/202607/",
@@ -132,19 +132,24 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.ok(anime.every(({ sourceUrl }) => sourceUrl === season.sourceUrl));
 
   for (const record of anime) {
-    assert.deepEqual(Object.keys(record).filter((key) => key !== "premiereEpisodeCount").sort(), [
-      "beijingTime",
-      "coverAlt",
-      "coverUrl",
-      "episodeCount",
-      "id",
-      "premiereDateBeijing",
-      "scheduleWeekday",
-      "sourceUrl",
-      "station",
-      "titleJa",
-      "titleZh",
-    ]);
+    assert.deepEqual(
+      Object.keys(record)
+        .filter((key) => key !== "premiereEpisodeCount" && key !== "regularBroadcastStartDateBeijing")
+        .sort(),
+      [
+        "beijingTime",
+        "coverAlt",
+        "coverUrl",
+        "episodeCount",
+        "id",
+        "premiereDateBeijing",
+        "scheduleWeekday",
+        "sourceUrl",
+        "station",
+        "titleJa",
+        "titleZh",
+      ],
+    );
   }
 
   const yumeMita = anime.find(({ id }) => id === "yume-mita");
@@ -209,6 +214,36 @@ test("uses YUC episode totals when available and defaults every other show to 12
   assert.equal(anime.find(({ id }) => id === "baki-dou-2")?.episodeCount, 12);
   assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);
+});
+
+test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunday slot", () => {
+  const mushoku = anime.find(({ id }) => id === "mushoku-3");
+
+  assert.deepEqual(
+    eventsForWeek([mushoku], "2026-06-29").map(({ episodeStart, episode, broadcastDate, time }) => ({
+      episodeStart,
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episodeStart: 1, episode: 2, broadcastDate: "2026-07-04", time: "23:00" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([mushoku], "2026-07-06").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 3, broadcastDate: "2026-07-12", time: "23:00" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([mushoku], "2026-07-13").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 4, broadcastDate: "2026-07-19", time: "23:00" }],
+  );
 });
 
 function spriteUrlFor(coverUrl) {
