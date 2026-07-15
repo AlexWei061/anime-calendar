@@ -540,7 +540,7 @@ export default function Home() {
                       disabled={isSavingSelection}
                       onChange={() => void toggleAnimeSelection(record.id)}
                     />
-                    <span>{record.titleZh}</span>
+                    <span title={record.titleZh}>{record.titleZh}</span>
                   </label>
                 ))}
               </div>

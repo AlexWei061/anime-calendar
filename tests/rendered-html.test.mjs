@@ -292,6 +292,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /<summary className="anime-selection-summary">/);
   assert.match(page, /本季度想追什么？/);
   assert.doesNotMatch(page, /本月番想追什么？/);
+  assert.match(page, /<span title=\{record\.titleZh\}>\{record\.titleZh\}<\/span>/);
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
