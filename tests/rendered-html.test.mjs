@@ -333,6 +333,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
   assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
+  assert.match(page, /<strong title=\{event\.titleZh\}>\{event\.titleZh\}<\/strong>/);
   assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes/);
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);

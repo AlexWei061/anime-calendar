@@ -435,7 +435,7 @@ export default function Home() {
         >
           <CoverArt anime={event} className="calendar-event-cover" decorative />
           <span className="calendar-event-content">
-            <strong>{event.titleZh}</strong>
+            <strong title={event.titleZh}>{event.titleZh}</strong>
             <span className="calendar-event-episode">{episodeLabel}</span>
           </span>
         </button>
