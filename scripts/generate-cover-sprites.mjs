@@ -44,7 +44,7 @@ for (let offset = 0; offset < covers.length; offset += coversPerSprite) {
     },
   })
     .composite(composite)
-    .webp({ quality: 75, effort: 4 })
+    .webp({ quality: 90, effort: 4 })
     .toFile(join(projectRoot, "public", spriteUrl.slice(1)));
 
   for (const [index, { coverUrl }] of page.entries()) {

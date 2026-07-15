@@ -13,7 +13,7 @@ const dataFiles = [
   "data/yuc-history-2025.js",
   "data/yuc-history-2026.js",
 ];
-const webpOptions = { quality: 75, effort: 4 };
+const webpOptions = { lossless: true, effort: 4 };
 
 const coverFiles = (await readdir(coverDirectory)).filter((file) => file.endsWith(".jpg"));
 
@@ -32,12 +32,10 @@ for (const dataFile of dataFiles) {
   const source = await readFile(path, "utf8");
   const updated = source.replaceAll(/("coverUrl": "\/covers\/yuc\/[^"]+)\.jpg"/g, "$1.webp\"");
 
-  if (source.includes("/covers/yuc/") && updated === source) {
-    throw new Error(`No local JPEG cover paths were updated in ${dataFile}`);
+  if (updated !== source) {
+    await writeFile(path, updated);
   }
-
-  await writeFile(path, updated);
 }
 
 await Promise.all(coverFiles.map((file) => rm(join(coverDirectory, file))));
-console.log(`Converted ${coverFiles.length} covers to WebP at quality ${webpOptions.quality}.`);
+console.log(`Converted ${coverFiles.length} covers to lossless WebP.`);

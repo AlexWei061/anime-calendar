@@ -529,7 +529,7 @@ test("keeps accessible contrast tokens and generated build metadata out of the d
   assert.match(styles, /--mint-deep:\s*#2f6d60;/);
   assert.match(
     readme,
-    /- `npm test`：构建应用并验证日历数据、集数排期和渲染后的时间表。/,
+    /- `npm test`：构建应用并验证日历数据、集数排期、封面图集映射和渲染后的时间表。/,
   );
   assert.doesNotMatch(readme, /npm test[^\n]*loading skeleton/i);
   assert.match(gitignore, /^tsconfig\.tsbuildinfo$/m);
