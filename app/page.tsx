@@ -14,10 +14,12 @@ import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.j
 import {
   addDays,
   eventsForWeek,
+  firstFullWeekStart,
   formatBroadcastTime,
   formatEpisodeLabel,
   groupEventsByTime,
   layoutTimelineEvents,
+  seasonForWeek,
   startOfWeek,
   timelineBoundsForEvents,
   timelineOffsetMinutes,
@@ -108,18 +110,28 @@ function shortDate(isoDate: string) {
   return Number(month) + "月" + Number(day) + "日";
 }
 
+function longDate(isoDate: string) {
+  const [year] = isoDate.split("-");
+  return year + "年" + shortDate(isoDate);
+}
+
 function compactDate(isoDate: string) {
   const [, month, day] = isoDate.split("-");
   return Number(month) + "/" + Number(day);
 }
 
 function weekLabel(dates: string[]) {
-  return shortDate(dates[0]) + " — " + shortDate(dates[dates.length - 1]);
+  const [firstDate] = dates;
+  const lastDate = dates[dates.length - 1];
+  return (
+    longDate(firstDate) +
+    " — " +
+    (firstDate.slice(0, 4) === lastDate.slice(0, 4) ? shortDate(lastDate) : longDate(lastDate))
+  );
 }
 
 export default function Home() {
   const [activePage, setActivePage] = useState<Page>("all");
-  const [activeSeasonId, setActiveSeasonId] = useState(initialSeasonId);
   const [selected, setSelected] = useState<SelectedAnime | null>(null);
   const [selectedAnimeIds, setSelectedAnimeIds] = useState<string[] | null>(null);
   const [selectionError, setSelectionError] = useState<string | null>(null);
@@ -137,7 +149,7 @@ export default function Home() {
     getBeijingDate,
     getServerBeijingDate,
   );
-  const activeSeason = seasons.find(({ id }) => id === activeSeasonId) ?? seasons.at(-1)!;
+  const activeSeason = seasonForWeek(seasons, activeWeekStart);
   const isHistoricalSeason = activeSeason.id !== initialSeasonId;
   const defaultTimelineStartMinutes = 5 * 60;
   const defaultTimelineEndMinutes = 29 * 60;
@@ -277,15 +289,15 @@ export default function Home() {
     const nextSeason = seasons.find(({ id }) => id === nextSeasonId);
     if (!nextSeason) return;
 
-    setActiveSeasonId(nextSeason.id);
-    setActiveWeekStart(nextSeason.firstWeekStart);
-    setActiveMobileDate(nextSeason.firstWeekStart);
+    const nextWeekStart = firstFullWeekStart(nextSeason);
+    setActiveWeekStart(nextWeekStart);
+    setActiveMobileDate(nextWeekStart);
   };
 
   const returnToCurrentWeek = () => {
     const date = !isHistoricalSeason
       ? currentBeijingDate ?? initialWeekStart
-      : activeSeason.firstWeekStart;
+      : firstFullWeekStart(activeSeason);
     setActiveWeekStart(startOfWeek(date));
     setActiveMobileDate(date);
   };

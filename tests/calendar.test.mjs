@@ -11,12 +11,22 @@ const {
   groupEventsByTime,
   layoutEventsForDay,
   layoutTimelineEvents,
+  seasonForWeek,
   stackEventsForDay,
   startOfWeek,
   timelineBoundsForEvents,
   timelineOffsetMinutes,
   weekDays,
 } = calendar;
+
+const seasons = [
+  { id: "2024-april", firstWeekStart: "2024-04-01" },
+  { id: "2025-january", firstWeekStart: "2024-12-30" },
+  { id: "2025-april", firstWeekStart: "2025-03-31" },
+  { id: "2025-october", firstWeekStart: "2025-09-29" },
+  { id: "2026-january", firstWeekStart: "2025-12-29" },
+  { id: "2026-april", firstWeekStart: "2026-03-30" },
+];
 
 const weeklyShow = {
   id: "demo",
@@ -39,6 +49,16 @@ test("builds Monday through Sunday dates for a calendar week", () => {
     "2026-07-12",
   ]);
   assert.equal(addDays("2026-07-31", 1), "2026-08-01");
+});
+
+test("keeps a cross-quarter week in its previous season until the next full week", () => {
+  assert.equal(typeof seasonForWeek, "function");
+  assert.equal(seasonForWeek(seasons, "2024-04-01").id, "2024-april");
+  assert.equal(seasonForWeek(seasons, "2025-03-31").id, "2025-january");
+  assert.equal(seasonForWeek(seasons, "2025-04-07").id, "2025-april");
+  assert.equal(seasonForWeek(seasons, "2025-12-29").id, "2025-october");
+  assert.equal(seasonForWeek(seasons, "2026-01-05").id, "2026-january");
+  assert.equal(seasonForWeek(seasons, "2026-04-06").id, "2026-april");
 });
 
 test("puts each weekly episode in the requested Monday-based week", () => {

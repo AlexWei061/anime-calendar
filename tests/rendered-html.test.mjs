@@ -76,6 +76,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /上一周/);
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
+  assert.match(cleanHtml, /2026年7月6日 — 7月12日/);
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
@@ -233,7 +234,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
-  assert.match(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
+  assert.match(page, /const activeSeason = seasonForWeek\(seasons, activeWeekStart\);/);
+  assert.doesNotMatch(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
   assert.match(page, /const initialSeasonId = "2026-july";/);
   assert.match(page, /activeSeason\.label/);
   assert.doesNotMatch(page, /冬番|春番|夏番/);
@@ -247,7 +249,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
   assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
   assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
-  assert.match(page, /setActiveWeekStart\(nextSeason\.firstWeekStart\)/);
+  assert.match(
+    page,
+    /const nextWeekStart = firstFullWeekStart\(nextSeason\);[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
+  );
   assert.match(
     page,
     /import\s*\{[\s\S]*?\btimelineBoundsForEvents,[\s\S]*?\}\s*from "\.\.\/lib\/calendar\.js";/,
