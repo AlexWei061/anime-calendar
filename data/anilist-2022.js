@@ -2,7 +2,7 @@
 
 export const winter2022 = {
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 77,
   "sourceName": "AniList 历史放送记录（试点）",
   "sourceUrl": "https://anilist.co/search/anime?year=2022&season=WINTER",
@@ -332,7 +332,7 @@ export const winter2022 = {
       "coverAlt": "進撃の巨人 The Final Season Part 2 封面",
       "premiereDateBeijing": "2022-01-09",
       "scheduleWeekday": "Sun",
-      "beijingTime": "23:05",
+      "beijingTime": "23:10",
       "timeStatus": "exact",
       "station": "AniList 首集排期（试点）",
       "sourceUrl": "https://anilist.co/anime/131681"
@@ -1173,7 +1173,7 @@ export const winter2022 = {
 
 export const spring2022 = {
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 88,
   "sourceName": "AniList 历史放送记录（试点）",
   "sourceUrl": "https://anilist.co/search/anime?year=2022&season=SPRING",
@@ -2512,7 +2512,7 @@ export const spring2022 = {
 
 export const summer2022 = {
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 77,
   "sourceName": "AniList 历史放送记录（试点）",
   "sourceUrl": "https://anilist.co/search/anime?year=2022&season=SUMMER",
@@ -3688,7 +3688,7 @@ export const summer2022 = {
 
 export const fall2022 = {
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 81,
   "sourceName": "AniList 历史放送记录（试点）",
   "sourceUrl": "https://anilist.co/search/anime?year=2022&season=FALL",

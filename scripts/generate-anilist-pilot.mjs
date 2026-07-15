@@ -21,6 +21,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-CA", {
 const SCHEDULE_OVERRIDES = new Map([
   [110350, { date: "2020-01-05", weekday: "Sun", time: "23:30" }],
   [110277, { date: "2020-12-06", weekday: "Sun", time: "23:10" }],
+  [131681, { date: "2022-01-09", weekday: "Sun", time: "23:10" }],
 ]);
 
 const query = `

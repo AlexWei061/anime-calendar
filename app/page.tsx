@@ -289,7 +289,7 @@ export default function Home() {
     const nextSeason = seasons.find(({ id }) => id === nextSeasonId);
     if (!nextSeason) return;
 
-    const nextWeekStart = firstFullWeekStart(nextSeason);
+    const nextWeekStart = nextSeason.firstWeekStart;
     setActiveWeekStart(nextWeekStart);
     setActiveMobileDate(nextWeekStart);
   };

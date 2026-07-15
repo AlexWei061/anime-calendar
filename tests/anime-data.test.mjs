@@ -718,6 +718,28 @@ test("schedules Attack on Titan Final Season Part 1 weekly from December", () =>
   );
 });
 
+test("schedules Attack on Titan Final Season Part 2 weekly from January", () => {
+  const attackOnTitan = allAnime.find(({ id }) => id === "anilist-131681");
+
+  assert.ok(attackOnTitan);
+  assert.equal(attackOnTitan.episodeCount, 12);
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2022-01-03").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 1, broadcastDate: "2022-01-09", time: "23:10" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2022-03-21").map(({ episode, broadcastDate }) => ({
+      episode,
+      broadcastDate,
+    })),
+    [{ episode: 12, broadcastDate: "2022-03-27" }],
+  );
+});
+
 test("keeps all recorded seasons available while navigating calendar weeks", () => {
   const january2020Events = eventsForWeek(allAnime, "2019-12-30");
   const april2020Events = eventsForWeek(allAnime, "2020-03-30");

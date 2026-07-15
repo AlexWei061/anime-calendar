@@ -3,7 +3,7 @@
 export const january2022 = {
   "label": "2022 年 1 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 42,
   "sourceName": "YUC 2022年1月新番表",
   "sourceUrl": "https://yuc.wiki/202201/",
@@ -137,20 +137,20 @@ export const january2022 = {
       "station": "AniList 未匹配（试点）"
     },
     {
-      "id": "yuc-202201-09",
-      "anilistId": null,
+      "id": "anilist-131681",
+      "anilistId": 131681,
       "episodeCount": 12,
-      "episodeCountStatus": "estimated",
+      "episodeCountStatus": "exact",
       "titleZh": "进击的巨人 最终季 Part2",
       "titleJa": "進撃の巨人 The Final Season パート2",
       "coverUrl": "/covers/yuc/history-2022-01-09.webp",
       "coverAlt": "进击的巨人 最终季 Part2 封面",
       "sourceUrl": "https://yuc.wiki/202201/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2022-01-09",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "23:10",
+      "timeStatus": "exact",
+      "station": "AniList 首集排期（试点）"
     },
     {
       "id": "anilist-142329",
@@ -686,7 +686,7 @@ export const january2022 = {
 export const april2022 = {
   "label": "2022 年 4 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 57,
   "sourceName": "YUC 2022年4月新番表",
   "sourceUrl": "https://yuc.wiki/202204/",
@@ -1613,7 +1613,7 @@ export const april2022 = {
 export const july2022 = {
   "label": "2022 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 50,
   "sourceName": "YUC 2022年7月新番表",
   "sourceUrl": "https://yuc.wiki/202207/",
@@ -2428,7 +2428,7 @@ export const july2022 = {
 export const october2022 = {
   "label": "2022 年 10 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "catalogCount": 57,
   "sourceName": "YUC 2022年10月新番表",
   "sourceUrl": "https://yuc.wiki/202210/",

@@ -308,6 +308,7 @@ function normalizeTitle(value) {
 
 export const TITLE_ALIASES = Object.freeze(
   [
+    ["進撃の巨人 The Final Season パート2", "進撃の巨人 The Final Season Part 2"],
     ["呪術廻戦 第3期", "呪術廻戦 死滅回游 前編"],
     ["MFゴースト Season 3", "MFゴースト 3rd Season"],
     ["炎炎ノ消防隊 参ノ章", "炎炎ノ消防隊 参ノ章 第2クール"],

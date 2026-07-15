@@ -251,7 +251,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
   assert.match(
     page,
-    /const nextWeekStart = firstFullWeekStart\(nextSeason\);[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
+    /const nextWeekStart = nextSeason\.firstWeekStart;[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
   );
   assert.match(
     page,
