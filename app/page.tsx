@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { allAnime, seasons } from "../data/anime.js";
+import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
 import {
@@ -44,6 +45,37 @@ type SelectedAnime = Anime & {
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine";
+
+function CoverArt({
+  anime,
+  className,
+  decorative = false,
+}: {
+  anime: Anime;
+  className: string;
+  decorative?: boolean;
+}) {
+  const sprite = coverSpriteFor(anime.coverUrl);
+  if (!sprite) return null;
+
+  const style = {
+    backgroundImage: `url(${sprite.url})`,
+    backgroundSize: `${sprite.columns * 100}% ${sprite.rows * 100}%`,
+    backgroundPosition: `${sprite.columns === 1 ? 0 : (sprite.x / (sprite.columns - 1)) * 100}% ${
+      sprite.rows === 1 ? 0 : (sprite.y / (sprite.rows - 1)) * 100
+    }%`,
+  } as CSSProperties;
+
+  return (
+    <span
+      aria-hidden={decorative || undefined}
+      aria-label={decorative ? undefined : anime.coverAlt}
+      className={className + " cover-sprite"}
+      role={decorative ? undefined : "img"}
+      style={style}
+    />
+  );
+}
 
 const beijingDateFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Shanghai",
@@ -389,7 +421,7 @@ export default function Home() {
             })
           }
         >
-          <img className="calendar-event-cover" src={event.coverUrl} alt="" loading="lazy" />
+          <CoverArt anime={event} className="calendar-event-cover" decorative />
           <span className="calendar-event-content">
             <strong>{event.titleZh}</strong>
             <span className="calendar-event-episode">{episodeLabel}</span>
@@ -649,7 +681,7 @@ export default function Home() {
               aria-label={"查看《" + record.titleZh + "／" + record.titleJa + "》详情"}
               onClick={(clickEvent) => openDetail(record, clickEvent.currentTarget)}
             >
-              <img src={record.coverUrl} alt={record.coverAlt} loading="lazy" />
+              <CoverArt anime={record} className="network-card-cover" decorative />
               <span>
                 <strong>{record.titleZh}</strong>
                 <small>{record.titleJa}</small>
@@ -720,7 +752,7 @@ export default function Home() {
               关闭
             </button>
           </div>
-          <img className="detail-cover" src={selected.coverUrl} alt={selected.coverAlt} />
+          <CoverArt anime={selected} className="detail-cover" />
           <p className="detail-title-zh">{selected.titleZh}</p>
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
           <dl>

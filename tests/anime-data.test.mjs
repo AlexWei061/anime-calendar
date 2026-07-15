@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readdir, readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { allAnime, anime, season, seasons } from "../data/anime.js";
+import { coverSpriteFor } from "../data/cover-sprites.js";
 import { addDays, eventsForWeek } from "../lib/calendar.js";
 import { groupByBeijingWeekday } from "../lib/schedule.js";
 import {
@@ -210,10 +211,21 @@ test("uses YUC episode totals when available and defaults every other show to 12
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);
 });
 
-test("ships every YUC cover as a local static asset", async () => {
+function spriteUrlFor(coverUrl) {
+  const sprite = coverSpriteFor(coverUrl);
+  assert.ok(sprite, `missing sprite for ${coverUrl}`);
+  return sprite.url;
+}
+
+test("ships every YUC cover through a local static sprite", async () => {
   await Promise.all(
-    anime.map(({ coverUrl }) => access(new URL(`../public${coverUrl}`, import.meta.url))),
+    anime.map(({ coverUrl }) => access(new URL(`../public${spriteUrlFor(coverUrl)}`, import.meta.url))),
   );
+});
+
+test("keeps packaged cover assets below the deployment file limit", async () => {
+  const coverFiles = await readdir(new URL("../public/covers/yuc/", import.meta.url), { recursive: true });
+  assert.ok(coverFiles.length < 100, `expected fewer than 100 cover assets, got ${coverFiles.length}`);
 });
 
 test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", async () => {
@@ -304,7 +316,9 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
     ),
   );
   await Promise.all(
-    historicalAnime.map(({ coverUrl }) => access(new URL(`../public${coverUrl}`, import.meta.url))),
+    historicalAnime.map(({ coverUrl }) =>
+      access(new URL(`../public${spriteUrlFor(coverUrl)}`, import.meta.url)),
+    ),
   );
   assert.ok(
     historicalAnime.every(

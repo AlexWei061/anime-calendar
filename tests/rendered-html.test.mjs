@@ -90,8 +90,8 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(cleanHtml, /次日 04:00/);
   assert.match(cleanHtml, /次日 03:08/);
   assert.match(html, /class="calendar-event/);
-  assert.match(html, /class="calendar-event-cover"/);
-  assert.match(html, /src="\/covers\/yuc\/transparent-night\.webp"/);
+  assert.match(html, /class="calendar-event-cover cover-sprite"/);
+  assert.match(html, /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+\.webp\)/);
   assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
@@ -125,8 +125,8 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   ].map(([card]) => card);
   assert.ok(timedEvents.length > 20);
   assert.ok(timedEvents.every((tag) => /aria-haspopup="dialog"/.test(tag)));
-  assert.ok(timedEvents.every((card) => /class="calendar-event-cover"/.test(card)));
-  assert.ok(timedEvents.every((card) => /loading="lazy"/.test(card)));
+  assert.ok(timedEvents.every((card) => /class="calendar-event-cover cover-sprite"/.test(card)));
+  assert.ok(timedEvents.every((card) => /\bcover-sprite\b/.test(card)));
 
   const mobilePicker = cleanHtml.slice(
     cleanHtml.indexOf('<div class="mobile-day-picker"'),
@@ -151,8 +151,8 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   ).length;
   assert.equal(networkCards.length, networkOnlyCount);
   assert.match(networkCards.join(""), /刃牙道 Part\.2/);
-  assert.match(networkCards.join(""), /src="\/covers\/yuc\/baki-dou-2\.webp"/);
-  assert.match(networkCards.join(""), /loading="lazy"/);
+  assert.match(networkCards.join(""), /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+\.webp\)/);
+  assert.match(networkCards.join(""), /\bcover-sprite\b/);
 
   const sourceLinks = [
     ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/yuc\.wiki\/202607\/")[^>]*>/g),
@@ -214,7 +214,9 @@ test("renders three same-time events side by side on one timeline day", async ()
   assert.ok(laneOffsets.includes("0%"));
   assert.ok(laneOffsets.some((offset) => /^33\.333/.test(offset ?? "")));
   assert.ok(laneOffsets.some((offset) => /^66\.666/.test(offset ?? "")));
-  assert.ok(sameTimeEvents.every(([, , card]) => /class="calendar-event-cover"/.test(card)));
+  assert.ok(
+    sameTimeEvents.every(([, , card]) => /class="calendar-event-cover cover-sprite"/.test(card)),
+  );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /正后方的神威/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /我家的弟弟们真是让您费心了/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /地狱模式/);
@@ -340,7 +342,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /\{selected \? \(/);
   assert.match(page, /selected\.titleZh/);
-  assert.match(page, /selected\.coverUrl/);
+  assert.match(page, /<CoverArt anime=\{selected\} className="detail-cover" \/>/);
   assert.match(page, /dialogRef\.current\.showModal\(\)/);
   assert.match(
     page,
@@ -389,7 +391,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
 
   assert.match(
     styles,
-    /\.detail-cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*auto;[\s\S]*?max-height:\s*none;[\s\S]*?object-fit:\s*contain;/,
+    /\.detail-cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;[\s\S]*?max-height:\s*none;[\s\S]*?background-repeat:\s*no-repeat;/,
   );
   assert.match(styles, /:focus-visible/);
   assert.match(
@@ -447,7 +449,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event \.calendar-event-cover\s*\{[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;[\s\S]*?object-fit:\s*contain;/,
+    /\.timeline-event \.calendar-event-cover\s*\{[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;/,
   );
   assert.match(
     styles,
