@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { filterKnownAnimeIds, validateAnimeIds } from "../lib/anime-selections.js";
+import * as animeSelections from "../lib/anime-selections.js";
+
+const { filterKnownAnimeIds, validateAnimeIds } = animeSelections;
 
 const validIds = new Set(["sayonara-lara", "mobius-dust"]);
 
@@ -27,4 +29,14 @@ test("rejects invalid saved selection payloads", () => {
 test("rejects invalid selection payloads", () => {
   assert.throws(() => validateAnimeIds("sayonara-lara", validIds), /animeIds/);
   assert.throws(() => validateAnimeIds(["unknown"], validIds), /unknown/);
+});
+
+test("splits 51 selections into D1-safe insert batches", () => {
+  const animeIds = Array.from({ length: 51 }, (_, index) => "anime-" + index);
+
+  assert.equal(typeof animeSelections.selectionInsertBatches, "function");
+  assert.deepEqual(animeSelections.selectionInsertBatches(animeIds), [
+    animeIds.slice(0, 50),
+    animeIds.slice(50),
+  ]);
 });

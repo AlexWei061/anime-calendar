@@ -19,3 +19,10 @@ test("declares a D1 table and authenticated selection route", async () => {
   assert.match(route, /filterKnownAnimeIds\(rows\.map\(\(\{ animeId \}\) => animeId\), validAnimeIds\)/);
   assert.match(route, /filterKnownAnimeIds\(payload\.animeIds, validAnimeIds\)/);
 });
+
+test("replaces selections in one atomic D1 batch", async () => {
+  const route = await readFile(new URL("../app/api/anime-selections/route.ts", import.meta.url), "utf8");
+
+  assert.match(route, /selectionInsertBatches\(animeIds\)\.map/);
+  assert.match(route, /await db\.batch\(\[/);
+});

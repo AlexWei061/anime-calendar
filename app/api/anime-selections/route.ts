@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
-import { filterKnownAnimeIds } from "../../../lib/anime-selections.js";
+import { filterKnownAnimeIds, selectionInsertBatches } from "../../../lib/anime-selections.js";
 import { getChatGPTUser } from "../../chatgpt-auth";
 
 const validAnimeIds = new Set(allAnime.map(({ id }) => id));
@@ -47,12 +47,12 @@ export async function PUT(request: Request) {
 
   try {
     const db = await getDb();
-    await db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email));
-    if (animeIds.length) {
-      await db.insert(animeSelections).values(
-        animeIds.map((animeId) => ({ userEmail: user.email, animeId })),
-      );
-    }
+    await db.batch([
+      db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)),
+      ...selectionInsertBatches(animeIds).map((batch) =>
+        db.insert(animeSelections).values(batch.map((animeId) => ({ userEmail: user.email, animeId }))),
+      ),
+    ]);
     return Response.json({ animeIds });
   } catch {
     return Response.json({ error: "Unable to save anime selections" }, { status: 500 });
