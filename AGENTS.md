@@ -97,7 +97,8 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 ## 个人追番与数据库边界
 
 - 追番列表是服务器端、按 ChatGPT 邮箱隔离的数据；浏览器不能决定用户邮箱。API 必须先调用 `getChatGPTUser()`，未登录时返回 `401`。
-- 写入前必须通过 `validateAnimeIds`，只接受 `allAnime` 中存在的字符串 ID；保存采用“该用户整表替换”的现有语义。
+- 写入前必须通过 `filterKnownAnimeIds` 去重并过滤掉不在 `allAnime` 中的 ID；保存采用“该用户整表替换”的现有语义。
+- D1 单条语句最多绑定 100 个参数；每个追番写入会绑定邮箱和番剧 ID 两个参数，所以插入必须按最多 50 个 ID 分批。删除旧列表与所有插入批次必须放进同一次 `db.batch()`，保持原子替换；不要先删除再单独插入，否则大列表插入失败会清空用户原有追番。
 - 已看标记同样按 ChatGPT 邮箱隔离并永久保存在 D1；单条记录由 `animeId`、`episodeStart` 和 `episode` 唯一标识。API 必须先认证，再通过 `validateEpisodeView` 校验，不能接受浏览器提供的用户身份。
 - 认证辅助函数依赖 Sites 保留的登录路由。不要在应用内实现 `/signin-with-chatgpt`、`/signout-with-chatgpt` 或 `/callback`。
 - 修改 D1 schema 时，同时更新 `db/schema.ts` 并运行 `npm run db:generate`，检查新迁移后将其提交。不要手写与 schema 不一致的 SQL。
@@ -109,6 +110,8 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 - `build/sites-vite-plugin.ts` 会将 `.openai/hosting.json` 和 `drizzle/` 复制到 `dist/.openai/`。不要手动编辑 `dist/`、`.next/` 或 `.wrangler/` 生成物。
 - 部署前保留生成后的图集和 `data/cover-sprites.js`；不要将已打包的封面还原为大量独立静态资源，以免超过 Sites 的静态文件承载范围。
 - 本地开发绑定由 `vite.config.ts` 模拟；应用级环境变量放在被忽略的 `.env*` 中。不提交凭据、真实数据库 ID 或 Wrangler/Miniflare 本地状态。
+- 发布到 GitHub 和 Sites 时，先验证构建，再提交并推送同一个 `main` 提交；Sites 保存的版本必须引用该提交及其对应的构建产物。若 Sites 源仓库有并发更新，先合并并验证，绝不强制推送覆盖对方改动。
+- Sites 默认保持私有访问；只有用户明确要求改变可见范围时才调整访问设置。发布完成后以部署状态为准，确认成功再交付站点 URL。
 
 ## 开发与验证
 
