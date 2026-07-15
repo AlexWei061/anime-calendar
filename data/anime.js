@@ -3,6 +3,8 @@ import { april2025, january2025, july2025, october2025 } from "./yuc-history-202
 import { april2024, january2024, july2024, october2024 } from "./yuc-history-2024.js";
 import { april2023, january2023, july2023, october2023 } from "./yuc-history-2023.js";
 import { april2022, january2022, july2022, october2022 } from "./yuc-history-2022.js";
+import { april2021, january2021, july2021, october2021 } from "./yuc-history-2021.js";
+import { april2020, january2020, july2020, october2020 } from "./yuc-history-2020.js";
 
 export const season = {
   "label": "2026 年 7 月番",
@@ -878,6 +880,54 @@ export const anime = [
 ];
 
 export const seasons = [
+  {
+    id: "2020-january",
+    firstWeekStart: "2019-12-30",
+    timelineStartHour: 5,
+    ...january2020,
+  },
+  {
+    id: "2020-april",
+    firstWeekStart: "2020-03-30",
+    timelineStartHour: 5,
+    ...april2020,
+  },
+  {
+    id: "2020-july",
+    firstWeekStart: "2020-06-29",
+    timelineStartHour: 5,
+    ...july2020,
+  },
+  {
+    id: "2020-october",
+    firstWeekStart: "2020-09-28",
+    timelineStartHour: 5,
+    ...october2020,
+  },
+  {
+    id: "2021-january",
+    firstWeekStart: "2021-01-04",
+    timelineStartHour: 5,
+    ...january2021,
+  },
+  {
+    id: "2021-april",
+    firstWeekStart: "2021-03-29",
+    timelineStartHour: 5,
+    ...april2021,
+  },
+  {
+    id: "2021-july",
+    firstWeekStart: "2021-06-28",
+    timelineStartHour: 5,
+    ...july2021,
+  },
+  {
+    id: "2021-october",
+    firstWeekStart: "2021-09-27",
+    timelineStartHour: 5,
+    ...october2021,
+  },
   {
     id: "2022-january",
     firstWeekStart: "2022-01-03",

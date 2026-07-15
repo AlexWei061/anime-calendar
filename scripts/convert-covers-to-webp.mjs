@@ -7,6 +7,8 @@ const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const coverDirectory = join(projectRoot, "public", "covers", "yuc");
 const dataFiles = [
   "data/anime.js",
+  "data/yuc-history-2020.js",
+  "data/yuc-history-2021.js",
   "data/yuc-history-2022.js",
   "data/yuc-history-2023.js",
   "data/yuc-history-2024.js",

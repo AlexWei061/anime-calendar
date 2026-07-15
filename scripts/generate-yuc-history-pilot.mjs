@@ -3,6 +3,90 @@ import { extname } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const seasonsByYear = Object.freeze({
+  2020: Object.freeze([
+    Object.freeze({
+      month: "1",
+      label: "2020 年 1 月番",
+      url: "https://yuc.wiki/202001/",
+      catalogName: "YUC 2020年1月新番表",
+      exportName: "january2020",
+      aniListExportName: "winter2020",
+      expectedCardCount: 51,
+      sentinelTitles: Object.freeze(["22/7", "猫狗宠物街 (拟人版)"]),
+    }),
+    Object.freeze({
+      month: "4",
+      label: "2020 年 4 月番",
+      url: "https://yuc.wiki/202004/",
+      catalogName: "YUC 2020年4月新番表",
+      exportName: "april2020",
+      aniListExportName: "spring2020",
+      expectedCardCount: 51,
+      sentinelTitles: Object.freeze(["天晴烂漫", "四月一日三姐妹 第2期"]),
+    }),
+    Object.freeze({
+      month: "7",
+      label: "2020 年 7 月番",
+      url: "https://yuc.wiki/202007/",
+      catalogName: "YUC 2020年7月新番表",
+      exportName: "july2020",
+      aniListExportName: "summer2020",
+      expectedCardCount: 22,
+      sentinelTitles: Object.freeze(["宝石幻想 光芒重现", "GETUP! GETLIVE!"]),
+    }),
+    Object.freeze({
+      month: "10",
+      label: "2020 年 10 月番",
+      url: "https://yuc.wiki/202010/",
+      catalogName: "YUC 2020年10月新番表",
+      exportName: "october2020",
+      aniListExportName: "fall2020",
+      expectedCardCount: 45,
+      sentinelTitles: Object.freeze(["成为神的那天/成神之日", "月歌 第2期"]),
+    }),
+  ]),
+  2021: Object.freeze([
+    Object.freeze({
+      month: "1",
+      label: "2021 年 1 月番",
+      url: "https://yuc.wiki/202101/",
+      catalogName: "YUC 2021年1月新番表",
+      exportName: "january2021",
+      aniListExportName: "winter2021",
+      expectedCardCount: 55,
+      sentinelTitles: Object.freeze(["赛马娘 第2期", "暗芝居 第8期"]),
+    }),
+    Object.freeze({
+      month: "4",
+      label: "2021 年 4 月番",
+      url: "https://yuc.wiki/202104/",
+      catalogName: "YUC 2021年4月新番表",
+      exportName: "april2021",
+      aniListExportName: "spring2021",
+      expectedCardCount: 64,
+      sentinelTitles: Object.freeze(["佐贺偶像是传奇 第2期", "训斥猫 / 坏嘴猫猫"]),
+    }),
+    Object.freeze({
+      month: "7",
+      label: "2021 年 7 月番",
+      url: "https://yuc.wiki/202107/",
+      catalogName: "YUC 2021年7月新番表",
+      exportName: "july2021",
+      aniListExportName: "summer2021",
+      expectedCardCount: 40,
+      sentinelTitles: Object.freeze(["白砂水族馆", "暗芝居 第9期"]),
+    }),
+    Object.freeze({
+      month: "10",
+      label: "2021 年 10 月番",
+      url: "https://yuc.wiki/202110/",
+      catalogName: "YUC 2021年10月新番表",
+      exportName: "october2021",
+      aniListExportName: "fall2021",
+      expectedCardCount: 53,
+      sentinelTitles: Object.freeze(["宿命回响 命运节拍", "群马酱"]),
+    }),
+  ]),
   2022: Object.freeze([
     Object.freeze({
       month: "1",
@@ -255,8 +339,8 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
 
   for (const [, card] of html.matchAll(cardPattern)) {
     const image = card.match(/<img\b(?=[^>]*\bwidth="180px")(?=[^>]*\bdata-src="([^"]+)")[^>]*>/i);
-    const titleZh = card.match(/<p class="title_cn[_r\d]*">([\s\S]*?)<\/p>/i);
-    const titleJa = card.match(/<p class="title_jp[_r\d]*">([\s\S]*?)<\/p>/i);
+    const titleZh = card.match(/<p class="title_cn[_a-z\d]*">([\s\S]*?)<\/p>/i);
+    const titleJa = card.match(/<p class="title_jp[_a-z\d]*">([\s\S]*?)<\/p>/i);
     if (!image || !titleZh || !titleJa) continue;
 
     const coverUrl = image[1].trim().replace(/^http:/i, "https:");
