@@ -668,6 +668,56 @@ test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
   assert.deepEqual(eventsForWeek([partTwo], "2026-10-05"), []);
 });
 
+test("schedules ID:INVADED weekly from its January premiere", () => {
+  const idInvaded = allAnime.find(({ id }) => id === "anilist-110350");
+
+  assert.deepEqual(
+    eventsForWeek([idInvaded], "2019-12-30").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 1, broadcastDate: "2020-01-05", time: "23:30" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([idInvaded], "2020-01-06").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 2, broadcastDate: "2020-01-12", time: "23:30" }],
+  );
+});
+
+test("schedules Attack on Titan Final Season Part 1 weekly from December", () => {
+  const attackOnTitan = allAnime.find(({ id }) => id === "anilist-110277");
+
+  assert.equal(attackOnTitan?.episodeCount, 16);
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2020-11-30").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 1, broadcastDate: "2020-12-06", time: "23:10" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2020-12-07").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 2, broadcastDate: "2020-12-13", time: "23:10" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2021-03-15").map(({ episode, broadcastDate }) => ({
+      episode,
+      broadcastDate,
+    })),
+    [{ episode: 16, broadcastDate: "2021-03-21" }],
+  );
+});
+
 test("keeps all recorded seasons available while navigating calendar weeks", () => {
   const january2020Events = eventsForWeek(allAnime, "2019-12-30");
   const april2020Events = eventsForWeek(allAnime, "2020-03-30");

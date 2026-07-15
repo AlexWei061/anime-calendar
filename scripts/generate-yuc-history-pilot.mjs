@@ -2,6 +2,8 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import { extname } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { coverSpriteFor } from "../data/cover-sprites.js";
+
 const seasonsByYear = Object.freeze({
   2020: Object.freeze([
     Object.freeze({
@@ -468,6 +470,11 @@ export function historicalCoverUrls(year, month, index) {
 }
 
 async function downloadCover(coverUrl, year, month, index) {
+  const spriteCoverUrl = historicalCoverUrls(year, month, index).find((localCoverUrl) =>
+    localCoverUrl.endsWith(".webp"),
+  );
+  if (spriteCoverUrl && coverSpriteFor(spriteCoverUrl)) return spriteCoverUrl;
+
   for (const localCoverUrl of historicalCoverUrls(year, month, index)) {
     try {
       await access(new URL(`../public${localCoverUrl}`, import.meta.url));

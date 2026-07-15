@@ -18,6 +18,10 @@ const dateFormatter = new Intl.DateTimeFormat("en-CA", {
   month: "2-digit",
   day: "2-digit",
 });
+const SCHEDULE_OVERRIDES = new Map([
+  [110350, { date: "2020-01-05", weekday: "Sun", time: "23:30" }],
+  [110277, { date: "2020-12-06", weekday: "Sun", time: "23:10" }],
+]);
 
 const query = `
   query ($page: Int!, $season: MediaSeason!, $year: Int!) {
@@ -78,7 +82,7 @@ function normalizeMedia(media, season, year) {
     throw new Error(`AniList record ${media.id} is incomplete for the pilot`);
   }
 
-  const schedule = firstAiring
+  const defaultSchedule = firstAiring
     ? (() => {
         const { date, time } = beijingDateTime(firstAiring.airingAt);
         const premiereEpisodeCount = Math.max(
@@ -98,6 +102,7 @@ function normalizeMedia(media, season, year) {
         time: null,
         weekday: null,
       };
+  const schedule = SCHEDULE_OVERRIDES.get(media.id) ?? defaultSchedule;
 
   return {
     id: `anilist-${media.id}`,
