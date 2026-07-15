@@ -228,6 +228,22 @@ test("keeps packaged cover assets below the deployment file limit", async () => 
   assert.ok(coverFiles.length < 100, `expected fewer than 100 cover assets, got ${coverFiles.length}`);
 });
 
+test("creates high-quality sprites from lossless local cover intermediates", async () => {
+  const [converter, spriteGenerator] = await Promise.all([
+    readFile(new URL("../scripts/convert-covers-to-webp.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../scripts/generate-cover-sprites.mjs", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(converter, /const webpOptions = \{ lossless: true, effort: 4 \}/);
+  assert.match(spriteGenerator, /\.webp\(\{ quality: 90, effort: 4 \}\)/);
+});
+
+test("allows original JPEG covers to be rebuilt after catalog paths already use WebP", async () => {
+  const converter = await readFile(new URL("../scripts/convert-covers-to-webp.mjs", import.meta.url), "utf8");
+
+  assert.doesNotMatch(converter, /No local JPEG cover paths were updated/);
+});
+
 test("ships YUC historical catalogs with Chinese titles, covers, and AniList broadcast details", async () => {
   assert.deepEqual(seasons.map(({ id }) => id), [
     "2022-january",
