@@ -156,23 +156,27 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.ok(anime.every(({ sourceUrl }) => sourceUrl === season.sourceUrl));
 
   for (const record of anime) {
+    const baseKeys = [
+      "beijingTime",
+      "coverAlt",
+      "coverUrl",
+      "episodeCount",
+      "id",
+      "premiereDateBeijing",
+      "scheduleWeekday",
+      "sourceUrl",
+      "station",
+      "titleJa",
+      "titleZh",
+    ];
     assert.deepEqual(
       Object.keys(record)
         .filter((key) => key !== "premiereEpisodeCount" && key !== "regularBroadcastStartDateBeijing")
         .sort(),
-      [
-        "beijingTime",
-        "coverAlt",
-        "coverUrl",
-        "episodeCount",
-        "id",
-        "premiereDateBeijing",
-        "scheduleWeekday",
-        "sourceUrl",
-        "station",
-        "titleJa",
-        "titleZh",
-      ],
+      (record.scheduleSourceName
+        ? [...baseKeys, "episodeSchedules", "scheduleChannel", "scheduleSourceName", "scheduleSourceUrl", "timeStatus"]
+        : baseKeys
+      ).sort(),
     );
   }
 
@@ -243,6 +247,7 @@ test("uses YUC episode totals when available and defaults every other show to 12
 test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunday slot", () => {
   const mushoku = anime.find(({ id }) => id === "mushoku-3");
 
+  assert.equal(mushoku?.scheduleSourceName, "しょぼいカレンダー");
   assert.deepEqual(
     eventsForWeek([mushoku], "2026-06-29").map(({ episodeStart, episode, broadcastDate, time }) => ({
       episodeStart,
@@ -250,7 +255,7 @@ test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunda
       broadcastDate,
       time,
     })),
-    [{ episodeStart: 1, episode: 2, broadcastDate: "2026-07-04", time: "23:00" }],
+    [{ episodeStart: 1, episode: 2, broadcastDate: "2026-07-04", time: "19:00" }],
   );
   assert.deepEqual(
     eventsForWeek([mushoku], "2026-07-06").map(({ episode, broadcastDate, time }) => ({
@@ -268,6 +273,25 @@ test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunda
     })),
     [{ episode: 4, broadcastDate: "2026-07-19", time: "23:00" }],
   );
+});
+
+test("audits every published catalog entry through Syoboi", async () => {
+  const snapshots = await Promise.all(
+    [2020, 2021, 2022, 2023, 2024, 2025, 2026].map(async (year) => {
+      const source = await import(`../data/syoboi-history-${year}.js`);
+      return source[`syoboiHistory${year}`];
+    }),
+  );
+  const auditedIds = new Set(
+    snapshots.flatMap(({ entries, unmatched, ambiguous, skipped }) => [
+      ...entries,
+      ...unmatched,
+      ...ambiguous,
+      ...skipped,
+    ]).map(({ recordId }) => recordId),
+  );
+
+  assert.ok(allAnime.every(({ id }) => auditedIds.has(id)));
 });
 
 function spriteUrlFor(coverUrl) {

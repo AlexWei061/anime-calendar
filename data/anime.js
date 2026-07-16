@@ -5,6 +5,7 @@ import { april2023, january2023, july2023, october2023 } from "./yuc-history-202
 import { april2022, january2022, july2022, october2022 } from "./yuc-history-2022.js";
 import { april2021, january2021, july2021, october2021 } from "./yuc-history-2021.js";
 import { april2020, january2020, july2020, october2020 } from "./yuc-history-2020.js";
+import { syoboiHistory2026 } from "./syoboi-history-2026.js";
 
 export const season = {
   "label": "2026 年 7 月番",
@@ -15,7 +16,7 @@ export const season = {
   "sourceUrl": "https://yuc.wiki/202607/"
 };
 
-export const anime = [
+const yucAnime = [
   {
     "id": "sayonara-lara",
     "episodeCount": 12,
@@ -878,6 +879,85 @@ export const anime = [
     "sourceUrl": "https://yuc.wiki/202607/"
   }
 ];
+
+const verifiedJulySchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
+
+function weekdayForDate(isoDate) {
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][new Date(`${isoDate}T00:00:00Z`).getUTCDay()];
+}
+
+function addDays(isoDate, days) {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function appendKnownWeeklySchedule(record, episodeSchedules) {
+  const lastSchedule = episodeSchedules.at(-1);
+  if (
+    !record.regularBroadcastStartDateBeijing ||
+    !record.beijingTime ||
+    !lastSchedule ||
+    lastSchedule.episodeEnd >= record.episodeCount
+  ) {
+    return episodeSchedules;
+  }
+  const weeklySchedule = episodeSchedules.find(
+    ({ broadcastDateBeijing, beijingTime, intervalDays }) =>
+      broadcastDateBeijing === record.regularBroadcastStartDateBeijing &&
+      beijingTime === record.beijingTime &&
+      intervalDays === 7,
+  );
+  if (!weeklySchedule) return episodeSchedules;
+
+  const episodeStart = lastSchedule.episodeEnd + 1;
+  return [
+    ...episodeSchedules,
+    {
+      episodeStart,
+      episodeEnd: record.episodeCount,
+      broadcastDateBeijing: addDays(
+        record.regularBroadcastStartDateBeijing,
+        (episodeStart - weeklySchedule.episodeStart) * 7,
+      ),
+      beijingTime: record.beijingTime,
+      intervalDays: 7,
+    },
+  ];
+}
+
+export const anime = yucAnime.map((record) => {
+  const schedule = verifiedJulySchedules.get(record.id);
+  if (!schedule?.episodeSchedules?.length) return record;
+
+  const episodeSchedules = appendKnownWeeklySchedule(record, schedule.episodeSchedules);
+  const [firstSchedule] = episodeSchedules;
+  const weeklySchedule = episodeSchedules
+    .filter(({ intervalDays }) => intervalDays === 7)
+    .sort(
+      (left, right) =>
+        right.episodeEnd - right.episodeStart - (left.episodeEnd - left.episodeStart) ||
+        left.episodeStart - right.episodeStart,
+    )[0];
+  return {
+    ...record,
+    ...(firstSchedule.intervalDays === 0 && firstSchedule.episodeEnd > firstSchedule.episodeStart
+      ? { premiereEpisodeCount: firstSchedule.episodeEnd }
+      : {}),
+    ...(weeklySchedule && weeklySchedule.episodeStart > 1
+      ? { regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing }
+      : {}),
+    premiereDateBeijing: firstSchedule.broadcastDateBeijing,
+    scheduleWeekday: weeklySchedule ? weekdayForDate(weeklySchedule.broadcastDateBeijing) : null,
+    beijingTime: weeklySchedule?.beijingTime ?? firstSchedule.beijingTime,
+    timeStatus: "verified",
+    station: schedule.channel,
+    episodeSchedules,
+    scheduleSourceName: "しょぼいカレンダー",
+    scheduleSourceUrl: schedule.sourceUrl,
+    scheduleChannel: schedule.channel,
+  };
+});
 
 export const seasons = [
   {

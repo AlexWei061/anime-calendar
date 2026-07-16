@@ -6,6 +6,54 @@ export const syoboiHistory2026 = {
   "sourceUrl": "https://cal.syoboi.jp/",
   "entries": [
     {
+      "recordId": "100-girlfriends-3",
+      "tid": 7893,
+      "titleJa": "君のことが大大大大大好きな100人の彼女 第3期",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7893",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "20th-century-electric-catalog",
+      "tid": 7913,
+      "titleJa": "二十世紀電氣目録 -ユーレカ・エヴリカ-",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7913",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "all-works-maid",
+      "tid": 7886,
+      "titleJa": "ヒロイン？聖女？いいえ、オールワークスメイドです（誇）！",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7886",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-01",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
       "recordId": "anilist-147105",
       "tid": 7741,
       "titleJa": "とんがり帽子のアトリエ",
@@ -2554,6 +2602,894 @@ export const syoboiHistory2026 = {
       ]
     },
     {
+      "recordId": "azur-lane-bisoku-2",
+      "tid": 7944,
+      "titleJa": "アズールレーン びそくぜんしんっ！にっ！！",
+      "channel": "BS11イレブン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7944",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-15",
+          "beijingTime": "00:20",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "black-torch",
+      "tid": 7923,
+      "titleJa": "BLACK TORCH",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7923",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "bungo-wan-2",
+      "tid": 7922,
+      "titleJa": "文豪ストレイドッグス わん！2",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7922",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-02",
+          "beijingTime": "20:40",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "clevatess-2",
+      "tid": 7942,
+      "titleJa": "クレバテスⅡ-魔獣の王と偽りの勇者伝承-",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7942",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "dodge-danko",
+      "tid": 7876,
+      "titleJa": "炎の闘球女 ドッジ弾子",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7876",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "futsutsuka-akujo",
+      "tid": 7914,
+      "titleJa": "ふつつかな悪女ではございますが～雛宮蝶鼠とりかえ伝～",
+      "channel": "テレビ東京",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7914",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-12",
+          "beijingTime": "22:45",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "ghost-in-the-shell",
+      "tid": 7936,
+      "titleJa": "攻殻機動隊 THE GHOST IN THE SHELL",
+      "channel": "フジテレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7936",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-07",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "grand-blue-3",
+      "tid": 7916,
+      "titleJa": "ぐらんぶる Season 3",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7916",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "grow-up-show",
+      "tid": 7925,
+      "titleJa": "グロウアップショウ ～ひまわりのサーカス団～",
+      "channel": "BS11イレブン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7925",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "hanazakari-2",
+      "tid": 7931,
+      "titleJa": "花ざかりの君たちへ 第2期",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7931",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-01",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "haniori-san",
+      "tid": 7908,
+      "titleJa": "花織さんは転生しても喧嘩がしたい",
+      "channel": "ABCテレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7908",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-12",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "hellmode-2",
+      "tid": 7669,
+      "titleJa": "ヘルモード ～やり込み好きのゲーマーは廃設定の異世界で無双する～",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7669",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2026-01-10",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "henkyou-ryumin",
+      "tid": 7880,
+      "titleJa": "領民0人スタートの辺境領主様",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7880",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-10",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "iwamoto-senpai",
+      "tid": 7924,
+      "titleJa": "岩元先輩ノ推薦",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7924",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "jiki-koshaku",
+      "tid": 7898,
+      "titleJa": "「きみを愛する気はない」と言った次期公爵様がなぜか溺愛してきます",
+      "channel": "テレビ朝日",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7898",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "kamui-san",
+      "tid": 7949,
+      "titleJa": "うしろの正面カムイさん",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7949",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "kimi-shinu-koi",
+      "tid": 7910,
+      "titleJa": "きみが死ぬまで恋をしたい",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7910",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-07",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "koko-ni-makase",
+      "tid": 7935,
+      "titleJa": "ここは俺に任せて先に行けと言ってから10年がたったら 伝説になっていた。",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7935",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "korekaite-shine",
+      "tid": 7889,
+      "titleJa": "これ描いて死ね",
+      "channel": "日本テレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7889",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-03",
+          "beijingTime": "22:35",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-10",
+          "beijingTime": "22:45",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "lets-go-kaiki",
+      "tid": 7932,
+      "titleJa": "レッツゴー怪奇組",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7932",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "15:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "lv999-villager",
+      "tid": 7899,
+      "titleJa": "LV999の村人",
+      "channel": "テレビ東京",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7899",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-01",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "magilumiere-2",
+      "tid": 7892,
+      "titleJa": "株式会社マジルミエ 第2期",
+      "channel": "日本テレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7892",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "mobuseka-2",
+      "tid": 7884,
+      "titleJa": "乙女ゲー世界はモブに厳しい世界です2",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7884",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "mushoku-3",
+      "tid": 7891,
+      "titleJa": "無職転生 ～異世界行ったら本気だす～ 第3期",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7891",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "19:00",
+          "intervalDays": 0
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-12",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "nanoha-exceeds",
+      "tid": 7823,
+      "titleJa": "魔法少女リリカルなのは EXCEEDS Gun Blaze Vengeance",
+      "channel": "BS11イレブン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7823",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "neko-to-ryu",
+      "tid": 7887,
+      "titleJa": "猫と竜",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7887",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "no-bullying-stepmother",
+      "tid": 7930,
+      "titleJa": "いびってこない義母と義姉",
+      "channel": "tvk",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7930",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "oni-no-hanayome",
+      "tid": 7946,
+      "titleJa": "鬼の花嫁",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7946",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "otome-kaiju-caramelize",
+      "tid": 7903,
+      "titleJa": "乙女怪獣キャラメリゼ",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7903",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-03",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-10",
+          "beijingTime": "01:13",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "rakudai-kenja",
+      "tid": 7897,
+      "titleJa": "落第賢者の学院無双 ～二度目の転生、Sランクチート魔術師冒険録～",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7897",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-01",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "red-river",
+      "tid": 7939,
+      "titleJa": "天は赤い河のほとり",
+      "channel": "日本テレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7939",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "00:39",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "saijo-no-osewa",
+      "tid": 7879,
+      "titleJa": "才女のお世話 高嶺の花だらけな名門校で、学院一のお嬢様 （生活能力皆無）を陰ながらお世話することになりました",
+      "channel": "MBS毎日放送",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7879",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "01:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-12",
+          "beijingTime": "01:05",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "saikyo-degare",
+      "tid": 7938,
+      "titleJa": "最強出涸らし皇子の暗躍帝位争い",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7938",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "19:57",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "samurai-troopers-2",
+      "tid": 7654,
+      "titleJa": "鎧真伝サムライトルーパー",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7654",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2026-01-06",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "sayonara-lara",
+      "tid": 7917,
+      "titleJa": "さよならララ",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7917",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "seihantai-kimi-boku",
+      "tid": 7825,
+      "titleJa": "正反対な君と僕 第2期",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7825",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "sekai-saikyo-kouei",
+      "tid": 7902,
+      "titleJa": "世界最強の後衛 ～迷宮国の新人探索者～",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7902",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "super-yani",
+      "tid": 7850,
+      "titleJa": "スーパーの裏でヤニ吸うふたり",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7850",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-09",
+          "beijingTime": "23:41",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-16",
+          "beijingTime": "22:56",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "suterare-seijo-camp",
+      "tid": 7915,
+      "titleJa": "捨てられ聖女の異世界ごはん旅 隠れスキルでキャンピングカーを召喚しました",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7915",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "taiari-deshita",
+      "tid": 7945,
+      "titleJa": "対ありでした。 〜お嬢さまは格闘ゲームなんてしない〜",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7945",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-07",
+          "beijingTime": "19:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "temmaku-jardugar",
+      "tid": 7907,
+      "titleJa": "天幕のジャードゥーガル",
+      "channel": "ABCテレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7907",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-04",
+          "beijingTime": "22:00",
+          "intervalDays": 0
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-11",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "tenko-saki-osananajimi",
+      "tid": 7934,
+      "titleJa": "転校先の清楚可憐な美少女が、 昔男子と思って一緒に遊んだ幼馴染だった件",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7934",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "tetsunabe-jan",
+      "tid": 7920,
+      "titleJa": "鉄鍋のジャン！",
+      "channel": "テレビ愛知",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7920",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-05",
+          "beijingTime": "16:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "thunder-3",
+      "tid": 7927,
+      "titleJa": "サンダー3",
+      "channel": "フジテレビ",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7927",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "23:50",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "transparent-night",
+      "tid": 7885,
+      "titleJa": "透明な夜に駆ける君と、目に見えない恋をした。",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7885",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-06",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "tsuiho-juki",
+      "tid": 7878,
+      "titleJa": "追放された転生重騎士はゲーム知識で無双する",
+      "channel": "MBS毎日放送",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7878",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2026-07-02",
+          "beijingTime": "23:26",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-10",
+          "beijingTime": "00:11",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "uchioto",
+      "tid": 7906,
+      "titleJa": "うちの弟どもがすみません",
+      "channel": "BS11イレブン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7906",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-03",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "unaware-saint",
+      "tid": 7901,
+      "titleJa": "無自覚聖女は今日も無意識に力を垂れ流す",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7901",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-06-30",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "victoria",
+      "tid": 7896,
+      "titleJa": "手札が多めのビクトリア",
+      "channel": "テレビ東京",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7896",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-07",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "world-is-dancing",
+      "tid": 7918,
+      "titleJa": "ワールド イズ ダンシング",
+      "channel": "KBS京都",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7918",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-02",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "yani-neko",
+      "tid": 7888,
+      "titleJa": "ヤニねこ",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7888",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-02",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "youjo-senki-2",
+      "tid": 7890,
+      "titleJa": "幼女戦記Ⅱ",
+      "channel": "AT-X",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7890",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2026-07-08",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
       "recordId": "yuc-202601-08",
       "tid": 7778,
       "titleJa": "終末のワルキューレⅢ",
@@ -2663,6 +3599,29 @@ export const syoboiHistory2026 = {
           "intervalDays": 7
         }
       ]
+    },
+    {
+      "recordId": "yume-mita",
+      "tid": 7919,
+      "titleJa": "バンドリ！ ゆめ∞みた",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/7919",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2026-07-02",
+          "beijingTime": "22:00",
+          "intervalDays": 0
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2026-07-09",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
     }
   ],
   "unmatched": [
@@ -2733,6 +3692,21 @@ export const syoboiHistory2026 = {
       "recordId": "anilist-208352"
     },
     {
+      "recordId": "baki-dou-2"
+    },
+    {
+      "recordId": "buchigire-reijo"
+    },
+    {
+      "recordId": "mobius-dust"
+    },
+    {
+      "recordId": "reiwa-no-darasan"
+    },
+    {
+      "recordId": "skeleton-knight-2"
+    },
+    {
       "recordId": "yuc-202604-16"
     },
     {
@@ -2756,6 +3730,30 @@ export const syoboiHistory2026 = {
       "recordId": "anilist-199221",
       "tid": 7321,
       "reason": "no-eligible-television-premiere"
+    },
+    {
+      "recordId": "bleach-tybw-kashin",
+      "tid": 7941,
+      "reason": "no-eligible-television-premiere"
+    },
+    {
+      "recordId": "cyborg-009-nemesis",
+      "tid": 7963,
+      "reason": "no-eligible-television-premiere"
+    },
+    {
+      "recordId": "nigejouzu-2",
+      "tid": 7953,
+      "reason": "no-eligible-television-premiere"
+    },
+    {
+      "recordId": "ossan-kensei-2",
+      "tid": 7371,
+      "reason": "no-eligible-television-premiere"
+    },
+    {
+      "recordId": "rezero-4-part-2",
+      "reason": "manual-split-not-distinguishable"
     },
     {
       "recordId": "yuc-202604-69",

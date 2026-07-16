@@ -21,6 +21,11 @@ const PROGRAM_FIELDS = "TID,PID,StTime,Count,SubTitle,Flag,Deleted,ChID";
 export const SYOBOI_TITLE_ALIASES = Object.freeze({
   "anilist-110350": Object.freeze({ tid: 5518 }),
   "anilist-131681": Object.freeze({ tid: 6246 }),
+  "mushoku-3": Object.freeze({ tid: 7891 }),
+});
+
+export const SYOBOI_UNVERIFIABLE_RECORDS = Object.freeze({
+  "rezero-4-part-2": "manual-split-not-distinguishable",
 });
 
 export function normalizeSyoboiTitle(value) {
@@ -31,6 +36,9 @@ export function normalizeSyoboiTitle(value) {
 }
 
 export function resolveSyoboiTitle(record, titles, year) {
+  const reason = SYOBOI_UNVERIFIABLE_RECORDS[record.id];
+  if (reason) return { status: "skipped", reason };
+
   const alias = SYOBOI_TITLE_ALIASES[record.id];
   if (alias) return { status: "matched", tid: alias.tid };
 
@@ -88,6 +96,10 @@ export function buildYearSnapshot({ year, catalog, titles, channels, programsByT
 
   for (const record of catalog) {
     const resolution = resolveSyoboiTitle(record, titles, year);
+    if (resolution.status === "skipped") {
+      skipped.push({ recordId: record.id, reason: resolution.reason });
+      continue;
+    }
     if (resolution.status === "unmatched") {
       unmatched.push({ recordId: record.id });
       continue;
@@ -223,12 +235,16 @@ async function catalogForYear(year) {
       .flatMap(({ aniListExportName }) => aniListCatalogs[aniListExportName].anime)
       .map((record) => [Number(record.id.replace("anilist-", "")), record]),
   );
-  return configs.flatMap(({ exportName }) =>
+  const historyCatalog = configs.flatMap(({ exportName }) =>
     catalogs[exportName].anime.map((record) => ({
       ...record,
       aniListTitleJa: record.anilistId === null ? null : aniListById.get(record.anilistId)?.titleJa ?? null,
     })),
   );
+  if (year !== 2026) return historyCatalog;
+
+  const { anime: julyCatalog } = await import(new URL("../data/anime.js", import.meta.url));
+  return [...historyCatalog, ...julyCatalog.map((record) => ({ ...record, aniListTitleJa: null }))];
 }
 
 async function main() {

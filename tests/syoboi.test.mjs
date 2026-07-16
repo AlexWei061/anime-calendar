@@ -172,6 +172,32 @@ test("uses the reviewed Attack on Titan Part 2 title alias instead of fuzzy matc
   );
 });
 
+test("uses the reviewed Mushoku Tensei III title alias instead of fuzzy matching", () => {
+  assert.deepEqual(
+    resolveSyoboiTitle(
+      { id: "mushoku-3", titleJa: "無職転生 ～異世界行ったら本気だす～ 第3期" },
+      [],
+      2026,
+    ),
+    { status: "matched", tid: 7891 },
+  );
+});
+
+test("keeps a manually split continuation out of an indistinguishable Syoboi season", () => {
+  const snapshot = buildYearSnapshot({
+    year: 2026,
+    catalog: [{ id: "rezero-4-part-2", titleJa: "Re:ゼロから始める異世界生活 4th season", episodeCount: 8 }],
+    titles: [{ tid: 7780, title: "Re:ゼロから始める異世界生活 4th season", firstYear: 2026, firstMonth: 4 }],
+    channels: new Map([[1, { kind: "television", name: "AT-X" }]]),
+    programsByTid: new Map([[7780, [{ id: 1, stTime: "2026-04-09 06:00:00", count: 1, subtitle: "", flag: 0, deleted: 0, channelId: 1 }]]]),
+  });
+
+  assert.deepEqual(snapshot.entries, []);
+  assert.deepEqual(snapshot.skipped, [
+    { recordId: "rezero-4-part-2", reason: "manual-split-not-distinguishable" },
+  ]);
+});
+
 test("writes ambiguous names to the report instead of selecting one", () => {
   const snapshot = buildYearSnapshot({
     year: 2020,

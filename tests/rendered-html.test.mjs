@@ -80,16 +80,15 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:22;--timeline-height:2152px/);
+  assert.match(html, /--timeline-hour-count:20;--timeline-height:1960px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:1392px/);
-  assert.match(html, /--event-width:33\.333/);
+  assert.match(html, /--event-width:50%/);
   assert.doesNotMatch(html, /class="time-grid"/);
-  assert.match(cleanHtml, /<time class="time-group-label">20:30<\/time>/);
+  assert.match(cleanHtml, /<time class="time-group-label">21:30<\/time>/);
   assert.match(cleanHtml, /次日 01:00/);
-  assert.match(cleanHtml, /次日 04:00/);
-  assert.match(cleanHtml, /次日 03:08/);
+  assert.match(cleanHtml, /次日 02:00/);
   assert.match(html, /class="calendar-event/);
   assert.match(html, /class="calendar-event-cover cover-sprite"/);
   assert.match(html, /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+\.webp\)/);
@@ -191,15 +190,15 @@ test("renders separate accessible watched controls without nesting calendar butt
   assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
 });
 
-test("renders three same-time events side by side on one timeline day", async () => {
+test("renders same-time events side by side on one timeline day", async () => {
   const cleanHtml = withoutReactMarkers(await (await render()).text());
   const sameTimeEvents = [
     ...cleanHtml.matchAll(
       /<div\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*style="([^"]*)")[^>]*>([\s\S]*?)<\/div>/g,
     ),
-  ].filter(([, , card]) => /aria-label="[^"]*2026-07-10 次日 00:30/.test(card));
+  ].filter(([, , card]) => /aria-label="[^"]*2026-07-06 21:30/.test(card));
 
-  assert.equal(sameTimeEvents.length, 3);
+  assert.equal(sameTimeEvents.length, 2);
   assert.equal(
     new Set(sameTimeEvents.map(([, style]) => style.match(/--event-top:([^;]+)/)?.[1])).size,
     1,
@@ -211,16 +210,14 @@ test("renders three same-time events side by side on one timeline day", async ()
   const laneOffsets = sameTimeEvents.map(
     ([, style]) => style.match(/--event-left:([^;]+)/)?.[1],
   );
-  assert.equal(new Set(laneOffsets).size, 3);
+  assert.equal(new Set(laneOffsets).size, 2);
   assert.ok(laneOffsets.includes("0%"));
-  assert.ok(laneOffsets.some((offset) => /^33\.333/.test(offset ?? "")));
-  assert.ok(laneOffsets.some((offset) => /^66\.666/.test(offset ?? "")));
+  assert.ok(laneOffsets.includes("50%"));
   assert.ok(
     sameTimeEvents.every(([, , card]) => /class="calendar-event-cover cover-sprite"/.test(card)),
   );
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /正后方的神威/);
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /我家的弟弟们真是让您费心了/);
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /地狱模式/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /说出你们先走我断后的十年后 我成为了传说/);
 });
 
 test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
