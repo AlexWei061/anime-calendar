@@ -41,16 +41,18 @@ export const january2021 = {
       "anilistId": 110200,
       "episodeCount": 12,
       "episodeCountStatus": "exact",
+      "premiereEpisodeCount": 12,
       "titleZh": "VLADLOVE",
       "titleJa": "ぶらどらぶ",
       "coverUrl": "/covers/yuc/history-2021-01-02.webp",
       "coverAlt": "VLADLOVE 封面",
       "sourceUrl": "https://yuc.wiki/202101/",
-      "premiereDateBeijing": "2021-07-03",
-      "scheduleWeekday": "Sat",
-      "beijingTime": "00:05",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2020-12-17",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -2191,11 +2193,12 @@ export const april2021 = {
       "coverUrl": "/covers/yuc/history-2021-04-09.webp",
       "coverAlt": "SD高达世界 群英集 封面",
       "sourceUrl": "https://yuc.wiki/202104/",
-      "premiereDateBeijing": "2021-04-10",
-      "scheduleWeekday": "Sat",
-      "beijingTime": "18:00",
-      "timeStatus": "verified",
-      "station": "BS11イレブン",
+      "premiereDateBeijing": "2021-04-08",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -2220,10 +2223,11 @@ export const april2021 = {
       "coverAlt": "B：the Beginning 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202104/",
       "premiereDateBeijing": "2021-03-18",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-128399",
@@ -2542,11 +2546,12 @@ export const april2021 = {
       "coverUrl": "/covers/yuc/history-2021-04-21.webp",
       "coverAlt": "黑塔利亚 第7期 封面",
       "sourceUrl": "https://yuc.wiki/202104/",
-      "premiereDateBeijing": "2021-04-08",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "21:10",
-      "timeStatus": "verified",
-      "station": "AT-X",
+      "premiereDateBeijing": "2021-04-01",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -3059,11 +3064,12 @@ export const april2021 = {
       "coverUrl": "/covers/yuc/history-2021-04-34.webp",
       "coverAlt": "极主夫道 封面",
       "sourceUrl": "https://yuc.wiki/202104/",
-      "premiereDateBeijing": "2021-08-30",
-      "scheduleWeekday": "Mon",
-      "beijingTime": "23:30",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2021-04-08",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -3827,7 +3833,8 @@ export const april2021 = {
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 首播日期（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-124786",
@@ -3840,10 +3847,11 @@ export const april2021 = {
       "coverAlt": "哥斯拉 奇异点 封面",
       "sourceUrl": "https://yuc.wiki/202104/",
       "premiereDateBeijing": "2021-03-25",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-113950",
@@ -4777,11 +4785,12 @@ export const july2021 = {
       "coverUrl": "/covers/yuc/history-2021-07-16.webp",
       "coverAlt": "终末的女武神 封面",
       "sourceUrl": "https://yuc.wiki/202107/",
-      "premiereDateBeijing": "2021-10-01",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "23:30",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2021-06-17",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -5555,10 +5564,11 @@ export const july2021 = {
       "coverAlt": "生化危机 无尽黑暗 封面",
       "sourceUrl": "https://yuc.wiki/202107/",
       "premiereDateBeijing": "2021-07-08",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "14:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-132679",
@@ -6805,10 +6815,11 @@ export const october2021 = {
       "coverAlt": "极主夫道 Part2 封面",
       "sourceUrl": "https://yuc.wiki/202110/",
       "premiereDateBeijing": "2021-10-07",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-124195",

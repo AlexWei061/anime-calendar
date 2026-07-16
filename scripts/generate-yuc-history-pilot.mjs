@@ -346,6 +346,11 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
     const titleJa = card.match(/<p class="title_jp[_a-z\d]*">([\s\S]*?)<\/p>/i);
     if (!image || !titleZh || !titleJa) continue;
 
+    const broadcast = decodeHtml(
+      (card.match(/<p\b[^>]*\bclass="broadcast"[^>]*>([\s\S]*?)<\/p>/i)?.[1] ?? "").replace(/<[^>]+>/g, " "),
+    );
+    const networkPremiere = /(\d{1,2})\s*\/\s*(\d{1,2})\s*(?:网络配信|ネット配信)/.exec(broadcast);
+
     const coverUrl = image[1].trim().replace(/^http:/i, "https:");
     const normalizedTitle = normalizeTitle(titleJa[1]);
     if (!coverUrl.startsWith("https://") || !normalizedTitle || cards.has(normalizedTitle)) continue;
@@ -354,6 +359,9 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
       titleZh: decodeHtml(titleZh[1]),
       titleJa: decodeHtml(titleJa[1]),
       coverUrl,
+      ...(networkPremiere
+        ? { networkPremiereMonth: Number(networkPremiere[1]), networkPremiereDay: Number(networkPremiere[2]) }
+        : {}),
     });
   }
 
@@ -370,6 +378,19 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
     }
   }
   return parsedCards;
+}
+
+function networkPremiereDate(card, sourceUrl, matched) {
+  if (!card.networkPremiereMonth || !card.networkPremiereDay) return null;
+
+  const monthDay = `${String(card.networkPremiereMonth).padStart(2, "0")}-${String(card.networkPremiereDay).padStart(2, "0")}`;
+  if (matched?.premiereDateBeijing?.slice(5) === monthDay) return matched.premiereDateBeijing;
+
+  const sourceSeason = /\/(\d{4})(\d{2})\/$/.exec(sourceUrl);
+  if (!sourceSeason) return null;
+  const [, sourceYear, sourceMonth] = sourceSeason;
+  const year = Number(sourceYear) - (card.networkPremiereMonth > Number(sourceMonth) ? 1 : 0);
+  return `${year}-${monthDay}`;
 }
 
 export function indexAniList(anime) {
@@ -415,21 +436,28 @@ export function applySyoboiSchedule(record, schedule) {
         left.episodeStart - right.episodeStart,
     )[0];
   const shared = { ...record };
-  delete shared.premiereEpisodeCount;
-  delete shared.regularBroadcastStartDateBeijing;
+  const keepsNetworkPremiere = record.premiereKind === "network";
+  if (!keepsNetworkPremiere) {
+    delete shared.premiereEpisodeCount;
+    delete shared.regularBroadcastStartDateBeijing;
+  }
   return {
     ...shared,
-    ...(firstSchedule.intervalDays === 0 && firstSchedule.episodeEnd > firstSchedule.episodeStart
-      ? { premiereEpisodeCount: firstSchedule.episodeEnd }
+    ...(!keepsNetworkPremiere
+      ? {
+          ...(firstSchedule.intervalDays === 0 && firstSchedule.episodeEnd > firstSchedule.episodeStart
+            ? { premiereEpisodeCount: firstSchedule.episodeEnd }
+            : {}),
+          ...(weeklySchedule && weeklySchedule.episodeStart > 1
+            ? { regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing }
+            : {}),
+          premiereDateBeijing: firstSchedule.broadcastDateBeijing,
+          scheduleWeekday: weeklySchedule ? weekdayForDate(weeklySchedule.broadcastDateBeijing) : null,
+          beijingTime: weeklySchedule?.beijingTime ?? firstSchedule.beijingTime,
+          timeStatus: "verified",
+          station: schedule.channel,
+        }
       : {}),
-    ...(weeklySchedule && weeklySchedule.episodeStart > 1
-      ? { regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing }
-      : {}),
-    premiereDateBeijing: firstSchedule.broadcastDateBeijing,
-    scheduleWeekday: weeklySchedule ? weekdayForDate(weeklySchedule.broadcastDateBeijing) : null,
-    beijingTime: weeklySchedule?.beijingTime ?? firstSchedule.beijingTime,
-    timeStatus: "verified",
-    station: schedule.channel,
     episodeSchedules: schedule.episodeSchedules,
     scheduleSourceName: "しょぼいカレンダー",
     scheduleSourceUrl: schedule.sourceUrl,
@@ -445,6 +473,17 @@ export function enrichYucRecord(card, index, sourceUrl, matched, syoboiSchedule)
     coverAlt: `${card.titleZh} 封面`,
     sourceUrl,
   };
+  const networkDate = networkPremiereDate(card, sourceUrl, matched);
+  const networkPremiere = networkDate
+    ? {
+        premiereDateBeijing: networkDate,
+        premiereKind: "network",
+        scheduleWeekday: null,
+        beijingTime: null,
+        timeStatus: "unknown",
+        station: "网络放送",
+      }
+    : {};
 
   if (!matched) {
     return {
@@ -458,6 +497,7 @@ export function enrichYucRecord(card, index, sourceUrl, matched, syoboiSchedule)
       beijingTime: null,
       timeStatus: "unknown",
       station: "AniList 未匹配（试点）",
+      ...networkPremiere,
     };
   }
 
@@ -475,6 +515,7 @@ export function enrichYucRecord(card, index, sourceUrl, matched, syoboiSchedule)
     beijingTime: matched.beijingTime,
     timeStatus: matched.timeStatus,
     station: matched.station,
+    ...networkPremiere,
   };
   return applySyoboiSchedule(record, syoboiSchedule);
 }

@@ -62,11 +62,12 @@ export const january2020 = {
       "coverUrl": "/covers/yuc/history-2020-01-03.webp",
       "coverAlt": "OBSOLETE 封面",
       "sourceUrl": "https://yuc.wiki/202001/",
-      "premiereDateBeijing": null,
+      "premiereDateBeijing": "2019-12-03",
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-110350",
@@ -327,11 +328,12 @@ export const january2020 = {
       "coverUrl": "/covers/yuc/history-2020-01-11.webp",
       "coverAlt": "齐木楠雄的灾难 灾始动篇 封面",
       "sourceUrl": "https://yuc.wiki/202001/",
-      "premiereDateBeijing": null,
+      "premiereDateBeijing": "2019-12-31",
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-106625",
@@ -386,11 +388,12 @@ export const january2020 = {
       "coverUrl": "/covers/yuc/history-2020-01-13.webp",
       "coverAlt": "Levius 封面",
       "sourceUrl": "https://yuc.wiki/202001/",
-      "premiereDateBeijing": null,
+      "premiereDateBeijing": "2019-11-30",
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-109298",

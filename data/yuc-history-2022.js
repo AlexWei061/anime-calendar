@@ -229,10 +229,11 @@ export const january2022 = {
       "coverAlt": "地球外少年少女 封面",
       "sourceUrl": "https://yuc.wiki/202201/",
       "premiereDateBeijing": "2022-01-28",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "16:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "yuc-202201-08",
@@ -244,11 +245,12 @@ export const january2022 = {
       "coverUrl": "/covers/yuc/history-2022-01-08.webp",
       "coverAlt": "JOJO奇妙冒险 石之海 Part1 封面",
       "sourceUrl": "https://yuc.wiki/202201/",
-      "premiereDateBeijing": "2022-01-07",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "23:30",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2021-12-01",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -853,11 +855,12 @@ export const january2022 = {
       "coverUrl": "/covers/yuc/history-2022-01-23.webp",
       "coverAlt": "超级小偷 封面",
       "sourceUrl": "https://yuc.wiki/202201/",
-      "premiereDateBeijing": null,
+      "premiereDateBeijing": "2021-11-25",
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-138912",
@@ -1665,10 +1668,11 @@ export const april2022 = {
       "coverAlt": "虎兔英雄传 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202204/",
       "premiereDateBeijing": "2022-04-08",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-143203",
@@ -1981,10 +1985,11 @@ export const april2022 = {
       "coverAlt": "机动奥特曼 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202204/",
       "premiereDateBeijing": "2022-04-14",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-117756",
@@ -2012,11 +2017,12 @@ export const april2022 = {
       "coverUrl": "/covers/yuc/history-2022-04-17.webp",
       "coverAlt": "新・罗马浴场 封面",
       "sourceUrl": "https://yuc.wiki/202204/",
-      "premiereDateBeijing": "2022-03-27",
-      "scheduleWeekday": "Sun",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2022-03-28",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "yuc-202204-18",
@@ -2675,11 +2681,12 @@ export const april2022 = {
       "coverUrl": "/covers/yuc/history-2022-04-35.webp",
       "coverAlt": "小太郎一个人生活 封面",
       "sourceUrl": "https://yuc.wiki/202204/",
-      "premiereDateBeijing": "2022-03-09",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2022-03-10",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "yuc-202204-36",
@@ -3031,11 +3038,12 @@ export const april2022 = {
       "coverUrl": "/covers/yuc/history-2022-04-47.webp",
       "coverAlt": "莎木 封面",
       "sourceUrl": "https://yuc.wiki/202204/",
-      "premiereDateBeijing": "2022-05-03",
-      "scheduleWeekday": "Tue",
-      "beijingTime": "18:00",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2022-04-07",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -3782,10 +3790,11 @@ export const july2022 = {
       "coverAlt": "邪神与厨二病少女 第3期 封面",
       "sourceUrl": "https://yuc.wiki/202207/",
       "premiereDateBeijing": "2022-07-06",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "01:05",
-      "timeStatus": "verified",
-      "station": "テレビ東京",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -3903,11 +3912,12 @@ export const july2022 = {
       "coverUrl": "/covers/yuc/history-2022-07-21.webp",
       "coverAlt": "风都侦探 封面",
       "sourceUrl": "https://yuc.wiki/202207/",
-      "premiereDateBeijing": "2022-08-08",
-      "scheduleWeekday": "Mon",
-      "beijingTime": "21:00",
-      "timeStatus": "verified",
-      "station": "TOKYO MX",
+      "premiereDateBeijing": "2021-08-01",
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network",
       "episodeSchedules": [
         {
           "episodeStart": 1,
@@ -3931,11 +3941,12 @@ export const july2022 = {
       "coverUrl": "/covers/yuc/history-2022-07-22.webp",
       "coverAlt": "遗迹守护者 封面",
       "sourceUrl": "https://yuc.wiki/202207/",
-      "premiereDateBeijing": null,
+      "premiereDateBeijing": "2022-06-18",
       "scheduleWeekday": null,
       "beijingTime": null,
       "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-144677",
@@ -3949,10 +3960,11 @@ export const july2022 = {
       "coverAlt": "BASTARD 暗黑破坏神 封面",
       "sourceUrl": "https://yuc.wiki/202207/",
       "premiereDateBeijing": "2022-06-30",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-141351",
@@ -3965,10 +3977,11 @@ export const july2022 = {
       "coverAlt": "狂赌深渊 双 封面",
       "sourceUrl": "https://yuc.wiki/202207/",
       "premiereDateBeijing": "2022-08-04",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "15:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": null,
+      "beijingTime": null,
+      "timeStatus": "unknown",
+      "station": "网络放送",
+      "premiereKind": "network"
     },
     {
       "id": "anilist-141775",

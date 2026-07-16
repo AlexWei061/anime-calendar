@@ -10,7 +10,7 @@ import { syoboiHistory2026 } from "./syoboi-history-2026.js";
 export const season = {
   "label": "2026 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-15",
+  "updatedAt": "2026-07-16",
   "catalogCount": 66,
   "sourceName": "YUC 2026年7月新番表",
   "sourceUrl": "https://yuc.wiki/202607/"
@@ -117,6 +117,7 @@ const yucAnime = [
     "coverUrl": "/covers/yuc/cyborg-009-nemesis.webp",
     "coverAlt": "人造人009 涅墨西斯 主视觉",
     "premiereDateBeijing": "2026-07-19",
+    "premiereKind": "network",
     "scheduleWeekday": null,
     "beijingTime": null,
     "station": "网络放送",
@@ -156,6 +157,7 @@ const yucAnime = [
     "coverUrl": "/covers/yuc/baki-dou-2.webp",
     "coverAlt": "刃牙道 Part.2 主视觉",
     "premiereDateBeijing": "2026-06-18",
+    "premiereKind": "network",
     "scheduleWeekday": null,
     "beijingTime": null,
     "station": "网络放送",

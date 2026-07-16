@@ -240,12 +240,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /月份/);
   assert.match(
     page,
-    /名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。/,
+    /YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。/,
   );
   assert.doesNotMatch(page, /AniList 原文与罗马音|AniList 历史放送记录/);
   assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
   assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
-  assert.match(page, /YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。/);
+  assert.match(page, /dateOnlyEventsForWeek/);
   assert.match(
     page,
     /const nextWeekStart = nextSeason\.firstWeekStart;[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,

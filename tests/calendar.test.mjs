@@ -6,6 +6,7 @@ import * as calendar from "../lib/calendar.js";
 
 const {
   addDays,
+  dateOnlyEventsForWeek,
   eventsForWeek,
   formatBroadcastTime,
   groupEventsByTime,
@@ -298,6 +299,32 @@ test("skips records without a fixed YUC weekday and time", () => {
   assert.deepEqual(
     eventsForWeek([{ ...weeklyShow, scheduleWeekday: null, beijingTime: null }], "2026-06-29"),
     [],
+  );
+});
+
+test("puts network premieres without a clock time on their premiere date", () => {
+  assert.deepEqual(
+    dateOnlyEventsForWeek(
+      [
+        {
+          ...weeklyShow,
+          id: "network-release",
+          premiereDateBeijing: "2026-07-19",
+          premiereKind: "network",
+          scheduleWeekday: null,
+          beijingTime: null,
+        },
+      ],
+      "2026-07-13",
+    ).map(({ id, date, premiereDateBeijing, premiereKind }) => ({ id, date, premiereDateBeijing, premiereKind })),
+    [
+      {
+        id: "network-release",
+        date: "2026-07-19",
+        premiereDateBeijing: "2026-07-19",
+        premiereKind: "network",
+      },
+    ],
   );
 });
 

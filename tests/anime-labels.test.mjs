@@ -7,6 +7,15 @@ test("labels network broadcasts with the correct schedule source", () => {
   assert.equal(
     networkBroadcastLabel({
       isHistoricalSeason: true,
+      sourceName: "YUC 2022年1月新番表",
+      premiereDateBeijing: "2021-12-01",
+      premiereKind: "network",
+    }),
+    "网络配信首播 · 2021-12-01",
+  );
+  assert.equal(
+    networkBroadcastLabel({
+      isHistoricalSeason: true,
       sourceName: "YUC 2026年1月新番表",
       premiereDateBeijing: "2026-01-08",
     }),

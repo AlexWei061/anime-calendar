@@ -13,6 +13,7 @@ import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
 import {
   addDays,
+  dateOnlyEventsForWeek,
   eventsForWeek,
   firstFullWeekStart,
   formatBroadcastTime,
@@ -39,11 +40,13 @@ type CalendarEvent = Anime & {
   episode: number;
   time: string;
 };
+type DateOnlyEvent = Anime & { date: string };
 type SelectedAnime = Anime & {
   selectedDate?: string;
   selectedTime?: string;
   selectedEpisodeStart?: number;
   selectedEpisode?: number;
+  selectedReleaseKind?: "network";
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine";
@@ -160,6 +163,7 @@ export default function Home() {
       : allAnime;
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
+  const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
   const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
     timelineBoundsForEvents(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes);
   const timelineHourCount = (timelineEndMinutes - timelineStartMinutes) / 60;
@@ -175,7 +179,9 @@ export default function Home() {
   const dayEventGroups = dates.map((date) =>
     groupEventsByTime(events.filter((event) => event.date === date)),
   );
+  const dayDateOnlyEvents = dates.map((date) => dateOnlyEvents.filter((event) => event.date === date));
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
+  const activeMobileDateOnlyEvents = dayDateOnlyEvents[dates.indexOf(activeMobileDate)] ?? [];
   const networkOnly = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
@@ -455,6 +461,25 @@ export default function Home() {
     );
   };
 
+  const dateOnlyEventButton = (event: DateOnlyEvent) => (
+    <button
+      className="date-only-event"
+      key={event.id}
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={`查看《${event.titleZh}／${event.titleJa}》网络配信首播：${event.date}`}
+      onClick={(clickEvent) =>
+        openDetail(event, clickEvent.currentTarget, {
+          selectedDate: event.date,
+          selectedReleaseKind: "network",
+        })
+      }
+    >
+      <strong>{event.titleZh}</strong>
+      <span>网络配信 · 时刻未定</span>
+    </button>
+  );
+
   return (
     <div className="site-shell">
       <nav className="page-sidebar" aria-label="页面导航">
@@ -631,6 +656,9 @@ export default function Home() {
                   key={date}
                   aria-label={weekdays[index] + " " + date}
                 >
+                  {dayDateOnlyEvents[index].length ? (
+                    <div className="date-only-events">{dayDateOnlyEvents[index].map(dateOnlyEventButton)}</div>
+                  ) : null}
                   {positionedEvents.map(({ event, lane, laneCount }) =>
                     eventButton(event, { lane, laneCount }),
                   )}
@@ -657,6 +685,9 @@ export default function Home() {
             ))}
           </div>
           <div className="mobile-agenda">
+            {activeMobileDateOnlyEvents.length ? (
+              <div className="mobile-date-only-events">{activeMobileDateOnlyEvents.map(dateOnlyEventButton)}</div>
+            ) : null}
             {activeMobileEventGroups.map(({ time, events: groupedEvents }) => (
               <section className="time-group" key={time}>
                 <time className="time-group-label">{formatBroadcastTime(time)}</time>
@@ -670,7 +701,7 @@ export default function Home() {
                 </div>
               </section>
             ))}
-            {!activeMobileEventGroups.length ? (
+            {!activeMobileEventGroups.length && !activeMobileDateOnlyEvents.length ? (
               <p>当天没有排定放送。</p>
             ) : null}
           </div>
@@ -702,6 +733,7 @@ export default function Home() {
                     isHistoricalSeason,
                     sourceName: activeSeason.sourceName,
                     premiereDateBeijing: record.premiereDateBeijing,
+                    premiereKind: record.premiereKind,
                   })}
                 </em>
               </span>
@@ -720,7 +752,7 @@ export default function Home() {
           ，更新于 {activeSeason.updatedAt}。
         </p>
         {isHistoricalSeason ? (
-          <p>YUC 提供目录、名称和封面；首播日期、北京时间与集数按 AniList 历史记录换算。</p>
+          <p>YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。</p>
         ) : (
           <p>周表时刻按资料来源公开排期展示为 {activeSeason.timeZoneLabel}。</p>
         )}
@@ -773,10 +805,12 @@ export default function Home() {
               <dd>
                 {selected.selectedDate
                   ? selected.selectedDate +
-                    " " +
-                    (selectedBroadcastTime
-                      ? formatBroadcastTime(selectedBroadcastTime)
-                      : "具体时刻未列出") +
+                    (selected.selectedReleaseKind === "network"
+                      ? " 网络配信 · 具体时刻未列出"
+                      : " " +
+                        (selectedBroadcastTime
+                          ? formatBroadcastTime(selectedBroadcastTime)
+                          : "具体时刻未列出")) +
                     (selected.selectedEpisode
                       ? " · " +
                         formatEpisodeLabel(
@@ -796,6 +830,7 @@ export default function Home() {
               <dd>
                 {selected.premiereDateBeijing
                   ? selected.premiereDateBeijing +
+                    ("premiereKind" in selected && selected.premiereKind === "network" ? " 网络配信" : "") +
                     " " +
                     (selectedBroadcastTime
                       ? formatBroadcastTime(selectedBroadcastTime)
@@ -807,6 +842,21 @@ export default function Home() {
               <dt>排期来源</dt>
               <dd>{selected.station ?? "待确认"}</dd>
             </div>
+            {"premiereKind" in selected &&
+            selected.premiereKind === "network" &&
+            "episodeSchedules" in selected &&
+            selected.episodeSchedules?.length ? (
+              <div>
+                <dt>电视播出</dt>
+                <dd>
+                  {selected.episodeSchedules[0].broadcastDateBeijing +
+                    " " +
+                    formatBroadcastTime(selected.episodeSchedules[0].beijingTime) +
+                    " · " +
+                    ("scheduleChannel" in selected ? selected.scheduleChannel : selected.station ?? "待确认")}
+                </dd>
+              </div>
+            ) : null}
             <div>
               <dt>集数</dt>
               <dd>
