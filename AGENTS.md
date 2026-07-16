@@ -46,7 +46,7 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `app/chatgpt-auth.ts` | 读取 Sites 注入的 ChatGPT 身份，生成安全的登录/退出跳转地址。 |
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表保存 API。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的单集已看标记读取与单条更新 API。 |
-| `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录和统一的 `allAnime` 目录。 |
+| `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录（含人工核对的特殊先行排期）和统一的 `allAnime` 目录。 |
 | `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
 | `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
 | `data/cover-sprites.js` | 由图集脚本生成的逻辑封面路径到本地 WebP 图集坐标的映射；不得手工编辑。 |
@@ -77,11 +77,12 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 - 运行时封面由 `data/cover-sprites.js` 映射到 `public/covers/yuc/sprites/` 中的 4×10 WebP 图集。中间封面使用无损 WebP，最终图集使用 quality 90；更新或新增封面后，依次运行 `npm run convert:covers-webp` 和 `npm run generate:cover-sprites`。不要手工编辑图集或映射文件，也不要恢复为每部番一个部署静态文件。
 - 所有数据字段按来源逐项合并，优先级为 YUC → AniList → しょぼいカレンダー → 估算或 `null`；低优先级来源只能补空值，不能覆盖已有值。中文名和封面始终来自 YUC，并为已填入字段保留 `*Source` 审计标记。
 - 2026 年 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；YUC 未列总集数时用 AniList 补充。历史目录中的 YUC 网络首播日期优先于之后的电视台排期；AniList 缺少首播日期、周播日或分钟时刻时，才由しょぼい补齐。
-- 没有明确时刻的网络首播必须保留 `null`，由页面放入日期专属的“网络配信 · 时刻未定”区域，不能虚构时间；即使之后有固定电视周播，也要将先行集数与后续周播集数分开排期。
+- 修改 2026 年 7 月的 YUC 目录时，同时核对 YUC 周表和作品详情中的 `broadcast_r`。若详情写有“`M/D先行N话`”及之后的固定周播，必须写入 `premiereDateBeijing`、`premiereKind: "network"`、`premiereEpisodeCount` 和 `regularBroadcastStartDateBeijing`；先行段为第 1 至 N 集，固定周播从第 N+1 集开始。
+- 没有明确时刻的网络首播必须保留 `null`，由页面放入日期专属的“网络配信 · 时刻未定”区域，不能虚构时间；即使之后有固定电视周播，也要将先行集数与后续周播集数分开排期，不能把先行集数塞入之后的电视时段。
 - 凌晨 `00:00` 至 `04:59` 的节目在周历中显示在前一天栏目的“次日 HH:MM”时段；必须通过
   `formatBroadcastTime` 和现有日期布局逻辑处理，不要在页面中手工挪动日期。
 - 未明确集数时按当前数据约定写入 `12`；首播包含多集时使用 `premiereEpisodeCount`。周历由
-  `eventsForWeek` 根据首播日期、首播集数和总集数展开，不要在页面中重复这套计算。
+  `eventsForWeek` 与 `dateOnlyEventsForWeek` 根据首播日期、首播集数、后续固定周播起始日和总集数展开，不要在页面中重复这套计算。
 - 改动目录、时间、集数或封面时，更新相应测试断言；封面改动还必须重新生成图集和映射。保留数据来源 URL 和 `season.updatedAt` 的审计价值。
 
 ## 前端与交互约定
@@ -125,6 +126,7 @@ npm test                                         # 先构建，再运行 tests/*
 ```
 
 - 改 bug 先在对应的 `tests/*.test.mjs` 添加能失败的回归测试，再做最小修复。
+- 涉及“先行多集 + 后续周播”的排期，回归测试必须同时断言：先行日显示正确的集数范围且没有虚构时刻，首个固定周播日从下一集开始。
 - 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint -- --ignore-pattern .worktrees` 和 `npm test`。`npm test` 会导入构建后的 Worker 并检查服务端 HTML，因此不能用只跑 TypeScript 检查替代它。
 - 只改动与需求直接相关的文件。不要顺带格式化大文件、升级依赖、重写模板配置或删除历史设计文档。
 - 测试应验证用户可见行为和数据约束；不要为了让测试通过而削弱数据校验、认证或无障碍语义。
