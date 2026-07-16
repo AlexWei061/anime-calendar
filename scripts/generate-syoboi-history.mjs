@@ -58,16 +58,24 @@ function actualEpisodeSchedules(programs, channelId, episodeCount) {
       if (!uniqueEpisodes.has(key)) uniqueEpisodes.set(key, schedule);
     } catch {}
   }
-  const schedules = [...uniqueEpisodes.values()];
+  const schedules = [...uniqueEpisodes.values()].sort((left, right) =>
+    `${left.broadcastDateBeijing}T${left.beijingTime}`.localeCompare(
+      `${right.broadcastDateBeijing}T${right.beijingTime}`,
+    ),
+  );
+  if (!schedules.length) return [];
   const firstEpisode = Math.min(...schedules.map(({ episodeStart }) => episodeStart));
+  let nextEpisode = 1;
   return compressEpisodeSchedules(
     schedules
-      .map((schedule) => ({
-        ...schedule,
-        episodeStart: schedule.episodeStart - firstEpisode + 1,
-        episodeEnd: Math.min(schedule.episodeEnd - firstEpisode + 1, episodeCount),
-      }))
-      .filter(({ episodeStart, episodeEnd }) => episodeStart > 0 && episodeEnd >= episodeStart),
+      .map((schedule) => {
+        const episodeEnd = Math.min(schedule.episodeEnd - firstEpisode + 1, episodeCount);
+        if (episodeEnd < nextEpisode) return null;
+        const episodeStart = Math.max(schedule.episodeStart - firstEpisode + 1, nextEpisode);
+        nextEpisode = episodeEnd + 1;
+        return episodeStart > 0 && episodeEnd >= episodeStart ? { ...schedule, episodeStart, episodeEnd } : null;
+      })
+      .filter(Boolean),
   );
 }
 

@@ -101,6 +101,30 @@ test("renumbers a verified global-count season from the local first episode", ()
   ]);
 });
 
+test("drops an overlapping global-count range after its first confirmed occurrence", () => {
+  const snapshot = buildYearSnapshot({
+    year: 2021,
+    catalog: [{ id: "overlap", titleJa: "重複例", episodeCount: 4 }],
+    titles: [{ tid: 1, title: "重複例", firstYear: 2021, firstMonth: 1 }],
+    channels: new Map([[1, { kind: "television", name: "TOKYO MX" }]]),
+    programsByTid: new Map([
+      [
+        1,
+        [
+          { id: 1, stTime: "2021-01-04 00:00:00", count: 60, subtitle: "", flag: 2, deleted: 0, channelId: 1 },
+          { id: 2, stTime: "2021-01-11 00:00:00", count: 61, subtitle: "", flag: 0, deleted: 0, channelId: 1 },
+          { id: 3, stTime: "2021-01-18 00:00:00", count: null, subtitle: "#61〜#62", flag: 0, deleted: 0, channelId: 1 },
+          { id: 4, stTime: "2021-01-25 00:00:00", count: 63, subtitle: "", flag: 0, deleted: 0, channelId: 1 },
+        ],
+      ],
+    ]),
+  });
+
+  assert.deepEqual(snapshot.entries[0]?.episodeSchedules, [
+    { episodeStart: 1, episodeEnd: 4, broadcastDateBeijing: "2021-01-03", beijingTime: "23:00", intervalDays: 7 },
+  ]);
+});
+
 test("keeps a same-slot double premiere and compresses a later weekly run", () => {
   assert.deepEqual(
     compressEpisodeSchedules([
