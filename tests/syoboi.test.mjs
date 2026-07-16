@@ -30,6 +30,13 @@ test("converts a JST midnight record to the preceding Beijing date", () => {
   });
 });
 
+test("accepts Syoboi's actual space-separated program timestamp", () => {
+  assert.deepEqual(syoboiJstToBeijing("2020-01-06 23:00:00"), {
+    broadcastDateBeijing: "2020-01-06",
+    beijingTime: "22:00",
+  });
+});
+
 test("rejects reruns and chooses the earliest Japanese television premiere", () => {
   const programs = parseProgLookup(`
     <ProgItem><PID>1</PID><StTime>20200105_230000</StTime><Count>1</Count><Flag>8</Flag><Deleted>0</Deleted><ChID>1</ChID></ProgItem>
