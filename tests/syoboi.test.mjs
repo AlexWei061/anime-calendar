@@ -8,7 +8,11 @@ import {
   parseTitleLookup,
   syoboiJstToBeijing,
 } from "../lib/syoboi.js";
-import { buildYearSnapshot, resolveSyoboiTitle } from "../scripts/generate-syoboi-history.mjs";
+import {
+  buildYearSnapshot,
+  requestWithRateLimitRetry,
+  resolveSyoboiTitle,
+} from "../scripts/generate-syoboi-history.mjs";
 
 test("parses XML entities and the requested title fields", () => {
   assert.deepEqual(
@@ -85,4 +89,17 @@ test("writes ambiguous names to the report instead of selecting one", () => {
 
   assert.deepEqual(snapshot.entries, []);
   assert.deepEqual(snapshot.ambiguous, [{ recordId: "same-name", candidateTids: [1, 2] }]);
+});
+
+test("waits out one Syoboi rate-limit response before retrying the same request", async () => {
+  let attempts = 0;
+  const delays = [];
+  const response = await requestWithRateLimitRetry(
+    async () => new Response("", { status: ++attempts === 1 ? 429 : 200 }),
+    async (milliseconds) => delays.push(milliseconds),
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(attempts, 2);
+  assert.deepEqual(delays, [10_000]);
 });

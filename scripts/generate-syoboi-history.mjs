@@ -14,7 +14,7 @@ import { yucSeasonsForYear } from "./generate-yuc-history-pilot.mjs";
 
 const SOURCE_URL = "https://cal.syoboi.jp/";
 const USER_AGENT = "anime-calendar-schedule-audit/1.0 (+https://github.com/AlexWei061/anime-calendar)";
-const REQUEST_DELAY_MS = 125;
+const REQUEST_DELAY_MS = 1_100;
 
 export const SYOBOI_TITLE_ALIASES = Object.freeze({});
 
@@ -114,15 +114,22 @@ export async function writeYearSnapshot(year, snapshot) {
   await writeFile(new URL(`../data/syoboi-history-${year}.js`, import.meta.url), output);
 }
 
-function wait() {
-  return new Promise((resolve) => setTimeout(resolve, REQUEST_DELAY_MS));
+function wait(milliseconds = REQUEST_DELAY_MS) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+export async function requestWithRateLimitRetry(request, sleep = wait) {
+  const response = await request();
+  if (response.status !== 429) return response;
+  await sleep(10_000);
+  return request();
 }
 
 async function fetchXml(command, params = {}) {
   const url = new URL("db.php", SOURCE_URL);
   url.searchParams.set("Command", command);
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
-  const response = await fetch(url, { headers: { "user-agent": USER_AGENT } });
+  const response = await requestWithRateLimitRetry(() => fetch(url, { headers: { "user-agent": USER_AGENT } }));
   if (!response.ok) throw new Error(`Syoboi request failed (${response.status}): ${url}`);
   await wait();
   return response.text();
@@ -180,11 +187,11 @@ async function main() {
   const year = Number(process.argv[2] ?? "2026");
   if (!Number.isInteger(year) || year < 2020 || year > 2026) throw new RangeError("Year must be between 2020 and 2026");
 
-  const [titleXml, channelXml, catalog] = await Promise.all([
-    fetchXml("TitleLookup", { TID: "*" }),
-    fetchXml("ChLookup"),
-    catalogForYear(year),
-  ]);
+  const [titleXml, channelXml, catalog] = [
+    await fetchXml("TitleLookup", { TID: "*" }),
+    await fetchXml("ChLookup"),
+    await catalogForYear(year),
+  ];
   const titles = parseTitleLookup(titleXml);
   const channels = new Map(parseChannelLookup(channelXml).map((channel) => [channel.id, channel]));
   const matchedTids = new Set(
