@@ -46,7 +46,7 @@ export function resolveSyoboiTitle(record, titles, year) {
   return { status: "ambiguous", candidateTids: candidates.map(({ tid }) => tid).sort((left, right) => left - right) };
 }
 
-function actualEpisodeSchedules(programs, channelId) {
+function actualEpisodeSchedules(programs, channelId, episodeCount) {
   const uniqueEpisodes = new Map();
   for (const program of programs) {
     if (program.channelId !== channelId || program.deleted !== 0 || (program.flag & 0x8) !== 0) continue;
@@ -58,7 +58,17 @@ function actualEpisodeSchedules(programs, channelId) {
       if (!uniqueEpisodes.has(key)) uniqueEpisodes.set(key, schedule);
     } catch {}
   }
-  return compressEpisodeSchedules([...uniqueEpisodes.values()]);
+  const schedules = [...uniqueEpisodes.values()];
+  const firstEpisode = Math.min(...schedules.map(({ episodeStart }) => episodeStart));
+  return compressEpisodeSchedules(
+    schedules
+      .map((schedule) => ({
+        ...schedule,
+        episodeStart: schedule.episodeStart - firstEpisode + 1,
+        episodeEnd: Math.min(schedule.episodeEnd - firstEpisode + 1, episodeCount),
+      }))
+      .filter(({ episodeStart, episodeEnd }) => episodeStart > 0 && episodeEnd >= episodeStart),
+  );
 }
 
 export function buildYearSnapshot({ year, catalog, titles, channels, programsByTid, generatedAt = "1970-01-01" }) {
@@ -85,7 +95,7 @@ export function buildYearSnapshot({ year, catalog, titles, channels, programsByT
       continue;
     }
 
-    const episodeSchedules = actualEpisodeSchedules(programs, primary.channelId);
+    const episodeSchedules = actualEpisodeSchedules(programs, primary.channelId, record.episodeCount);
     if (!episodeSchedules.length) {
       skipped.push({ recordId: record.id, tid: resolution.tid, reason: "no-numbered-episodes" });
       continue;
@@ -144,7 +154,7 @@ function formatRangeDate(date) {
 }
 
 function rangeForYear(year) {
-  const start = new Date(Date.UTC(year, 0, 1));
+  const start = new Date(Date.UTC(year - 1, 9, 1));
   const end =
     year === 2026
       ? new Date(Date.now() + 24 * 60 * 60 * 1000)

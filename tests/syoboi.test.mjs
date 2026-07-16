@@ -58,6 +58,49 @@ test("rejects reruns and chooses the earliest Japanese television premiere", () 
   );
 });
 
+test("accepts the first television record when Syoboi uses a global episode number", () => {
+  assert.deepEqual(
+    choosePrimaryTelevisionSchedule(
+      [
+        {
+          id: 1,
+          stTime: "2020-12-07 00:10:00",
+          count: 60,
+          subtitle: "",
+          flag: 2,
+          deleted: 0,
+          channelId: 1,
+        },
+      ],
+      new Map([[1, { kind: "television" }]]),
+    ),
+    { channelId: 1, firstProgramId: 1 },
+  );
+});
+
+test("renumbers a verified global-count season from the local first episode", () => {
+  const snapshot = buildYearSnapshot({
+    year: 2021,
+    catalog: [{ id: "aot", titleJa: "進撃の巨人 The Final Season", episodeCount: 3 }],
+    titles: [{ tid: 5827, title: "進撃の巨人 The Final Season", firstYear: 2020, firstMonth: 12 }],
+    channels: new Map([[1, { kind: "television", name: "NHK総合" }]]),
+    programsByTid: new Map([
+      [
+        5827,
+        [
+          { id: 1, stTime: "2020-12-07 00:10:00", count: 60, subtitle: "", flag: 2, deleted: 0, channelId: 1 },
+          { id: 2, stTime: "2020-12-14 00:10:00", count: 61, subtitle: "", flag: 0, deleted: 0, channelId: 1 },
+          { id: 3, stTime: "2020-12-21 00:10:00", count: 62, subtitle: "", flag: 0, deleted: 0, channelId: 1 },
+        ],
+      ],
+    ]),
+  });
+
+  assert.deepEqual(snapshot.entries[0]?.episodeSchedules, [
+    { episodeStart: 1, episodeEnd: 3, broadcastDateBeijing: "2020-12-06", beijingTime: "23:10", intervalDays: 7 },
+  ]);
+});
+
 test("keeps a same-slot double premiere and compresses a later weekly run", () => {
   assert.deepEqual(
     compressEpisodeSchedules([
