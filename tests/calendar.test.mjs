@@ -83,6 +83,28 @@ test("keeps the full episode range for a multi-episode premiere", () => {
   );
 });
 
+test("uses verified episode schedule segments without extrapolating the final segment", () => {
+  const record = {
+    ...weeklyShow,
+    id: "verified-2026",
+    episodeSchedules: [
+      { episodeStart: 1, episodeEnd: 2, broadcastDateBeijing: "2026-07-04", beijingTime: "23:00", intervalDays: 0 },
+      { episodeStart: 3, episodeEnd: 4, broadcastDateBeijing: "2026-07-12", beijingTime: "23:00", intervalDays: 7 },
+    ],
+  };
+
+  assert.deepEqual(
+    eventsForWeek([record], "2026-07-13").map(({ episodeStart, episode, broadcastDate, time }) => ({
+      episodeStart,
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episodeStart: 4, episode: 4, broadcastDate: "2026-07-19", time: "23:00" }],
+  );
+  assert.equal(eventsForWeek([record], "2026-08-03").length, 0);
+});
+
 test("formats single episodes and premiere episode ranges", () => {
   assert.equal(typeof calendar.formatEpisodeLabel, "function");
   assert.equal(calendar.formatEpisodeLabel(1, 3), "第 1-3 集");
