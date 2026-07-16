@@ -954,6 +954,22 @@ export const syoboiHistory2020 = {
       ]
     },
     {
+      "recordId": "anilist-110355",
+      "tid": 5754,
+      "titleJa": "ゴールデンカムイ 第三期",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5754",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-05",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
       "recordId": "anilist-110371",
       "tid": 5703,
       "titleJa": "恋とプロデューサー～EVOL×LOVE～",
@@ -1044,13 +1060,6 @@ export const syoboiHistory2020 = {
           "broadcastDateBeijing": "2020-03-09",
           "beijingTime": "22:00",
           "intervalDays": 7
-        },
-        {
-          "episodeStart": 11,
-          "episodeEnd": 11,
-          "broadcastDateBeijing": "2020-09-21",
-          "beijingTime": "22:00",
-          "intervalDays": 7
         }
       ]
     },
@@ -1066,6 +1075,22 @@ export const syoboiHistory2020 = {
           "episodeEnd": 12,
           "broadcastDateBeijing": "2020-10-11",
           "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "anilist-111145",
+      "tid": 5798,
+      "titleJa": "A3! SEASON AUTUMN & WINTER",
+      "channel": "サンテレビジョン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5798",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-12",
+          "beijingTime": "23:00",
           "intervalDays": 7
         }
       ]
@@ -1364,22 +1389,15 @@ export const syoboiHistory2020 = {
       "episodeSchedules": [
         {
           "episodeStart": 1,
-          "episodeEnd": 1,
-          "broadcastDateBeijing": "2020-04-10",
-          "beijingTime": "20:30",
-          "intervalDays": 7
-        },
-        {
-          "episodeStart": 1,
           "episodeEnd": 2,
           "broadcastDateBeijing": "2020-03-30",
           "beijingTime": "20:30",
           "intervalDays": 0
         },
         {
-          "episodeStart": 2,
+          "episodeStart": 3,
           "episodeEnd": 3,
-          "broadcastDateBeijing": "2020-04-17",
+          "broadcastDateBeijing": "2020-04-24",
           "beijingTime": "20:30",
           "intervalDays": 7
         },
@@ -1692,6 +1710,22 @@ export const syoboiHistory2020 = {
       ]
     },
     {
+      "recordId": "anilist-113469",
+      "tid": 5726,
+      "titleJa": "りばあす",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5726",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-07",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
       "recordId": "anilist-113470",
       "tid": 5526,
       "titleJa": "SHOW BY ROCK!! ましゅまいれっしゅ!!",
@@ -1703,6 +1737,57 @@ export const syoboiHistory2020 = {
           "episodeEnd": 12,
           "broadcastDateBeijing": "2020-01-09",
           "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "anilist-113472",
+      "tid": 5549,
+      "titleJa": "妖怪ウォッチJam 妖怪学園Y ～Nとの遭遇～",
+      "channel": "テレビ愛知",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5549",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2019-12-27",
+          "beijingTime": "17:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2020-01-10",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2020-01-24",
+          "beijingTime": "17:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 17,
+          "broadcastDateBeijing": "2020-01-31",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 18,
+          "episodeEnd": 49,
+          "broadcastDateBeijing": "2020-05-08",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 50,
+          "episodeEnd": 50,
+          "broadcastDateBeijing": "2020-12-25",
+          "beijingTime": "16:55",
           "intervalDays": 7
         }
       ]
@@ -1880,6 +1965,29 @@ export const syoboiHistory2020 = {
           "episodeEnd": 11,
           "broadcastDateBeijing": "2020-10-11",
           "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "anilist-114233",
+      "tid": 5663,
+      "titleJa": "ガンダムビルドダイバーズRe:RISE 2nd Season",
+      "channel": "BS11イレブン",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5663",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2020-04-11",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2020-07-11",
+          "beijingTime": "18:00",
           "intervalDays": 7
         }
       ]
@@ -2805,52 +2913,165 @@ export const syoboiHistory2020 = {
         },
         {
           "episodeStart": 12,
-          "episodeEnd": 13,
+          "episodeEnd": 12,
           "broadcastDateBeijing": "2020-02-19",
           "beijingTime": "21:30",
-          "intervalDays": 0
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "yuc-202007-06",
+      "tid": 5463,
+      "titleJa": "ノー・ガンズ・ライフ",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5463",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2019-10-11",
+          "beijingTime": "00:28",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 14,
-          "episodeEnd": 15,
-          "broadcastDateBeijing": "2020-02-26",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2019-11-01",
+          "beijingTime": "00:30",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 16,
-          "episodeEnd": 17,
-          "broadcastDateBeijing": "2020-03-04",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2019-11-08",
+          "beijingTime": "02:08",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 18,
-          "episodeEnd": 19,
-          "broadcastDateBeijing": "2020-03-11",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2019-11-15",
+          "beijingTime": "01:13",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 20,
-          "episodeEnd": 21,
-          "broadcastDateBeijing": "2020-03-18",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2019-11-22",
+          "beijingTime": "00:30",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 22,
-          "episodeEnd": 23,
-          "broadcastDateBeijing": "2020-03-25",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 8,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2019-11-29",
+          "beijingTime": "00:28",
+          "intervalDays": 7
         },
         {
-          "episodeStart": 24,
-          "episodeEnd": 25,
-          "broadcastDateBeijing": "2020-04-01",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2019-12-20",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2019-12-27",
+          "beijingTime": "00:09",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "yuc-202007-07",
+      "tid": 5725,
+      "titleJa": "ムヒョとロージーの魔法律相談事務所 第2期",
+      "channel": "アニマックス",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5725",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-07-07",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "yuc-202007-17",
+      "tid": 5603,
+      "titleJa": "ソードアート・オンライン アリシゼーション War of Underworld -THE LAST SEASON-",
+      "channel": "TOKYO MX",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5603",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2020-07-11",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ]
+    },
+    {
+      "recordId": "yuc-202010-16",
+      "tid": 5782,
+      "titleJa": "ハイキュー!! TO THE TOP 第2クール",
+      "channel": "TBS",
+      "sourceUrl": "https://cal.syoboi.jp/tid/5782",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2020-10-03",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2020-10-24",
+          "beijingTime": "01:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2020-10-31",
+          "beijingTime": "01:27",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2020-11-14",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2020-11-21",
+          "beijingTime": "01:27",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2020-11-28",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-12-19",
+          "beijingTime": "01:35",
+          "intervalDays": 7
         }
       ]
     }
@@ -2982,31 +3203,6 @@ export const syoboiHistory2020 = {
   ],
   "skipped": [
     {
-      "recordId": "anilist-110355",
-      "tid": 5754,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "anilist-111145",
-      "tid": 5798,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "anilist-113469",
-      "tid": 5726,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "anilist-113472",
-      "tid": 5549,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "anilist-114233",
-      "tid": 5663,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
       "recordId": "yuc-202001-11",
       "tid": 5983,
       "reason": "no-eligible-television-premiere"
@@ -3014,26 +3210,6 @@ export const syoboiHistory2020 = {
     {
       "recordId": "yuc-202001-13",
       "tid": 5903,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "yuc-202007-06",
-      "tid": 5463,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "yuc-202007-07",
-      "tid": 5725,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "yuc-202007-17",
-      "tid": 5603,
-      "reason": "no-eligible-television-premiere"
-    },
-    {
-      "recordId": "yuc-202010-16",
-      "tid": 5782,
       "reason": "no-eligible-television-premiere"
     }
   ]

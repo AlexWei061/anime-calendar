@@ -141,13 +141,6 @@ export const january2020 = {
           "broadcastDateBeijing": "2020-03-09",
           "beijingTime": "22:00",
           "intervalDays": 7
-        },
-        {
-          "episodeStart": 11,
-          "episodeEnd": 11,
-          "broadcastDateBeijing": "2020-09-21",
-          "beijingTime": "22:00",
-          "intervalDays": 7
         }
       ],
       "scheduleSourceName": "しょぼいカレンダー",
@@ -1332,52 +1325,10 @@ export const january2020 = {
         },
         {
           "episodeStart": 12,
-          "episodeEnd": 13,
+          "episodeEnd": 12,
           "broadcastDateBeijing": "2020-02-19",
           "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 14,
-          "episodeEnd": 15,
-          "broadcastDateBeijing": "2020-02-26",
-          "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 16,
-          "episodeEnd": 17,
-          "broadcastDateBeijing": "2020-03-04",
-          "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 18,
-          "episodeEnd": 19,
-          "broadcastDateBeijing": "2020-03-11",
-          "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 20,
-          "episodeEnd": 21,
-          "broadcastDateBeijing": "2020-03-18",
-          "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 22,
-          "episodeEnd": 23,
-          "broadcastDateBeijing": "2020-03-25",
-          "beijingTime": "21:30",
-          "intervalDays": 0
-        },
-        {
-          "episodeStart": 24,
-          "episodeEnd": 25,
-          "broadcastDateBeijing": "2020-04-01",
-          "beijingTime": "21:30",
-          "intervalDays": 0
+          "intervalDays": 7
         }
       ],
       "scheduleSourceName": "しょぼいカレンダー",
@@ -1526,28 +1477,87 @@ export const january2020 = {
       "coverUrl": "/covers/yuc/history-2020-01-49.webp",
       "coverAlt": "Rebirth 封面",
       "sourceUrl": "https://yuc.wiki/202001/",
-      "premiereDateBeijing": "2020-01-05",
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 首播日期（试点）"
+      "premiereDateBeijing": "2020-10-07",
+      "scheduleWeekday": "Wed",
+      "beijingTime": "00:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-07",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5726",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-113472",
       "anilistId": 113472,
       "episodeCount": 63,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 61,
       "titleZh": "妖怪手表Jam 妖怪学院Y 与N遭遇",
       "titleJa": "妖怪ウォッチJam 妖怪学園Y ～Nとの遭遇～",
       "coverUrl": "/covers/yuc/history-2020-01-50.webp",
       "coverAlt": "妖怪手表Jam 妖怪学院Y 与N遭遇 封面",
       "sourceUrl": "https://yuc.wiki/202001/",
-      "premiereDateBeijing": "2021-03-19",
+      "premiereDateBeijing": "2019-12-27",
       "scheduleWeekday": "Fri",
       "beijingTime": "17:25",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "regularBroadcastStartDateBeijing": "2020-05-08",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2019-12-27",
+          "beijingTime": "17:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2020-01-10",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2020-01-24",
+          "beijingTime": "17:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 17,
+          "broadcastDateBeijing": "2020-01-31",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 18,
+          "episodeEnd": 49,
+          "broadcastDateBeijing": "2020-05-08",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 50,
+          "episodeEnd": 50,
+          "broadcastDateBeijing": "2020-12-25",
+          "beijingTime": "16:55",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5549",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-109964",
@@ -1627,20 +1637,14 @@ export const april2020 = {
       "coverUrl": "/covers/yuc/history-2020-04-01.webp",
       "coverAlt": "天晴烂漫 封面",
       "sourceUrl": "https://yuc.wiki/202004/",
-      "premiereDateBeijing": "2020-04-10",
+      "premiereDateBeijing": "2020-03-30",
       "scheduleWeekday": "Fri",
       "beijingTime": "20:00",
       "timeStatus": "verified",
       "station": "AT-X",
+      "premiereEpisodeCount": 2,
       "regularBroadcastStartDateBeijing": "2020-07-24",
       "episodeSchedules": [
-        {
-          "episodeStart": 1,
-          "episodeEnd": 1,
-          "broadcastDateBeijing": "2020-04-10",
-          "beijingTime": "20:30",
-          "intervalDays": 7
-        },
         {
           "episodeStart": 1,
           "episodeEnd": 2,
@@ -1649,9 +1653,9 @@ export const april2020 = {
           "intervalDays": 0
         },
         {
-          "episodeStart": 2,
+          "episodeStart": 3,
           "episodeEnd": 3,
-          "broadcastDateBeijing": "2020-04-17",
+          "broadcastDateBeijing": "2020-04-24",
           "beijingTime": "20:30",
           "intervalDays": 7
         },
@@ -1833,17 +1837,36 @@ export const april2020 = {
       "anilistId": 114233,
       "episodeCount": 13,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 6,
       "titleZh": "高达创形者再起 第2期",
       "titleJa": "ガンダムビルドダイバーズRe:RISE 2nd Season",
       "coverUrl": "/covers/yuc/history-2020-04-07.webp",
       "coverAlt": "高达创形者再起 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202004/",
-      "premiereDateBeijing": "2020-07-09",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "19:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2020-04-11",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "18:00",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "regularBroadcastStartDateBeijing": "2020-07-11",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2020-04-11",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2020-07-11",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5663",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-114402",
@@ -3279,11 +3302,72 @@ export const july2020 = {
       "coverUrl": "/covers/yuc/history-2020-07-06.webp",
       "coverAlt": "非枪人生 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202007/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2019-10-11",
+      "scheduleWeekday": "Fri",
+      "beijingTime": "00:28",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2019-10-11",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2019-11-01",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2019-11-08",
+          "beijingTime": "02:08",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2019-11-15",
+          "beijingTime": "01:13",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2019-11-22",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2019-11-29",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2019-12-20",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2019-12-27",
+          "beijingTime": "00:09",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5463",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "yuc-202007-07",
@@ -3295,11 +3379,23 @@ export const july2020 = {
       "coverUrl": "/covers/yuc/history-2020-07-07.webp",
       "coverAlt": "魔法律事务所 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202007/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2020-07-07",
+      "scheduleWeekday": "Tue",
+      "beijingTime": "18:00",
+      "timeStatus": "verified",
+      "station": "アニマックス",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-07-07",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5725",
+      "scheduleChannel": "アニマックス"
     },
     {
       "id": "anilist-112818",
@@ -3609,11 +3705,23 @@ export const july2020 = {
       "coverUrl": "/covers/yuc/history-2020-07-17.webp",
       "coverAlt": "刀剑神域 Alicization War of Underworld 最终季 封面",
       "sourceUrl": "https://yuc.wiki/202007/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2020-07-11",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2020-07-11",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5603",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202007-18",
@@ -4218,8 +4326,20 @@ export const october2020 = {
       "premiereDateBeijing": "2020-10-05",
       "scheduleWeekday": "Mon",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-05",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5754",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202010-16",
@@ -4231,11 +4351,65 @@ export const october2020 = {
       "coverUrl": "/covers/yuc/history-2020-10-16.webp",
       "coverAlt": "排球少年 第4期 后半 封面",
       "sourceUrl": "https://yuc.wiki/202010/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2020-10-03",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "01:25",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2020-10-03",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2020-10-24",
+          "beijingTime": "01:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2020-10-31",
+          "beijingTime": "01:27",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2020-11-14",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2020-11-21",
+          "beijingTime": "01:27",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2020-11-28",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-12-19",
+          "beijingTime": "01:35",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5782",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-113415",
@@ -4973,8 +5147,20 @@ export const october2020 = {
       "premiereDateBeijing": "2020-10-12",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "サンテレビジョン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2020-10-12",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/5798",
+      "scheduleChannel": "サンテレビジョン"
     },
     {
       "id": "anilist-113970",

@@ -424,9 +424,9 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
       ({ titleJa, premiereDateBeijing, scheduleWeekday, beijingTime, episodeCount }) =>
         typeof titleJa === "string" &&
         titleJa.length > 0 &&
-        ((/^\d{4}-\d{2}-\d{2}$/.test(premiereDateBeijing) &&
+          ((/^\d{4}-\d{2}-\d{2}$/.test(premiereDateBeijing) &&
           ((/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/.test(scheduleWeekday) && /^\d{2}:\d{2}$/.test(beijingTime)) ||
-            (scheduleWeekday === null && beijingTime === null))) ||
+            (scheduleWeekday === null && (/^\d{2}:\d{2}$/.test(beijingTime) || beijingTime === null)))) ||
           (premiereDateBeijing === null && scheduleWeekday === null && beijingTime === null)) &&
         Number.isInteger(episodeCount) &&
         episodeCount > 0,
@@ -768,10 +768,11 @@ test("schedules ID:INVADED as a two-episode premiere followed by weekly broadcas
   );
 });
 
-test("schedules Attack on Titan Final Season Part 1 weekly from December", () => {
+test("records Attack on Titan Final Season Part 1 as a 16-episode split broadcast", () => {
   const attackOnTitan = allAnime.find(({ id }) => id === "anilist-110277");
 
   assert.equal(attackOnTitan?.episodeCount, 16);
+  assert.equal(attackOnTitan?.scheduleSourceName, "しょぼいカレンダー");
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2020-11-30").map(({ episode, broadcastDate, time }) => ({
       episode,
@@ -788,34 +789,53 @@ test("schedules Attack on Titan Final Season Part 1 weekly from December", () =>
     })),
     [{ episode: 2, broadcastDate: "2020-12-13", time: "23:10" }],
   );
+  assert.deepEqual(eventsForWeek([attackOnTitan], "2020-12-28"), []);
   assert.deepEqual(
-    eventsForWeek([attackOnTitan], "2021-03-15").map(({ episode, broadcastDate }) => ({
+    eventsForWeek([attackOnTitan], "2021-01-04").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 5, broadcastDate: "2021-01-10", time: "23:10" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2021-03-22").map(({ episode, broadcastDate }) => ({
       episode,
       broadcastDate,
     })),
-    [{ episode: 16, broadcastDate: "2021-03-21" }],
+    [{ episode: 16, broadcastDate: "2021-03-28" }],
   );
 });
 
-test("schedules Attack on Titan Final Season Part 2 weekly from January", () => {
+test("records Attack on Titan Final Season Part 2 broadcast changes", () => {
   const attackOnTitan = allAnime.find(({ id }) => id === "anilist-131681");
 
-  assert.ok(attackOnTitan);
-  assert.equal(attackOnTitan.episodeCount, 12);
+  assert.equal(attackOnTitan?.episodeCount, 12);
+  assert.equal(attackOnTitan?.scheduleSourceName, "しょぼいカレンダー");
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2022-01-03").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
       time,
     })),
-    [{ episode: 1, broadcastDate: "2022-01-09", time: "23:10" }],
+    [{ episode: 1, broadcastDate: "2022-01-09", time: "23:05" }],
   );
   assert.deepEqual(
-    eventsForWeek([attackOnTitan], "2022-03-21").map(({ episode, broadcastDate }) => ({
+    eventsForWeek([attackOnTitan], "2022-02-07").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
+      time,
     })),
-    [{ episode: 12, broadcastDate: "2022-03-27" }],
+    [{ episode: 6, broadcastDate: "2022-02-13", time: "23:43" }],
+  );
+  assert.deepEqual(eventsForWeek([attackOnTitan], "2022-03-21"), []);
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2022-03-28").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 12, broadcastDate: "2022-04-03", time: "23:05" }],
   );
 });
 
@@ -851,10 +871,10 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   assert.ok(july2020Events.some(({ id, episode }) => id === "anilist-112818" && episode === 1));
   assert.ok(october2020Events.some(({ id, episode }) => id === "anilist-114099" && episode === 1));
   assert.ok(january2021Events.some(({ id, episode }) => id === "anilist-128872" && episode === 1));
-  assert.ok(april2021Events.some(({ id, episode }) => id === "anilist-117067" && episode === 6));
+  assert.ok(april2021Events.some(({ id, episode }) => id === "anilist-121962" && episode === 1));
   assert.ok(july2021Events.some(({ id, episode }) => id === "anilist-125640" && episode === 1));
   assert.ok(october2021Events.some(({ id, episode }) => id === "anilist-137877" && episode === 2));
-  assert.ok(january2022Events.some(({ id, episode }) => id === "anilist-118465" && episode === 1));
+  assert.ok(january2022Events.some(({ id, episode }) => id === "anilist-109820" && episode === 1));
   assert.ok(april2022Events.some(({ id, episode }) => id === "anilist-137633" && episode === 1));
   assert.ok(july2022Events.some(({ id, episode }) => id === "anilist-151128" && episode === 1));
   assert.ok(october2022Events.some(({ id, episode }) => id === "anilist-155526" && episode === 1));
@@ -868,7 +888,7 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   assert.ok(october2024Events.some(({ id, episode }) => id === "anilist-178395" && episode === 1));
   assert.ok(decemberToJanuaryEvents.some(({ id, episode }) => id === "anilist-169295" && episode === 1));
   assert.ok(marchToApril2025Events.some(({ id, episode }) => id === "anilist-184279" && episode === 1));
-  assert.ok(septemberToOctoberEvents.some(({ id, episode }) => id === "anilist-187663" && episode === 1));
+  assert.ok(septemberToOctoberEvents.some(({ id, episode }) => id === "anilist-195173" && episode === 1));
   assert.ok(marchToAprilEvents.some(({ id, episode }) => id === "anilist-202957" && episode === 10));
   assert.ok(marchToAprilEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 1));
   assert.ok(juneToJulyEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 14));

@@ -3,7 +3,7 @@
 export const january2023 = {
   "label": "2023 年 1 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-16",
   "catalogCount": 62,
   "sourceName": "YUC 2023年1月新番表",
   "sourceUrl": "https://yuc.wiki/202301/",
@@ -21,8 +21,56 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:25",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-01-21",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-01-14",
+          "beijingTime": "00:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-01-21",
+          "beijingTime": "00:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-11",
+          "beijingTime": "01:50",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-18",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-25",
+          "beijingTime": "00:25",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6551",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-155907",
@@ -37,8 +85,27 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-06",
       "scheduleWeekday": "Fri",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-01-06",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6576",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-135778",
@@ -53,8 +120,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "19:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-09",
+          "beijingTime": "19:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6550",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-155202",
@@ -68,9 +147,21 @@ export const january2023 = {
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-05",
       "scheduleWeekday": "Thu",
-      "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "20:00",
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-05",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6547",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-135429",
@@ -117,8 +208,42 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "regularBroadcastStartDateBeijing": "2023-02-11",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-02-11",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-25",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-16",
+          "beijingTime": "18:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6592",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-147216",
@@ -130,11 +255,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-08.webp",
       "coverAlt": "D4DJ 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-09",
-      "scheduleWeekday": "Mon",
-      "beijingTime": "08:40",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-01-13",
+      "scheduleWeekday": "Fri",
+      "beijingTime": "22:00",
+      "timeStatus": "verified",
+      "station": "BS日テレ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-13",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6590",
+      "scheduleChannel": "BS日テレ"
     },
     {
       "id": "anilist-157883",
@@ -149,8 +286,27 @@ export const january2023 = {
       "premiereDateBeijing": "2023-02-05",
       "scheduleWeekday": "Sun",
       "beijingTime": "07:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 39,
+          "broadcastDateBeijing": "2023-02-05",
+          "beijingTime": "07:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 40,
+          "episodeEnd": 46,
+          "broadcastDateBeijing": "2023-11-12",
+          "beijingTime": "07:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6614",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "yuc-202301-10",
@@ -181,8 +337,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-01-04",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6575",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-142853",
@@ -197,8 +365,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "01:08",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "MBS毎日放送",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "01:08",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6564",
+      "scheduleChannel": "MBS毎日放送"
     },
     {
       "id": "yuc-202301-13",
@@ -229,8 +409,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-01-09",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6552",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "yuc-202301-15",
@@ -277,9 +469,21 @@ export const january2023 = {
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
-      "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6534",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-148969",
@@ -294,8 +498,27 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-10",
       "scheduleWeekday": "Tue",
       "beijingTime": "20:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-01-10",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-05-16",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6565",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-151806",
@@ -310,8 +533,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-01-04",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6542",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-136435",
@@ -326,8 +561,49 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "00:35",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "regularBroadcastStartDateBeijing": "2023-02-13",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-01-09",
+          "beijingTime": "00:35",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-02-06",
+          "beijingTime": "01:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-02-13",
+          "beijingTime": "00:35",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-20",
+          "beijingTime": "00:45",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-03-27",
+          "beijingTime": "00:35",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6581",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-151252",
@@ -339,11 +615,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-21.webp",
       "coverAlt": "冰属性男子与酷酷女同事 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-03",
-      "scheduleWeekday": "Tue",
+      "premiereDateBeijing": "2023-01-04",
+      "scheduleWeekday": "Wed",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-04",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6558",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-141785",
@@ -358,8 +646,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-09",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6579",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-144144",
@@ -371,11 +671,73 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-23.webp",
       "coverAlt": "大雪海的凯纳 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-11",
+      "premiereDateBeijing": "2023-01-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "フジテレビ",
+      "regularBroadcastStartDateBeijing": "2023-01-25",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-01-12",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-01-19",
+          "beijingTime": "00:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-01-25",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-02-09",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-02-15",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-02-23",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-08",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-23",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6562",
+      "scheduleChannel": "フジテレビ"
     },
     {
       "id": "anilist-151679",
@@ -390,8 +752,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6594",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-151040",
@@ -406,8 +780,70 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "regularBroadcastStartDateBeijing": "2023-01-14",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-01-14",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-02-04",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-02-11",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-03-04",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-11",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-18",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-25",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6580",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "yuc-202301-26",
@@ -438,8 +874,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6574",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-146346",
@@ -451,11 +899,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-28.webp",
       "coverAlt": "变成狗后被喜欢的人捡走了 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-05",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-01-07",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "00:35",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "00:35",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6555",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-142849",
@@ -470,8 +930,35 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-10",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "regularBroadcastStartDateBeijing": "2023-08-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-01-10",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-03-07",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-08-22",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6532",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-147864",
@@ -486,8 +973,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-05",
       "scheduleWeekday": "Thu",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-05",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6556",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-150117",
@@ -502,8 +1001,91 @@ export const january2023 = {
       "premiereDateBeijing": "2022-12-04",
       "scheduleWeekday": "Sun",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "regularBroadcastStartDateBeijing": "2023-03-26",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2022-12-04",
+          "beijingTime": "23:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2022-12-12",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2022-12-19",
+          "beijingTime": "00:06",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2022-12-26",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-02-06",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 14,
+          "broadcastDateBeijing": "2023-02-12",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 15,
+          "episodeEnd": 15,
+          "broadcastDateBeijing": "2023-03-19",
+          "beijingTime": "23:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 16,
+          "episodeEnd": 23,
+          "broadcastDateBeijing": "2023-03-26",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 24,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-05-21",
+          "beijingTime": "23:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 25,
+          "episodeEnd": 28,
+          "broadcastDateBeijing": "2023-05-28",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6531",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-154785",
@@ -518,8 +1100,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-06",
       "scheduleWeekday": "Fri",
       "beijingTime": "20:54",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-06",
+          "beijingTime": "20:54",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6585",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-137308",
@@ -532,10 +1126,22 @@ export const january2023 = {
       "coverAlt": "突如其来埃及神 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-11",
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 首播日期（试点）"
+      "scheduleWeekday": "Wed",
+      "beijingTime": "00:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-01-11",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6612",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-150653",
@@ -563,11 +1169,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-35.webp",
       "coverAlt": "在地下城寻求邂逅是否搞错了什么 第4期 后半 厄灾篇 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-05",
-      "scheduleWeekday": "Thu",
-      "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-01-07",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "00:05",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6535",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-153841",
@@ -582,8 +1200,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-01-04",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6549",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-126529",
@@ -598,8 +1228,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "00:05",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-09",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6538",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-116867",
@@ -614,8 +1256,41 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-11",
       "scheduleWeekday": "Wed",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-01-11",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-08",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-04-12",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-21",
+          "beijingTime": "19:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6589",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "yuc-202301-39",
@@ -645,9 +1320,21 @@ export const january2023 = {
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
-      "beijingTime": "20:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6586",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-146954",
@@ -662,8 +1349,34 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-14",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:23",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-01-14",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-18",
+          "beijingTime": "00:33",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-25",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6570",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-155068",
@@ -678,8 +1391,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-18",
       "scheduleWeekday": "Wed",
       "beijingTime": "19:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-18",
+          "beijingTime": "19:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6561",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-152523",
@@ -694,8 +1419,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6544",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-142193",
@@ -710,8 +1447,34 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-10",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:45",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-01-10",
+          "beijingTime": "00:45",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-21",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-28",
+          "beijingTime": "00:45",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6554",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-153629",
@@ -726,8 +1489,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-04",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6540",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-152765",
@@ -742,8 +1517,27 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-26",
+          "beijingTime": "01:10",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6543",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-146850",
@@ -758,8 +1552,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-06",
       "scheduleWeekday": "Fri",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-06",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6541",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-156067",
@@ -773,9 +1579,35 @@ export const january2023 = {
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-10",
       "scheduleWeekday": "Tue",
-      "beijingTime": "22:45",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-01-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-21",
+          "beijingTime": "23:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-28",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6568",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-137909",
@@ -787,11 +1619,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-49.webp",
       "coverAlt": "不相信人类的冒险者们好像要去拯救世界 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-03",
+      "premiereDateBeijing": "2023-01-10",
       "scheduleWeekday": "Tue",
-      "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "22:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-10",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6539",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202301-50",
@@ -821,9 +1665,50 @@ export const january2023 = {
       "sourceUrl": "https://yuc.wiki/202301/",
       "premiereDateBeijing": "2023-01-06",
       "scheduleWeekday": "Fri",
-      "beijingTime": "00:58",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:28",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-01-13",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-01-06",
+          "beijingTime": "00:58",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-01-13",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-10",
+          "beijingTime": "01:33",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-17",
+          "beijingTime": "00:33",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-24",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6545",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-143064",
@@ -838,8 +1723,56 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-01-21",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-01-14",
+          "beijingTime": "01:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-01-21",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-03-11",
+          "beijingTime": "02:20",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-03-18",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-25",
+          "beijingTime": "00:57",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6536",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "yuc-202301-53",
@@ -870,8 +1803,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6566",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-146323",
@@ -886,8 +1831,27 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-05",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-01-05",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-02",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6584",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-125869",
@@ -902,8 +1866,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-14",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "WOWOWプライム",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-01-14",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6619",
+      "scheduleChannel": "WOWOWプライム"
     },
     {
       "id": "anilist-145665",
@@ -918,8 +1894,56 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "regularBroadcastStartDateBeijing": "2023-02-18",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-01-07",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-02-18",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-07-23",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-07-23",
+          "beijingTime": "18:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-07-23",
+          "beijingTime": "19:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-23",
+          "beijingTime": "19:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6601",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-130696",
@@ -931,11 +1955,23 @@ export const january2023 = {
       "coverUrl": "/covers/yuc/history-2023-01-58.webp",
       "coverAlt": "英雄传说 闪之轨迹 北方战役 封面",
       "sourceUrl": "https://yuc.wiki/202301/",
-      "premiereDateBeijing": "2023-01-06",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-01-08",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "22:30",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-01-08",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6573",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-158870",
@@ -950,8 +1986,20 @@ export const january2023 = {
       "premiereDateBeijing": "2023-01-13",
       "scheduleWeekday": "Fri",
       "beijingTime": "17:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-01-13",
+          "beijingTime": "17:55",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6587",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "yuc-202301-60",
@@ -1007,7 +2055,7 @@ export const january2023 = {
 export const april2023 = {
   "label": "2023 年 4 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-16",
   "catalogCount": 53,
   "sourceName": "YUC 2023年4月新番表",
   "sourceUrl": "https://yuc.wiki/202304/",
@@ -1025,8 +2073,28 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "16:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "CBCテレビ",
+      "regularBroadcastStartDateBeijing": "2023-05-21",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-05-21",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6680",
+      "scheduleChannel": "CBCテレビ"
     },
     {
       "id": "anilist-151606",
@@ -1041,8 +2109,34 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:23",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-05-27",
+          "beijingTime": "02:09",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-06-03",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6639",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-157765",
@@ -1057,8 +2151,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6641",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-134131",
@@ -1072,9 +2178,43 @@ export const april2023 = {
       "sourceUrl": "https://yuc.wiki/202304/",
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
-      "beijingTime": "00:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:53",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-04-29",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "01:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-04-15",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-04-22",
+          "beijingTime": "01:08",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-29",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6671",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "yuc-202304-05",
@@ -1086,11 +2226,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-05.webp",
       "coverAlt": "Opus.COLORs 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-04-06",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6633",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-156854",
@@ -1105,8 +2257,77 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "00:29",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "regularBroadcastStartDateBeijing": "2023-04-26",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-12",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-04-19",
+          "beijingTime": "00:49",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-04-26",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-05-17",
+          "beijingTime": "01:19",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-05-24",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-05-31",
+          "beijingTime": "00:34",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-06-07",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-06-21",
+          "beijingTime": "00:49",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-06-28",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6693",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-145139",
@@ -1121,8 +2342,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "22:15",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "フジテレビ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6645",
+      "scheduleChannel": "フジテレビ"
     },
     {
       "id": "anilist-131518",
@@ -1137,8 +2370,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-06",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6667",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-144932",
@@ -1153,8 +2398,62 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-04-01",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-06-04",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 18,
+          "broadcastDateBeijing": "2023-06-10",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 19,
+          "episodeEnd": 19,
+          "broadcastDateBeijing": "2023-08-06",
+          "beijingTime": "00:20",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 20,
+          "episodeEnd": 21,
+          "broadcastDateBeijing": "2023-08-12",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 22,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-09-03",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 25,
+          "episodeEnd": 25,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "00:10",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6634",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-153452",
@@ -1166,11 +2465,80 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-10.webp",
       "coverAlt": "国王排名 勇气的宝箱 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-13",
+      "premiereDateBeijing": "2023-04-14",
       "scheduleWeekday": "Thu",
       "beijingTime": "23:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "フジテレビ",
+      "regularBroadcastStartDateBeijing": "2023-06-01",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-14",
+          "beijingTime": "00:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-04-21",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-04-27",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-05-05",
+          "beijingTime": "00:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-05-12",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-05-19",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-05-26",
+          "beijingTime": "00:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-06-01",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-06-16",
+          "beijingTime": "00:10",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6691",
+      "scheduleChannel": "フジテレビ"
     },
     {
       "id": "yuc-202304-11",
@@ -1216,9 +2584,43 @@ export const april2023 = {
       "sourceUrl": "https://yuc.wiki/202304/",
       "premiereDateBeijing": "2023-04-04",
       "scheduleWeekday": "Tue",
-      "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "regularBroadcastStartDateBeijing": "2023-04-11",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-04",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-11",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-05-24",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-05-30",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6640",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-154364",
@@ -1233,8 +2635,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-06",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6625",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-147729",
@@ -1265,8 +2679,49 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-05",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "regularBroadcastStartDateBeijing": "2023-05-31",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-04-05",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-04-26",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-05-03",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-05-31",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-06-28",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6624",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-151189",
@@ -1281,8 +2736,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-02",
       "scheduleWeekday": "Sun",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-02",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6670",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-157198",
@@ -1297,8 +2764,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6689",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-128893",
@@ -1313,8 +2792,27 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-04-01",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-06-03",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6672",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-150672",
@@ -1329,8 +2827,27 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-12",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-06-07",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6676",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-155783",
@@ -1345,8 +2862,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-04-01",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6646",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-147369",
@@ -1361,8 +2890,27 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "16:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "NHK Eテレ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 17,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 18,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-08-27",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6626",
+      "scheduleChannel": "NHK Eテレ"
     },
     {
       "id": "anilist-154412",
@@ -1376,9 +2924,43 @@ export const april2023 = {
       "sourceUrl": "https://yuc.wiki/202304/",
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
-      "beijingTime": "00:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:23",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-04-29",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-04-15",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-04-22",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-29",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6649",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-149028",
@@ -1393,8 +2975,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-06",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6623",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-151847",
@@ -1409,8 +3003,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "20:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-10",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6629",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-128715",
@@ -1425,8 +3031,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-19",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-04-19",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6677",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-148098",
@@ -1438,11 +3056,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-27.webp",
       "coverAlt": "邻人似银河 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-08",
-      "scheduleWeekday": "Sat",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-04-09",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "00:30",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6628",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-153152",
@@ -1457,8 +3087,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-02",
       "scheduleWeekday": "Sun",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-02",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6643",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-154965",
@@ -1473,8 +3115,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-04-01",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6650",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-143653",
@@ -1489,8 +3143,34 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-04-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-05-22",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-05-29",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6657",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-141911",
@@ -1505,8 +3185,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-04",
       "scheduleWeekday": "Tue",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-04",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6647",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-157295",
@@ -1518,11 +3210,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-32.webp",
       "coverAlt": "什么情况都不知道的转校生一个劲的凑过来 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-02",
+      "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6638",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-148109",
@@ -1537,8 +3241,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-07",
       "scheduleWeekday": "Fri",
       "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-07",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6661",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-155070",
@@ -1553,8 +3269,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-07",
       "scheduleWeekday": "Fri",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-07",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6627",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-151801",
@@ -1569,8 +3297,27 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-07",
       "scheduleWeekday": "Fri",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-04-07",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-05-26",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6692",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-160442",
@@ -1585,8 +3332,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:35",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "00:35",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6658",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-148048",
@@ -1598,11 +3357,44 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-37.webp",
       "coverAlt": "无神世界中的神明活动 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-05",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-04-06",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "00:30",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-06-01",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-06-29",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-06",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6659",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-150957",
@@ -1616,9 +3408,43 @@ export const april2023 = {
       "sourceUrl": "https://yuc.wiki/202304/",
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
-      "beijingTime": "01:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "01:23",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-04-29",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "01:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-04-15",
+          "beijingTime": "01:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-04-22",
+          "beijingTime": "01:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-29",
+          "beijingTime": "01:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6651",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-150075",
@@ -1630,11 +3456,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-39.webp",
       "coverAlt": "为美好的世界献上爆焰 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-05",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-04-06",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "00:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6648",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-127550",
@@ -1649,8 +3487,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-03",
       "scheduleWeekday": "Mon",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-03",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6644",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-147571",
@@ -1665,8 +3515,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-03",
       "scheduleWeekday": "Mon",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-03",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6642",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-140754",
@@ -1681,8 +3543,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-09",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6630",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "yuc-202304-43",
@@ -1710,11 +3584,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-44.webp",
       "coverAlt": "异世界一击无双姐姐 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-07",
-      "scheduleWeekday": "Fri",
+      "premiereDateBeijing": "2023-04-08",
+      "scheduleWeekday": "Sat",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6678",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-153332",
@@ -1728,9 +3614,21 @@ export const april2023 = {
       "sourceUrl": "https://yuc.wiki/202304/",
       "premiereDateBeijing": "2023-04-02",
       "scheduleWeekday": "Sun",
-      "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-02",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6660",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "yuc-202304-46",
@@ -1758,11 +3656,44 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-47.webp",
       "coverAlt": "赛马娘 巅峰之路 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-16",
-      "scheduleWeekday": "Sun",
-      "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-10-03",
+      "scheduleWeekday": "Tue",
+      "beijingTime": "11:30",
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-03",
+          "beijingTime": "11:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "11:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-10-05",
+          "beijingTime": "11:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "11:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6705",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-144188",
@@ -1774,11 +3705,23 @@ export const april2023 = {
       "coverUrl": "/covers/yuc/history-2023-04-48.webp",
       "coverAlt": "机甲爱丽丝Expansion 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2023-04-03",
-      "scheduleWeekday": "Mon",
-      "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-04-04",
+      "scheduleWeekday": "Tue",
+      "beijingTime": "00:05",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-04",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6688",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-156896",
@@ -1793,25 +3736,77 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-04",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-04",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-05-23",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-05-30",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6653",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-159560",
       "anilistId": 159560,
       "episodeCount": 97,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 51,
       "titleZh": "逃走中 TheGreatMission",
       "titleJa": "逃走中 グレートミッション",
       "coverUrl": "/covers/yuc/history-2023-04-50.webp",
       "coverAlt": "逃走中 TheGreatMission 封面",
       "sourceUrl": "https://yuc.wiki/202304/",
-      "premiereDateBeijing": "2024-04-14",
+      "premiereDateBeijing": "2023-04-02",
       "scheduleWeekday": "Sun",
       "beijingTime": "08:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "フジテレビ",
+      "regularBroadcastStartDateBeijing": "2023-07-30",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-04-02",
+          "beijingTime": "08:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 15,
+          "broadcastDateBeijing": "2023-05-28",
+          "beijingTime": "08:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 16,
+          "episodeEnd": 37,
+          "broadcastDateBeijing": "2023-07-30",
+          "beijingTime": "08:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6632",
+      "scheduleChannel": "フジテレビ"
     },
     {
       "id": "anilist-160173",
@@ -1826,8 +3821,20 @@ export const april2023 = {
       "premiereDateBeijing": "2023-04-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "06:58",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BSフジ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-04-08",
+          "beijingTime": "06:58",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6652",
+      "scheduleChannel": "BSフジ"
     },
     {
       "id": "anilist-162840",
@@ -1868,7 +3875,7 @@ export const april2023 = {
 export const july2023 = {
   "label": "2023 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-16",
   "catalogCount": 53,
   "sourceName": "YUC 2023年7月新番表",
   "sourceUrl": "https://yuc.wiki/202307/",
@@ -1883,11 +3890,23 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-01.webp",
       "coverAlt": "幻日的夜羽 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-06-25",
+      "premiereDateBeijing": "2023-07-02",
       "scheduleWeekday": "Sun",
-      "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "21:30",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-07-02",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6734",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-163571",
@@ -1899,11 +3918,45 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-02.webp",
       "coverAlt": "BanG Dream! It's MyGO!!!!! 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-06-29",
+      "premiereDateBeijing": "2023-06-08",
       "scheduleWeekday": "Thu",
-      "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "22:00",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "regularBroadcastStartDateBeijing": "2023-07-06",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-06-08",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-06-29",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-06",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 13,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-14",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6716",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202307-03",
@@ -1915,11 +3968,23 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-03.webp",
       "coverAlt": "AYAKA 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-07-02",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "00:00",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-02",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6748",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-161647",
@@ -1966,8 +4031,49 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "regularBroadcastStartDateBeijing": "2023-07-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-15",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-07-22",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-09",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "22:00",
+          "intervalDays": 0
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6742",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-145064",
@@ -1998,8 +4104,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-07-12",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6745",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-159926",
@@ -2044,11 +4162,23 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-11.webp",
       "coverAlt": "终末的女武神 第2期 Part.2 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-01-25",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-04-14",
+      "scheduleWeekday": "Fri",
+      "beijingTime": "23:30",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-04-14",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6706",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-154745",
@@ -2063,8 +4193,63 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:23",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "MBS毎日放送",
+      "regularBroadcastStartDateBeijing": "2023-07-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-15",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-07-22",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-12",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-02",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-16",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "00:43",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6756",
+      "scheduleChannel": "MBS毎日放送"
     },
     {
       "id": "anilist-139435",
@@ -2079,8 +4264,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-09",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6765",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-146953",
@@ -2095,8 +4292,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-03",
       "scheduleWeekday": "Mon",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-03",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6736",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-163205",
@@ -2111,8 +4320,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-03",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-03",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6747",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-163132",
@@ -2127,8 +4348,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-07-01",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6749",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-160188",
@@ -2143,8 +4376,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-04",
       "scheduleWeekday": "Tue",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-07-04",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6751",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-149883",
@@ -2158,9 +4403,78 @@ export const july2023 = {
       "sourceUrl": "https://yuc.wiki/202307/",
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
-      "beijingTime": "01:23",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "01:25",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-07-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "01:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-15",
+          "beijingTime": "01:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-07-22",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-12",
+          "beijingTime": "01:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-09-02",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-02",
+          "beijingTime": "01:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-09-09",
+          "beijingTime": "01:25",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-16",
+          "beijingTime": "01:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 13,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "01:43",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6718",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-155730",
@@ -2175,8 +4489,49 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-02",
       "scheduleWeekday": "Sun",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "regularBroadcastStartDateBeijing": "2023-08-27",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-07-02",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-07-30",
+          "beijingTime": "00:50",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-08-06",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-08-20",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-08-27",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6733",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-160447",
@@ -2191,8 +4546,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-09",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6762",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-150972",
@@ -2207,8 +4574,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-12",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6764",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-152802",
@@ -2223,8 +4602,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "00:05",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 25,
+          "broadcastDateBeijing": "2023-07-10",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6744",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-159831",
@@ -2239,8 +4630,55 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "16:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TBS",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-07-09",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-08-13",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-27",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-09-17",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-24",
+          "beijingTime": "15:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-25",
+          "beijingTime": "22:40",
+          "intervalDays": 0
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6720",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-145140",
@@ -2255,8 +4693,140 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-12",
       "scheduleWeekday": "Wed",
       "beijingTime": "00:29",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "regularBroadcastStartDateBeijing": "2023-08-02",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-12",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-19",
+          "beijingTime": "00:49",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-07-26",
+          "beijingTime": "00:59",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-08-02",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-23",
+          "beijingTime": "00:54",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-08-30",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-06",
+          "beijingTime": "00:39",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-09-13",
+          "beijingTime": "01:14",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-20",
+          "beijingTime": "00:59",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-27",
+          "beijingTime": "00:39",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 14,
+          "episodeEnd": 14,
+          "broadcastDateBeijing": "2023-10-11",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 15,
+          "episodeEnd": 15,
+          "broadcastDateBeijing": "2023-10-18",
+          "beijingTime": "01:19",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 16,
+          "episodeEnd": 17,
+          "broadcastDateBeijing": "2023-10-25",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 18,
+          "episodeEnd": 18,
+          "broadcastDateBeijing": "2023-11-08",
+          "beijingTime": "00:34",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 19,
+          "episodeEnd": 19,
+          "broadcastDateBeijing": "2023-11-15",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 20,
+          "episodeEnd": 20,
+          "broadcastDateBeijing": "2023-11-22",
+          "beijingTime": "01:19",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 21,
+          "episodeEnd": 23,
+          "broadcastDateBeijing": "2023-11-29",
+          "beijingTime": "00:29",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 24,
+          "episodeEnd": 24,
+          "broadcastDateBeijing": "2023-12-20",
+          "beijingTime": "01:19",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6728",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-146836",
@@ -2271,8 +4841,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-03",
       "scheduleWeekday": "Mon",
       "beijingTime": "20:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-03",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6746",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-158530",
@@ -2286,9 +4868,64 @@ export const july2023 = {
       "sourceUrl": "https://yuc.wiki/202307/",
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
-      "beijingTime": "00:53",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:55",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-07-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-15",
+          "beijingTime": "01:08",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-07-22",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-12",
+          "beijingTime": "00:58",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-02",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-16",
+          "beijingTime": "00:58",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "01:13",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6719",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-163137",
@@ -2319,8 +4956,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-07",
       "scheduleWeekday": "Fri",
       "beijingTime": "20:54",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-07",
+          "beijingTime": "20:54",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6726",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-165426",
@@ -2349,11 +4998,30 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-30.webp",
       "coverAlt": "小不点社长 第2期 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-07-01",
-      "scheduleWeekday": "Sat",
-      "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-07-13",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "21:23",
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-13",
+          "beijingTime": "21:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 13,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-05",
+          "beijingTime": "21:16",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6771",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-166104",
@@ -2365,11 +5033,23 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-31.webp",
       "coverAlt": "总之就是非常可爱 女高篇 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-07-12",
+      "premiereDateBeijing": "2023-08-02",
       "scheduleWeekday": "Wed",
-      "beijingTime": "11:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "21:30",
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-08-02",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6786",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "yuc-202307-32",
@@ -2400,8 +5080,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-13",
       "scheduleWeekday": "Thu",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-13",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6758",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "yuc-202307-34",
@@ -2432,8 +5124,27 @@ export const july2023 = {
       "premiereDateBeijing": "2023-01-05",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-01-05",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-03-02",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6584",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-139606",
@@ -2448,8 +5159,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-09",
       "scheduleWeekday": "Sun",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-09",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6743",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-142598",
@@ -2464,8 +5187,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-07",
       "scheduleWeekday": "Fri",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 15,
+          "broadcastDateBeijing": "2023-07-07",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6740",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-162983",
@@ -2480,15 +5215,83 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-05",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:55",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "フジテレビ",
+      "regularBroadcastStartDateBeijing": "2023-08-02",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-05",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-13",
+          "beijingTime": "00:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-07-19",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-07-27",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-08-02",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-09-07",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-14",
+          "beijingTime": "00:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-20",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 13,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-27",
+          "beijingTime": "23:50",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6763",
+      "scheduleChannel": "フジテレビ"
     },
     {
       "id": "anilist-131863",
       "anilistId": 131863,
       "episodeCount": 12,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 2,
       "titleZh": "Liar・Liar 谎言游戏",
       "titleJa": "ライアー・ライアー",
       "coverUrl": "/covers/yuc/history-2023-07-39.webp",
@@ -2497,8 +5300,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6715",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-157397",
@@ -2513,8 +5328,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-04",
       "scheduleWeekday": "Tue",
       "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-04",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6755",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-147103",
@@ -2529,8 +5356,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-05",
       "scheduleWeekday": "Wed",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-05",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6738",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202307-42",
@@ -2542,11 +5381,23 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-42.webp",
       "coverAlt": "身为悲剧始作俑者的最强邪恶BOSS女王为民竭心尽力 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-07-06",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "23:00",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-06",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6757",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-153360",
@@ -2561,15 +5412,26 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-05",
       "scheduleWeekday": "Wed",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-05",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6723",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-153339",
       "anilistId": 153339,
       "episodeCount": 12,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 2,
       "titleZh": "甜点转生",
       "titleJa": "おかしな転生",
       "coverUrl": "/covers/yuc/history-2023-07-44.webp",
@@ -2578,8 +5440,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-04",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-04",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6735",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-154391",
@@ -2594,8 +5468,49 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-02",
       "scheduleWeekday": "Sun",
       "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "regularBroadcastStartDateBeijing": "2023-08-27",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-07-02",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-07-30",
+          "beijingTime": "01:20",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-08-06",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-08-20",
+          "beijingTime": "01:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-08-27",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6754",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-148465",
@@ -2610,8 +5525,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6741",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-155418",
@@ -2623,11 +5550,66 @@ export const july2023 = {
       "coverUrl": "/covers/yuc/history-2023-07-47.webp",
       "coverAlt": "圣者无双 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-07-07",
+      "premiereDateBeijing": "2023-07-14",
       "scheduleWeekday": "Fri",
-      "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:30",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-07-21",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-14",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-07-21",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-08-11",
+          "beijingTime": "00:33",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-09-01",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-09-01",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-08",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-15",
+          "beijingTime": "00:33",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6760",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-154643",
@@ -2642,8 +5624,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6729",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-162893",
@@ -2658,8 +5652,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-01",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-07-01",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6713",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-169364",
@@ -2672,27 +5678,101 @@ export const july2023 = {
       "coverAlt": "生物友伴 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
       "premiereDateBeijing": "2023-07-08",
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 首播日期（试点）"
+      "scheduleWeekday": "Sat",
+      "beijingTime": "00:50",
+      "timeStatus": "verified",
+      "station": "MBS毎日放送",
+      "regularBroadcastStartDateBeijing": "2023-07-22",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "00:50",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-07-15",
+          "beijingTime": "01:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-07-22",
+          "beijingTime": "00:50",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-08-12",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-09-02",
+          "beijingTime": "00:50",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-09-16",
+          "beijingTime": "00:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "01:10",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6752",
+      "scheduleChannel": "MBS毎日放送"
     },
     {
       "id": "anilist-150970",
       "anilistId": 150970,
       "episodeCount": 13,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 12,
       "titleZh": "卡片战斗先导者will+Dress 第3期",
       "titleJa": "カードファイト!! ヴァンガード will+Dress Season3",
       "coverUrl": "/covers/yuc/history-2023-07-51.webp",
       "coverAlt": "卡片战斗先导者will+Dress 第3期 封面",
       "sourceUrl": "https://yuc.wiki/202307/",
-      "premiereDateBeijing": "2023-09-30",
+      "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "07:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "regularBroadcastStartDateBeijing": "2023-08-26",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "07:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-08-26",
+          "beijingTime": "07:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6759",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-163136",
@@ -2707,8 +5787,20 @@ export const july2023 = {
       "premiereDateBeijing": "2023-07-08",
       "scheduleWeekday": "Sat",
       "beijingTime": "08:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 25,
+          "broadcastDateBeijing": "2023-07-08",
+          "beijingTime": "08:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6778",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-166829",
@@ -2732,7 +5824,7 @@ export const july2023 = {
 export const october2023 = {
   "label": "2023 年 10 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-16",
   "catalogCount": 76,
   "sourceName": "YUC 2023年10月新番表",
   "sourceUrl": "https://yuc.wiki/202310/",
@@ -2766,8 +5858,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-01",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6807",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-166896",
@@ -2782,8 +5886,41 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-11-12",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-11-19",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-17",
+          "beijingTime": "00:45",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6865",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-162209",
@@ -2798,8 +5935,27 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-09",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-25",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6870",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-162720",
@@ -2814,8 +5970,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "17:25",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "NHK Eテレ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6800",
+      "scheduleChannel": "NHK Eテレ"
     },
     {
       "id": "anilist-163204",
@@ -2846,8 +6014,34 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-11-18",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-11-25",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6858",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-131518-202310-08",
@@ -2862,8 +6056,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-04-06",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6667",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-163329",
@@ -2878,8 +6084,41 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-03",
       "scheduleWeekday": "Tue",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-03",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-12",
+          "beijingTime": "23:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-19",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 13,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-12-26",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6835",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "yuc-202310-10",
@@ -2910,8 +6149,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-01",
       "scheduleWeekday": "Sun",
       "beijingTime": "16:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "16:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6806",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-157198-202310-12",
@@ -2926,8 +6177,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-04-10",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-10",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6689",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-154364-202310-13",
@@ -2942,8 +6205,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-04-06",
       "scheduleWeekday": "Thu",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-04-06",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6625",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-14",
@@ -2990,25 +6265,62 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "15:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TBS",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "15:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-11-19",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-11-26",
+          "beijingTime": "15:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6828",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-165159",
       "anilistId": 165159,
       "episodeCount": 138,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 125,
       "titleZh": "霸旋陀螺X",
       "titleJa": "BEYBLADE X",
       "coverUrl": "/covers/yuc/history-2023-10-17.webp",
       "coverAlt": "霸旋陀螺X 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2026-05-01",
+      "premiereDateBeijing": "2023-10-06",
       "scheduleWeekday": "Fri",
-      "beijingTime": "18:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "17:25",
+      "timeStatus": "verified",
+      "station": "テレビ愛知",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "17:25",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6862",
+      "scheduleChannel": "テレビ愛知"
     },
     {
       "id": "anilist-143327",
@@ -3020,11 +6332,23 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-18.webp",
       "coverAlt": "MF Ghost 极速车魂 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-10-01",
-      "scheduleWeekday": "Sun",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-10-07",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "22:00",
+      "timeStatus": "verified",
+      "station": "アニマックス",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6809",
+      "scheduleChannel": "アニマックス"
     },
     {
       "id": "anilist-99088",
@@ -3048,17 +6372,93 @@ export const october2023 = {
       "anilistId": 154587,
       "episodeCount": 28,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 5,
       "titleZh": "葬送的芙莉莲",
       "titleJa": "葬送のフリーレン",
       "coverUrl": "/covers/yuc/history-2023-10-20.webp",
       "coverAlt": "葬送的芙莉莲 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-10-06",
+      "premiereDateBeijing": "2023-09-29",
       "scheduleWeekday": "Fri",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "premiereEpisodeCount": 4,
+      "regularBroadcastStartDateBeijing": "2023-11-17",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-09-29",
+          "beijingTime": "20:00",
+          "intervalDays": 0
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-10-20",
+          "beijingTime": "22:20",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-10-27",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-11-03",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-11-10",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-11-17",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 14,
+          "episodeEnd": 14,
+          "broadcastDateBeijing": "2023-12-08",
+          "beijingTime": "22:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 15,
+          "episodeEnd": 15,
+          "broadcastDateBeijing": "2023-12-15",
+          "beijingTime": "22:15",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 16,
+          "episodeEnd": 16,
+          "broadcastDateBeijing": "2023-12-22",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6776",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-146493",
@@ -3072,9 +6472,29 @@ export const october2023 = {
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-01",
       "scheduleWeekday": "Sun",
-      "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:30",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "regularBroadcastStartDateBeijing": "2023-10-08",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6804",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-154116",
@@ -3089,8 +6509,42 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "00:23",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-10-28",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-10-14",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-10-21",
+          "beijingTime": "00:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-28",
+          "beijingTime": "00:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6820",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-138788",
@@ -3104,9 +6558,50 @@ export const october2023 = {
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-06",
       "scheduleWeekday": "Fri",
-      "beijingTime": "00:28",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:43",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-10-20",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "00:33",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-10-13",
+          "beijingTime": "00:28",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-20",
+          "beijingTime": "00:43",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-15",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-22",
+          "beijingTime": "01:23",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6817",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-167820",
@@ -3136,9 +6631,50 @@ export const october2023 = {
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
-      "beijingTime": "00:58",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "00:53",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-10-28",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "01:08",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-10-14",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-10-21",
+          "beijingTime": "01:08",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-28",
+          "beijingTime": "00:53",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-16",
+          "beijingTime": "01:03",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6821",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-163142",
@@ -3153,15 +6689,26 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6854",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-154454",
       "anilistId": 154454,
       "episodeCount": 12,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 2,
       "titleZh": "凹凸魔女的母女故事",
       "titleJa": "でこぼこ魔女の親子事情",
       "coverUrl": "/covers/yuc/history-2023-10-27.webp",
@@ -3170,8 +6717,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-01",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6794",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-162694",
@@ -3186,8 +6745,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6842",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-29",
@@ -3218,8 +6789,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-09",
       "scheduleWeekday": "Mon",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-09",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6837",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-159559",
@@ -3234,8 +6817,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6848",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-32",
@@ -3247,11 +6842,23 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-32.webp",
       "coverAlt": "Dog Signal 狗狗信号 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-10-22",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "16:00",
+      "timeStatus": "verified",
+      "station": "NHK Eテレ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-22",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6867",
+      "scheduleChannel": "NHK Eテレ"
     },
     {
       "id": "anilist-155527",
@@ -3264,10 +6871,30 @@ export const october2023 = {
       "coverAlt": "大小姐和看门犬 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-09-29",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "00:05",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": "Thu",
+      "beijingTime": "23:30",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "regularBroadcastStartDateBeijing": "2023-10-05",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-09-29",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-05",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6803",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-34",
@@ -3298,8 +6925,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6855",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-142666",
@@ -3314,8 +6953,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-02",
       "scheduleWeekday": "Mon",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-02",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6811",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-158926",
@@ -3329,9 +6980,21 @@ export const october2023 = {
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-02",
       "scheduleWeekday": "Mon",
-      "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "21:30",
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-02",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6840",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-158791",
@@ -3346,8 +7009,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-09-30",
       "scheduleWeekday": "Sat",
       "beijingTime": "16:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-09-30",
+          "beijingTime": "16:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6791",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-159074",
@@ -3359,11 +7034,31 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-39.webp",
       "coverAlt": "放学后少年花子君 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-10-11",
-      "scheduleWeekday": "Wed",
-      "beijingTime": "07:10",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-10-13",
+      "scheduleWeekday": "Fri",
+      "beijingTime": "01:13",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "regularBroadcastStartDateBeijing": "2023-10-20",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-13",
+          "beijingTime": "00:58",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-10-20",
+          "beijingTime": "01:13",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6829",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "yuc-202310-40",
@@ -3391,11 +7086,73 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-41.webp",
       "coverAlt": "小不点 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-01-06",
-      "scheduleWeekday": "Fri",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-10-07",
+      "scheduleWeekday": "Sat",
+      "beijingTime": "23:30",
+      "timeStatus": "verified",
+      "station": "NHK総合",
+      "regularBroadcastStartDateBeijing": "2023-11-18",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-10-21",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-10-29",
+          "beijingTime": "00:02",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-11-05",
+          "beijingTime": "00:26",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-11-11",
+          "beijingTime": "23:38",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-11-18",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 9,
+          "broadcastDateBeijing": "2023-12-09",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 10,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-12-23",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6838",
+      "scheduleChannel": "NHK総合"
     },
     {
       "id": "anilist-111322",
@@ -3410,8 +7167,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-06",
       "scheduleWeekday": "Fri",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6859",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-161964",
@@ -3426,8 +7195,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6833",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "yuc-202310-44",
@@ -3458,8 +7239,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6824",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-46",
@@ -3487,28 +7280,95 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-47.webp",
       "coverAlt": "关于我转生变成史莱姆这档事 彩叶草之梦 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-11-26",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "17:00",
+      "timeStatus": "verified",
+      "station": "アニマックス",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 1,
+          "broadcastDateBeijing": "2023-11-26",
+          "beijingTime": "17:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 2,
+          "episodeEnd": 2,
+          "broadcastDateBeijing": "2023-11-26",
+          "beijingTime": "17:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 3,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-11-26",
+          "beijingTime": "18:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6880",
+      "scheduleChannel": "アニマックス"
     },
     {
       "id": "anilist-161645",
       "anilistId": 161645,
       "episodeCount": 24,
       "episodeCountStatus": "exact",
-      "premiereEpisodeCount": 3,
       "titleZh": "药屋少女的呢喃",
       "titleJa": "薬屋のひとりごと",
       "coverUrl": "/covers/yuc/history-2023-10-48.webp",
       "coverAlt": "药屋少女的呢喃 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-22",
-      "scheduleWeekday": "Sun",
-      "beijingTime": "00:05",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "scheduleWeekday": "Sat",
+      "beijingTime": "23:55",
+      "timeStatus": "verified",
+      "station": "日本テレビ",
+      "premiereEpisodeCount": 3,
+      "regularBroadcastStartDateBeijing": "2023-11-18",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 3,
+          "broadcastDateBeijing": "2023-10-22",
+          "beijingTime": "00:05",
+          "intervalDays": 0
+        },
+        {
+          "episodeStart": 4,
+          "episodeEnd": 4,
+          "broadcastDateBeijing": "2023-10-29",
+          "beijingTime": "00:05",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 5,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-11-04",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-11-12",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-11-18",
+          "beijingTime": "23:55",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6793",
+      "scheduleChannel": "日本テレビ"
     },
     {
       "id": "anilist-154384",
@@ -3523,8 +7383,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6826",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-159808",
@@ -3539,8 +7411,27 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-09",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6825",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-158704",
@@ -3555,8 +7446,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-02",
       "scheduleWeekday": "Mon",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-02",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6853",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-161992",
@@ -3571,8 +7474,41 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-08",
       "scheduleWeekday": "Sun",
       "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ朝日",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-10-08",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 6,
+          "broadcastDateBeijing": "2023-11-12",
+          "beijingTime": "01:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 7,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-11-19",
+          "beijingTime": "01:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-17",
+          "beijingTime": "01:15",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6827",
+      "scheduleChannel": "テレビ朝日"
     },
     {
       "id": "anilist-154214",
@@ -3587,8 +7523,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "21:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "21:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6795",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-156184",
@@ -3603,8 +7551,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-09-28",
       "scheduleWeekday": "Thu",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-09-28",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6861",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-161364",
@@ -3619,8 +7579,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-03",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-03",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6844",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "yuc-202310-56",
@@ -3632,11 +7604,37 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-56.webp",
       "coverAlt": "香格里拉边境 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": null,
-      "scheduleWeekday": null,
-      "beijingTime": null,
-      "timeStatus": "unknown",
-      "station": "AniList 未匹配（试点）"
+      "premiereDateBeijing": "2023-10-01",
+      "scheduleWeekday": "Sun",
+      "beijingTime": "16:00",
+      "timeStatus": "verified",
+      "station": "TBS",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 7,
+          "broadcastDateBeijing": "2023-10-01",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 8,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-11-19",
+          "beijingTime": "16:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-11-26",
+          "beijingTime": "16:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6805",
+      "scheduleChannel": "TBS"
     },
     {
       "id": "anilist-156039",
@@ -3648,11 +7646,23 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-57.webp",
       "coverAlt": "暴食狂战士 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-10-01",
-      "scheduleWeekday": "Sun",
-      "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "premiereDateBeijing": "2023-10-05",
+      "scheduleWeekday": "Thu",
+      "beijingTime": "00:30",
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-05",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6847",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "anilist-140501",
@@ -3664,11 +7674,37 @@ export const october2023 = {
       "coverUrl": "/covers/yuc/history-2023-10-58.webp",
       "coverAlt": "圣剑学院的魔剑使 封面",
       "sourceUrl": "https://yuc.wiki/202310/",
-      "premiereDateBeijing": "2023-09-26",
+      "premiereDateBeijing": "2023-10-03",
       "scheduleWeekday": "Tue",
       "beijingTime": "00:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-03",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-12",
+          "beijingTime": "00:40",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-19",
+          "beijingTime": "00:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6860",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-142599",
@@ -3683,8 +7719,27 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-07",
       "scheduleWeekday": "Sat",
       "beijingTime": "23:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 8,
+          "broadcastDateBeijing": "2023-10-07",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 9,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-09",
+          "beijingTime": "23:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6841",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "anilist-154459",
@@ -3699,8 +7754,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-06",
       "scheduleWeekday": "Fri",
       "beijingTime": "21:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-06",
+          "beijingTime": "21:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6864",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-157399",
@@ -3715,8 +7782,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "20:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "20:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6813",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-154999",
@@ -3747,8 +7826,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "BS11イレブン",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6792",
+      "scheduleChannel": "BS11イレブン"
     },
     {
       "id": "yuc-202310-64",
@@ -3843,8 +7934,28 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-03",
       "scheduleWeekday": "Tue",
       "beijingTime": "22:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "regularBroadcastStartDateBeijing": "2023-11-14",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 5,
+          "broadcastDateBeijing": "2023-10-03",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 6,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-11-14",
+          "beijingTime": "22:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6869",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-70",
@@ -3874,9 +7985,21 @@ export const october2023 = {
       "sourceUrl": "https://yuc.wiki/202310/",
       "premiereDateBeijing": "2023-10-02",
       "scheduleWeekday": "Mon",
-      "beijingTime": "01:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "beijingTime": "20:30",
+      "timeStatus": "verified",
+      "station": "AT-X",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-02",
+          "beijingTime": "20:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6810",
+      "scheduleChannel": "AT-X"
     },
     {
       "id": "anilist-166523",
@@ -3891,8 +8014,34 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "23:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "テレビ東京",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 10,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 11,
+          "episodeEnd": 11,
+          "broadcastDateBeijing": "2023-12-13",
+          "beijingTime": "23:10",
+          "intervalDays": 7
+        },
+        {
+          "episodeStart": 12,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-12-20",
+          "beijingTime": "23:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6814",
+      "scheduleChannel": "テレビ東京"
     },
     {
       "id": "anilist-163364",
@@ -3907,8 +8056,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-05",
       "scheduleWeekday": "Thu",
       "beijingTime": "22:30",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 12,
+          "broadcastDateBeijing": "2023-10-05",
+          "beijingTime": "22:30",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6857",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-74",
@@ -3939,8 +8100,20 @@ export const october2023 = {
       "premiereDateBeijing": "2023-10-04",
       "scheduleWeekday": "Wed",
       "beijingTime": "00:00",
-      "timeStatus": "exact",
-      "station": "AniList 首集排期（试点）"
+      "timeStatus": "verified",
+      "station": "TOKYO MX",
+      "episodeSchedules": [
+        {
+          "episodeStart": 1,
+          "episodeEnd": 13,
+          "broadcastDateBeijing": "2023-10-04",
+          "beijingTime": "00:00",
+          "intervalDays": 7
+        }
+      ],
+      "scheduleSourceName": "しょぼいカレンダー",
+      "scheduleSourceUrl": "https://cal.syoboi.jp/tid/6812",
+      "scheduleChannel": "TOKYO MX"
     },
     {
       "id": "yuc-202310-76",
