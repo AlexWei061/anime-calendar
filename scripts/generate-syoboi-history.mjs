@@ -15,6 +15,8 @@ import { yucSeasonsForYear } from "./generate-yuc-history-pilot.mjs";
 const SOURCE_URL = "https://cal.syoboi.jp/";
 const USER_AGENT = "anime-calendar-schedule-audit/1.0 (+https://github.com/AlexWei061/anime-calendar)";
 const REQUEST_DELAY_MS = 1_100;
+const PROGRAM_BATCH_SIZE = 10;
+const PROGRAM_FIELDS = "TID,PID,StTime,Count,SubTitle,Flag,Deleted,ChID";
 
 export const SYOBOI_TITLE_ALIASES = Object.freeze({
   "anilist-110350": Object.freeze({ tid: 5518 }),
@@ -158,12 +160,37 @@ function quarterRanges(year) {
   });
 }
 
-async function fetchPrograms(tid, year) {
-  const programs = parseProgLookup(await fetchXml("ProgLookup", { TID: tid, Range: rangeForYear(year) }));
+export function groupProgramsByTid(programs, tids) {
+  const grouped = new Map(tids.map((tid) => [tid, []]));
+  for (const program of programs) {
+    if (grouped.has(program.tid)) grouped.get(program.tid).push(program);
+  }
+  return grouped;
+}
+
+async function fetchPrograms(tids, year) {
+  const programs = parseProgLookup(
+    await fetchXml("ProgLookup", { TID: tids.join(","), Range: rangeForYear(year), Fields: PROGRAM_FIELDS }),
+  );
   if (programs.length < 5000) return programs;
-  return (await Promise.all(quarterRanges(year).map(async (range) => parseProgLookup(await fetchXml("ProgLookup", { TID: tid, Range: range })))))
-    .flat()
-    .sort((left, right) => left.id - right.id);
+
+  if (tids.length > 1) {
+    const middle = Math.ceil(tids.length / 2);
+    return [
+      ...(await fetchPrograms(tids.slice(0, middle), year)),
+      ...(await fetchPrograms(tids.slice(middle), year)),
+    ];
+  }
+
+  const splitPrograms = [];
+  for (const range of quarterRanges(year)) {
+    const programsForQuarter = parseProgLookup(
+      await fetchXml("ProgLookup", { TID: tids[0], Range: range, Fields: PROGRAM_FIELDS }),
+    );
+    if (programsForQuarter.length === 5000) throw new Error(`Syoboi program range is too broad: ${tids[0]} ${range}`);
+    splitPrograms.push(...programsForQuarter);
+  }
+  return splitPrograms.sort((left, right) => left.id - right.id);
 }
 
 async function catalogForYear(year) {
@@ -203,7 +230,13 @@ async function main() {
       .map(({ tid }) => tid),
   );
   const programsByTid = new Map();
-  for (const tid of [...matchedTids].sort((left, right) => left - right)) programsByTid.set(tid, await fetchPrograms(tid, year));
+  const tids = [...matchedTids].sort((left, right) => left - right);
+  for (let index = 0; index < tids.length; index += PROGRAM_BATCH_SIZE) {
+    const batch = tids.slice(index, index + PROGRAM_BATCH_SIZE);
+    for (const [tid, programs] of groupProgramsByTid(await fetchPrograms(batch, year), batch)) {
+      programsByTid.set(tid, programs);
+    }
+  }
 
   const snapshot = buildYearSnapshot({
     year,

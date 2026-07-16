@@ -10,6 +10,7 @@ import {
 } from "../lib/syoboi.js";
 import {
   buildYearSnapshot,
+  groupProgramsByTid,
   requestWithRateLimitRetry,
   resolveSyoboiTitle,
 } from "../scripts/generate-syoboi-history.mjs";
@@ -120,4 +121,27 @@ test("waits out one Syoboi rate-limit response before retrying the same request"
   assert.equal(response.status, 200);
   assert.equal(attempts, 2);
   assert.deepEqual(delays, [10_000]);
+});
+
+test("keeps batched program responses separated by Syoboi title ID", () => {
+  const grouped = groupProgramsByTid(
+    [
+      { id: 1, tid: 5518 },
+      { id: 2, tid: 5519 },
+      { id: 3, tid: 5518 },
+      { id: 4, tid: 9999 },
+    ],
+    [5518, 5519],
+  );
+
+  assert.deepEqual([...grouped.entries()], [
+    [
+      5518,
+      [
+        { id: 1, tid: 5518 },
+        { id: 3, tid: 5518 },
+      ],
+    ],
+    [5519, [{ id: 2, tid: 5519 }]],
+  ]);
 });
