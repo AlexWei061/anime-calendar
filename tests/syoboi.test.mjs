@@ -82,6 +82,17 @@ test("accepts only a one-to-one normalized title in its broadcast year", () => {
   );
 });
 
+test("uses the reviewed ID:INVADED title alias instead of fuzzy matching", () => {
+  assert.deepEqual(
+    resolveSyoboiTitle(
+      { id: "anilist-110350", titleJa: "イド：インヴェイデッド", aniListTitleJa: "ID:INVADED" },
+      [],
+      2020,
+    ),
+    { status: "matched", tid: 5518 },
+  );
+});
+
 test("writes ambiguous names to the report instead of selecting one", () => {
   const snapshot = buildYearSnapshot({
     year: 2020,

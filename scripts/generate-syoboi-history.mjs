@@ -16,7 +16,9 @@ const SOURCE_URL = "https://cal.syoboi.jp/";
 const USER_AGENT = "anime-calendar-schedule-audit/1.0 (+https://github.com/AlexWei061/anime-calendar)";
 const REQUEST_DELAY_MS = 1_100;
 
-export const SYOBOI_TITLE_ALIASES = Object.freeze({});
+export const SYOBOI_TITLE_ALIASES = Object.freeze({
+  "anilist-110350": Object.freeze({ tid: 5518 }),
+});
 
 export function normalizeSyoboiTitle(value) {
   return value
