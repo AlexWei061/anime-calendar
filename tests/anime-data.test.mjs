@@ -644,6 +644,55 @@ test("uses YUC's Re:Zero P1 episode count instead of the AniList total", () => {
   assert.equal(enrichYucRecord(card, 48, "https://yuc.wiki/202604/", matched).episodeCount, 11);
 });
 
+test("keeps YUC identity fields while replacing only verified schedule fields", () => {
+  const record = enrichYucRecord(
+    {
+      titleZh: "异度侵入",
+      titleJa: "ID:INVADED イド：インヴェイデッド",
+      coverUrl: "/covers/yuc/history-2020-01-01.webp",
+    },
+    0,
+    "https://yuc.wiki/202001/",
+    {
+      id: "anilist-110350",
+      episodeCount: 13,
+      episodeCountStatus: "exact",
+      premiereDateBeijing: "2020-01-06",
+      scheduleWeekday: "Mon",
+      beijingTime: "23:30",
+      timeStatus: "exact",
+      station: "AniList 首集排期（试点）",
+    },
+    {
+      tid: 5518,
+      channel: "TOKYO MX",
+      sourceUrl: "https://cal.syoboi.jp/tid/5518",
+      episodeSchedules: [
+        {
+          episodeStart: 1,
+          episodeEnd: 13,
+          broadcastDateBeijing: "2020-01-05",
+          beijingTime: "23:00",
+          intervalDays: 7,
+        },
+      ],
+    },
+  );
+
+  assert.equal(record.titleZh, "异度侵入");
+  assert.equal(record.coverUrl, "/covers/yuc/history-2020-01-01.webp");
+  assert.equal(record.sourceUrl, "https://yuc.wiki/202001/");
+  assert.equal(record.scheduleSourceName, "しょぼいカレンダー");
+  assert.equal(record.scheduleChannel, "TOKYO MX");
+  assert.equal(record.station, "TOKYO MX");
+  assert.equal(record.premiereDateBeijing, "2020-01-05");
+  assert.equal(record.scheduleWeekday, "Sun");
+  assert.equal(record.beijingTime, "23:00");
+  assert.deepEqual(record.episodeSchedules, [
+    { episodeStart: 1, episodeEnd: 13, broadcastDateBeijing: "2020-01-05", beijingTime: "23:00", intervalDays: 7 },
+  ]);
+});
+
 test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
   const aprilReZero = seasons
     .find(({ id }) => id === "2026-april")
