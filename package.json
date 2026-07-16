@@ -13,6 +13,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "generate:anilist-pilot": "node scripts/generate-anilist-pilot.mjs",
+    "generate:syoboi-history": "node scripts/generate-syoboi-history.mjs",
     "generate:yuc-history-pilot": "node scripts/generate-yuc-history-pilot.mjs",
     "convert:covers-webp": "node scripts/convert-covers-to-webp.mjs",
     "generate:cover-sprites": "node scripts/generate-cover-sprites.mjs"

@@ -8,6 +8,7 @@ import {
   parseTitleLookup,
   syoboiJstToBeijing,
 } from "../lib/syoboi.js";
+import { buildYearSnapshot, resolveSyoboiTitle } from "../scripts/generate-syoboi-history.mjs";
 
 test("parses XML entities and the requested title fields", () => {
   assert.deepEqual(
@@ -57,4 +58,31 @@ test("keeps a same-slot double premiere and compresses a later weekly run", () =
       { episodeStart: 3, episodeEnd: 4, broadcastDateBeijing: "2026-07-12", beijingTime: "23:00", intervalDays: 7 },
     ],
   );
+});
+
+test("accepts only a one-to-one normalized title in its broadcast year", () => {
+  assert.deepEqual(
+    resolveSyoboiTitle(
+      { id: "anilist-110350", titleJa: "ID:INVADED イド：インヴェイデッド", aniListTitleJa: "ID:INVADED" },
+      [{ tid: 5518, title: "ID:INVADED イド：インヴェイデッド", firstYear: 2020, firstMonth: 1 }],
+      2020,
+    ),
+    { status: "matched", tid: 5518 },
+  );
+});
+
+test("writes ambiguous names to the report instead of selecting one", () => {
+  const snapshot = buildYearSnapshot({
+    year: 2020,
+    catalog: [{ id: "same-name", titleJa: "同名作品", aniListTitleJa: "同名作品" }],
+    titles: [
+      { tid: 1, title: "同名作品", firstYear: 2020, firstMonth: 1 },
+      { tid: 2, title: "同名作品", firstYear: 2020, firstMonth: 1 },
+    ],
+    channels: new Map(),
+    programsByTid: new Map(),
+  });
+
+  assert.deepEqual(snapshot.entries, []);
+  assert.deepEqual(snapshot.ambiguous, [{ recordId: "same-name", candidateTids: [1, 2] }]);
 });
