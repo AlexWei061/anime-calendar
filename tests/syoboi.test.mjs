@@ -161,6 +161,17 @@ test("uses the reviewed ID:INVADED title alias instead of fuzzy matching", () =>
   );
 });
 
+test("uses the reviewed Attack on Titan Part 2 title alias instead of fuzzy matching", () => {
+  assert.deepEqual(
+    resolveSyoboiTitle(
+      { id: "anilist-131681", titleJa: "進撃の巨人 The Final Season パート2", aniListTitleJa: "進撃の巨人 The Final Season Part 2" },
+      [],
+      2022,
+    ),
+    { status: "matched", tid: 6246 },
+  );
+});
+
 test("writes ambiguous names to the report instead of selecting one", () => {
   const snapshot = buildYearSnapshot({
     year: 2020,

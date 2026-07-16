@@ -20,6 +20,7 @@ const PROGRAM_FIELDS = "TID,PID,StTime,Count,SubTitle,Flag,Deleted,ChID";
 
 export const SYOBOI_TITLE_ALIASES = Object.freeze({
   "anilist-110350": Object.freeze({ tid: 5518 }),
+  "anilist-131681": Object.freeze({ tid: 6246 }),
 });
 
 export function normalizeSyoboiTitle(value) {
