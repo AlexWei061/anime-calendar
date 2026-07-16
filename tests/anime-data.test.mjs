@@ -373,6 +373,29 @@ test("puts July YUC network releases in their premiere-date calendar slots", () 
   );
 });
 
+test("keeps YUC's pre-release episode range ahead of its weekly television run", () => {
+  const superYani = anime.find(({ id }) => id === "super-yani");
+
+  assert.deepEqual(
+    dateOnlyEventsForWeek([superYani], "2026-06-01").map(({ date, episodeStart, episode }) => ({
+      date,
+      episodeStart,
+      episode,
+    })),
+    [{ date: "2026-06-03", episodeStart: 1, episode: 6 }],
+  );
+  assert.deepEqual(eventsForWeek([superYani], "2026-06-01"), []);
+  assert.deepEqual(
+    eventsForWeek([superYani], "2026-07-06").map(({ episodeStart, episode, broadcastDate, time }) => ({
+      episodeStart,
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episodeStart: 7, episode: 7, broadcastDate: "2026-07-09", time: "22:56" }],
+  );
+});
+
 test("keeps YUC July fixed-time records in the calendar when Syoboi has no match", () => {
   const mobiusDust = anime.find(({ id }) => id === "mobius-dust");
 

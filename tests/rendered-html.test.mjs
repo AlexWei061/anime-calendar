@@ -246,6 +246,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
   assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
   assert.match(page, /dateOnlyEventsForWeek/);
+  assert.match(page, /const episodeLabel = formatEpisodeLabel\(event\.episodeStart, event\.episode\);/);
+  assert.match(page, /网络配信 · \{episodeLabel\} · 时刻未定/);
   assert.match(page, /"timeline-grid" \+ \(dateOnlyEvents\.length \? " has-date-only-events" : ""\)/);
   assert.match(page, /className=\{"timeline-date-only" \+/);
   assert.doesNotMatch(styles, /\.date-only-events\s*\{[\s\S]*?position:\s*absolute/);

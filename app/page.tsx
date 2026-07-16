@@ -40,7 +40,7 @@ type CalendarEvent = Anime & {
   episode: number;
   time: string;
 };
-type DateOnlyEvent = Anime & { date: string };
+type DateOnlyEvent = Anime & { date: string; episodeStart: number; episode: number };
 type SelectedAnime = Anime & {
   selectedDate?: string;
   selectedTime?: string;
@@ -185,9 +185,12 @@ export default function Home() {
   const networkOnly = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
-  const selectedBroadcastTime = selected
-    ? selected.selectedTime ?? selected.beijingTime
-    : undefined;
+  const selectedBroadcastTime =
+    selected?.selectedReleaseKind === "network"
+      ? undefined
+      : selected
+        ? selected.selectedTime ?? selected.beijingTime
+        : undefined;
 
   useEffect(() => {
     if (!currentBeijingDate || didSetInitialWeek.current) return;
@@ -461,24 +464,28 @@ export default function Home() {
     );
   };
 
-  const dateOnlyEventButton = (event: DateOnlyEvent) => (
-    <button
+  const dateOnlyEventButton = (event: DateOnlyEvent) => {
+    const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
+
+    return <button
       className="date-only-event"
       key={event.id}
       type="button"
       aria-haspopup="dialog"
-      aria-label={`查看《${event.titleZh}／${event.titleJa}》网络配信首播：${event.date}`}
+      aria-label={`查看《${event.titleZh}／${event.titleJa}》网络配信首播 ${episodeLabel}：${event.date}`}
       onClick={(clickEvent) =>
         openDetail(event, clickEvent.currentTarget, {
           selectedDate: event.date,
+          selectedEpisodeStart: event.episodeStart,
+          selectedEpisode: event.episode,
           selectedReleaseKind: "network",
         })
       }
     >
       <strong>{event.titleZh}</strong>
-      <span>网络配信 · 时刻未定</span>
-    </button>
-  );
+      <span>网络配信 · {episodeLabel} · 时刻未定</span>
+    </button>;
+  };
 
   return (
     <div className="site-shell">
