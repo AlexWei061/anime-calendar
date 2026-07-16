@@ -439,13 +439,29 @@ test("ships YUC historical catalogs with Chinese titles, covers, and AniList bro
   assert.ok(unmatchedAnime.length > 0);
   assert.ok(
     unmatchedAnime.every(
-      ({ premiereDateBeijing, scheduleWeekday, beijingTime, timeStatus, episodeCount, episodeCountStatus }) =>
-        premiereDateBeijing === null &&
-        scheduleWeekday === null &&
-        beijingTime === null &&
-        timeStatus === "unknown" &&
-        episodeCount === 12 &&
-        episodeCountStatus === "estimated",
+      ({
+        premiereDateBeijing,
+        scheduleWeekday,
+        beijingTime,
+        timeStatus,
+        episodeCount,
+        episodeCountStatus,
+        scheduleSourceName,
+        scheduleSourceUrl,
+        scheduleChannel,
+        episodeSchedules,
+      }) =>
+        (premiereDateBeijing === null &&
+          scheduleWeekday === null &&
+          beijingTime === null &&
+          timeStatus === "unknown" &&
+          episodeCount === 12 &&
+          episodeCountStatus === "estimated") ||
+        (scheduleSourceName === "しょぼいカレンダー" &&
+          typeof scheduleSourceUrl === "string" &&
+          typeof scheduleChannel === "string" &&
+          Array.isArray(episodeSchedules) &&
+          episodeSchedules.length > 0),
     ),
   );
   assert.equal(new Set(allAnime.map(({ id }) => id)).size, allAnime.length);
@@ -670,9 +686,16 @@ test("keeps YUC identity fields while replacing only verified schedule fields", 
       episodeSchedules: [
         {
           episodeStart: 1,
-          episodeEnd: 13,
+          episodeEnd: 1,
           broadcastDateBeijing: "2020-01-05",
           beijingTime: "23:00",
+          intervalDays: 7,
+        },
+        {
+          episodeStart: 2,
+          episodeEnd: 13,
+          broadcastDateBeijing: "2020-01-05",
+          beijingTime: "23:30",
           intervalDays: 7,
         },
       ],
@@ -687,9 +710,10 @@ test("keeps YUC identity fields while replacing only verified schedule fields", 
   assert.equal(record.station, "TOKYO MX");
   assert.equal(record.premiereDateBeijing, "2020-01-05");
   assert.equal(record.scheduleWeekday, "Sun");
-  assert.equal(record.beijingTime, "23:00");
+  assert.equal(record.beijingTime, "23:30");
   assert.deepEqual(record.episodeSchedules, [
-    { episodeStart: 1, episodeEnd: 13, broadcastDateBeijing: "2020-01-05", beijingTime: "23:00", intervalDays: 7 },
+    { episodeStart: 1, episodeEnd: 1, broadcastDateBeijing: "2020-01-05", beijingTime: "23:00", intervalDays: 7 },
+    { episodeStart: 2, episodeEnd: 13, broadcastDateBeijing: "2020-01-05", beijingTime: "23:30", intervalDays: 7 },
   ]);
 });
 
@@ -717,16 +741,22 @@ test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
   assert.deepEqual(eventsForWeek([partTwo], "2026-10-05"), []);
 });
 
-test("schedules ID:INVADED weekly from its January premiere", () => {
+test("schedules ID:INVADED as a two-episode premiere followed by weekly broadcasts", () => {
   const idInvaded = allAnime.find(({ id }) => id === "anilist-110350");
 
+  assert.equal(idInvaded?.scheduleSourceName, "しょぼいカレンダー");
+  assert.equal(idInvaded?.scheduleChannel, "BS11イレブン");
   assert.deepEqual(
-    eventsForWeek([idInvaded], "2019-12-30").map(({ episode, broadcastDate, time }) => ({
+    eventsForWeek([idInvaded], "2019-12-30").map(({ episodeStart, episode, broadcastDate, time }) => ({
+      episodeStart,
       episode,
       broadcastDate,
       time,
     })),
-    [{ episode: 1, broadcastDate: "2020-01-05", time: "23:30" }],
+    [
+      { episodeStart: 1, episode: 1, broadcastDate: "2020-01-05", time: "23:00" },
+      { episodeStart: 2, episode: 2, broadcastDate: "2020-01-05", time: "23:30" },
+    ],
   );
   assert.deepEqual(
     eventsForWeek([idInvaded], "2020-01-06").map(({ episode, broadcastDate, time }) => ({
@@ -734,7 +764,7 @@ test("schedules ID:INVADED weekly from its January premiere", () => {
       broadcastDate,
       time,
     })),
-    [{ episode: 2, broadcastDate: "2020-01-12", time: "23:30" }],
+    [{ episode: 3, broadcastDate: "2020-01-12", time: "23:30" }],
   );
 });
 
@@ -818,7 +848,7 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
 
   assert.ok(january2020Events.some(({ id, episode }) => id === "anilist-104051" && episode === 1));
   assert.ok(april2020Events.some(({ id, episode }) => id === "anilist-111310" && episode === 1));
-  assert.ok(july2020Events.some(({ id, episode }) => id === "anilist-108522" && episode === 5));
+  assert.ok(july2020Events.some(({ id, episode }) => id === "anilist-112818" && episode === 1));
   assert.ok(october2020Events.some(({ id, episode }) => id === "anilist-114099" && episode === 1));
   assert.ok(january2021Events.some(({ id, episode }) => id === "anilist-128872" && episode === 1));
   assert.ok(april2021Events.some(({ id, episode }) => id === "anilist-117067" && episode === 6));

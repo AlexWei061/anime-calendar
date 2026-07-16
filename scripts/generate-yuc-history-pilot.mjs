@@ -407,8 +407,16 @@ export function applySyoboiSchedule(record, schedule) {
   if (!schedule?.episodeSchedules?.length) return record;
 
   const [firstSchedule] = schedule.episodeSchedules;
-  const weeklySchedule = schedule.episodeSchedules.find(({ intervalDays }) => intervalDays === 7);
-  const { premiereEpisodeCount, regularBroadcastStartDateBeijing, ...shared } = record;
+  const weeklySchedule = schedule.episodeSchedules
+    .filter(({ intervalDays }) => intervalDays === 7)
+    .sort(
+      (left, right) =>
+        right.episodeEnd - right.episodeStart - (left.episodeEnd - left.episodeStart) ||
+        left.episodeStart - right.episodeStart,
+    )[0];
+  const shared = { ...record };
+  delete shared.premiereEpisodeCount;
+  delete shared.regularBroadcastStartDateBeijing;
   return {
     ...shared,
     ...(firstSchedule.intervalDays === 0 && firstSchedule.episodeEnd > firstSchedule.episodeStart
