@@ -1,4 +1,5 @@
 import { april2026, january2026 } from "./yuc-history-2026.js";
+import { summer2026 } from "./anilist-2026.js";
 import { april2025, january2025, july2025, october2025 } from "./yuc-history-2025.js";
 import { april2024, january2024, july2024, october2024 } from "./yuc-history-2024.js";
 import { april2023, january2023, july2023, october2023 } from "./yuc-history-2023.js";
@@ -882,7 +883,41 @@ const yucAnime = [
   }
 ];
 
+function normalizeTitle(value) {
+  return value.normalize("NFKC").toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, "");
+}
+
+const julyAniListByTitle = new Map();
+for (const record of summer2026.anime) {
+  const title = normalizeTitle(record.titleZh);
+  julyAniListByTitle.set(title, julyAniListByTitle.has(title) ? null : record);
+}
+
+const yucExactEpisodeCountIds = new Set(["cyborg-009-nemesis", "rezero-4-part-2"]);
 const verifiedJulySchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
+
+function withYucSources(record) {
+  const aniList = julyAniListByTitle.get(normalizeTitle(record.titleJa));
+  const yucEpisodeCount = yucExactEpisodeCountIds.has(record.id);
+  const episodeCount = yucEpisodeCount ? record.episodeCount : aniList?.episodeCount ?? record.episodeCount;
+  const episodeCountSource = yucEpisodeCount ? "YUC" : aniList ? "AniList" : "estimated";
+
+  return {
+    ...record,
+    anilistId: aniList ? Number(aniList.id.slice("anilist-".length)) : null,
+    episodeCount,
+    episodeCountStatus: episodeCountSource === "estimated" ? "estimated" : "exact",
+    episodeCountSource,
+    titleSource: "YUC",
+    coverSource: "YUC",
+    ...(record.premiereDateBeijing ? { premiereDateSource: "YUC" } : {}),
+    ...(record.scheduleWeekday ? { scheduleWeekdaySource: "YUC" } : {}),
+    ...(record.beijingTime ? { beijingTimeSource: "YUC", timeStatus: "exact" } : { timeStatus: "unknown" }),
+    stationSource: "YUC",
+    ...(record.premiereEpisodeCount ? { premiereEpisodeCountSource: "YUC" } : {}),
+    ...(record.regularBroadcastStartDateBeijing ? { regularBroadcastStartDateSource: "YUC" } : {}),
+  };
+}
 
 function weekdayForDate(isoDate) {
   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][new Date(`${isoDate}T00:00:00Z`).getUTCDay()];
@@ -896,21 +931,8 @@ function addDays(isoDate, days) {
 
 function appendKnownWeeklySchedule(record, episodeSchedules) {
   const lastSchedule = episodeSchedules.at(-1);
-  if (
-    !record.regularBroadcastStartDateBeijing ||
-    !record.beijingTime ||
-    !lastSchedule ||
-    lastSchedule.episodeEnd >= record.episodeCount
-  ) {
-    return episodeSchedules;
-  }
-  const weeklySchedule = episodeSchedules.find(
-    ({ broadcastDateBeijing, beijingTime, intervalDays }) =>
-      broadcastDateBeijing === record.regularBroadcastStartDateBeijing &&
-      beijingTime === record.beijingTime &&
-      intervalDays === 7,
-  );
-  if (!weeklySchedule) return episodeSchedules;
+  const weeklySchedule = [...episodeSchedules].reverse().find(({ intervalDays }) => intervalDays === 7);
+  if (!lastSchedule || !weeklySchedule || lastSchedule.episodeEnd >= record.episodeCount) return episodeSchedules;
 
   const episodeStart = lastSchedule.episodeEnd + 1;
   return [
@@ -919,17 +941,56 @@ function appendKnownWeeklySchedule(record, episodeSchedules) {
       episodeStart,
       episodeEnd: record.episodeCount,
       broadcastDateBeijing: addDays(
-        record.regularBroadcastStartDateBeijing,
+        weeklySchedule.broadcastDateBeijing,
         (episodeStart - weeklySchedule.episodeStart) * 7,
       ),
-      beijingTime: record.beijingTime,
+      beijingTime: weeklySchedule.beijingTime,
       intervalDays: 7,
     },
   ];
 }
 
-export const anime = yucAnime.map((record) => {
+function withVerifiedYucPremiereTime(record, schedule) {
+  const [firstSchedule] = schedule?.episodeSchedules ?? [];
+  if (
+    !record.premiereEpisodeCount ||
+    !record.regularBroadcastStartDateBeijing ||
+    !firstSchedule ||
+    firstSchedule.intervalDays !== 0 ||
+    firstSchedule.episodeStart !== 1 ||
+    firstSchedule.episodeEnd !== record.premiereEpisodeCount ||
+    firstSchedule.broadcastDateBeijing !== record.premiereDateBeijing
+  ) {
+    return record;
+  }
+
+  return {
+    ...record,
+    episodeSchedules: [
+      firstSchedule,
+      {
+        episodeStart: record.premiereEpisodeCount + 1,
+        episodeEnd: record.episodeCount,
+        broadcastDateBeijing: record.regularBroadcastStartDateBeijing,
+        beijingTime: record.beijingTime,
+        intervalDays: 7,
+      },
+    ],
+    timeStatus: "verified",
+    scheduleSourceName: "YUC 周表 + しょぼい首播时刻",
+    scheduleSourceUrl: schedule.sourceUrl,
+    scheduleChannel: schedule.channel,
+    episodeSchedulesSource: "YUC 周表 + しょぼい首播时刻",
+  };
+}
+
+export const anime = yucAnime.map((entry) => {
+  const record = withYucSources(entry);
   const schedule = verifiedJulySchedules.get(record.id);
+  if (record.premiereKind === "network") return record;
+  if (record.premiereDateBeijing && record.scheduleWeekday && record.beijingTime) {
+    return withVerifiedYucPremiereTime(record, schedule);
+  }
   if (!schedule?.episodeSchedules?.length) return record;
 
   const episodeSchedules = appendKnownWeeklySchedule(record, schedule.episodeSchedules);
@@ -950,11 +1011,16 @@ export const anime = yucAnime.map((record) => {
       ? { regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing }
       : {}),
     premiereDateBeijing: firstSchedule.broadcastDateBeijing,
+    premiereDateSource: "しょぼいカレンダー",
     scheduleWeekday: weeklySchedule ? weekdayForDate(weeklySchedule.broadcastDateBeijing) : null,
+    ...(weeklySchedule ? { scheduleWeekdaySource: "しょぼいカレンダー" } : {}),
     beijingTime: weeklySchedule?.beijingTime ?? firstSchedule.beijingTime,
+    beijingTimeSource: "しょぼいカレンダー",
     timeStatus: "verified",
     station: schedule.channel,
+    stationSource: "しょぼいカレンダー",
     episodeSchedules,
+    episodeSchedulesSource: "しょぼいカレンダー",
     scheduleSourceName: "しょぼいカレンダー",
     scheduleSourceUrl: schedule.sourceUrl,
     scheduleChannel: schedule.channel,

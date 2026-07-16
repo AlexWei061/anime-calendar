@@ -175,7 +175,7 @@ if (!Number.isInteger(year) || year < 2020 || year > 2026) {
   throw new RangeError("Year must be an integer from 2020 through 2026");
 }
 
-const seasonNames = year === 2026 ? ["WINTER", "SPRING"] : ["WINTER", "SPRING", "SUMMER", "FALL"];
+const seasonNames = year === 2026 ? ["WINTER", "SPRING", "SUMMER"] : ["WINTER", "SPRING", "SUMMER", "FALL"];
 const catalogs = await Promise.all(
   seasonNames.map(async (season) => [season, await fetchSeason(season, year)]),
 );

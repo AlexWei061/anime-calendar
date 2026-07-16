@@ -121,7 +121,33 @@ test("keeps YUC network premiere dates from detailed cards", () => {
   );
 });
 
-test("keeps a YUC network premiere while attaching later television episodes", () => {
+test("parses YUC episode totals from detailed cards", () => {
+  const html = `
+    <div style="float:left"><img width="180px" data-src="https://example.test/twelve.jpg"></div>
+    <div><p class="title_cn">示例十二话</p>
+    <p class="title_jp">Example Twelve</p>
+    <p class="broadcast">完结<br>(全12话)</p></div>
+    <div style="clear:both"></div>
+  `;
+
+  assert.deepEqual(
+    parseCards(html, {
+      month: "1",
+      expectedCardCount: 1,
+      sentinelTitles: ["示例十二话"],
+    }),
+    [
+      {
+        titleZh: "示例十二话",
+        titleJa: "Example Twelve",
+        coverUrl: "https://example.test/twelve.jpg",
+        episodeCount: 12,
+      },
+    ],
+  );
+});
+
+test("keeps a YUC network premiere ahead of later Syoboi television episodes", () => {
   const record = {
     id: "jojo-stone-ocean",
     episodeCount: 12,
@@ -163,18 +189,13 @@ test("keeps a YUC network premiere while attaching later television episodes", (
       scheduleWeekday: null,
       beijingTime: null,
       station: "网络放送",
-      episodeSchedules: [
-        {
-          episodeStart: 1,
-          episodeEnd: 12,
-          broadcastDateBeijing: "2022-01-07",
-          beijingTime: "23:30",
-          intervalDays: 7,
-        },
-      ],
-      scheduleSourceName: "しょぼいカレンダー",
+      episodeSchedules: undefined,
+      scheduleSourceName: undefined,
     },
   );
+  assert.deepEqual(dateOnlyEventsForWeek([result], "2021-11-29").map(({ id, date }) => ({ id, date })), [
+    { id: "jojo-stone-ocean", date: "2021-12-01" },
+  ]);
 });
 
 test("parses a legacy YUC card with an underscore title class suffix", () => {
@@ -241,27 +262,51 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
 
   for (const record of anime) {
     const baseKeys = [
+      "anilistId",
       "beijingTime",
+      "coverSource",
       "coverAlt",
       "coverUrl",
       "episodeCount",
+      "episodeCountSource",
+      "episodeCountStatus",
       "id",
       "premiereDateBeijing",
       "scheduleWeekday",
       "sourceUrl",
       "station",
+      "stationSource",
+      "timeStatus",
+      "titleSource",
       "titleJa",
       "titleZh",
     ];
     assert.deepEqual(
       Object.keys(record)
-        .filter((key) => key !== "premiereEpisodeCount" && key !== "regularBroadcastStartDateBeijing")
+        .filter(
+          (key) =>
+            ![
+              "premiereEpisodeCount",
+              "premiereEpisodeCountSource",
+              "regularBroadcastStartDateBeijing",
+              "regularBroadcastStartDateSource",
+            ].includes(key),
+        )
         .sort(),
       [
         ...baseKeys,
+        ...(record.premiereDateSource ? ["premiereDateSource"] : []),
+        ...(record.scheduleWeekdaySource ? ["scheduleWeekdaySource"] : []),
+        ...(record.beijingTimeSource ? ["beijingTimeSource"] : []),
         ...(record.premiereKind ? ["premiereKind"] : []),
         ...(record.scheduleSourceName
-          ? ["episodeSchedules", "scheduleChannel", "scheduleSourceName", "scheduleSourceUrl", "timeStatus"]
+          ? [
+              "episodeSchedules",
+              "episodeSchedulesSource",
+              "scheduleChannel",
+              "scheduleSourceName",
+              "scheduleSourceUrl",
+            ]
           : []),
       ].sort(),
     );
@@ -342,7 +387,34 @@ test("keeps YUC July fixed-time records in the calendar when Syoboi has no match
   );
 });
 
-test("keeps historical network releases on their YUC premiere dates and television runs separately", () => {
+test("keeps July YUC schedules ahead of Syoboi television schedules", () => {
+  const ids = new Set(["henkyou-ryumin", "korekaite-shine", "uchioto"]);
+
+  assert.deepEqual(
+    eventsForWeek(anime, "2026-07-13")
+      .filter(({ id, date }) => date === "2026-07-17" && ids.has(id))
+      .map(({ id, episode, time }) => ({ id, episode, time })),
+    [
+      { id: "henkyou-ryumin", episode: 3, time: "21:30" },
+      { id: "korekaite-shine", episode: 3, time: "23:35" },
+      { id: "uchioto", episode: 3, time: "24:30" },
+    ],
+  );
+});
+
+test("uses AniList episode totals without replacing July YUC schedules", () => {
+  const yumeMita = anime.find(({ id }) => id === "yume-mita");
+
+  assert.equal(yumeMita?.anilistId, 198376);
+  assert.equal(yumeMita?.episodeCount, 13);
+  assert.equal(yumeMita?.episodeCountSource, "AniList");
+  assert.equal(yumeMita?.premiereDateSource, "YUC");
+  assert.equal(yumeMita?.scheduleWeekdaySource, "YUC");
+  assert.equal(yumeMita?.beijingTimeSource, "YUC");
+  assert.equal(yumeMita?.beijingTime, "22:00");
+});
+
+test("keeps historical YUC network releases ahead of later Syoboi television runs", () => {
   const jojo = allAnime.find(({ id }) => id === "yuc-202201-08");
   const ragnarok = allAnime.find(({ id }) => id === "anilist-127399");
 
@@ -376,21 +448,11 @@ test("keeps historical network releases on their YUC premiere dates and televisi
     [{ id: "yuc-202201-08", date: "2021-12-01" }],
   );
   assert.deepEqual(
-    eventsForWeek([jojo], "2022-01-03").map(({ episode, broadcastDate, time }) => ({
-      episode,
-      broadcastDate,
-      time,
-    })),
-    [{ episode: 1, broadcastDate: "2022-01-07", time: "23:30" }],
+    dateOnlyEventsForWeek([jojo, ragnarok], "2021-06-14").map(({ id, date }) => ({ id, date })),
+    [{ id: "anilist-127399", date: "2021-06-17" }],
   );
-  assert.deepEqual(
-    eventsForWeek([ragnarok], "2021-09-27").map(({ episode, broadcastDate, time }) => ({
-      episode,
-      broadcastDate,
-      time,
-    })),
-    [{ episode: 1, broadcastDate: "2021-10-01", time: "23:30" }],
-  );
+  assert.deepEqual(eventsForWeek([jojo], "2022-01-03"), []);
+  assert.deepEqual(eventsForWeek([ragnarok], "2021-09-27"), []);
 });
 
 test("uses YUC episode totals when available and defaults every other show to 12 episodes", () => {
@@ -406,7 +468,7 @@ test("uses YUC episode totals when available and defaults every other show to 12
 test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunday slot", () => {
   const mushoku = anime.find(({ id }) => id === "mushoku-3");
 
-  assert.equal(mushoku?.scheduleSourceName, "しょぼいカレンダー");
+  assert.equal(mushoku?.scheduleSourceName, "YUC 周表 + しょぼい首播时刻");
   assert.deepEqual(
     eventsForWeek([mushoku], "2026-06-29").map(({ episodeStart, episode, broadcastDate, time }) => ({
       episodeStart,
@@ -682,7 +744,7 @@ test("keeps the historical pilot as generated local data", async () => {
     [generated2023, ["winter2023", "spring2023", "summer2023", "fall2023"]],
     [generated2024, ["winter2024", "spring2024", "summer2024", "fall2024"]],
     [generated2025, ["winter2025", "spring2025", "summer2025", "fall2025"]],
-    [generated2026, ["winter2026", "spring2026"]],
+    [generated2026, ["winter2026", "spring2026", "summer2026"]],
   ]) {
     for (const seasonName of seasonNames) assert.match(generated, new RegExp(`export const ${seasonName}`));
   }
@@ -817,17 +879,43 @@ test("ships generated YUC historical catalogs with auditable source records", as
       anilistId: null,
       episodeCount: 12,
       episodeCountStatus: "estimated",
+      episodeCountSource: "estimated",
       titleZh: "一脸嫌弃表情的妹子给你看胖次R",
+      titleSource: "YUC",
       titleJa: "嫌な顔されながらおパンツ見せてもらいたいR",
       coverUrl: "/covers/yuc/history-2026-04-69.webp",
       coverAlt: "一脸嫌弃表情的妹子给你看胖次R 封面",
+      coverSource: "YUC",
       sourceUrl: "https://yuc.wiki/202604/",
       premiereDateBeijing: null,
       scheduleWeekday: null,
       beijingTime: null,
       timeStatus: "unknown",
       station: "AniList 未匹配（试点）",
+      stationSource: "estimated",
     },
+  );
+});
+
+test("records the source for every populated historical catalog field", () => {
+  const historicalAnime = allAnime.filter(({ sourceUrl }) => sourceUrl.includes("yuc.wiki"));
+
+  assert.ok(
+    historicalAnime.every(
+      ({ titleSource, coverSource, episodeCountSource, stationSource }) =>
+        titleSource === "YUC" &&
+        coverSource === "YUC" &&
+        typeof episodeCountSource === "string" &&
+        typeof stationSource === "string",
+    ),
+  );
+  assert.ok(
+    historicalAnime.every(
+      ({ premiereDateBeijing, premiereDateSource, scheduleWeekday, scheduleWeekdaySource, beijingTime, beijingTimeSource }) =>
+        (!premiereDateBeijing || typeof premiereDateSource === "string") &&
+        (!scheduleWeekday || typeof scheduleWeekdaySource === "string") &&
+        (!beijingTime || typeof beijingTimeSource === "string"),
+    ),
   );
 });
 
@@ -851,7 +939,7 @@ test("uses YUC's Re:Zero P1 episode count instead of the AniList total", () => {
   assert.equal(enrichYucRecord(card, 48, "https://yuc.wiki/202604/", matched).episodeCount, 11);
 });
 
-test("keeps YUC identity fields while replacing only verified schedule fields", () => {
+test("keeps YUC identity fields and AniList schedules ahead of Syoboi", () => {
   const record = enrichYucRecord(
     {
       titleZh: "异度侵入",
@@ -896,16 +984,78 @@ test("keeps YUC identity fields while replacing only verified schedule fields", 
   assert.equal(record.titleZh, "异度侵入");
   assert.equal(record.coverUrl, "/covers/yuc/history-2020-01-01.webp");
   assert.equal(record.sourceUrl, "https://yuc.wiki/202001/");
-  assert.equal(record.scheduleSourceName, "しょぼいカレンダー");
-  assert.equal(record.scheduleChannel, "TOKYO MX");
-  assert.equal(record.station, "TOKYO MX");
-  assert.equal(record.premiereDateBeijing, "2020-01-05");
-  assert.equal(record.scheduleWeekday, "Sun");
+  assert.equal(record.scheduleSourceName, undefined);
+  assert.equal(record.scheduleChannel, undefined);
+  assert.equal(record.station, "AniList 首集排期（试点）");
+  assert.equal(record.premiereDateBeijing, "2020-01-06");
+  assert.equal(record.scheduleWeekday, "Mon");
   assert.equal(record.beijingTime, "23:30");
-  assert.deepEqual(record.episodeSchedules, [
-    { episodeStart: 1, episodeEnd: 1, broadcastDateBeijing: "2020-01-05", beijingTime: "23:00", intervalDays: 7 },
-    { episodeStart: 2, episodeEnd: 13, broadcastDateBeijing: "2020-01-05", beijingTime: "23:30", intervalDays: 7 },
-  ]);
+  assert.equal(record.episodeSchedules, undefined);
+});
+
+test("fills only missing fields from each lower-priority source", () => {
+  const record = enrichYucRecord(
+    {
+      titleZh: "示例番",
+      titleJa: "Example",
+      coverUrl: "/covers/yuc/example.webp",
+      episodeCount: 8,
+    },
+    0,
+    "https://yuc.wiki/202001/",
+    {
+      id: "anilist-1",
+      episodeCount: 12,
+      episodeCountStatus: "exact",
+      premiereDateBeijing: "2020-01-06",
+      scheduleWeekday: null,
+      beijingTime: null,
+      timeStatus: "unknown",
+      station: "AniList 首播日期（试点）",
+    },
+    {
+      channel: "TOKYO MX",
+      sourceUrl: "https://cal.syoboi.jp/tid/1",
+      episodeSchedules: [
+        {
+          episodeStart: 1,
+          episodeEnd: 8,
+          broadcastDateBeijing: "2020-01-05",
+          beijingTime: "23:30",
+          intervalDays: 7,
+        },
+      ],
+    },
+  );
+
+  assert.deepEqual(
+    {
+      episodeCount: record.episodeCount,
+      episodeCountSource: record.episodeCountSource,
+      premiereDateBeijing: record.premiereDateBeijing,
+      premiereDateSource: record.premiereDateSource,
+      scheduleWeekday: record.scheduleWeekday,
+      scheduleWeekdaySource: record.scheduleWeekdaySource,
+      beijingTime: record.beijingTime,
+      beijingTimeSource: record.beijingTimeSource,
+      station: record.station,
+      stationSource: record.stationSource,
+      episodeSchedules: record.episodeSchedules,
+    },
+    {
+      episodeCount: 8,
+      episodeCountSource: "YUC",
+      premiereDateBeijing: "2020-01-06",
+      premiereDateSource: "AniList",
+      scheduleWeekday: "Sun",
+      scheduleWeekdaySource: "しょぼいカレンダー",
+      beijingTime: "23:30",
+      beijingTimeSource: "しょぼいカレンダー",
+      station: "TOKYO MX",
+      stationSource: "しょぼいカレンダー",
+      episodeSchedules: undefined,
+    },
+  );
 });
 
 test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
@@ -932,22 +1082,19 @@ test("keeps Re:Zero P1 and Part.2 as separate schedules", () => {
   assert.deepEqual(eventsForWeek([partTwo], "2026-10-05"), []);
 });
 
-test("schedules ID:INVADED as a two-episode premiere followed by weekly broadcasts", () => {
+test("schedules ID:INVADED from its AniList weekly record ahead of Syoboi", () => {
   const idInvaded = allAnime.find(({ id }) => id === "anilist-110350");
 
-  assert.equal(idInvaded?.scheduleSourceName, "しょぼいカレンダー");
-  assert.equal(idInvaded?.scheduleChannel, "BS11イレブン");
+  assert.equal(idInvaded?.scheduleSourceName, undefined);
+  assert.equal(idInvaded?.scheduleChannel, undefined);
+  assert.equal(idInvaded?.station, "AniList 首集排期（试点）");
   assert.deepEqual(
-    eventsForWeek([idInvaded], "2019-12-30").map(({ episodeStart, episode, broadcastDate, time }) => ({
-      episodeStart,
+    eventsForWeek([idInvaded], "2019-12-30").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
       time,
     })),
-    [
-      { episodeStart: 1, episode: 1, broadcastDate: "2020-01-05", time: "23:00" },
-      { episodeStart: 2, episode: 2, broadcastDate: "2020-01-05", time: "23:30" },
-    ],
+    [{ episode: 1, broadcastDate: "2020-01-05", time: "23:30" }],
   );
   assert.deepEqual(
     eventsForWeek([idInvaded], "2020-01-06").map(({ episode, broadcastDate, time }) => ({
@@ -955,15 +1102,16 @@ test("schedules ID:INVADED as a two-episode premiere followed by weekly broadcas
       broadcastDate,
       time,
     })),
-    [{ episode: 3, broadcastDate: "2020-01-12", time: "23:30" }],
+    [{ episode: 2, broadcastDate: "2020-01-12", time: "23:30" }],
   );
 });
 
-test("records Attack on Titan Final Season Part 1 as a 16-episode split broadcast", () => {
+test("records Attack on Titan Final Season Part 1 from its AniList weekly record", () => {
   const attackOnTitan = allAnime.find(({ id }) => id === "anilist-110277");
 
   assert.equal(attackOnTitan?.episodeCount, 16);
-  assert.equal(attackOnTitan?.scheduleSourceName, "しょぼいカレンダー");
+  assert.equal(attackOnTitan?.scheduleSourceName, undefined);
+  assert.equal(attackOnTitan?.station, "AniList 首集排期（试点）");
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2020-11-30").map(({ episode, broadcastDate, time }) => ({
       episode,
@@ -980,36 +1128,44 @@ test("records Attack on Titan Final Season Part 1 as a 16-episode split broadcas
     })),
     [{ episode: 2, broadcastDate: "2020-12-13", time: "23:10" }],
   );
-  assert.deepEqual(eventsForWeek([attackOnTitan], "2020-12-28"), []);
+  assert.deepEqual(
+    eventsForWeek([attackOnTitan], "2020-12-28").map(({ episode, broadcastDate, time }) => ({
+      episode,
+      broadcastDate,
+      time,
+    })),
+    [{ episode: 5, broadcastDate: "2021-01-03", time: "23:10" }],
+  );
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2021-01-04").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
       time,
     })),
-    [{ episode: 5, broadcastDate: "2021-01-10", time: "23:10" }],
+    [{ episode: 6, broadcastDate: "2021-01-10", time: "23:10" }],
   );
   assert.deepEqual(
-    eventsForWeek([attackOnTitan], "2021-03-22").map(({ episode, broadcastDate }) => ({
+    eventsForWeek([attackOnTitan], "2021-03-15").map(({ episode, broadcastDate }) => ({
       episode,
       broadcastDate,
     })),
-    [{ episode: 16, broadcastDate: "2021-03-28" }],
+    [{ episode: 16, broadcastDate: "2021-03-21" }],
   );
 });
 
-test("records Attack on Titan Final Season Part 2 broadcast changes", () => {
+test("records Attack on Titan Final Season Part 2 from its AniList weekly record", () => {
   const attackOnTitan = allAnime.find(({ id }) => id === "anilist-131681");
 
   assert.equal(attackOnTitan?.episodeCount, 12);
-  assert.equal(attackOnTitan?.scheduleSourceName, "しょぼいカレンダー");
+  assert.equal(attackOnTitan?.scheduleSourceName, undefined);
+  assert.equal(attackOnTitan?.station, "AniList 首集排期（试点）");
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2022-01-03").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
       time,
     })),
-    [{ episode: 1, broadcastDate: "2022-01-09", time: "23:05" }],
+    [{ episode: 1, broadcastDate: "2022-01-09", time: "23:10" }],
   );
   assert.deepEqual(
     eventsForWeek([attackOnTitan], "2022-02-07").map(({ episode, broadcastDate, time }) => ({
@@ -1017,16 +1173,15 @@ test("records Attack on Titan Final Season Part 2 broadcast changes", () => {
       broadcastDate,
       time,
     })),
-    [{ episode: 6, broadcastDate: "2022-02-13", time: "23:43" }],
+    [{ episode: 6, broadcastDate: "2022-02-13", time: "23:10" }],
   );
-  assert.deepEqual(eventsForWeek([attackOnTitan], "2022-03-21"), []);
   assert.deepEqual(
-    eventsForWeek([attackOnTitan], "2022-03-28").map(({ episode, broadcastDate, time }) => ({
+    eventsForWeek([attackOnTitan], "2022-03-21").map(({ episode, broadcastDate, time }) => ({
       episode,
       broadcastDate,
       time,
     })),
-    [{ episode: 12, broadcastDate: "2022-04-03", time: "23:05" }],
+    [{ episode: 12, broadcastDate: "2022-03-27", time: "23:10" }],
   );
 });
 
@@ -1036,7 +1191,7 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   const july2020Events = eventsForWeek(allAnime, "2020-06-29");
   const october2020Events = eventsForWeek(allAnime, "2020-09-28");
   const january2021Events = eventsForWeek(allAnime, "2021-01-04");
-  const april2021Events = eventsForWeek(allAnime, "2021-03-29");
+  const april2021Events = eventsForWeek(allAnime, "2021-04-05");
   const july2021Events = eventsForWeek(allAnime, "2021-06-28");
   const october2021Events = eventsForWeek(allAnime, "2021-09-27");
   const january2022Events = eventsForWeek(allAnime, "2022-01-03");
@@ -1101,16 +1256,20 @@ test("keeps unmatched YUC cards without inferring AniList broadcast data", () =>
     anilistId: null,
     episodeCount: 12,
     episodeCountStatus: "estimated",
+    episodeCountSource: "estimated",
     titleZh: "示例番",
+    titleSource: "YUC",
     titleJa: "Alpha",
     coverUrl: "https://i0.hdslb.com/example.jpg",
     coverAlt: "示例番 封面",
+    coverSource: "YUC",
     sourceUrl: "https://yuc.wiki/202601/",
     premiereDateBeijing: null,
     scheduleWeekday: null,
     beijingTime: null,
     timeStatus: "unknown",
     station: "AniList 未匹配（试点）",
+    stationSource: "estimated",
   });
 });
 

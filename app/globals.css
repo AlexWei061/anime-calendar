@@ -381,6 +381,10 @@ h1 {
   gap: 1px;
 }
 
+.timeline-grid.has-date-only-events {
+  grid-template-rows: 4.35rem auto auto;
+}
+
 .timeline-corner,
 .timeline-day-header {
   position: sticky;
@@ -457,12 +461,21 @@ h1 {
   background-color: color-mix(in srgb, var(--mint) 28%, var(--card));
 }
 
-.date-only-events {
-  position: absolute;
-  z-index: 2;
-  top: 0.3rem;
-  right: 0.3rem;
-  left: 0.3rem;
+.timeline-date-only-corner,
+.timeline-date-only {
+  min-width: 0;
+  background: var(--card);
+}
+
+.timeline-date-only {
+  padding: 0.3rem;
+}
+
+.timeline-date-only.is-today {
+  background: color-mix(in srgb, var(--mint) 28%, var(--card));
+}
+
+.timeline-date-only-events {
   display: grid;
   gap: 0.25rem;
 }

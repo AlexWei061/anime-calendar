@@ -75,7 +75,8 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 - 每个季度的 `catalogCount` 必须等于该季度 `anime.length`。每个条目都要有中日标题、集数、来源、封面路径和无障碍替代文本。
 - 所有封面均在本地处理，页面运行时不依赖第三方图片链接。条目的 `coverUrl` 是稳定的逻辑封面键：7 月使用稳定 slug，历史目录使用 `history-<year>-*`；它不一定对应单独的静态文件。
 - 运行时封面由 `data/cover-sprites.js` 映射到 `public/covers/yuc/sprites/` 中的 4×10 WebP 图集。中间封面使用无损 WebP，最终图集使用 quality 90；更新或新增封面后，依次运行 `npm run convert:covers-webp` 和 `npm run generate:cover-sprites`。不要手工编辑图集或映射文件，也不要恢复为每部番一个部署静态文件。
-- 2026 年 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；历史目录的中文名和封面来自 YUC，首播日期、周播时间和集数来自 AniList 历史资料。
+- 所有数据字段按来源逐项合并，优先级为 YUC → AniList → しょぼいカレンダー → 估算或 `null`；低优先级来源只能补空值，不能覆盖已有值。中文名和封面始终来自 YUC，并为已填入字段保留 `*Source` 审计标记。
+- 2026 年 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；YUC 未列总集数时用 AniList 补充。历史目录中的 YUC 网络首播日期优先于之后的电视台排期；AniList 缺少首播日期、周播日或分钟时刻时，才由しょぼい补齐。
 - 没有固定周播时刻的网络放送应保留 `null`，由页面放入“网络放送／固定时刻未列出”区域，不能虚构时间。
 - 凌晨 `00:00` 至 `04:59` 的节目在周历中显示在前一天栏目的“次日 HH:MM”时段；必须通过
   `formatBroadcastTime` 和现有日期布局逻辑处理，不要在页面中手工挪动日期。

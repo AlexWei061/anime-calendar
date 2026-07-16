@@ -614,7 +614,7 @@ export default function Home() {
 
         <div className="time-grid-scroll">
           <div
-            className="timeline-grid"
+            className={"timeline-grid" + (dateOnlyEvents.length ? " has-date-only-events" : "")}
             aria-label={weekLabel(dates) + " 放送安排"}
             style={timelineStyle}
           >
@@ -634,6 +634,23 @@ export default function Home() {
                 </header>
               );
             })}
+            {dateOnlyEvents.length ? (
+              <>
+                <div className="timeline-date-only-corner" aria-hidden="true" />
+                {dates.map((date, index) => (
+                  <div
+                    className={"timeline-date-only" + (date === currentBeijingDate ? " is-today" : "")}
+                    key={date}
+                  >
+                    {dayDateOnlyEvents[index].length ? (
+                      <div className="timeline-date-only-events">
+                        {dayDateOnlyEvents[index].map(dateOnlyEventButton)}
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </>
+            ) : null}
             <div className="timeline-axis" aria-hidden="true">
               {timelineHours.map((hour) => (
                 <time
@@ -656,9 +673,6 @@ export default function Home() {
                   key={date}
                   aria-label={weekdays[index] + " " + date}
                 >
-                  {dayDateOnlyEvents[index].length ? (
-                    <div className="date-only-events">{dayDateOnlyEvents[index].map(dateOnlyEventButton)}</div>
-                  ) : null}
                   {positionedEvents.map(({ event, lane, laneCount }) =>
                     eventButton(event, { lane, laneCount }),
                   )}

@@ -350,6 +350,7 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
       (card.match(/<p\b[^>]*\bclass="broadcast"[^>]*>([\s\S]*?)<\/p>/i)?.[1] ?? "").replace(/<[^>]+>/g, " "),
     );
     const networkPremiere = /(\d{1,2})\s*\/\s*(\d{1,2})\s*(?:网络配信|ネット配信)/.exec(broadcast);
+    const episodeCount = /(?:全|共)\s*(\d+)\s*[话話集]/.exec(broadcast);
 
     const coverUrl = image[1].trim().replace(/^http:/i, "https:");
     const normalizedTitle = normalizeTitle(titleJa[1]);
@@ -362,6 +363,7 @@ export function parseCards(html, { month, expectedCardCount, sentinelTitles }) {
       ...(networkPremiere
         ? { networkPremiereMonth: Number(networkPremiere[1]), networkPremiereDay: Number(networkPremiere[2]) }
         : {}),
+      ...(episodeCount ? { episodeCount: Number(episodeCount[1]) } : {}),
     });
   }
 
@@ -426,6 +428,7 @@ function weekdayForDate(isoDate) {
 
 export function applySyoboiSchedule(record, schedule) {
   if (!schedule?.episodeSchedules?.length) return record;
+  if (record.premiereKind === "network") return record;
 
   const [firstSchedule] = schedule.episodeSchedules;
   const weeklySchedule = schedule.episodeSchedules
@@ -435,29 +438,42 @@ export function applySyoboiSchedule(record, schedule) {
         right.episodeEnd - right.episodeStart - (left.episodeEnd - left.episodeStart) ||
         left.episodeStart - right.episodeStart,
     )[0];
+  const scheduleTime = weeklySchedule?.beijingTime ?? firstSchedule.beijingTime;
+  const fillsWeekday = !record.scheduleWeekday && weeklySchedule;
+  const fillsTime = !record.beijingTime && scheduleTime;
+  const fillsDate = !record.premiereDateBeijing;
   const shared = { ...record };
-  const keepsNetworkPremiere = record.premiereKind === "network";
-  if (!keepsNetworkPremiere) {
+  if (fillsDate) {
     delete shared.premiereEpisodeCount;
     delete shared.regularBroadcastStartDateBeijing;
   }
-  return {
+  const merged = {
     ...shared,
-    ...(!keepsNetworkPremiere
+    ...(fillsDate
       ? {
           ...(firstSchedule.intervalDays === 0 && firstSchedule.episodeEnd > firstSchedule.episodeStart
-            ? { premiereEpisodeCount: firstSchedule.episodeEnd }
+            ? { premiereEpisodeCount: firstSchedule.episodeEnd, premiereEpisodeCountSource: "しょぼいカレンダー" }
             : {}),
           ...(weeklySchedule && weeklySchedule.episodeStart > 1
-            ? { regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing }
+            ? {
+                regularBroadcastStartDateBeijing: weeklySchedule.broadcastDateBeijing,
+                regularBroadcastStartDateSource: "しょぼいカレンダー",
+              }
             : {}),
           premiereDateBeijing: firstSchedule.broadcastDateBeijing,
-          scheduleWeekday: weeklySchedule ? weekdayForDate(weeklySchedule.broadcastDateBeijing) : null,
-          beijingTime: weeklySchedule?.beijingTime ?? firstSchedule.beijingTime,
-          timeStatus: "verified",
-          station: schedule.channel,
+          premiereDateSource: "しょぼいカレンダー",
         }
       : {}),
+    ...(fillsWeekday
+      ? { scheduleWeekday: weekdayForDate(weeklySchedule.broadcastDateBeijing), scheduleWeekdaySource: "しょぼいカレンダー" }
+      : {}),
+    ...(fillsTime ? { beijingTime: scheduleTime, beijingTimeSource: "しょぼいカレンダー", timeStatus: "verified" } : {}),
+    ...(fillsWeekday || fillsTime ? { station: schedule.channel, stationSource: "しょぼいカレンダー" } : {}),
+  };
+
+  if (!fillsDate) return merged;
+  return {
+    ...merged,
     episodeSchedules: schedule.episodeSchedules,
     scheduleSourceName: "しょぼいカレンダー",
     scheduleSourceUrl: schedule.sourceUrl,
@@ -468,20 +484,24 @@ export function applySyoboiSchedule(record, schedule) {
 export function enrichYucRecord(card, index, sourceUrl, matched, syoboiSchedule) {
   const shared = {
     titleZh: card.titleZh,
+    titleSource: "YUC",
     titleJa: card.titleJa,
     coverUrl: card.coverUrl,
     coverAlt: `${card.titleZh} 封面`,
+    coverSource: "YUC",
     sourceUrl,
   };
   const networkDate = networkPremiereDate(card, sourceUrl, matched);
   const networkPremiere = networkDate
     ? {
         premiereDateBeijing: networkDate,
+        premiereDateSource: "YUC",
         premiereKind: "network",
         scheduleWeekday: null,
         beijingTime: null,
         timeStatus: "unknown",
         station: "网络放送",
+        stationSource: "YUC",
       }
     : {};
 
@@ -489,32 +509,42 @@ export function enrichYucRecord(card, index, sourceUrl, matched, syoboiSchedule)
     return {
       id: `yuc-${sourceUrl.slice(-7, -1)}-${String(index + 1).padStart(2, "0")}`,
       anilistId: null,
-      episodeCount: 12,
-      episodeCountStatus: "estimated",
+      episodeCount: card.episodeCount ?? 12,
+      episodeCountStatus: card.episodeCount ? "exact" : "estimated",
+      episodeCountSource: card.episodeCount ? "YUC" : "estimated",
       ...shared,
       premiereDateBeijing: null,
       scheduleWeekday: null,
       beijingTime: null,
       timeStatus: "unknown",
       station: "AniList 未匹配（试点）",
+      stationSource: "estimated",
       ...networkPremiere,
     };
   }
 
   const anilistId = Number(matched.id.replace("anilist-", ""));
-  const episodeCount = EPISODE_COUNT_OVERRIDES[anilistId] ?? matched.episodeCount;
+  const yucEpisodeCount = card.episodeCount ?? EPISODE_COUNT_OVERRIDES[anilistId];
+  const episodeCount = yucEpisodeCount ?? matched.episodeCount;
   const record = {
     id: matched.id,
     anilistId,
     episodeCount,
-    episodeCountStatus: matched.episodeCountStatus,
-    ...(matched.premiereEpisodeCount ? { premiereEpisodeCount: matched.premiereEpisodeCount } : {}),
+    episodeCountStatus: yucEpisodeCount ? "exact" : matched.episodeCountStatus,
+    episodeCountSource: yucEpisodeCount ? "YUC" : "AniList",
+    ...(matched.premiereEpisodeCount
+      ? { premiereEpisodeCount: matched.premiereEpisodeCount, premiereEpisodeCountSource: "AniList" }
+      : {}),
     ...shared,
     premiereDateBeijing: matched.premiereDateBeijing,
+    ...(matched.premiereDateBeijing ? { premiereDateSource: "AniList" } : {}),
     scheduleWeekday: matched.scheduleWeekday,
+    ...(matched.scheduleWeekday ? { scheduleWeekdaySource: "AniList" } : {}),
     beijingTime: matched.beijingTime,
+    ...(matched.beijingTime ? { beijingTimeSource: "AniList" } : {}),
     timeStatus: matched.timeStatus,
     station: matched.station,
+    stationSource: "AniList",
     ...networkPremiere,
   };
   return applySyoboiSchedule(record, syoboiSchedule);

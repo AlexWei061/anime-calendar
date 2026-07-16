@@ -80,7 +80,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:20;--timeline-height:1960px/);
+  assert.match(html, /--timeline-hour-count:22;--timeline-height:2152px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:1392px/);
@@ -217,7 +217,7 @@ test("renders same-time events side by side on one timeline day", async () => {
     sameTimeEvents.every(([, , card]) => /class="calendar-event-cover cover-sprite"/.test(card)),
   );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /说出你们先走我断后的十年后 我成为了传说/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
 });
 
 test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
@@ -246,6 +246,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
   assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
   assert.match(page, /dateOnlyEventsForWeek/);
+  assert.match(page, /"timeline-grid" \+ \(dateOnlyEvents\.length \? " has-date-only-events" : ""\)/);
+  assert.match(page, /className=\{"timeline-date-only" \+/);
+  assert.doesNotMatch(styles, /\.date-only-events\s*\{[\s\S]*?position:\s*absolute/);
   assert.match(
     page,
     /const nextWeekStart = nextSeason\.firstWeekStart;[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
