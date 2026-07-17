@@ -217,12 +217,18 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /const isStatisticsSectionCollapsed = \(section: StatisticsSection\) =>/);
   assert.match(page, /const toggleStatisticsSection = \(section: StatisticsSection\) =>/);
   assert.match(page, /className="statistics-section-heading-toggle"/);
-  assert.match(page, /className="statistics-section-chevron" aria-hidden="true">⌄/);
+  assert.match(page, /className="statistics-section-chevron" aria-hidden="true" \/>/);
   assert.match(page, /aria-expanded=\{!isStatisticsSectionCollapsed\("today"\)\}/);
   assert.match(page, /aria-controls="statistics-today-content"/);
   assert.match(page, /id="statistics-today-content" hidden=\{isStatisticsSectionCollapsed\("today"\)\}/);
   assert.match(page, /id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}/);
   assert.match(page, /id="statistics-season-content" hidden=\{isStatisticsSectionCollapsed\("season"\)\}/);
+  assert.match(page, /const statisticsSeasonTotals = progressTotals\(statisticsSeasonProgress\);/);
+  assert.match(
+    page,
+    /<dl className="statistics-overview-grid">[\s\S]*?<div id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>/,
+  );
+  assert.match(page, /<dt>本季追番<\/dt>/);
   assert.match(page, /const statisticsAnimeCard = \(/);
   assert.match(page, /className="statistics-anime-card"/);
   assert.match(page, /aria-haspopup="dialog"/);
@@ -248,6 +254,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(styles, /\.statistics-anime-card\s*\{/);
   assert.match(styles, /\.statistics-section-heading-toggle\s*\{/);
   assert.match(styles, /\.statistics-section-chevron\s*\{/);
+  assert.match(styles, /border-right: 2px solid currentColor;/);
+  assert.match(styles, /cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);

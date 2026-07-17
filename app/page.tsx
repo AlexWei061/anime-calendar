@@ -199,6 +199,7 @@ export default function Home() {
   const overallProgressTotals = progressTotals(allProgress);
   const overallProgress = sortProgressBySeasonThenWatchedEpisodes(allProgress, seasonIndexByAnimeId);
   const statisticsSeasonProgress = sortProgressByWatchedEpisodes(progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []));
+  const statisticsSeasonTotals = progressTotals(statisticsSeasonProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
@@ -673,7 +674,7 @@ export default function Home() {
                       </span>
                     </span>
                     <span className="statistics-section-heading-note">只显示你收藏的番剧</span>
-                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                    <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
                 </div>
                 <div id="statistics-today-content" hidden={isStatisticsSectionCollapsed("today")}>
@@ -729,28 +730,28 @@ export default function Home() {
                       </span>
                     </span>
                     <span className="statistics-section-heading-note">按已标记的集数统计</span>
-                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                    <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
                 </div>
+                <dl className="statistics-overview-grid">
+                  <div>
+                    <dt>追番总数</dt>
+                    <dd>{overallProgressTotals.total} 部</dd>
+                  </div>
+                  <div>
+                    <dt>在追</dt>
+                    <dd>{overallProgressTotals.inProgress} 部</dd>
+                  </div>
+                  <div>
+                    <dt>已看完</dt>
+                    <dd>{overallProgressTotals.completed} 部</dd>
+                  </div>
+                  <div>
+                    <dt>未开始</dt>
+                    <dd>{overallProgressTotals.notStarted} 部</dd>
+                  </div>
+                </dl>
                 <div id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
-                  <dl className="statistics-overview-grid">
-                    <div>
-                      <dt>追番总数</dt>
-                      <dd>{overallProgressTotals.total} 部</dd>
-                    </div>
-                    <div>
-                      <dt>在追</dt>
-                      <dd>{overallProgressTotals.inProgress} 部</dd>
-                    </div>
-                    <div>
-                      <dt>已看完</dt>
-                      <dd>{overallProgressTotals.completed} 部</dd>
-                    </div>
-                    <div>
-                      <dt>未开始</dt>
-                      <dd>{overallProgressTotals.notStarted} 部</dd>
-                    </div>
-                  </dl>
                   <div className="statistics-anime-card-list">
                     {overallProgress.map((progress) => (
                       <span key={progress.record.id}>
@@ -782,7 +783,7 @@ export default function Home() {
                         {statisticsSeason.label}
                       </span>
                     </span>
-                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                    <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
                   <div className="statistics-section-controls">
                     <label className="statistics-season-picker">
@@ -800,6 +801,24 @@ export default function Home() {
                     </label>
                   </div>
                 </div>
+                <dl className="statistics-overview-grid">
+                  <div>
+                    <dt>本季追番</dt>
+                    <dd>{statisticsSeasonTotals.total} 部</dd>
+                  </div>
+                  <div>
+                    <dt>在追</dt>
+                    <dd>{statisticsSeasonTotals.inProgress} 部</dd>
+                  </div>
+                  <div>
+                    <dt>已看完</dt>
+                    <dd>{statisticsSeasonTotals.completed} 部</dd>
+                  </div>
+                  <div>
+                    <dt>未开始</dt>
+                    <dd>{statisticsSeasonTotals.notStarted} 部</dd>
+                  </div>
+                </dl>
                 <div id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
                   {statisticsSeasonProgress.length ? (
                     <div className="statistics-anime-card-list">

@@ -275,25 +275,25 @@ h1 {
 }
 
 .statistics-section-chevron {
-  display: grid;
+  display: block;
   flex: 0 0 auto;
-  width: 1.6rem;
-  height: 1.6rem;
-  place-items: center;
-  border-radius: 999px;
+  width: 0.58rem;
+  height: 0.58rem;
+  margin-right: 0.2rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   color: var(--blue);
-  font-size: 1.35rem;
-  line-height: 1;
-  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+  transform: rotate(45deg);
+  transition: color 160ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .statistics-section-heading-toggle:hover .statistics-section-chevron,
 .statistics-section-heading-toggle:focus-visible .statistics-section-chevron {
-  background: var(--blue-soft);
+  color: color-mix(in srgb, var(--blue) 72%, var(--ink));
 }
 
 .statistics-section-heading-toggle[aria-expanded="false"] .statistics-section-chevron {
-  transform: rotate(-90deg);
+  transform: rotate(-45deg);
 }
 
 .statistics-section-controls {
