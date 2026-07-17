@@ -5,6 +5,7 @@ import {
   broadcastsForDate,
   progressForAnime,
   progressTotals,
+  sortProgressBySeasonThenWatchedEpisodes,
   sortProgressByWatchedEpisodes,
 } from "../lib/anime-statistics.js";
 
@@ -73,6 +74,32 @@ test("sorts seasonal progress by watched episode count before unstarted shows", 
       { animeId: "finished", watchedEpisodeCount: 2 },
       { animeId: "not-started", watchedEpisodeCount: 0 },
     ],
+  );
+});
+
+test("sorts all progress by season before watched episode count", () => {
+  const progress = progressForAnime(
+    [
+      { id: "winter-unwatched", episodeCount: 12 },
+      { id: "winter-watched", episodeCount: 12 },
+      { id: "spring-watched", episodeCount: 12 },
+    ],
+    [
+      { animeId: "winter-watched", episodeStart: 1, episode: 4 },
+      { animeId: "spring-watched", episodeStart: 1, episode: 8 },
+    ],
+  );
+
+  assert.deepEqual(
+    sortProgressBySeasonThenWatchedEpisodes(
+      progress,
+      new Map([
+        ["winter-unwatched", 0],
+        ["winter-watched", 0],
+        ["spring-watched", 1],
+      ]),
+    ).map(({ record }) => record.id),
+    ["winter-watched", "winter-unwatched", "spring-watched"],
   );
 });
 

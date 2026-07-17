@@ -311,31 +311,6 @@ h1 {
   padding: 0 0.7rem;
 }
 
-.statistics-status-groups {
-  display: grid;
-  gap: 1.35rem;
-  margin-top: 1.35rem;
-}
-
-.statistics-status-group {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.statistics-status-group h3 {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.statistics-status-group h3 span {
-  color: var(--muted-ink);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
 .statistics-anime-card-list {
   display: grid;
   gap: 0.65rem;

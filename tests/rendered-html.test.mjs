@@ -207,6 +207,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
   assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\);/);
   assert.match(page, /const overallProgressTotals = progressTotals\(allProgress\);/);
+  assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
+  assert.match(page, /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(allProgress, seasonIndexByAnimeId\);/);
   assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
   assert.match(page, /今日播出/);
   assert.match(page, /只显示你收藏的番剧/);
@@ -227,7 +229,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /selectedDate: event\.broadcastDate/);
   assert.match(page, /selectedEpisode: event\.episode/);
   assert.match(page, /className="statistics-anime-card-list"/);
-  assert.match(page, /className="statistics-status-groups"/);
+  assert.match(page, /overallProgress\.map\(\(progress\) =>/);
+  assert.doesNotMatch(page, /className="statistics-status-groups"/);
   assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
   assert.match(page, /在追/);
   assert.match(page, /已看完/);
@@ -237,6 +240,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /选择季度/);
   assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{progress\.record\.episodeCount\} 集/);
   assert.match(page, /最后标记第 \$\{progress\.latestWatchedEpisode\} 集/);
+  assert.match(page, /<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>/);
   assert.match(styles, /\.statistics-overview-grid\s*\{/);
   assert.match(styles, /\.statistics-anime-card\s*\{/);
   assert.match(styles, /\.statistics-section-toggle\s*\{/);

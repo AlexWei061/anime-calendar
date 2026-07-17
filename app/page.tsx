@@ -15,6 +15,7 @@ import {
   broadcastsForDate,
   progressForAnime,
   progressTotals,
+  sortProgressBySeasonThenWatchedEpisodes,
   sortProgressByWatchedEpisodes,
 } from "../lib/anime-statistics.js";
 import {
@@ -57,6 +58,12 @@ type SelectedAnime = Anime & {
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine" | "stats";
 type StatisticsSection = "today" | "overview" | "season";
+
+const seasonIndexByAnimeId = new Map(
+  seasons.flatMap((season, seasonIndex) =>
+    season.anime.map((record) => [record.id, seasonIndex] as const),
+  ),
+);
 
 function CoverArt({
   anime,
@@ -190,6 +197,7 @@ export default function Home() {
   );
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
   const overallProgressTotals = progressTotals(allProgress);
+  const overallProgress = sortProgressBySeasonThenWatchedEpisodes(allProgress, seasonIndexByAnimeId);
   const statisticsSeasonProgress = sortProgressByWatchedEpisodes(progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []));
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
@@ -737,34 +745,16 @@ export default function Home() {
                       <dd>{overallProgressTotals.notStarted} 部</dd>
                     </div>
                   </dl>
-                  <div className="statistics-status-groups">
-                    {[
-                      ["in-progress", "在追"],
-                      ["completed", "已看完"],
-                      ["not-started", "未开始"],
-                    ].map(([status, label]) => {
-                      const progress = allProgress.filter((item) => item.status === status);
-                      return (
-                        <section className="statistics-status-group" key={status}>
-                          <h3>{label}<span>{progress.length} 部</span></h3>
-                          {progress.length ? (
-                            <div className="statistics-anime-card-list">
-                              {progress.map((item) => (
-                                <span key={item.record.id}>
-                                  {statisticsAnimeCard(
-                                    item.record,
-                                    `已看 ${item.watchedEpisodeCount} / ${item.record.episodeCount} 集${item.latestWatchedEpisode ? ` · 最后标记第 ${item.latestWatchedEpisode} 集` : ""}`,
-                                    label,
-                                  )}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="statistics-empty">暂无{label}的番剧。</p>
-                          )}
-                        </section>
-                      );
-                    })}
+                  <div className="statistics-anime-card-list">
+                    {overallProgress.map((progress) => (
+                      <span key={progress.record.id}>
+                        {statisticsAnimeCard(
+                          progress.record,
+                          `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
+                          progressStatusLabel(progress.status),
+                        )}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </section>
