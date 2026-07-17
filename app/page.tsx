@@ -436,6 +436,7 @@ export default function Home() {
       SelectedAnime,
       "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode" | "selectedReleaseKind"
     > = {},
+    watchedEpisodeCount?: number,
   ) => (
     <button
       className="statistics-anime-card"
@@ -449,6 +450,11 @@ export default function Home() {
         <strong>{record.titleZh}</strong>
         <small>{record.titleJa}</small>
         <em>{description}</em>
+        {watchedEpisodeCount !== undefined ? (
+          <span className="statistics-anime-card-progress" aria-hidden="true">
+            <span style={{ width: `${(watchedEpisodeCount / record.episodeCount) * 100}%` }} />
+          </span>
+        ) : null}
       </span>
       {status ? <span className="statistics-anime-card-status">{status}</span> : null}
     </button>
@@ -653,22 +659,22 @@ export default function Home() {
             <>
               <section className="statistics-today" aria-labelledby="statistics-today-heading">
                 <div className="statistics-section-heading">
-                  <div>
-                    <p className="section-kicker">今天{currentBeijingDate ? " · " + shortDate(currentBeijingDate) : ""}</p>
-                    <h2 id="statistics-today-heading">今日播出</h2>
-                  </div>
-                  <div className="statistics-section-controls">
-                    <p>只显示你收藏的番剧</p>
-                    <button
-                      className="statistics-section-toggle"
-                      type="button"
-                      aria-expanded={!isStatisticsSectionCollapsed("today")}
-                      aria-controls="statistics-today-content"
-                      onClick={() => toggleStatisticsSection("today")}
-                    >
-                      {isStatisticsSectionCollapsed("today") ? "展开" : "收起"}
-                    </button>
-                  </div>
+                  <button
+                    className="statistics-section-heading-toggle"
+                    type="button"
+                    aria-expanded={!isStatisticsSectionCollapsed("today")}
+                    aria-controls="statistics-today-content"
+                    onClick={() => toggleStatisticsSection("today")}
+                  >
+                    <span className="statistics-section-heading-copy">
+                      <span className="section-kicker">今天{currentBeijingDate ? " · " + shortDate(currentBeijingDate) : ""}</span>
+                      <span className="statistics-section-title" id="statistics-today-heading" role="heading" aria-level={2}>
+                        今日播出
+                      </span>
+                    </span>
+                    <span className="statistics-section-heading-note">只显示你收藏的番剧</span>
+                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                  </button>
                 </div>
                 <div id="statistics-today-content" hidden={isStatisticsSectionCollapsed("today")}>
                   {todayBroadcasts.length ? (
@@ -709,22 +715,22 @@ export default function Home() {
 
               <section className="statistics-overview" aria-labelledby="statistics-overview-heading">
                 <div className="statistics-section-heading">
-                  <div>
-                    <p className="section-kicker">全部追番</p>
-                    <h2 id="statistics-overview-heading">总体进度</h2>
-                  </div>
-                  <div className="statistics-section-controls">
-                    <p>按已标记的集数统计</p>
-                    <button
-                      className="statistics-section-toggle"
-                      type="button"
-                      aria-expanded={!isStatisticsSectionCollapsed("overview")}
-                      aria-controls="statistics-overview-content"
-                      onClick={() => toggleStatisticsSection("overview")}
-                    >
-                      {isStatisticsSectionCollapsed("overview") ? "展开" : "收起"}
-                    </button>
-                  </div>
+                  <button
+                    className="statistics-section-heading-toggle"
+                    type="button"
+                    aria-expanded={!isStatisticsSectionCollapsed("overview")}
+                    aria-controls="statistics-overview-content"
+                    onClick={() => toggleStatisticsSection("overview")}
+                  >
+                    <span className="statistics-section-heading-copy">
+                      <span className="section-kicker">全部追番</span>
+                      <span className="statistics-section-title" id="statistics-overview-heading" role="heading" aria-level={2}>
+                        总体进度
+                      </span>
+                    </span>
+                    <span className="statistics-section-heading-note">按已标记的集数统计</span>
+                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                  </button>
                 </div>
                 <div id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
                   <dl className="statistics-overview-grid">
@@ -752,6 +758,8 @@ export default function Home() {
                           progress.record,
                           `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
                           progressStatusLabel(progress.status),
+                          {},
+                          progress.watchedEpisodeCount,
                         )}
                       </span>
                     ))}
@@ -761,10 +769,21 @@ export default function Home() {
 
               <section className="statistics-season" aria-labelledby="statistics-season-heading">
                 <div className="statistics-section-heading">
-                  <div>
-                    <p className="section-kicker">季度明细</p>
-                    <h2 id="statistics-season-heading">{statisticsSeason.label}</h2>
-                  </div>
+                  <button
+                    className="statistics-section-heading-toggle"
+                    type="button"
+                    aria-expanded={!isStatisticsSectionCollapsed("season")}
+                    aria-controls="statistics-season-content"
+                    onClick={() => toggleStatisticsSection("season")}
+                  >
+                    <span className="statistics-section-heading-copy">
+                      <span className="section-kicker">季度明细</span>
+                      <span className="statistics-section-title" id="statistics-season-heading" role="heading" aria-level={2}>
+                        {statisticsSeason.label}
+                      </span>
+                    </span>
+                    <span className="statistics-section-chevron" aria-hidden="true">⌄</span>
+                  </button>
                   <div className="statistics-section-controls">
                     <label className="statistics-season-picker">
                       选择季度
@@ -779,15 +798,6 @@ export default function Home() {
                         ))}
                       </select>
                     </label>
-                    <button
-                      className="statistics-section-toggle"
-                      type="button"
-                      aria-expanded={!isStatisticsSectionCollapsed("season")}
-                      aria-controls="statistics-season-content"
-                      onClick={() => toggleStatisticsSection("season")}
-                    >
-                      {isStatisticsSectionCollapsed("season") ? "展开" : "收起"}
-                    </button>
                   </div>
                 </div>
                 <div id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
@@ -799,6 +809,8 @@ export default function Home() {
                             progress.record,
                             `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
                             progressStatusLabel(progress.status),
+                            {},
+                            progress.watchedEpisodeCount,
                           )}
                         </span>
                       ))}

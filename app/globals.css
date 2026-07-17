@@ -231,40 +231,75 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.statistics-section-heading h2 {
+.statistics-section-heading-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.statistics-section-heading-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statistics-section-heading-copy .section-kicker {
+  display: block;
   margin-bottom: 0;
+}
+
+.statistics-section-title {
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
   font-size: clamp(1.45rem, 2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.statistics-section-heading-note {
+  margin-left: auto;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+}
+
+.statistics-section-heading-copy + .statistics-section-chevron {
+  margin-left: auto;
+}
+
+.statistics-section-chevron {
+  display: grid;
+  flex: 0 0 auto;
+  width: 1.6rem;
+  height: 1.6rem;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--blue);
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.statistics-section-heading-toggle:hover .statistics-section-chevron,
+.statistics-section-heading-toggle:focus-visible .statistics-section-chevron {
+  background: var(--blue-soft);
+}
+
+.statistics-section-heading-toggle[aria-expanded="false"] .statistics-section-chevron {
+  transform: rotate(-90deg);
 }
 
 .statistics-section-controls {
   display: grid;
   justify-items: end;
   gap: 0.55rem;
-}
-
-.statistics-section-controls > p {
-  max-width: 18rem;
-  margin: 0;
-  color: var(--muted-ink);
-  text-align: right;
-}
-
-.statistics-section-toggle {
-  min-width: 4.2rem;
-  padding: 0.36rem 0.7rem;
-  border: 1px solid var(--line);
-  border-radius: 0.55rem;
-  background: var(--card);
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.statistics-section-toggle:hover {
-  border-color: var(--blue);
-  color: var(--blue);
 }
 
 .statistics-overview-grid {
@@ -375,6 +410,21 @@ h1 {
   color: var(--muted-ink);
   font-size: 0.73rem;
   font-style: normal;
+}
+
+.statistics-anime-card-progress {
+  display: block;
+  height: 0.34rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.statistics-anime-card-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--blue);
 }
 
 .statistics-anime-card-status {
@@ -1106,10 +1156,6 @@ h1 {
 
   .statistics-section-controls {
     justify-items: start;
-  }
-
-  .statistics-section-controls > p {
-    text-align: left;
   }
 
   .statistics-overview-grid {

@@ -216,7 +216,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /const \[collapsedStatisticsSections, setCollapsedStatisticsSections\] = useState<StatisticsSection\[\]>\(\[\]\);/);
   assert.match(page, /const isStatisticsSectionCollapsed = \(section: StatisticsSection\) =>/);
   assert.match(page, /const toggleStatisticsSection = \(section: StatisticsSection\) =>/);
-  assert.match(page, /className="statistics-section-toggle"/);
+  assert.match(page, /className="statistics-section-heading-toggle"/);
+  assert.match(page, /className="statistics-section-chevron" aria-hidden="true">⌄/);
   assert.match(page, /aria-expanded=\{!isStatisticsSectionCollapsed\("today"\)\}/);
   assert.match(page, /aria-controls="statistics-today-content"/);
   assert.match(page, /id="statistics-today-content" hidden=\{isStatisticsSectionCollapsed\("today"\)\}/);
@@ -229,6 +230,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /selectedDate: event\.broadcastDate/);
   assert.match(page, /selectedEpisode: event\.episode/);
   assert.match(page, /className="statistics-anime-card-list"/);
+  assert.match(page, /className="statistics-anime-card-progress"/);
+  assert.match(page, /width: `\$\{\(watchedEpisodeCount \/ record\.episodeCount\) \* 100\}%`/);
   assert.match(page, /overallProgress\.map\(\(progress\) =>/);
   assert.doesNotMatch(page, /className="statistics-status-groups"/);
   assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
@@ -243,7 +246,9 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>/);
   assert.match(styles, /\.statistics-overview-grid\s*\{/);
   assert.match(styles, /\.statistics-anime-card\s*\{/);
-  assert.match(styles, /\.statistics-section-toggle\s*\{/);
+  assert.match(styles, /\.statistics-section-heading-toggle\s*\{/);
+  assert.match(styles, /\.statistics-section-chevron\s*\{/);
+  assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
