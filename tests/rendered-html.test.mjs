@@ -255,7 +255,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(styles, /\.statistics-section-heading-toggle\s*\{/);
   assert.match(styles, /\.statistics-section-chevron\s*\{/);
   assert.match(styles, /border-right: 2px solid currentColor;/);
-  assert.match(styles, /cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
+  assert.match(styles, /transform 260ms cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
