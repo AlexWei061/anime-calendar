@@ -298,7 +298,7 @@ export default function Home() {
     const nextSeason = seasons.find(({ id }) => id === nextSeasonId);
     if (!nextSeason) return;
 
-    const nextWeekStart = nextSeason.firstWeekStart;
+    const nextWeekStart = firstFullWeekStart(nextSeason);
     setActiveWeekStart(nextWeekStart);
     setActiveMobileDate(nextWeekStart);
   };
@@ -529,7 +529,7 @@ export default function Home() {
         </div>
         <div className="calendar-header-controls">
           <label className="season-picker">
-            月份
+            选择季度
             <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
               {seasons.map((candidate) => (
                 <option key={candidate.id} value={candidate.id}>

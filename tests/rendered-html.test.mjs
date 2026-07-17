@@ -237,7 +237,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /activeSeason\.label/);
   assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.doesNotMatch(layout, /冬番|春番|夏番/);
-  assert.match(page, /月份/);
+  assert.match(page, /选择季度/);
   assert.match(
     page,
     /YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。/,
@@ -253,7 +253,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(styles, /\.date-only-events\s*\{[\s\S]*?position:\s*absolute/);
   assert.match(
     page,
-    /const nextWeekStart = nextSeason\.firstWeekStart;[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
+    /const nextWeekStart = firstFullWeekStart\(nextSeason\);[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
   );
   assert.match(
     page,
