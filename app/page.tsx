@@ -11,6 +11,7 @@ import { allAnime, seasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
+import { broadcastsForDate, progressForAnime, progressTotals } from "../lib/anime-statistics.js";
 import {
   addDays,
   dateOnlyEventsForWeek,
@@ -49,7 +50,7 @@ type SelectedAnime = Anime & {
   selectedReleaseKind?: "network";
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
-type Page = "all" | "mine";
+type Page = "all" | "mine" | "stats";
 
 function CoverArt({
   anime,
@@ -133,6 +134,12 @@ function weekLabel(dates: string[]) {
   );
 }
 
+function progressStatusLabel(status: string) {
+  if (status === "completed") return "已看完";
+  if (status === "in-progress") return "在追";
+  return "未开始";
+}
+
 export default function Home() {
   const [activePage, setActivePage] = useState<Page>("all");
   const [selected, setSelected] = useState<SelectedAnime | null>(null);
@@ -142,6 +149,7 @@ export default function Home() {
   const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisode[] | null>(null);
   const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
+  const [selectedStatisticsSeasonId, setSelectedStatisticsSeasonId] = useState<string | null>(null);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -161,7 +169,22 @@ export default function Home() {
     activePage === "mine"
       ? allAnime.filter((record) => selectedAnimeIds?.includes(record.id))
       : allAnime;
+  const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
+  const defaultStatisticsSeason =
+    [...seasons]
+      .reverse()
+      .find((season) => season.anime.some((record) => selectedAnimeIds?.includes(record.id))) ??
+    seasons[seasons.length - 1];
+  const statisticsSeason =
+    seasons.find(({ id }) => id === selectedStatisticsSeasonId) ?? defaultStatisticsSeason;
+  const statisticsSeasonAnime = statisticsSeason.anime.filter((record) =>
+    selectedAnimeIds?.includes(record.id),
+  );
+  const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
+  const overallProgressTotals = progressTotals(allProgress);
+  const statisticsSeasonProgress = progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []);
+  const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
   const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
@@ -207,10 +230,10 @@ export default function Home() {
   }, [selected]);
 
   useEffect(() => {
-    const syncPageFromUrl = () =>
-      setActivePage(
-        new URLSearchParams(window.location.search).get("page") === "mine" ? "mine" : "all",
-      );
+    const syncPageFromUrl = () => {
+      const page = new URLSearchParams(window.location.search).get("page");
+      setActivePage(page === "mine" || page === "stats" ? page : "all");
+    };
 
     syncPageFromUrl();
     window.addEventListener("popstate", syncPageFromUrl);
@@ -218,7 +241,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (activePage !== "mine" || selectedAnimeIds !== null) return;
+    if ((activePage !== "mine" && activePage !== "stats") || selectedAnimeIds !== null) return;
 
     let cancelled = false;
     async function loadAnimeSelections() {
@@ -279,8 +302,8 @@ export default function Home() {
     if (page === activePage) return;
 
     const url = new URL(window.location.href);
-    if (page === "mine") {
-      url.searchParams.set("page", "mine");
+    if (page === "mine" || page === "stats") {
+      url.searchParams.set("page", page);
     } else {
       url.searchParams.delete("page");
     }
@@ -507,48 +530,216 @@ export default function Home() {
         >
           我的番剧{selectedAnimeIds ? " · " + selectedAnimeIds.length + " 部" : ""}
         </button>
+        <button
+          className={activePage === "stats" ? "is-active" : ""}
+          type="button"
+          aria-current={activePage === "stats" ? "page" : undefined}
+          onClick={() => changePage("stats")}
+        >
+          追番统计
+        </button>
       </nav>
       <main className="calendar-page">
       <header className="calendar-header">
         <div>
-          <p className="season-kicker">{activePage === "all" ? activeSeason.label : "我的番剧"}</p>
-          <h1>{activePage === "all" ? activeSeason.label + "时间表" : "我的番剧时间表"}</h1>
+          <p className="season-kicker">
+            {activePage === "all" ? activeSeason.label : activePage === "mine" ? "我的番剧" : "我的进度"}
+          </p>
+          <h1>
+            {activePage === "all"
+              ? activeSeason.label + "时间表"
+              : activePage === "mine"
+                ? "我的番剧时间表"
+                : "追番统计"}
+          </h1>
           <p className="intro">
             {activePage === "all"
               ? "共 " +
                 activeSeason.catalogCount +
                 " 部番剧" +
                 "，从首播日起按周显示；未明确集数的作品暂按 12 集安排，时间均为北京时间。"
-              : "勾选想追的番剧，只查看属于你的播出时间表。"}
+              : activePage === "mine"
+                ? "勾选想追的番剧，只查看属于你的播出时间表。"
+                : "查看今天要追的番剧、整体进度，以及每个季度的追番记录。"}
           </p>
-          {isHistoricalSeason ? (
+          {activePage !== "stats" && isHistoricalSeason ? (
             <p className="pilot-note">
               名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。
             </p>
           ) : null}
         </div>
-        <div className="calendar-header-controls">
-          <label className="season-picker">
-            选择季度
-            <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
-              {seasons.map((candidate) => (
-                <option key={candidate.id} value={candidate.id}>
-                  {candidate.label}
-                </option>
-              ))}
-            </select>
-            <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
-          </label>
-          <a
-            className="source-link"
-            href={activeSeason.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {activeSeason.sourceName} <span aria-hidden="true">↗</span>
-          </a>
-        </div>
+        {activePage !== "stats" ? (
+          <div className="calendar-header-controls">
+            <label className="season-picker">
+              选择季度
+              <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
+                {seasons.map((candidate) => (
+                  <option key={candidate.id} value={candidate.id}>
+                    {candidate.label}
+                  </option>
+                ))}
+              </select>
+              <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
+            </label>
+            <a
+              className="source-link"
+              href={activeSeason.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {activeSeason.sourceName} <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        ) : null}
       </header>
+
+      {activePage === "stats" ? (
+        <section className="statistics-page" aria-label="我的追番统计">
+          {selectedAnimeIds === null || watchedEpisodes === null ? (
+            <p className="selection-status" aria-live="polite">
+              {selectionError ?? watchedEpisodeError ?? "正在读取你的追番和已看记录…"}
+            </p>
+          ) : (
+            <>
+              <section className="statistics-today" aria-labelledby="statistics-today-heading">
+                <div className="statistics-section-heading">
+                  <div>
+                    <p className="section-kicker">今天{currentBeijingDate ? " · " + shortDate(currentBeijingDate) : ""}</p>
+                    <h2 id="statistics-today-heading">今日播出</h2>
+                  </div>
+                  <p>只显示你收藏的番剧</p>
+                </div>
+                {todayBroadcasts.length ? (
+                  <table className="statistics-today-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">番剧</th>
+                        <th scope="col">播出</th>
+                        <th scope="col">集数</th>
+                        <th scope="col">状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {todayBroadcasts.map((event) => {
+                        const watchedEpisode = {
+                          animeId: event.id,
+                          episodeStart: event.episodeStart,
+                          episode: event.episode,
+                        };
+                        const isWatched = watchedEpisodes.some(
+                          (candidate) => episodeViewKey(candidate) === episodeViewKey(watchedEpisode),
+                        );
+
+                        return (
+                          <tr key={event.id + "-" + event.episodeStart + "-" + event.episode}>
+                            <th scope="row">{event.titleZh}</th>
+                            <td>
+                              {event.releaseKind === "network"
+                                ? "网络配信 · 时刻未定"
+                                : event.broadcastTime}
+                            </td>
+                            <td>{formatEpisodeLabel(event.episodeStart, event.episode)}</td>
+                            <td className={isWatched ? "is-watched" : "is-pending"}>
+                              {isWatched ? "已看" : "待看"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="statistics-empty">今天没有已收藏番剧安排播出。</p>
+                )}
+              </section>
+
+              <section className="statistics-overview" aria-labelledby="statistics-overview-heading">
+                <div className="statistics-section-heading">
+                  <div>
+                    <p className="section-kicker">全部追番</p>
+                    <h2 id="statistics-overview-heading">总体进度</h2>
+                  </div>
+                  <p>按已标记的集数统计</p>
+                </div>
+                <dl className="statistics-overview-grid">
+                  <div>
+                    <dt>追番总数</dt>
+                    <dd>{overallProgressTotals.total} 部</dd>
+                  </div>
+                  <div>
+                    <dt>在追</dt>
+                    <dd>{overallProgressTotals.inProgress} 部</dd>
+                  </div>
+                  <div>
+                    <dt>已看完</dt>
+                    <dd>{overallProgressTotals.completed} 部</dd>
+                  </div>
+                  <div>
+                    <dt>未开始</dt>
+                    <dd>{overallProgressTotals.notStarted} 部</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section className="statistics-season" aria-labelledby="statistics-season-heading">
+                <div className="statistics-section-heading">
+                  <div>
+                    <p className="section-kicker">季度明细</p>
+                    <h2 id="statistics-season-heading">{statisticsSeason.label}</h2>
+                  </div>
+                  <label className="statistics-season-picker">
+                    选择季度
+                    <select
+                      value={statisticsSeason.id}
+                      onChange={(event) => setSelectedStatisticsSeasonId(event.target.value)}
+                    >
+                      {seasons.map((candidate) => (
+                        <option key={candidate.id} value={candidate.id}>
+                          {candidate.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                {statisticsSeasonProgress.length ? (
+                  <div className="statistics-progress-list">
+                    {statisticsSeasonProgress.map((progress) => {
+                      const progressPercent = (progress.watchedEpisodeCount / progress.record.episodeCount) * 100;
+
+                      return (
+                        <article className="statistics-progress-row" key={progress.record.id}>
+                          <CoverArt anime={progress.record} className="statistics-progress-cover" decorative />
+                          <div className="statistics-progress-title">
+                            <strong>{progress.record.titleZh}</strong>
+                            <small>{progress.record.titleJa}</small>
+                          </div>
+                          <span className={"statistics-status is-" + progress.status}>
+                            {progressStatusLabel(progress.status)}
+                          </span>
+                          <div className="statistics-progress-value">
+                            <span>
+                              已看 {progress.watchedEpisodeCount} / {progress.record.episodeCount} 集
+                            </span>
+                            <span className="statistics-progress-track" aria-hidden="true">
+                              <span style={{ width: progressPercent + "%" }} />
+                            </span>
+                          </div>
+                          <span className="statistics-last-watched">
+                            {progress.latestWatchedEpisode === null
+                              ? "尚未标记"
+                              : <>最后标记第{progress.latestWatchedEpisode}集</>}
+                          </span>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="statistics-empty">这个季度还没有收藏的番剧。</p>
+                )}
+              </section>
+            </>
+          )}
+        </section>
+      ) : null}
 
       {activePage === "mine" ? (
         <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
@@ -590,7 +781,7 @@ export default function Home() {
         </section>
       ) : null}
 
-      {activePage === "all" || calendarAnime.length ? (
+      {activePage !== "stats" && (activePage === "all" || calendarAnime.length) ? (
         <>
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">

@@ -208,6 +208,209 @@ h1 {
   padding: 2.25rem 0;
 }
 
+.statistics-page {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 2rem;
+}
+
+.statistics-today,
+.statistics-overview,
+.statistics-season {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--card);
+}
+
+.statistics-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.statistics-section-heading h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+}
+
+.statistics-section-heading > p {
+  max-width: 18rem;
+  margin: 0;
+  color: var(--muted-ink);
+  text-align: right;
+}
+
+.statistics-today {
+  min-width: 0;
+}
+
+.statistics-today-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  text-align: left;
+}
+
+.statistics-today-table th,
+.statistics-today-table td {
+  padding: 0.75rem 0.6rem;
+  border-top: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.statistics-today-table thead th {
+  border-top: 0;
+  color: var(--muted-ink);
+  font-size: 0.76rem;
+}
+
+.statistics-today-table tbody th {
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-weight: 700;
+}
+
+.statistics-today-table .is-watched,
+.statistics-status.is-completed {
+  color: var(--mint-deep);
+  font-weight: 800;
+}
+
+.statistics-today-table .is-pending,
+.statistics-status.is-in-progress {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.statistics-status.is-not-started {
+  color: var(--muted-ink);
+  font-weight: 800;
+}
+
+.statistics-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.statistics-overview-grid div {
+  padding: 0.9rem;
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--blue-soft) 52%, var(--card));
+}
+
+.statistics-overview-grid dt {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+}
+
+.statistics-overview-grid dd {
+  margin: 0.35rem 0 0;
+  color: var(--blue);
+  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: 800;
+}
+
+.statistics-season-picker {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.statistics-season-picker select {
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+}
+
+.statistics-progress-list {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.statistics-progress-row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(12rem, 1.5fr) minmax(4.5rem, 0.5fr) minmax(9rem, 0.9fr) minmax(7rem, 0.7fr);
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.statistics-progress-cover {
+  display: block;
+  width: 3.25rem;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.4rem;
+  background-repeat: no-repeat;
+}
+
+.statistics-progress-title {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statistics-progress-title strong,
+.statistics-progress-title small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statistics-progress-title small,
+.statistics-last-watched {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+}
+
+.statistics-progress-value {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+}
+
+.statistics-progress-track {
+  display: block;
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--paper-deep);
+}
+
+.statistics-progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--blue);
+}
+
+.statistics-status,
+.statistics-last-watched {
+  min-width: 0;
+}
+
+.statistics-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.65rem;
+  color: var(--muted-ink);
+  text-align: center;
+}
+
 .anime-selection-panel {
   margin-top: 2rem;
   padding: 1.25rem;
@@ -909,6 +1112,32 @@ h1 {
   .section-heading,
   .calendar-footer {
     display: grid;
+  }
+
+  .statistics-section-heading {
+    display: grid;
+  }
+
+  .statistics-section-heading > p {
+    text-align: left;
+  }
+
+  .statistics-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statistics-progress-row {
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    gap: 0.65rem;
+  }
+
+  .statistics-progress-value,
+  .statistics-last-watched {
+    grid-column: 2 / -1;
+  }
+
+  .statistics-today-table {
+    font-size: 0.84rem;
   }
 
   .section-heading > p {

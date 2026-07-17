@@ -190,6 +190,41 @@ test("renders separate accessible watched controls without nesting calendar butt
   assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
 });
 
+test("ships a routed personal statistics page with today and all-season progress views", async () => {
+  const [page, styles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /type Page = "all" \| "mine" \| "stats";/);
+  assert.match(page, /changePage\("stats"\)/);
+  assert.match(page, /page === "mine" \|\| page === "stats"/);
+  assert.match(page, /url\.searchParams\.set\("page", page\);/);
+  assert.match(
+    page,
+    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
+  );
+  assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
+  assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\);/);
+  assert.match(page, /const overallProgressTotals = progressTotals\(allProgress\);/);
+  assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
+  assert.match(page, /今日播出/);
+  assert.match(page, /只显示你收藏的番剧/);
+  assert.match(page, /<table className="statistics-today-table">/);
+  assert.match(page, /在追/);
+  assert.match(page, /已看完/);
+  assert.match(page, /未开始/);
+  assert.match(page, /<label className="statistics-season-picker">/);
+  assert.match(page, /value=\{statisticsSeason\.id\}/);
+  assert.match(page, /选择季度/);
+  assert.match(page, /已看 \{progress\.watchedEpisodeCount\} \/ \{progress\.record\.episodeCount\} 集/);
+  assert.match(page, /最后标记第\{progress\.latestWatchedEpisode\}集/);
+  assert.match(styles, /\.statistics-overview-grid\s*\{/);
+  assert.match(styles, /\.statistics-today-table\s*\{/);
+  assert.match(styles, /\.statistics-progress-list\s*\{/);
+  assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-today-table/);
+});
+
 test("renders same-time events side by side on one timeline day", async () => {
   const cleanHtml = withoutReactMarkers(await (await render()).text());
   const sameTimeEvents = [
