@@ -5,6 +5,7 @@ import {
   broadcastsForDate,
   progressForAnime,
   progressTotals,
+  sortProgressByWatchedEpisodes,
 } from "../lib/anime-statistics.js";
 
 const anime = [
@@ -54,6 +55,25 @@ test("summarizes watched ranges into per-anime progress and overall statuses", (
     completed: 1,
     notStarted: 1,
   });
+});
+
+test("sorts seasonal progress by watched episode count before unstarted shows", () => {
+  const progress = progressForAnime(anime, [
+    { animeId: "ongoing", episodeStart: 1, episode: 4 },
+    { animeId: "finished", episodeStart: 1, episode: 2 },
+  ]);
+
+  assert.deepEqual(
+    sortProgressByWatchedEpisodes(progress).map(({ record, watchedEpisodeCount }) => ({
+      animeId: record.id,
+      watchedEpisodeCount,
+    })),
+    [
+      { animeId: "ongoing", watchedEpisodeCount: 4 },
+      { animeId: "finished", watchedEpisodeCount: 2 },
+      { animeId: "not-started", watchedEpisodeCount: 0 },
+    ],
+  );
 });
 
 test("keeps a Monday after-midnight broadcast in the actual date's today list", () => {

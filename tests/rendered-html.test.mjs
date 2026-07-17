@@ -190,7 +190,7 @@ test("renders separate accessible watched controls without nesting calendar butt
   assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
 });
 
-test("ships a routed personal statistics page with today and all-season progress views", async () => {
+test("ships interactive, collapsible personal statistics cards with today and all-season progress views", async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
@@ -202,7 +202,7 @@ test("ships a routed personal statistics page with today and all-season progress
   assert.match(page, /url\.searchParams\.set\("page", page\);/);
   assert.match(
     page,
-    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
+    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)(?=[^}]*\bsortProgressByWatchedEpisodes\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
   );
   assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
   assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\);/);
@@ -210,19 +210,36 @@ test("ships a routed personal statistics page with today and all-season progress
   assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
   assert.match(page, /今日播出/);
   assert.match(page, /只显示你收藏的番剧/);
-  assert.match(page, /<table className="statistics-today-table">/);
+  assert.match(page, /type StatisticsSection = "today" \| "overview" \| "season";/);
+  assert.match(page, /const \[collapsedStatisticsSections, setCollapsedStatisticsSections\] = useState<StatisticsSection\[\]>\(\[\]\);/);
+  assert.match(page, /const isStatisticsSectionCollapsed = \(section: StatisticsSection\) =>/);
+  assert.match(page, /const toggleStatisticsSection = \(section: StatisticsSection\) =>/);
+  assert.match(page, /className="statistics-section-toggle"/);
+  assert.match(page, /aria-expanded=\{!isStatisticsSectionCollapsed\("today"\)\}/);
+  assert.match(page, /aria-controls="statistics-today-content"/);
+  assert.match(page, /id="statistics-today-content" hidden=\{isStatisticsSectionCollapsed\("today"\)\}/);
+  assert.match(page, /id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}/);
+  assert.match(page, /id="statistics-season-content" hidden=\{isStatisticsSectionCollapsed\("season"\)\}/);
+  assert.match(page, /const statisticsAnimeCard = \(/);
+  assert.match(page, /className="statistics-anime-card"/);
+  assert.match(page, /aria-haspopup="dialog"/);
+  assert.match(page, /onClick=\{\(clickEvent\) => openDetail\(record, clickEvent\.currentTarget\)\}/);
+  assert.match(page, /className="statistics-anime-card-list"/);
+  assert.match(page, /className="statistics-status-groups"/);
+  assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
   assert.match(page, /在追/);
   assert.match(page, /已看完/);
   assert.match(page, /未开始/);
   assert.match(page, /<label className="statistics-season-picker">/);
   assert.match(page, /value=\{statisticsSeason\.id\}/);
   assert.match(page, /选择季度/);
-  assert.match(page, /已看 \{progress\.watchedEpisodeCount\} \/ \{progress\.record\.episodeCount\} 集/);
-  assert.match(page, /最后标记第\{progress\.latestWatchedEpisode\}集/);
+  assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{progress\.record\.episodeCount\} 集/);
+  assert.match(page, /最后标记第 \$\{progress\.latestWatchedEpisode\} 集/);
   assert.match(styles, /\.statistics-overview-grid\s*\{/);
-  assert.match(styles, /\.statistics-today-table\s*\{/);
-  assert.match(styles, /\.statistics-progress-list\s*\{/);
-  assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-today-table/);
+  assert.match(styles, /\.statistics-anime-card\s*\{/);
+  assert.match(styles, /\.statistics-section-toggle\s*\{/);
+  assert.match(styles, /\.statistics-anime-card-list\s*\{/);
+  assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
 
 test("renders same-time events side by side on one timeline day", async () => {

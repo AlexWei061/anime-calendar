@@ -11,7 +11,12 @@ import { allAnime, seasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
-import { broadcastsForDate, progressForAnime, progressTotals } from "../lib/anime-statistics.js";
+import {
+  broadcastsForDate,
+  progressForAnime,
+  progressTotals,
+  sortProgressByWatchedEpisodes,
+} from "../lib/anime-statistics.js";
 import {
   addDays,
   dateOnlyEventsForWeek,
@@ -51,6 +56,7 @@ type SelectedAnime = Anime & {
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine" | "stats";
+type StatisticsSection = "today" | "overview" | "season";
 
 function CoverArt({
   anime,
@@ -150,6 +156,7 @@ export default function Home() {
   const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
   const [selectedStatisticsSeasonId, setSelectedStatisticsSeasonId] = useState<string | null>(null);
+  const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -183,7 +190,7 @@ export default function Home() {
   );
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
   const overallProgressTotals = progressTotals(allProgress);
-  const statisticsSeasonProgress = progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []);
+  const statisticsSeasonProgress = sortProgressByWatchedEpisodes(progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []));
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
@@ -404,6 +411,33 @@ export default function Home() {
     setSelected({ ...record, ...selection });
   };
 
+  const isStatisticsSectionCollapsed = (section: StatisticsSection) =>
+    collapsedStatisticsSections.includes(section);
+  const toggleStatisticsSection = (section: StatisticsSection) => {
+    setCollapsedStatisticsSections((sections) =>
+      sections.includes(section)
+        ? sections.filter((candidate) => candidate !== section)
+        : [...sections, section],
+    );
+  };
+  const statisticsAnimeCard = (record: Anime, description: string, status?: string) => (
+    <button
+      className="statistics-anime-card"
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={`查看《${record.titleZh}／${record.titleJa}》详情`}
+      onClick={(clickEvent) => openDetail(record, clickEvent.currentTarget)}
+    >
+      <CoverArt anime={record} className="statistics-anime-card-cover" decorative />
+      <span className="statistics-anime-card-content">
+        <strong>{record.titleZh}</strong>
+        <small>{record.titleJa}</small>
+        <em>{description}</em>
+      </span>
+      {status ? <span className="statistics-anime-card-status">{status}</span> : null}
+    </button>
+  );
+
   const handleDialogClose = () => {
     setSelected(null);
     openerRef.current?.focus();
@@ -607,19 +641,22 @@ export default function Home() {
                     <p className="section-kicker">今天{currentBeijingDate ? " · " + shortDate(currentBeijingDate) : ""}</p>
                     <h2 id="statistics-today-heading">今日播出</h2>
                   </div>
-                  <p>只显示你收藏的番剧</p>
+                  <div className="statistics-section-controls">
+                    <p>只显示你收藏的番剧</p>
+                    <button
+                      className="statistics-section-toggle"
+                      type="button"
+                      aria-expanded={!isStatisticsSectionCollapsed("today")}
+                      aria-controls="statistics-today-content"
+                      onClick={() => toggleStatisticsSection("today")}
+                    >
+                      {isStatisticsSectionCollapsed("today") ? "展开" : "收起"}
+                    </button>
+                  </div>
                 </div>
-                {todayBroadcasts.length ? (
-                  <table className="statistics-today-table">
-                    <thead>
-                      <tr>
-                        <th scope="col">番剧</th>
-                        <th scope="col">播出</th>
-                        <th scope="col">集数</th>
-                        <th scope="col">状态</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div id="statistics-today-content" hidden={isStatisticsSectionCollapsed("today")}>
+                  {todayBroadcasts.length ? (
+                    <div className="statistics-anime-card-list">
                       {todayBroadcasts.map((event) => {
                         const watchedEpisode = {
                           animeId: event.id,
@@ -631,25 +668,20 @@ export default function Home() {
                         );
 
                         return (
-                          <tr key={event.id + "-" + event.episodeStart + "-" + event.episode}>
-                            <th scope="row">{event.titleZh}</th>
-                            <td>
-                              {event.releaseKind === "network"
-                                ? "网络配信 · 时刻未定"
-                                : event.broadcastTime}
-                            </td>
-                            <td>{formatEpisodeLabel(event.episodeStart, event.episode)}</td>
-                            <td className={isWatched ? "is-watched" : "is-pending"}>
-                              {isWatched ? "已看" : "待看"}
-                            </td>
-                          </tr>
+                          <span key={event.id + "-" + event.episodeStart + "-" + event.episode}>
+                            {statisticsAnimeCard(
+                              event,
+                              `${event.releaseKind === "network" ? "网络配信 · 时刻未定" : event.broadcastTime} · ${formatEpisodeLabel(event.episodeStart, event.episode)}`,
+                              isWatched ? "已看" : "待看",
+                            )}
+                          </span>
                         );
                       })}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="statistics-empty">今天没有已收藏番剧安排播出。</p>
-                )}
+                    </div>
+                  ) : (
+                    <p className="statistics-empty">今天没有已收藏番剧安排播出。</p>
+                  )}
+                </div>
               </section>
 
               <section className="statistics-overview" aria-labelledby="statistics-overview-heading">
@@ -658,26 +690,68 @@ export default function Home() {
                     <p className="section-kicker">全部追番</p>
                     <h2 id="statistics-overview-heading">总体进度</h2>
                   </div>
-                  <p>按已标记的集数统计</p>
+                  <div className="statistics-section-controls">
+                    <p>按已标记的集数统计</p>
+                    <button
+                      className="statistics-section-toggle"
+                      type="button"
+                      aria-expanded={!isStatisticsSectionCollapsed("overview")}
+                      aria-controls="statistics-overview-content"
+                      onClick={() => toggleStatisticsSection("overview")}
+                    >
+                      {isStatisticsSectionCollapsed("overview") ? "展开" : "收起"}
+                    </button>
+                  </div>
                 </div>
-                <dl className="statistics-overview-grid">
-                  <div>
-                    <dt>追番总数</dt>
-                    <dd>{overallProgressTotals.total} 部</dd>
+                <div id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
+                  <dl className="statistics-overview-grid">
+                    <div>
+                      <dt>追番总数</dt>
+                      <dd>{overallProgressTotals.total} 部</dd>
+                    </div>
+                    <div>
+                      <dt>在追</dt>
+                      <dd>{overallProgressTotals.inProgress} 部</dd>
+                    </div>
+                    <div>
+                      <dt>已看完</dt>
+                      <dd>{overallProgressTotals.completed} 部</dd>
+                    </div>
+                    <div>
+                      <dt>未开始</dt>
+                      <dd>{overallProgressTotals.notStarted} 部</dd>
+                    </div>
+                  </dl>
+                  <div className="statistics-status-groups">
+                    {[
+                      ["in-progress", "在追"],
+                      ["completed", "已看完"],
+                      ["not-started", "未开始"],
+                    ].map(([status, label]) => {
+                      const progress = allProgress.filter((item) => item.status === status);
+                      return (
+                        <section className="statistics-status-group" key={status}>
+                          <h3>{label}<span>{progress.length} 部</span></h3>
+                          {progress.length ? (
+                            <div className="statistics-anime-card-list">
+                              {progress.map((item) => (
+                                <span key={item.record.id}>
+                                  {statisticsAnimeCard(
+                                    item.record,
+                                    `已看 ${item.watchedEpisodeCount} / ${item.record.episodeCount} 集${item.latestWatchedEpisode ? ` · 最后标记第 ${item.latestWatchedEpisode} 集` : ""}`,
+                                    label,
+                                  )}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="statistics-empty">暂无{label}的番剧。</p>
+                          )}
+                        </section>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <dt>在追</dt>
-                    <dd>{overallProgressTotals.inProgress} 部</dd>
-                  </div>
-                  <div>
-                    <dt>已看完</dt>
-                    <dd>{overallProgressTotals.completed} 部</dd>
-                  </div>
-                  <div>
-                    <dt>未开始</dt>
-                    <dd>{overallProgressTotals.notStarted} 部</dd>
-                  </div>
-                </dl>
+                </div>
               </section>
 
               <section className="statistics-season" aria-labelledby="statistics-season-heading">
@@ -686,55 +760,48 @@ export default function Home() {
                     <p className="section-kicker">季度明细</p>
                     <h2 id="statistics-season-heading">{statisticsSeason.label}</h2>
                   </div>
-                  <label className="statistics-season-picker">
-                    选择季度
-                    <select
-                      value={statisticsSeason.id}
-                      onChange={(event) => setSelectedStatisticsSeasonId(event.target.value)}
+                  <div className="statistics-section-controls">
+                    <label className="statistics-season-picker">
+                      选择季度
+                      <select
+                        value={statisticsSeason.id}
+                        onChange={(event) => setSelectedStatisticsSeasonId(event.target.value)}
+                      >
+                        {seasons.map((candidate) => (
+                          <option key={candidate.id} value={candidate.id}>
+                            {candidate.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      className="statistics-section-toggle"
+                      type="button"
+                      aria-expanded={!isStatisticsSectionCollapsed("season")}
+                      aria-controls="statistics-season-content"
+                      onClick={() => toggleStatisticsSection("season")}
                     >
-                      {seasons.map((candidate) => (
-                        <option key={candidate.id} value={candidate.id}>
-                          {candidate.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                {statisticsSeasonProgress.length ? (
-                  <div className="statistics-progress-list">
-                    {statisticsSeasonProgress.map((progress) => {
-                      const progressPercent = (progress.watchedEpisodeCount / progress.record.episodeCount) * 100;
-
-                      return (
-                        <article className="statistics-progress-row" key={progress.record.id}>
-                          <CoverArt anime={progress.record} className="statistics-progress-cover" decorative />
-                          <div className="statistics-progress-title">
-                            <strong>{progress.record.titleZh}</strong>
-                            <small>{progress.record.titleJa}</small>
-                          </div>
-                          <span className={"statistics-status is-" + progress.status}>
-                            {progressStatusLabel(progress.status)}
-                          </span>
-                          <div className="statistics-progress-value">
-                            <span>
-                              已看 {progress.watchedEpisodeCount} / {progress.record.episodeCount} 集
-                            </span>
-                            <span className="statistics-progress-track" aria-hidden="true">
-                              <span style={{ width: progressPercent + "%" }} />
-                            </span>
-                          </div>
-                          <span className="statistics-last-watched">
-                            {progress.latestWatchedEpisode === null
-                              ? "尚未标记"
-                              : <>最后标记第{progress.latestWatchedEpisode}集</>}
-                          </span>
-                        </article>
-                      );
-                    })}
+                      {isStatisticsSectionCollapsed("season") ? "展开" : "收起"}
+                    </button>
                   </div>
-                ) : (
-                  <p className="statistics-empty">这个季度还没有收藏的番剧。</p>
-                )}
+                </div>
+                <div id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
+                  {statisticsSeasonProgress.length ? (
+                    <div className="statistics-anime-card-list">
+                      {statisticsSeasonProgress.map((progress) => (
+                        <span key={progress.record.id}>
+                          {statisticsAnimeCard(
+                            progress.record,
+                            `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
+                            progressStatusLabel(progress.status),
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="statistics-empty">这个季度还没有收藏的番剧。</p>
+                  )}
+                </div>
               </section>
             </>
           )}
