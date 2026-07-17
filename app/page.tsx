@@ -751,7 +751,7 @@ export default function Home() {
                     <dd>{overallProgressTotals.notStarted} 部</dd>
                   </div>
                 </dl>
-                <div id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
+                <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
                   <div className="statistics-anime-card-list">
                     {overallProgress.map((progress) => (
                       <span key={progress.record.id}>
@@ -819,7 +819,7 @@ export default function Home() {
                     <dd>{statisticsSeasonTotals.notStarted} 部</dd>
                   </div>
                 </dl>
-                <div id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
+                <div className="statistics-progress-content" id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
                   {statisticsSeasonProgress.length ? (
                     <div className="statistics-anime-card-list">
                       {statisticsSeasonProgress.map((progress) => (

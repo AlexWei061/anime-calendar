@@ -309,6 +309,10 @@ h1 {
   margin: 0;
 }
 
+.statistics-progress-content {
+  margin-top: 1rem;
+}
+
 .statistics-overview-grid div {
   padding: 0.9rem;
   border-radius: 0.65rem;
