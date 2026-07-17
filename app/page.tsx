@@ -420,13 +420,21 @@ export default function Home() {
         : [...sections, section],
     );
   };
-  const statisticsAnimeCard = (record: Anime, description: string, status?: string) => (
+  const statisticsAnimeCard = (
+    record: Anime,
+    description: string,
+    status?: string,
+    selection: Pick<
+      SelectedAnime,
+      "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode" | "selectedReleaseKind"
+    > = {},
+  ) => (
     <button
       className="statistics-anime-card"
       type="button"
       aria-haspopup="dialog"
       aria-label={`查看《${record.titleZh}／${record.titleJa}》详情`}
-      onClick={(clickEvent) => openDetail(record, clickEvent.currentTarget)}
+      onClick={(clickEvent) => openDetail(record, clickEvent.currentTarget, selection)}
     >
       <CoverArt anime={record} className="statistics-anime-card-cover" decorative />
       <span className="statistics-anime-card-content">
@@ -673,6 +681,13 @@ export default function Home() {
                               event,
                               `${event.releaseKind === "network" ? "网络配信 · 时刻未定" : event.broadcastTime} · ${formatEpisodeLabel(event.episodeStart, event.episode)}`,
                               isWatched ? "已看" : "待看",
+                              {
+                                selectedDate: event.broadcastDate,
+                                selectedTime: event.broadcastTime,
+                                selectedEpisodeStart: event.episodeStart,
+                                selectedEpisode: event.episode,
+                                selectedReleaseKind: event.releaseKind === "network" ? "network" : undefined,
+                              },
                             )}
                           </span>
                         );

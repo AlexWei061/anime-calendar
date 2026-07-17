@@ -223,7 +223,9 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /const statisticsAnimeCard = \(/);
   assert.match(page, /className="statistics-anime-card"/);
   assert.match(page, /aria-haspopup="dialog"/);
-  assert.match(page, /onClick=\{\(clickEvent\) => openDetail\(record, clickEvent\.currentTarget\)\}/);
+  assert.match(page, /onClick=\{\(clickEvent\) => openDetail\(record, clickEvent\.currentTarget, selection\)\}/);
+  assert.match(page, /selectedDate: event\.broadcastDate/);
+  assert.match(page, /selectedEpisode: event\.episode/);
   assert.match(page, /className="statistics-anime-card-list"/);
   assert.match(page, /className="statistics-status-groups"/);
   assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
