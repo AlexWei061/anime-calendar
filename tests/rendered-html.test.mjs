@@ -416,6 +416,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     /\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*13rem minmax\(0, 1fr\);/,
   );
   assert.match(styles, /\.page-sidebar button\.is-active/);
+  assert.match(
+    styles,
+    /\.page-sidebar\s*\{[\s\S]*?align-self:\s*start;[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0;/,
+  );
   assert.match(styles, /\.season-picker\s*\{/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);

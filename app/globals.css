@@ -53,6 +53,7 @@ a {
 }
 
 .page-sidebar {
+  align-self: start;
   position: sticky;
   top: 0;
   display: grid;
