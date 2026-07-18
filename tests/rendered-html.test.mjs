@@ -666,6 +666,15 @@ test("keeps global title search separate from calendar schedules", async () => {
   assert.doesNotMatch(page, /const matchingCalendarAnime/);
   assert.doesNotMatch(page, /const matchingSeasonAnime/);
   assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[\s\S]*?grid-template-columns:\s*1fr;/);
+  assert.match(styles, /\.anime-search-page\s*\{[\s\S]*?display:\s*grid;/);
+  assert.match(
+    styles,
+    /\.anime-search\s*\{[\s\S]*?max-width:\s*32rem;[\s\S]*?display:\s*grid;/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width: 860px\) \{[\s\S]*?\.anime-search\s*\{[\s\S]*?max-width:\s*none;/,
+  );
 });
 
 test("keeps accessible contrast tokens and generated build metadata out of the deliverable", async () => {

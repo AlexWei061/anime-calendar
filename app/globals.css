@@ -118,7 +118,13 @@ a {
   gap: 0.9rem;
 }
 
+.anime-search-page {
+  display: grid;
+  gap: 1rem;
+}
+
 .anime-search {
+  max-width: 32rem;
   display: grid;
   gap: 0.35rem;
   color: var(--muted-ink);
@@ -127,7 +133,7 @@ a {
 }
 
 .anime-search input {
-  width: 16rem;
+  width: 100%;
   min-height: 2.4rem;
   border: 1px solid var(--line);
   border-radius: 0.6rem;
@@ -138,7 +144,7 @@ a {
 }
 
 .anime-search-empty {
-  margin: 2rem 0;
+  margin: 0;
   padding: 1rem;
   border: 1px dashed var(--line);
   border-radius: 0.75rem;
@@ -412,6 +418,10 @@ h1 {
   display: grid;
   gap: 0.65rem;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.statistics-anime-card-list.anime-search-results {
+  grid-template-columns: 1fr;
 }
 
 .statistics-anime-card-list > span {
@@ -1212,12 +1222,8 @@ h1 {
     display: grid;
   }
 
-  .calendar-header-controls {
-    justify-items: stretch;
-  }
-
-  .anime-search input {
-    width: 100%;
+  .anime-search {
+    max-width: none;
   }
 
   .statistics-section-heading {
