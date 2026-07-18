@@ -697,6 +697,26 @@ test("keeps global title search separate from calendar schedules", async () => {
   assert.doesNotMatch(page, /const matchingCalendarAnime/);
   assert.doesNotMatch(page, /const matchingSeasonAnime/);
   assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[^}]*?grid-template-columns:\s*1fr;/);
+  assert.match(
+    styles,
+    /\.anime-search-results \.statistics-anime-card\s*\{[^}]*?grid-template-columns:\s*6rem minmax\(0, 1fr\) auto;[^}]*?gap:\s*0\.9rem;[^}]*?padding:\s*0\.7rem;/,
+  );
+  assert.match(
+    styles,
+    /\.anime-search-results \.statistics-anime-card-cover\s*\{[^}]*?width:\s*6rem;/,
+  );
+  assert.match(
+    styles,
+    /\.anime-search-results \.statistics-anime-card-content strong\s*\{[^}]*?font-size:\s*1\.05rem;/,
+  );
+  assert.match(
+    styles,
+    /\.anime-search-results \.statistics-anime-card-content small,\s*\.anime-search-results \.statistics-anime-card-content em\s*\{[^}]*?font-size:\s*0\.82rem;/,
+  );
+  assert.match(
+    styles,
+    /\.anime-search-results \.statistics-anime-card-progress\s*\{[^}]*?height:\s*0\.4rem;/,
+  );
   assert.match(styles, /\.anime-search-page\s*\{[^}]*?display:\s*grid;/);
   assert.match(styles, /\.anime-search-page\s*\{[^}]*?gap:\s*1rem;/);
   assert.match(
