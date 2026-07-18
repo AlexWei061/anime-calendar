@@ -202,19 +202,21 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /url\.searchParams\.set\("page", page\);/);
   assert.match(
     page,
-    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)(?=[^}]*\bsortProgressByWatchedEpisodes\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
+    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)(?=[^}]*\bsortProgressBySeasonThenWatchedEpisodes\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
   );
   assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
   assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\);/);
-  assert.match(page, /const overallProgressTotals = progressTotals\(allProgress\);/);
+  assert.match(page, /const selectedOverallSeason = seasons\.find\(\(\{ id \}\) => id === selectedOverallSeasonId\);/);
+  assert.match(page, /const displayedOverallProgressTotals = progressTotals\(displayedOverallProgress\);/);
   assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
   assert.match(page, /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(allProgress, seasonIndexByAnimeId\);/);
   assert.match(page, /const overallProgressBySeason = seasons/);
+  assert.match(page, /const displayedOverallProgressBySeason = selectedOverallSeason/);
   assert.match(page, /\.reverse\(\);/);
   assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
   assert.match(page, /今日播出/);
   assert.match(page, /只显示你收藏的番剧/);
-  assert.match(page, /type StatisticsSection = "today" \| "overview" \| "season";/);
+  assert.match(page, /type StatisticsSection = "today" \| "overview";/);
   assert.match(page, /const \[collapsedStatisticsSections, setCollapsedStatisticsSections\] = useState<StatisticsSection\[\]>\(\[\]\);/);
   assert.match(page, /const isStatisticsSectionCollapsed = \(section: StatisticsSection\) =>/);
   assert.match(page, /const toggleStatisticsSection = \(section: StatisticsSection\) =>/);
@@ -224,13 +226,15 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /aria-controls="statistics-today-content"/);
   assert.match(page, /id="statistics-today-content" hidden=\{isStatisticsSectionCollapsed\("today"\)\}/);
   assert.match(page, /<div className="statistics-progress-content" id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>/);
-  assert.match(page, /<div className="statistics-progress-content" id="statistics-season-content" hidden=\{isStatisticsSectionCollapsed\("season"\)\}>/);
-  assert.match(page, /const statisticsSeasonTotals = progressTotals\(statisticsSeasonProgress\);/);
+  assert.doesNotMatch(page, /statistics-season-content/);
+  assert.doesNotMatch(page, /className="statistics-season"/);
   assert.match(
     page,
     /<dl className="statistics-overview-grid">[\s\S]*?<div className="statistics-progress-content" id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>/,
   );
-  assert.match(page, /<dt>本季追番<\/dt>/);
+  assert.match(page, /className="statistics-overview-summary"/);
+  assert.match(page, /selectedOverallSeason \? "本季追番" : "追番总数"/);
+  assert.match(page, /displayedOverallProgressTotals\.total/);
   assert.match(page, /const statisticsAnimeCard = \(/);
   assert.match(page, /className="statistics-anime-card"/);
   assert.match(page, /aria-haspopup="dialog"/);
@@ -240,23 +244,22 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /className="statistics-anime-card-list"/);
   assert.match(page, /className="statistics-anime-card-progress"/);
   assert.match(page, /width: `\$\{\(watchedEpisodeCount \/ record\.episodeCount\) \* 100\}%`/);
-  assert.match(page, /overallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
-  assert.match(page, /定位季度/);
+  assert.match(page, /displayedOverallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
+  assert.match(page, /选择季度/);
   assert.match(
     page,
-    /statistics-overview"[\s\S]*?className="statistics-section-controls"[\s\S]*?定位季度[\s\S]*?statistics-overview-grid/,
+    /statistics-overview"[\s\S]*?className="statistics-section-controls"[\s\S]*?选择季度[\s\S]*?statistics-overview-grid/,
   );
   assert.doesNotMatch(page, /statistics-overview-locator/);
   assert.match(page, /statistics-overview-season-\$\{season\.id\}/);
-  assert.match(page, /scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
+  assert.match(page, /<option value="">All<\/option>/);
+  assert.match(page, /getElementById\("statistics-overview"\)\?\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
   assert.doesNotMatch(page, /className="statistics-status-groups"/);
-  assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
   assert.match(page, /在追/);
   assert.match(page, /已看完/);
   assert.match(page, /未开始/);
   assert.match(page, /<label className="statistics-season-picker">/);
-  assert.match(page, /value=\{statisticsSeason\.id\}/);
-  assert.match(page, /选择季度/);
+  assert.match(page, /value=\{selectedOverallSeasonId\}/);
   assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{progress\.record\.episodeCount\} 集/);
   assert.match(page, /最后标记第 \$\{progress\.latestWatchedEpisode\} 集/);
   assert.match(page, /<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>/);
@@ -271,7 +274,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
-  assert.match(styles, /\.statistics-overview \.statistics-section-heading\s*\{[\s\S]*?position: sticky;[\s\S]*?top: 0\.75rem;/);
+  assert.match(styles, /\.statistics-overview-summary\s*\{[\s\S]*?position: sticky;[\s\S]*?top: 0\.75rem;/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
 

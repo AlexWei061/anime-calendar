@@ -16,7 +16,6 @@ import {
   progressForAnime,
   progressTotals,
   sortProgressBySeasonThenWatchedEpisodes,
-  sortProgressByWatchedEpisodes,
 } from "../lib/anime-statistics.js";
 import {
   addDays,
@@ -57,7 +56,7 @@ type SelectedAnime = Anime & {
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
 type Page = "all" | "mine" | "stats";
-type StatisticsSection = "today" | "overview" | "season";
+type StatisticsSection = "today" | "overview";
 
 const seasonIndexByAnimeId = new Map(
   seasons.flatMap((season, seasonIndex) =>
@@ -162,7 +161,6 @@ export default function Home() {
   const [watchedEpisodes, setWatchedEpisodes] = useState<WatchedEpisode[] | null>(null);
   const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
-  const [selectedStatisticsSeasonId, setSelectedStatisticsSeasonId] = useState<string | null>(null);
   const [selectedOverallSeasonId, setSelectedOverallSeasonId] = useState("");
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
@@ -186,18 +184,7 @@ export default function Home() {
       : allAnime;
   const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
-  const defaultStatisticsSeason =
-    [...seasons]
-      .reverse()
-      .find((season) => season.anime.some((record) => selectedAnimeIds?.includes(record.id))) ??
-    seasons[seasons.length - 1];
-  const statisticsSeason =
-    seasons.find(({ id }) => id === selectedStatisticsSeasonId) ?? defaultStatisticsSeason;
-  const statisticsSeasonAnime = statisticsSeason.anime.filter((record) =>
-    selectedAnimeIds?.includes(record.id),
-  );
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
-  const overallProgressTotals = progressTotals(allProgress);
   const overallProgress = sortProgressBySeasonThenWatchedEpisodes(allProgress, seasonIndexByAnimeId);
   const overallProgressBySeason = seasons
     .map((season, seasonIndex) => ({
@@ -208,8 +195,14 @@ export default function Home() {
     }))
     .filter(({ progress }) => progress.length)
     .reverse();
-  const statisticsSeasonProgress = sortProgressByWatchedEpisodes(progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []));
-  const statisticsSeasonTotals = progressTotals(statisticsSeasonProgress);
+  const selectedOverallSeason = seasons.find(({ id }) => id === selectedOverallSeasonId);
+  const displayedOverallProgress = selectedOverallSeason
+    ? overallProgressBySeason.find(({ season }) => season.id === selectedOverallSeason.id)?.progress ?? []
+    : overallProgress;
+  const displayedOverallProgressBySeason = selectedOverallSeason
+    ? [{ season: selectedOverallSeason, progress: displayedOverallProgress }]
+    : overallProgressBySeason;
+  const displayedOverallProgressTotals = progressTotals(displayedOverallProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
@@ -724,8 +717,9 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="statistics-overview" aria-labelledby="statistics-overview-heading">
-                <div className="statistics-section-heading">
+              <section className="statistics-overview" id="statistics-overview" aria-labelledby="statistics-overview-heading">
+                <div className="statistics-overview-summary">
+                  <div className="statistics-section-heading">
                   <button
                     className="statistics-section-heading-toggle"
                     type="button"
@@ -734,9 +728,9 @@ export default function Home() {
                     onClick={() => toggleStatisticsSection("overview")}
                   >
                     <span className="statistics-section-heading-copy">
-                      <span className="section-kicker">全部追番</span>
+                      <span className="section-kicker">{selectedOverallSeason ? "季度追番" : "全部追番"}</span>
                       <span className="statistics-section-title" id="statistics-overview-heading" role="heading" aria-level={2}>
-                        总体进度
+                        {selectedOverallSeason?.label ?? "总体进度"}
                       </span>
                     </span>
                     <span className="statistics-section-heading-note">按已标记的集数统计</span>
@@ -744,21 +738,20 @@ export default function Home() {
                   </button>
                   <div className="statistics-section-controls">
                     <label className="statistics-season-picker">
-                      定位季度
+                      选择季度
                       <select
                         value={selectedOverallSeasonId}
                         onChange={(event) => {
                           const seasonId = event.target.value;
                           setSelectedOverallSeasonId(seasonId);
-                          if (!seasonId) return;
-                          window.requestAnimationFrame(() => {
-                            document
-                              .getElementById(`statistics-overview-season-${seasonId}`)
-                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          });
+                          if (!seasonId) {
+                            window.requestAnimationFrame(() => {
+                              document.getElementById("statistics-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            });
+                          }
                         }}
                       >
-                        <option value="">选择季度</option>
+                        <option value="">All</option>
                         {overallProgressBySeason.map(({ season }) => (
                           <option key={season.id} value={season.id}>
                             {season.label}
@@ -767,27 +760,28 @@ export default function Home() {
                       </select>
                     </label>
                   </div>
+                  </div>
+                  <dl className="statistics-overview-grid">
+                    <div>
+                      <dt>{selectedOverallSeason ? "本季追番" : "追番总数"}</dt>
+                      <dd>{displayedOverallProgressTotals.total} 部</dd>
+                    </div>
+                    <div>
+                      <dt>在追</dt>
+                      <dd>{displayedOverallProgressTotals.inProgress} 部</dd>
+                    </div>
+                    <div>
+                      <dt>已看完</dt>
+                      <dd>{displayedOverallProgressTotals.completed} 部</dd>
+                    </div>
+                    <div>
+                      <dt>未开始</dt>
+                      <dd>{displayedOverallProgressTotals.notStarted} 部</dd>
+                    </div>
+                  </dl>
                 </div>
-                <dl className="statistics-overview-grid">
-                  <div>
-                    <dt>追番总数</dt>
-                    <dd>{overallProgressTotals.total} 部</dd>
-                  </div>
-                  <div>
-                    <dt>在追</dt>
-                    <dd>{overallProgressTotals.inProgress} 部</dd>
-                  </div>
-                  <div>
-                    <dt>已看完</dt>
-                    <dd>{overallProgressTotals.completed} 部</dd>
-                  </div>
-                  <div>
-                    <dt>未开始</dt>
-                    <dd>{overallProgressTotals.notStarted} 部</dd>
-                  </div>
-                </dl>
                 <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
-                  {overallProgressBySeason.map(({ season, progress }) => (
+                  {displayedOverallProgressBySeason.map(({ season, progress }) => (
                     <section
                       className="statistics-overview-season"
                       id={`statistics-overview-season-${season.id}`}
@@ -813,77 +807,6 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="statistics-season" aria-labelledby="statistics-season-heading">
-                <div className="statistics-section-heading">
-                  <button
-                    className="statistics-section-heading-toggle"
-                    type="button"
-                    aria-expanded={!isStatisticsSectionCollapsed("season")}
-                    aria-controls="statistics-season-content"
-                    onClick={() => toggleStatisticsSection("season")}
-                  >
-                    <span className="statistics-section-heading-copy">
-                      <span className="section-kicker">季度明细</span>
-                      <span className="statistics-section-title" id="statistics-season-heading" role="heading" aria-level={2}>
-                        {statisticsSeason.label}
-                      </span>
-                    </span>
-                    <span className="statistics-section-chevron" aria-hidden="true" />
-                  </button>
-                  <div className="statistics-section-controls">
-                    <label className="statistics-season-picker">
-                      选择季度
-                      <select
-                        value={statisticsSeason.id}
-                        onChange={(event) => setSelectedStatisticsSeasonId(event.target.value)}
-                      >
-                        {seasons.map((candidate) => (
-                          <option key={candidate.id} value={candidate.id}>
-                            {candidate.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                </div>
-                <dl className="statistics-overview-grid">
-                  <div>
-                    <dt>本季追番</dt>
-                    <dd>{statisticsSeasonTotals.total} 部</dd>
-                  </div>
-                  <div>
-                    <dt>在追</dt>
-                    <dd>{statisticsSeasonTotals.inProgress} 部</dd>
-                  </div>
-                  <div>
-                    <dt>已看完</dt>
-                    <dd>{statisticsSeasonTotals.completed} 部</dd>
-                  </div>
-                  <div>
-                    <dt>未开始</dt>
-                    <dd>{statisticsSeasonTotals.notStarted} 部</dd>
-                  </div>
-                </dl>
-                <div className="statistics-progress-content" id="statistics-season-content" hidden={isStatisticsSectionCollapsed("season")}>
-                  {statisticsSeasonProgress.length ? (
-                    <div className="statistics-anime-card-list">
-                      {statisticsSeasonProgress.map((progress) => (
-                        <span key={progress.record.id}>
-                          {statisticsAnimeCard(
-                            progress.record,
-                            `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
-                            progressStatusLabel(progress.status),
-                            {},
-                            progress.watchedEpisodeCount,
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="statistics-empty">这个季度还没有收藏的番剧。</p>
-                  )}
-                </div>
-              </section>
             </>
           )}
         </section>

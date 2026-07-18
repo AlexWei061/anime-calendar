@@ -215,8 +215,7 @@ h1 {
 }
 
 .statistics-today,
-.statistics-overview,
-.statistics-season {
+.statistics-overview {
   padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--line);
   border-radius: 0.9rem;
@@ -313,19 +312,23 @@ h1 {
   margin-top: 1rem;
 }
 
-.statistics-overview .statistics-section-heading {
+.statistics-overview-summary {
   position: sticky;
   top: 0.75rem;
   z-index: 2;
   margin: -0.5rem -0.6rem 1rem;
-  padding: 0.5rem 0.6rem;
+  padding: 0.5rem 0.6rem 0.6rem;
   border-radius: 0.7rem;
   background: var(--card);
   box-shadow: 0 0.35rem 0.9rem color-mix(in srgb, var(--ink) 8%, transparent);
 }
 
+.statistics-overview-summary .statistics-section-heading {
+  margin-bottom: 0.8rem;
+}
+
 .statistics-overview-season {
-  scroll-margin-top: 5rem;
+  scroll-margin-top: 12rem;
 }
 
 .statistics-overview-season + .statistics-overview-season {
@@ -1189,7 +1192,7 @@ h1 {
     justify-items: start;
   }
 
-  .statistics-overview .statistics-section-heading {
+  .statistics-overview-summary {
     top: 0.5rem;
   }
 
