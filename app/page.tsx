@@ -742,34 +742,6 @@ export default function Home() {
                     <span className="statistics-section-heading-note">按已标记的集数统计</span>
                     <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
-                  <div className="statistics-section-controls">
-                    <label className="statistics-season-picker">
-                      定位季度
-                      <select
-                        value={selectedOverallSeasonId}
-                        onChange={(event) => {
-                          const seasonId = event.target.value;
-                          setSelectedOverallSeasonId(seasonId);
-                          if (!seasonId) return;
-                          setCollapsedStatisticsSections((sections) =>
-                            sections.filter((section) => section !== "overview"),
-                          );
-                          window.requestAnimationFrame(() => {
-                            document
-                              .getElementById(`statistics-overview-season-${seasonId}`)
-                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          });
-                        }}
-                      >
-                        <option value="">选择季度</option>
-                        {overallProgressBySeason.map(({ season }) => (
-                          <option key={season.id} value={season.id}>
-                            {season.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
                 </div>
                 <dl className="statistics-overview-grid">
                   <div>
@@ -790,6 +762,31 @@ export default function Home() {
                   </div>
                 </dl>
                 <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
+                  <div className="statistics-overview-locator">
+                    <label className="statistics-season-picker">
+                      定位季度
+                      <select
+                        value={selectedOverallSeasonId}
+                        onChange={(event) => {
+                          const seasonId = event.target.value;
+                          setSelectedOverallSeasonId(seasonId);
+                          if (!seasonId) return;
+                          window.requestAnimationFrame(() => {
+                            document
+                              .getElementById(`statistics-overview-season-${seasonId}`)
+                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          });
+                        }}
+                      >
+                        <option value="">选择季度</option>
+                        {overallProgressBySeason.map(({ season }) => (
+                          <option key={season.id} value={season.id}>
+                            {season.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
                   {overallProgressBySeason.map(({ season, progress }) => (
                     <section
                       className="statistics-overview-season"
