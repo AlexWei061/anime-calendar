@@ -636,12 +636,25 @@ test("keeps global title search separate from calendar schedules", async () => {
 
   assert.match(page, /const \[animeQuery, setAnimeQuery\] = useState\(""\);/);
   assert.match(page, /const searchResults = allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/);
+  assert.match(
+    page,
+    /\{activePage === "search" \? \([\s\S]*?<section className="anime-search-page" aria-labelledby="anime-search-heading">/,
+  );
   assert.match(page, /<section className="anime-search-page" aria-labelledby="anime-search-heading">/);
   assert.match(page, /<label className="anime-search">[\s\S]*?查询番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/);
   assert.match(page, /className="statistics-anime-card-list anime-search-results"/);
+  assert.match(
+    page,
+    /searchResults\.map\(\(record\) => \([\s\S]*?statisticsAnimeCard\(\s*record,/,
+  );
   assert.match(page, /seasonLabelByAnimeId\.get\(record\.id\) \?\? "已收录番剧"/);
   assert.match(page, /className="anime-search-empty"[\s\S]*?aria-live="polite"/);
   assert.match(page, /activePage === "all" \|\| activePage === "mine"/);
+  assert.match(
+    page,
+    /const networkOnly = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
+  );
+  assert.doesNotMatch(page, /const networkOnly = searchResults\.filter\(/);
   assert.doesNotMatch(page, /const matchingCalendarAnime/);
   assert.doesNotMatch(page, /const matchingSeasonAnime/);
   assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[\s\S]*?grid-template-columns:\s*1fr;/);
