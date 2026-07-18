@@ -1222,6 +1222,10 @@ h1 {
     display: grid;
   }
 
+  .calendar-header-controls {
+    justify-items: stretch;
+  }
+
   .anime-search {
     max-width: none;
   }
