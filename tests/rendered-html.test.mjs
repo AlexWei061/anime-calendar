@@ -211,7 +211,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
   assert.match(page, /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(allProgress, seasonIndexByAnimeId\);/);
   assert.match(page, /const overallProgressBySeason = seasons/);
-  assert.match(page, /const displayedOverallProgressBySeason = selectedOverallSeason/);
+  assert.match(page, /const displayedOverallProgressBySeason = overallProgressBySeason;/);
   assert.match(page, /\.reverse\(\);/);
   assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
   assert.match(page, /今日播出/);
@@ -254,6 +254,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /statistics-overview-season-\$\{season\.id\}/);
   assert.match(page, /<option value="">All<\/option>/);
   assert.match(page, /getElementById\("statistics-overview"\)\?\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
+  assert.match(page, /getElementById\(`statistics-overview-season-\$\{seasonId\}`\)\s*\?\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
   assert.doesNotMatch(page, /className="statistics-status-groups"/);
   assert.match(page, /在追/);
   assert.match(page, /已看完/);

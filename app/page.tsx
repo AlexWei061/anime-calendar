@@ -199,9 +199,7 @@ export default function Home() {
   const displayedOverallProgress = selectedOverallSeason
     ? overallProgressBySeason.find(({ season }) => season.id === selectedOverallSeason.id)?.progress ?? []
     : overallProgress;
-  const displayedOverallProgressBySeason = selectedOverallSeason
-    ? [{ season: selectedOverallSeason, progress: displayedOverallProgress }]
-    : overallProgressBySeason;
+  const displayedOverallProgressBySeason = overallProgressBySeason;
   const displayedOverallProgressTotals = progressTotals(displayedOverallProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
@@ -744,11 +742,15 @@ export default function Home() {
                         onChange={(event) => {
                           const seasonId = event.target.value;
                           setSelectedOverallSeasonId(seasonId);
-                          if (!seasonId) {
-                            window.requestAnimationFrame(() => {
+                          window.requestAnimationFrame(() => {
+                            if (!seasonId) {
                               document.getElementById("statistics-overview")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                            });
-                          }
+                              return;
+                            }
+                            document
+                              .getElementById(`statistics-overview-season-${seasonId}`)
+                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          });
                         }}
                       >
                         <option value="">All</option>
