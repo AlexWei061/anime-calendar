@@ -648,13 +648,44 @@ test("keeps global title search separate from calendar schedules", async () => {
   assert.match(page, /const searchResults = allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/);
   assert.match(
     page,
+    /if \(\s*\(activePage !== "mine" && activePage !== "stats" && activePage !== "search"\) \|\|\s*selectedAnimeIds !== null\s*\) \{\s*return;/,
+  );
+  assert.match(page, /const searchProgress = progressForAnime\(searchResults, watchedEpisodes \?\? \[\]\);/);
+  assert.match(
+    page,
+    /const searchProgressByAnimeId = new Map\(\s*searchProgress\.map\(\(progress\) => \[progress\.record\.id, progress\]\),\s*\);/,
+  );
+  assert.match(page, /const searchProgressError = selectionError \?\? watchedEpisodeError;/);
+  assert.match(
+    page,
+    /const isSearchProgressLoading =\s*\(\s*selectedAnimeIds === null \|\| watchedEpisodes === null\s*\) && !searchProgressError;/,
+  );
+  assert.match(page, /正在读取追番进度…/);
+  assert.match(page, /searchProgressError \?\? "正在读取追番进度…"/);
+  assert.match(page, /isSearchProgressLoading \? \(/);
+  assert.match(page, /const isTracked = selectedAnimeIds\.includes\(record\.id\);/);
+  assert.match(
+    page,
+    /isTracked\s*\?\s*progressStatusLabel\(progress\.status\)\s*:\s*"未追番"/,
+  );
+  assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{record\.episodeCount\} 集/);
+  assert.match(
+    page,
+    /searchResults\.map\(\(record\) => \{[\s\S]*?statisticsAnimeCard\(\s*record,[\s\S]*?progress\.watchedEpisodeCount,\s*\)/,
+  );
+  assert.match(
+    page,
+    /if \(\s*!progress \|\| selectedAnimeIds === null \|\| watchedEpisodes === null\s*\) \{[\s\S]*?statisticsAnimeCard\(\s*record,[\s\S]*?"进度暂不可用"/,
+  );
+  assert.match(
+    page,
     /\{activePage === "search" \? \([\s\S]*?<section className="anime-search-page" aria-labelledby="anime-search-heading">/,
   );
   assert.match(page, /<label className="anime-search">[\s\S]*?查询番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/);
   assert.match(page, /className="statistics-anime-card-list anime-search-results"/);
   assert.match(
     page,
-    /searchResults\.map\(\(record\) => \([\s\S]*?statisticsAnimeCard\(\s*record,/,
+    /searchResults\.map\(\(record\) => \{[\s\S]*?statisticsAnimeCard\(\s*record,/,
   );
   assert.match(page, /seasonLabelByAnimeId\.get\(record\.id\) \?\? "已收录番剧"/);
   assert.match(page, /className="anime-search-empty"[\s\S]*?aria-live="polite"/);
