@@ -56,12 +56,17 @@ type SelectedAnime = Anime & {
   selectedReleaseKind?: "network";
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
-type Page = "all" | "mine" | "stats";
+type Page = "all" | "mine" | "stats" | "search";
 type StatisticsSection = "today" | "overview";
 
 const seasonIndexByAnimeId = new Map(
   seasons.flatMap((season, seasonIndex) =>
     season.anime.map((record) => [record.id, seasonIndex] as const),
+  ),
+);
+const seasonLabelByAnimeId = new Map(
+  seasons.flatMap((season) =>
+    season.anime.map((record) => [record.id, season.label] as const),
   ),
 );
 
@@ -184,9 +189,8 @@ export default function Home() {
     activePage === "mine"
       ? allAnime.filter((record) => selectedAnimeIds?.includes(record.id))
       : allAnime;
-  const matchingCalendarAnime = calendarAnime.filter((record) => matchesAnimeTitle(record, animeQuery));
   const hasAnimeQuery = animeQuery.trim().length > 0;
-  const noSearchMatches = hasAnimeQuery && calendarAnime.length > 0 && !matchingCalendarAnime.length;
+  const searchResults = allAnime.filter((record) => matchesAnimeTitle(record, animeQuery));
   const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
@@ -207,9 +211,9 @@ export default function Home() {
   const displayedOverallProgressBySeason = overallProgressBySeason;
   const displayedOverallProgressTotals = progressTotals(displayedOverallProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
-  const events = eventsForWeek(matchingCalendarAnime, activeWeekStart) as CalendarEvent[];
+  const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(
-    matchingCalendarAnime,
+    calendarAnime,
     activeWeekStart,
   ) as DateOnlyEvent[];
   const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
@@ -230,10 +234,7 @@ export default function Home() {
   const dayDateOnlyEvents = dates.map((date) => dateOnlyEvents.filter((event) => event.date === date));
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
   const activeMobileDateOnlyEvents = dayDateOnlyEvents[dates.indexOf(activeMobileDate)] ?? [];
-  const matchingSeasonAnime = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
-    (record) => matchesAnimeTitle(record, animeQuery),
-  );
-  const networkOnly = matchingSeasonAnime.filter(
+  const networkOnly = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
   const selectedBroadcastTime =
@@ -260,7 +261,7 @@ export default function Home() {
   useEffect(() => {
     const syncPageFromUrl = () => {
       const page = new URLSearchParams(window.location.search).get("page");
-      setActivePage(page === "mine" || page === "stats" ? page : "all");
+      setActivePage(page === "mine" || page === "stats" || page === "search" ? page : "all");
     };
 
     syncPageFromUrl();
@@ -330,7 +331,7 @@ export default function Home() {
     if (page === activePage) return;
 
     const url = new URL(window.location.href);
-    if (page === "mine" || page === "stats") {
+    if (page === "mine" || page === "stats" || page === "search") {
       url.searchParams.set("page", page);
     } else {
       url.searchParams.delete("page");
@@ -607,19 +608,35 @@ export default function Home() {
         >
           追番统计
         </button>
+        <button
+          className={activePage === "search" ? "is-active" : ""}
+          type="button"
+          aria-current={activePage === "search" ? "page" : undefined}
+          onClick={() => changePage("search")}
+        >
+          查询番剧
+        </button>
       </nav>
       <main className="calendar-page">
       <header className="calendar-header">
         <div>
           <p className="season-kicker">
-            {activePage === "all" ? activeSeason.label : activePage === "mine" ? "我的番剧" : "我的进度"}
+            {activePage === "all"
+              ? activeSeason.label
+              : activePage === "mine"
+                ? "我的番剧"
+                : activePage === "search"
+                  ? "全部目录"
+                  : "我的进度"}
           </p>
           <h1>
             {activePage === "all"
               ? activeSeason.label + "时间表"
               : activePage === "mine"
                 ? "我的番剧时间表"
-                : "追番统计"}
+                : activePage === "search"
+                  ? "查询番剧"
+                  : "追番统计"}
           </h1>
           <p className="intro">
             {activePage === "all"
@@ -629,25 +646,18 @@ export default function Home() {
                 "，从首播日起按周显示；未明确集数的作品暂按 12 集安排，时间均为北京时间。"
               : activePage === "mine"
                 ? "勾选想追的番剧，只查看属于你的播出时间表。"
-                : "查看今天要追的番剧、整体进度，以及每个季度的追番记录。"}
+                : activePage === "search"
+                  ? "搜索本应用已收录的全部番剧，支持中文和日文标题。"
+                  : "查看今天要追的番剧、整体进度，以及每个季度的追番记录。"}
           </p>
-          {activePage !== "stats" && isHistoricalSeason ? (
+          {(activePage === "all" || activePage === "mine") && isHistoricalSeason ? (
             <p className="pilot-note">
               名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。
             </p>
           ) : null}
         </div>
-        {activePage !== "stats" ? (
+        {activePage === "all" || activePage === "mine" ? (
           <div className="calendar-header-controls">
-            <label className="anime-search">
-              查找番剧
-              <input
-                type="search"
-                value={animeQuery}
-                onChange={(event) => setAnimeQuery(event.target.value)}
-                placeholder="输入中文或日文名"
-              />
-            </label>
             <label className="season-picker">
               选择季度
               <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
@@ -874,11 +884,47 @@ export default function Home() {
         </section>
       ) : null}
 
-      {activePage !== "stats" && noSearchMatches ? (
-        <p className="anime-search-empty" aria-live="polite">
-          未找到“{animeQuery.trim()}”相关的番剧。
-        </p>
-      ) : activePage !== "stats" && (activePage === "all" || matchingCalendarAnime.length) ? (
+      {activePage === "search" ? (
+        <section className="anime-search-page" aria-labelledby="anime-search-heading">
+          <div className="section-heading">
+            <div>
+              <p className="section-kicker">全部目录</p>
+              <h2 id="anime-search-heading">查询番剧</h2>
+            </div>
+            <p>输入中文或日文名，查询所有已收录作品。</p>
+          </div>
+          <label className="anime-search">
+            查询番剧
+            <input
+              type="search"
+              value={animeQuery}
+              onChange={(event) => setAnimeQuery(event.target.value)}
+              placeholder="输入中文或日文名"
+            />
+          </label>
+          {!hasAnimeQuery ? (
+            <p className="anime-search-empty">输入中文或日文名开始查询。</p>
+          ) : searchResults.length ? (
+            <div className="statistics-anime-card-list anime-search-results">
+              {searchResults.map((record) => (
+                <span key={record.id}>
+                  {statisticsAnimeCard(
+                    record,
+                    seasonLabelByAnimeId.get(record.id) ?? "已收录番剧",
+                  )}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="anime-search-empty" aria-live="polite">
+              未找到“{animeQuery.trim()}”相关的番剧。
+            </p>
+          )}
+        </section>
+      ) : null}
+
+      {activePage === "all" || activePage === "mine" ? (
+        activePage === "all" || calendarAnime.length ? (
         <>
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">
@@ -1071,6 +1117,7 @@ export default function Home() {
         <p className="my-schedule-empty">
           勾选上方的番剧后，这里会显示你的专属时间表。
         </p>
+        ) : null
       ) : null}
 
       {selected ? (
