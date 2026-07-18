@@ -424,6 +424,29 @@ h1 {
   grid-template-columns: 1fr;
 }
 
+.anime-search-results .statistics-anime-card {
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  padding: 0.7rem;
+}
+
+.anime-search-results .statistics-anime-card-cover {
+  width: 6rem;
+}
+
+.anime-search-results .statistics-anime-card-content strong {
+  font-size: 1.05rem;
+}
+
+.anime-search-results .statistics-anime-card-content small,
+.anime-search-results .statistics-anime-card-content em {
+  font-size: 0.82rem;
+}
+
+.anime-search-results .statistics-anime-card-progress {
+  height: 0.4rem;
+}
+
 .statistics-anime-card-list > span {
   display: grid;
 }
