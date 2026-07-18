@@ -190,7 +190,7 @@ test("renders separate accessible watched controls without nesting calendar butt
   assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
 });
 
-test("ships interactive, collapsible personal statistics cards with today and all-season progress views", async () => {
+test("ships interactive, collapsible personal statistics cards with sticky season navigation", async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
