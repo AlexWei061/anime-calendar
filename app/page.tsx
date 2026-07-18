@@ -191,6 +191,13 @@ export default function Home() {
       : allAnime;
   const hasAnimeQuery = animeQuery.trim().length > 0;
   const searchResults = allAnime.filter((record) => matchesAnimeTitle(record, animeQuery));
+  const searchProgress = progressForAnime(searchResults, watchedEpisodes ?? []);
+  const searchProgressByAnimeId = new Map(
+    searchProgress.map((progress) => [progress.record.id, progress]),
+  );
+  const searchProgressError = selectionError ?? watchedEpisodeError;
+  const isSearchProgressLoading =
+    (selectedAnimeIds === null || watchedEpisodes === null) && !searchProgressError;
   const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
@@ -270,7 +277,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if ((activePage !== "mine" && activePage !== "stats") || selectedAnimeIds !== null) return;
+    if (
+      (activePage !== "mine" && activePage !== "stats" && activePage !== "search") ||
+      selectedAnimeIds !== null
+    ) {
+      return;
+    }
 
     let cancelled = false;
     async function loadAnimeSelections() {
@@ -905,16 +917,43 @@ export default function Home() {
           {!hasAnimeQuery ? (
             <p className="anime-search-empty">输入中文或日文名开始查询。</p>
           ) : searchResults.length ? (
-            <div className="statistics-anime-card-list anime-search-results">
-              {searchResults.map((record) => (
-                <span key={record.id}>
-                  {statisticsAnimeCard(
-                    record,
-                    seasonLabelByAnimeId.get(record.id) ?? "已收录番剧",
-                  )}
-                </span>
-              ))}
-            </div>
+            isSearchProgressLoading ? (
+              <p className="selection-status" aria-live="polite">
+                {searchProgressError ?? "正在读取追番进度…"}
+              </p>
+            ) : (
+              <div className="statistics-anime-card-list anime-search-results">
+                {searchResults.map((record) => {
+                  const progress = searchProgressByAnimeId.get(record.id);
+                  if (!progress || selectedAnimeIds === null || watchedEpisodes === null) {
+                    return (
+                      <span key={record.id}>
+                        {statisticsAnimeCard(
+                          record,
+                          (seasonLabelByAnimeId.get(record.id) ?? "已收录番剧") +
+                            " · 追番进度暂不可用",
+                          "进度暂不可用",
+                        )}
+                      </span>
+                    );
+                  }
+
+                  const isTracked = selectedAnimeIds.includes(record.id);
+                  return (
+                    <span key={record.id}>
+                      {statisticsAnimeCard(
+                        record,
+                        (seasonLabelByAnimeId.get(record.id) ?? "已收录番剧") +
+                          ` · 已看 ${progress.watchedEpisodeCount} / ${record.episodeCount} 集`,
+                        isTracked ? progressStatusLabel(progress.status) : "未追番",
+                        {},
+                        progress.watchedEpisodeCount,
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+            )
           ) : (
             <p className="anime-search-empty" aria-live="polite">
               未找到“{animeQuery.trim()}”相关的番剧。
