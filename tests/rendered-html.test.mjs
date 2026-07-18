@@ -196,9 +196,10 @@ test("ships interactive, collapsible personal statistics cards with sticky seaso
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /type Page = "all" \| "mine" \| "stats";/);
+  assert.match(page, /type Page = "all" \| "mine" \| "stats" \| "search";/);
   assert.match(page, /changePage\("stats"\)/);
-  assert.match(page, /page === "mine" \|\| page === "stats"/);
+  assert.match(page, /changePage\("search"\)/);
+  assert.match(page, /page === "mine" \|\| page === "stats" \|\| page === "search"/);
   assert.match(page, /url\.searchParams\.set\("page", page\);/);
   assert.match(
     page,
@@ -405,12 +406,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
   assert.match(page, /无法读取已看记录。请稍后重试。/);
   assert.match(page, /保存已看状态失败，请重试。/);
-  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.match(page, /dateOnlyEventsForWeek\(\s*calendarAnime,\s*activeWeekStart,\s*\)/);
+  assert.doesNotMatch(page, /eventsForWeek\(searchResults, activeWeekStart\)/);
+  assert.doesNotMatch(page, /dateOnlyEventsForWeek\(\s*searchResults,\s*activeWeekStart,\s*\)/);
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
-  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
   assert.match(page, /groupEventsByTime/);
   assert.match(page, /layoutTimelineEvents/);
@@ -625,35 +628,23 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
 });
 
-test("keeps title search filtering shared by calendar and mobile schedule", async () => {
+test("keeps global title search separate from calendar schedules", async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /import \{ matchesAnimeTitle \} from "\.\.\/lib\/anime-search\.js";/);
   assert.match(page, /const \[animeQuery, setAnimeQuery\] = useState\(""\);/);
-  assert.match(
-    page,
-    /const matchingCalendarAnime = calendarAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/,
-  );
-  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
-  assert.match(page, /dateOnlyEventsForWeek\(\s*matchingCalendarAnime,\s*activeWeekStart,\s*\)/);
-  assert.match(
-    page,
-    /const matchingSeasonAnime = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
-  );
-  assert.match(page, /const networkOnly = matchingSeasonAnime\.filter\(/);
-  assert.match(
-    page,
-    /<label className="anime-search">[\s\S]*?查找番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/,
-  );
+  assert.match(page, /const searchResults = allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/);
+  assert.match(page, /<section className="anime-search-page" aria-labelledby="anime-search-heading">/);
+  assert.match(page, /<label className="anime-search">[\s\S]*?查询番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/);
+  assert.match(page, /className="statistics-anime-card-list anime-search-results"/);
+  assert.match(page, /seasonLabelByAnimeId\.get\(record\.id\) \?\? "已收录番剧"/);
   assert.match(page, /className="anime-search-empty"[\s\S]*?aria-live="polite"/);
-  assert.match(styles, /\.anime-search\s*\{[\s\S]*?display:\s*grid;/);
-  assert.match(
-    styles,
-    /@media \(max-width: 860px\) \{[\s\S]*?\.anime-search input\s*\{[\s\S]*?width:\s*100%;/,
-  );
+  assert.match(page, /activePage === "all" \|\| activePage === "mine"/);
+  assert.doesNotMatch(page, /const matchingCalendarAnime/);
+  assert.doesNotMatch(page, /const matchingSeasonAnime/);
+  assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[\s\S]*?grid-template-columns:\s*1fr;/);
 });
 
 test("keeps accessible contrast tokens and generated build metadata out of the deliverable", async () => {
