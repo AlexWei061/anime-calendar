@@ -244,8 +244,9 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /定位季度/);
   assert.match(
     page,
-    /<div className="statistics-progress-content" id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>[\s\S]*?className="statistics-overview-locator"/,
+    /statistics-overview"[\s\S]*?className="statistics-section-controls"[\s\S]*?定位季度[\s\S]*?statistics-overview-grid/,
   );
+  assert.doesNotMatch(page, /statistics-overview-locator/);
   assert.match(page, /statistics-overview-season-\$\{season\.id\}/);
   assert.match(page, /scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
   assert.doesNotMatch(page, /className="statistics-status-groups"/);
@@ -270,7 +271,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
-  assert.match(styles, /\.statistics-overview-locator\s*\{[\s\S]*?position: sticky;[\s\S]*?top: 0\.75rem;/);
+  assert.match(styles, /\.statistics-overview \.statistics-section-heading\s*\{[\s\S]*?position: sticky;[\s\S]*?top: 0\.75rem;/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
 

@@ -742,27 +742,7 @@ export default function Home() {
                     <span className="statistics-section-heading-note">按已标记的集数统计</span>
                     <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
-                </div>
-                <dl className="statistics-overview-grid">
-                  <div>
-                    <dt>追番总数</dt>
-                    <dd>{overallProgressTotals.total} 部</dd>
-                  </div>
-                  <div>
-                    <dt>在追</dt>
-                    <dd>{overallProgressTotals.inProgress} 部</dd>
-                  </div>
-                  <div>
-                    <dt>已看完</dt>
-                    <dd>{overallProgressTotals.completed} 部</dd>
-                  </div>
-                  <div>
-                    <dt>未开始</dt>
-                    <dd>{overallProgressTotals.notStarted} 部</dd>
-                  </div>
-                </dl>
-                <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
-                  <div className="statistics-overview-locator">
+                  <div className="statistics-section-controls">
                     <label className="statistics-season-picker">
                       定位季度
                       <select
@@ -787,6 +767,26 @@ export default function Home() {
                       </select>
                     </label>
                   </div>
+                </div>
+                <dl className="statistics-overview-grid">
+                  <div>
+                    <dt>追番总数</dt>
+                    <dd>{overallProgressTotals.total} 部</dd>
+                  </div>
+                  <div>
+                    <dt>在追</dt>
+                    <dd>{overallProgressTotals.inProgress} 部</dd>
+                  </div>
+                  <div>
+                    <dt>已看完</dt>
+                    <dd>{overallProgressTotals.completed} 部</dd>
+                  </div>
+                  <div>
+                    <dt>未开始</dt>
+                    <dd>{overallProgressTotals.notStarted} 部</dd>
+                  </div>
+                </dl>
+                <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
                   {overallProgressBySeason.map(({ season, progress }) => (
                     <section
                       className="statistics-overview-season"

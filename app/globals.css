@@ -313,22 +313,15 @@ h1 {
   margin-top: 1rem;
 }
 
-.statistics-overview-locator {
+.statistics-overview .statistics-section-heading {
   position: sticky;
   top: 0.75rem;
   z-index: 2;
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.85rem;
+  margin: -0.5rem -0.6rem 1rem;
   padding: 0.5rem 0.6rem;
-  border: 1px solid var(--line);
   border-radius: 0.7rem;
-  background: color-mix(in srgb, var(--card) 92%, var(--paper));
+  background: var(--card);
   box-shadow: 0 0.35rem 0.9rem color-mix(in srgb, var(--ink) 8%, transparent);
-}
-
-.statistics-overview-locator .statistics-season-picker {
-  justify-items: end;
 }
 
 .statistics-overview-season {
@@ -1196,13 +1189,8 @@ h1 {
     justify-items: start;
   }
 
-  .statistics-overview-locator {
+  .statistics-overview .statistics-section-heading {
     top: 0.5rem;
-    justify-content: flex-start;
-  }
-
-  .statistics-overview-locator .statistics-season-picker {
-    justify-items: start;
   }
 
   .statistics-overview-grid {
