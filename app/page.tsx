@@ -10,6 +10,7 @@ import {
 import { allAnime, seasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
+import { matchesAnimeTitle } from "../lib/anime-search.js";
 import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
 import {
   broadcastsForDate,
@@ -154,6 +155,7 @@ function progressStatusLabel(status: string) {
 
 export default function Home() {
   const [activePage, setActivePage] = useState<Page>("all");
+  const [animeQuery, setAnimeQuery] = useState("");
   const [selected, setSelected] = useState<SelectedAnime | null>(null);
   const [selectedAnimeIds, setSelectedAnimeIds] = useState<string[] | null>(null);
   const [selectionError, setSelectionError] = useState<string | null>(null);
@@ -182,6 +184,9 @@ export default function Home() {
     activePage === "mine"
       ? allAnime.filter((record) => selectedAnimeIds?.includes(record.id))
       : allAnime;
+  const matchingCalendarAnime = calendarAnime.filter((record) => matchesAnimeTitle(record, animeQuery));
+  const hasAnimeQuery = animeQuery.trim().length > 0;
+  const noSearchMatches = hasAnimeQuery && calendarAnime.length > 0 && !matchingCalendarAnime.length;
   const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
@@ -202,8 +207,11 @@ export default function Home() {
   const displayedOverallProgressBySeason = overallProgressBySeason;
   const displayedOverallProgressTotals = progressTotals(displayedOverallProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
-  const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
-  const dateOnlyEvents = dateOnlyEventsForWeek(calendarAnime, activeWeekStart) as DateOnlyEvent[];
+  const events = eventsForWeek(matchingCalendarAnime, activeWeekStart) as CalendarEvent[];
+  const dateOnlyEvents = dateOnlyEventsForWeek(
+    matchingCalendarAnime,
+    activeWeekStart,
+  ) as DateOnlyEvent[];
   const { startMinutes: timelineStartMinutes, endMinutes: timelineEndMinutes } =
     timelineBoundsForEvents(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes);
   const timelineHourCount = (timelineEndMinutes - timelineStartMinutes) / 60;
@@ -222,7 +230,10 @@ export default function Home() {
   const dayDateOnlyEvents = dates.map((date) => dateOnlyEvents.filter((event) => event.date === date));
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
   const activeMobileDateOnlyEvents = dayDateOnlyEvents[dates.indexOf(activeMobileDate)] ?? [];
-  const networkOnly = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
+  const matchingSeasonAnime = (activePage === "mine" ? selectedSeasonAnime : activeSeason.anime).filter(
+    (record) => matchesAnimeTitle(record, animeQuery),
+  );
+  const networkOnly = matchingSeasonAnime.filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   );
   const selectedBroadcastTime =
@@ -628,6 +639,15 @@ export default function Home() {
         </div>
         {activePage !== "stats" ? (
           <div className="calendar-header-controls">
+            <label className="anime-search">
+              查找番剧
+              <input
+                type="search"
+                value={animeQuery}
+                onChange={(event) => setAnimeQuery(event.target.value)}
+                placeholder="输入中文或日文名"
+              />
+            </label>
             <label className="season-picker">
               选择季度
               <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
@@ -854,7 +874,11 @@ export default function Home() {
         </section>
       ) : null}
 
-      {activePage !== "stats" && (activePage === "all" || calendarAnime.length) ? (
+      {activePage !== "stats" && noSearchMatches ? (
+        <p className="anime-search-empty" aria-live="polite">
+          未找到“{animeQuery.trim()}”相关的番剧。
+        </p>
+      ) : activePage !== "stats" && (activePage === "all" || matchingCalendarAnime.length) ? (
         <>
       <section className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">

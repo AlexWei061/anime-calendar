@@ -118,6 +118,34 @@ a {
   gap: 0.9rem;
 }
 
+.anime-search {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.anime-search input {
+  width: 16rem;
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+}
+
+.anime-search-empty {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.75rem;
+  color: var(--muted-ink);
+  text-align: center;
+}
+
 .season-picker {
   display: grid;
   gap: 0.35rem;
@@ -1182,6 +1210,14 @@ h1 {
   .section-heading,
   .calendar-footer {
     display: grid;
+  }
+
+  .calendar-header-controls {
+    justify-items: stretch;
+  }
+
+  .anime-search input {
+    width: 100%;
   }
 
   .statistics-section-heading {

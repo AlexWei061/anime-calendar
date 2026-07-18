@@ -358,10 +358,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /const selectedSeasonAnime = activeSeason\.anime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/,
   );
-  assert.match(
-    page,
-    /const networkOnly = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
-  );
+  assert.match(page, /const networkOnly = matchingSeasonAnime\.filter\(/);
   assert.match(
     page,
     /timelineBoundsForEvents\(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes\)/,
@@ -408,12 +405,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
   assert.match(page, /无法读取已看记录。请稍后重试。/);
   assert.match(page, /保存已看状态失败，请重试。/);
-  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
-  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
   assert.match(page, /formatBroadcastTime/);
   assert.match(page, /groupEventsByTime/);
   assert.match(page, /layoutTimelineEvents/);
@@ -626,6 +623,37 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.detail-dialog::backdrop/);
   assert.match(styles, /\.network-card/);
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
+});
+
+test("keeps title search filtering shared by calendar and mobile schedule", async () => {
+  const [page, styles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /import \{ matchesAnimeTitle \} from "\.\.\/lib\/anime-search\.js";/);
+  assert.match(page, /const \[animeQuery, setAnimeQuery\] = useState\(""\);/);
+  assert.match(
+    page,
+    /const matchingCalendarAnime = calendarAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/,
+  );
+  assert.match(page, /eventsForWeek\(matchingCalendarAnime, activeWeekStart\)/);
+  assert.match(page, /dateOnlyEventsForWeek\(\s*matchingCalendarAnime,\s*activeWeekStart,\s*\)/);
+  assert.match(
+    page,
+    /const matchingSeasonAnime = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
+  );
+  assert.match(page, /const networkOnly = matchingSeasonAnime\.filter\(/);
+  assert.match(
+    page,
+    /<label className="anime-search">[\s\S]*?查找番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/,
+  );
+  assert.match(page, /className="anime-search-empty"[\s\S]*?aria-live="polite"/);
+  assert.match(styles, /\.anime-search\s*\{[\s\S]*?display:\s*grid;/);
+  assert.match(
+    styles,
+    /@media \(max-width: 860px\) \{[\s\S]*?\.anime-search input\s*\{[\s\S]*?width:\s*100%;/,
+  );
 });
 
 test("keeps accessible contrast tokens and generated build metadata out of the deliverable", async () => {
