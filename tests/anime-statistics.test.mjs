@@ -77,7 +77,7 @@ test("sorts seasonal progress by watched episode count before unstarted shows", 
   );
 });
 
-test("sorts all progress by season before watched episode count", () => {
+test("sorts all progress by newest season before watched episode count", () => {
   const progress = progressForAnime(
     [
       { id: "winter-unwatched", episodeCount: 12 },
@@ -99,7 +99,7 @@ test("sorts all progress by season before watched episode count", () => {
         ["spring-watched", 1],
       ]),
     ).map(({ record }) => record.id),
-    ["winter-watched", "winter-unwatched", "spring-watched"],
+    ["spring-watched", "winter-watched", "winter-unwatched"],
   );
 });
 

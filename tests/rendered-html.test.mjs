@@ -209,6 +209,8 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /const overallProgressTotals = progressTotals\(allProgress\);/);
   assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
   assert.match(page, /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(allProgress, seasonIndexByAnimeId\);/);
+  assert.match(page, /const overallProgressBySeason = seasons/);
+  assert.match(page, /\.reverse\(\);/);
   assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
   assert.match(page, /今日播出/);
   assert.match(page, /只显示你收藏的番剧/);
@@ -238,7 +240,11 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(page, /className="statistics-anime-card-list"/);
   assert.match(page, /className="statistics-anime-card-progress"/);
   assert.match(page, /width: `\$\{\(watchedEpisodeCount \/ record\.episodeCount\) \* 100\}%`/);
-  assert.match(page, /overallProgress\.map\(\(progress\) =>/);
+  assert.match(page, /overallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
+  assert.match(page, /定位季度/);
+  assert.match(page, /statistics-overview"[\s\S]*?定位季度[\s\S]*?statistics-overview-grid/);
+  assert.match(page, /statistics-overview-season-\$\{season\.id\}/);
+  assert.match(page, /scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
   assert.doesNotMatch(page, /className="statistics-status-groups"/);
   assert.match(page, /sortProgressByWatchedEpisodes\(progressForAnime\(statisticsSeasonAnime, watchedEpisodes \?\? \[\]\)\)/);
   assert.match(page, /在追/);
@@ -260,6 +266,7 @@ test("ships interactive, collapsible personal statistics cards with today and al
   assert.match(styles, /transform 260ms cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
+  assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
 

@@ -163,6 +163,7 @@ export default function Home() {
   const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
   const [selectedStatisticsSeasonId, setSelectedStatisticsSeasonId] = useState<string | null>(null);
+  const [selectedOverallSeasonId, setSelectedOverallSeasonId] = useState("");
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
@@ -198,6 +199,15 @@ export default function Home() {
   const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
   const overallProgressTotals = progressTotals(allProgress);
   const overallProgress = sortProgressBySeasonThenWatchedEpisodes(allProgress, seasonIndexByAnimeId);
+  const overallProgressBySeason = seasons
+    .map((season, seasonIndex) => ({
+      season,
+      progress: overallProgress.filter(
+        (progress) => seasonIndexByAnimeId.get(progress.record.id) === seasonIndex,
+      ),
+    }))
+    .filter(({ progress }) => progress.length)
+    .reverse();
   const statisticsSeasonProgress = sortProgressByWatchedEpisodes(progressForAnime(statisticsSeasonAnime, watchedEpisodes ?? []));
   const statisticsSeasonTotals = progressTotals(statisticsSeasonProgress);
   const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
@@ -732,6 +742,34 @@ export default function Home() {
                     <span className="statistics-section-heading-note">按已标记的集数统计</span>
                     <span className="statistics-section-chevron" aria-hidden="true" />
                   </button>
+                  <div className="statistics-section-controls">
+                    <label className="statistics-season-picker">
+                      定位季度
+                      <select
+                        value={selectedOverallSeasonId}
+                        onChange={(event) => {
+                          const seasonId = event.target.value;
+                          setSelectedOverallSeasonId(seasonId);
+                          if (!seasonId) return;
+                          setCollapsedStatisticsSections((sections) =>
+                            sections.filter((section) => section !== "overview"),
+                          );
+                          window.requestAnimationFrame(() => {
+                            document
+                              .getElementById(`statistics-overview-season-${seasonId}`)
+                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          });
+                        }}
+                      >
+                        <option value="">选择季度</option>
+                        {overallProgressBySeason.map(({ season }) => (
+                          <option key={season.id} value={season.id}>
+                            {season.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
                 </div>
                 <dl className="statistics-overview-grid">
                   <div>
@@ -752,19 +790,29 @@ export default function Home() {
                   </div>
                 </dl>
                 <div className="statistics-progress-content" id="statistics-overview-content" hidden={isStatisticsSectionCollapsed("overview")}>
-                  <div className="statistics-anime-card-list">
-                    {overallProgress.map((progress) => (
-                      <span key={progress.record.id}>
-                        {statisticsAnimeCard(
-                          progress.record,
-                          `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
-                          progressStatusLabel(progress.status),
-                          {},
-                          progress.watchedEpisodeCount,
-                        )}
-                      </span>
-                    ))}
-                  </div>
+                  {overallProgressBySeason.map(({ season, progress }) => (
+                    <section
+                      className="statistics-overview-season"
+                      id={`statistics-overview-season-${season.id}`}
+                      key={season.id}
+                      aria-labelledby={`statistics-overview-season-heading-${season.id}`}
+                    >
+                      <h3 id={`statistics-overview-season-heading-${season.id}`}>{season.label}</h3>
+                      <div className="statistics-anime-card-list">
+                        {progress.map((progress) => (
+                          <span key={progress.record.id}>
+                            {statisticsAnimeCard(
+                              progress.record,
+                              `已看 ${progress.watchedEpisodeCount} / ${progress.record.episodeCount} 集${progress.latestWatchedEpisode === null ? " · 尚未标记观看" : ` · 最后标记第 ${progress.latestWatchedEpisode} 集`}`,
+                              progressStatusLabel(progress.status),
+                              {},
+                              progress.watchedEpisodeCount,
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
                 </div>
               </section>
 
