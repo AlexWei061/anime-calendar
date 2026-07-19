@@ -9,6 +9,13 @@
   --blue-soft: #dceff1;
   --mint: #b9ded1;
   --mint-deep: #2f6d60;
+  --font-ui: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: Georgia, "Noto Serif SC", "Songti SC", serif;
+  --radius-control: 0.4rem;
+  --radius-card: 0.5rem;
+  --radius-panel: 0.65rem;
+  --shadow-raise: 0 0.3rem 0.8rem rgb(31 41 51 / 10%);
+  --transition: 150ms ease;
 }
 
 * {
@@ -24,7 +31,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-ui);
 }
 
 button,
@@ -58,44 +65,50 @@ a {
   top: 0;
   display: grid;
   align-content: start;
-  gap: 0.35rem;
+  gap: 0.25rem;
   min-height: 100vh;
-  padding: 2rem 1rem;
+  padding: 1.75rem 0.85rem;
   border-right: 1px solid var(--line);
   background: var(--paper-deep);
 }
 
 .site-name {
-  margin: 0 0 1rem;
+  margin: 0 0 0.9rem;
+  padding: 0 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--line);
   color: var(--blue);
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
   font-weight: 800;
 }
 
 .page-sidebar button {
-  padding: 0.7rem;
+  padding: 0.6rem 0.7rem;
   border: 1px solid transparent;
-  border-radius: 0.6rem;
+  border-radius: var(--radius-card);
   background: transparent;
   cursor: pointer;
   text-align: left;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
 }
 
-.page-sidebar button:hover,
-.page-sidebar button.is-active {
-  background: var(--card);
+.page-sidebar button:hover {
+  background: color-mix(in srgb, var(--card) 62%, transparent);
   color: var(--blue);
 }
 
 .page-sidebar button.is-active {
+  border-color: color-mix(in srgb, var(--line) 70%, var(--card));
+  background: var(--card);
+  box-shadow: inset 0.14rem 0 0 var(--blue);
+  color: var(--blue);
   font-weight: 800;
 }
 
 .calendar-page {
   width: min(1680px, 100%);
   margin: 0 auto;
-  padding: 3rem clamp(1rem, 3vw, 3.5rem) 2rem;
+  padding: 2rem clamp(1rem, 3vw, 3.5rem) 2rem;
 }
 
 .calendar-header,
@@ -108,7 +121,7 @@ a {
 }
 
 .calendar-header {
-  padding-bottom: 2rem;
+  padding-bottom: 1.4rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -136,18 +149,23 @@ a {
   width: 100%;
   min-height: 2.4rem;
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-control);
   background: var(--card);
   color: var(--ink);
   font: inherit;
   padding: 0 0.7rem;
+  transition: border-color var(--transition);
+}
+
+.anime-search input:hover {
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
 }
 
 .anime-search-empty {
   margin: 0;
   padding: 1rem;
   border: 1px dashed var(--line);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-panel);
   color: var(--muted-ink);
   text-align: center;
 }
@@ -163,11 +181,17 @@ a {
 .season-picker select {
   min-height: 2.4rem;
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-control);
   background: var(--card);
   color: var(--ink);
   font: inherit;
   padding: 0 0.7rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.season-picker select:hover {
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
 }
 
 .season-picker span,
@@ -178,17 +202,16 @@ a {
 }
 
 .pilot-note {
-  margin: 0.75rem 0 0;
+  margin: 0.6rem 0 0;
 }
 
 .season-kicker,
 .section-kicker {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.45rem;
   color: var(--blue);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 h1,
@@ -202,15 +225,13 @@ h1,
 h2,
 h3,
 strong {
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-display);
 }
 
 h1 {
-  max-width: 12ch;
-  margin-bottom: 0.7rem;
-  font-size: clamp(2.15rem, 5vw, 4.4rem);
-  line-height: 1.04;
-  letter-spacing: -0.045em;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  line-height: 1.15;
 }
 
 .intro,
@@ -223,6 +244,8 @@ h1 {
 .intro {
   max-width: 44rem;
   margin-bottom: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .source-link,
@@ -239,20 +262,20 @@ h1 {
 
 .weekly-section {
   --week-pager-height: 3.25rem;
-  padding: 2.25rem 0;
+  padding: 1.5rem 0;
 }
 
 .statistics-page {
   display: grid;
   gap: 1.25rem;
-  padding-top: 2rem;
+  padding-top: 1.5rem;
 }
 
 .statistics-today,
 .statistics-overview {
   padding: clamp(1rem, 2vw, 1.5rem);
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  border-radius: var(--radius-panel);
   background: var(--card);
 }
 
@@ -291,7 +314,7 @@ h1 {
 }
 
 .statistics-section-title {
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-display);
   font-size: clamp(1.45rem, 2vw, 2rem);
   font-weight: 700;
   line-height: 1.2;
@@ -317,7 +340,7 @@ h1 {
   border-bottom: 2px solid currentColor;
   color: var(--blue);
   transform: rotate(45deg);
-  transition: color 160ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 150ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .statistics-section-heading-toggle:hover .statistics-section-chevron,
@@ -352,9 +375,9 @@ h1 {
   z-index: 2;
   margin: -0.5rem -0.6rem 1rem;
   padding: 0.5rem 0.6rem 0.6rem;
-  border-radius: 0.7rem;
+  border-radius: var(--radius-card);
   background: var(--card);
-  box-shadow: 0 0.35rem 0.9rem color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: var(--shadow-raise);
 }
 
 .statistics-overview-summary .statistics-section-heading {
@@ -379,7 +402,7 @@ h1 {
 
 .statistics-overview-grid div {
   padding: 0.9rem;
-  border-radius: 0.65rem;
+  border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--blue-soft) 52%, var(--card));
 }
 
@@ -391,8 +414,9 @@ h1 {
 .statistics-overview-grid dd {
   margin: 0.35rem 0 0;
   color: var(--blue);
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-display);
   font-size: clamp(1.45rem, 3vw, 2rem);
+  font-variant-numeric: tabular-nums;
   font-weight: 800;
 }
 
@@ -407,11 +431,17 @@ h1 {
 .statistics-season-picker select {
   min-height: 2.4rem;
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-control);
   background: var(--card);
   color: var(--ink);
   font: inherit;
   padding: 0 0.7rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.statistics-season-picker select:hover {
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
 }
 
 .statistics-anime-card-list {
@@ -459,26 +489,28 @@ h1 {
   width: 100%;
   padding: 0.55rem;
   border: 1px solid var(--line);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-card);
   background: var(--card);
   color: var(--ink);
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: border-color 160ms ease, transform 160ms ease;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .statistics-anime-card:hover {
   border-color: var(--blue);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-raise);
 }
 
 .statistics-anime-card-cover {
   display: block;
   width: 3rem;
   aspect-ratio: 3 / 4;
-  border-radius: 0.45rem;
+  border-radius: 0.3rem;
   background-repeat: no-repeat;
+  outline: 1px solid rgb(31 41 51 / 8%);
+  outline-offset: -1px;
 }
 
 .statistics-anime-card-content {
@@ -496,7 +528,7 @@ h1 {
 }
 
 .statistics-anime-card-content strong {
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-display);
   font-size: 0.88rem;
 }
 
@@ -537,16 +569,16 @@ h1 {
   margin: 0;
   padding: 1rem;
   border: 1px dashed var(--line);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-card);
   color: var(--muted-ink);
   text-align: center;
 }
 
 .anime-selection-panel {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   padding: 1.25rem;
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  border-radius: var(--radius-panel);
   background: color-mix(in srgb, var(--card) 80%, var(--paper-deep));
 }
 
@@ -567,7 +599,7 @@ h1 {
 }
 
 .anime-selection-title {
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -593,9 +625,14 @@ h1 {
   min-width: 0;
   padding: 0.55rem;
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-control);
   background: var(--card);
   cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.anime-selection:hover {
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
 }
 
 .anime-selection:has(input:checked) {
@@ -620,7 +657,7 @@ h1 {
 .my-schedule-empty {
   margin: 1.5rem 0 0;
   padding: 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-card);
   color: var(--muted-ink);
 }
 
@@ -638,8 +675,7 @@ h1 {
 }
 
 .section-heading h2,
-.network-section h2,
-.detail-dialog h2 {
+.network-section h2 {
   margin-bottom: 0;
   font-size: clamp(1.45rem, 2vw, 2rem);
 }
@@ -656,10 +692,11 @@ h1 {
   z-index: 3;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
   min-height: var(--week-pager-height);
   margin-bottom: 0;
   padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
   background: var(--paper);
 }
 
@@ -667,28 +704,45 @@ h1 {
 .mobile-day-picker button,
 .dialog-close {
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-control);
   background: var(--card);
   cursor: pointer;
 }
 
 .week-pager button {
-  padding: 0.5rem 0.75rem;
+  padding: 0.42rem 0.8rem;
   font-size: 0.84rem;
   font-weight: 700;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
 }
 
 .week-pager button:hover,
 .dialog-close:hover {
   border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* “回到本周”是辅助操作：视觉降级为文字按钮，翻周按钮保持主样式。DOM 顺序为 上一周 / 日期 / 回到本周 / 下一周。 */
+.week-pager button:nth-of-type(2) {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted-ink);
+  font-weight: 400;
+}
+
+.week-pager button:nth-of-type(2):hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  color: var(--blue);
 }
 
 .week-pager p {
   flex: 1;
   margin: 0;
-  color: var(--blue);
-  font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
-  font-size: 1.1rem;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
   text-align: center;
 }
@@ -698,7 +752,7 @@ h1 {
   --timeline-lines:
     repeating-linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--line) 65%, transparent) 0 1px,
+      color-mix(in srgb, var(--line) 55%, transparent) 0 1px,
       transparent 1px 48px
     ),
     repeating-linear-gradient(
@@ -711,7 +765,7 @@ h1 {
   grid-template-rows: 4.35rem auto;
   overflow: clip;
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  border-radius: var(--radius-panel);
   background: var(--line);
   gap: 1px;
 }
@@ -732,32 +786,35 @@ h1 {
 .timeline-day-header {
   display: grid;
   align-content: center;
-  gap: 0.12rem;
+  gap: 0.15rem;
   padding: 0.72rem;
 }
 
 .timeline-day-header.is-today {
-  background: var(--mint);
+  background: color-mix(in srgb, var(--mint) 42%, var(--card));
 }
 
 .timeline-day-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.98rem;
 }
 
 .timeline-day-header span {
   color: var(--muted-ink);
   font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .timeline-day-header b {
   position: absolute;
-  top: 0.7rem;
+  top: 0.6rem;
   right: 0.55rem;
-  padding: 0.1rem 0.35rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 999px;
-  background: var(--mint);
-  font-size: 0.65rem;
+  background: var(--mint-deep);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
 }
 
 .timeline-axis {
@@ -776,6 +833,7 @@ h1 {
   padding-left: 0.35rem;
   color: var(--muted-ink);
   font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
   line-height: 1;
 }
@@ -793,7 +851,7 @@ h1 {
 }
 
 .timeline-day.is-today {
-  background-color: color-mix(in srgb, var(--mint) 28%, var(--card));
+  background-color: color-mix(in srgb, var(--mint) 18%, var(--card));
 }
 
 .timeline-date-only-corner,
@@ -807,7 +865,7 @@ h1 {
 }
 
 .timeline-date-only.is-today {
-  background: color-mix(in srgb, var(--mint) 28%, var(--card));
+  background: color-mix(in srgb, var(--mint) 18%, var(--card));
 }
 
 .timeline-date-only-events {
@@ -817,33 +875,35 @@ h1 {
 
 .date-only-event {
   display: grid;
-  gap: 0.1rem;
+  gap: 0.12rem;
   width: 100%;
-  padding: 0.3rem;
-  border: 1px dashed color-mix(in srgb, var(--blue) 72%, var(--line));
-  border-radius: 0.4rem;
-  background: color-mix(in srgb, var(--blue-soft) 86%, var(--card));
+  padding: 0.35rem 0.4rem;
+  border: 1px dashed color-mix(in srgb, var(--blue) 55%, var(--line));
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--blue-soft) 70%, var(--card));
   color: var(--ink);
   cursor: pointer;
   text-align: left;
+  transition: border-color var(--transition), background var(--transition);
 }
 
 .date-only-event:hover {
   border-color: var(--blue);
+  background: color-mix(in srgb, var(--blue-soft) 85%, var(--card));
 }
 
 .date-only-event strong {
   overflow: hidden;
-  font-size: 0.68rem;
-  line-height: 1.2;
+  font-size: 0.7rem;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .date-only-event span {
   color: var(--muted-ink);
-  font-size: 0.62rem;
-  line-height: 1.2;
+  font-size: 0.63rem;
+  line-height: 1.25;
 }
 
 .time-groups {
@@ -852,20 +912,24 @@ h1 {
 
 .time-group {
   display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
+  grid-template-columns: 4.25rem minmax(0, 1fr);
   border-bottom: 1px solid var(--line);
 }
 
+.time-group:last-of-type {
+  border-bottom: 0;
+}
+
 .time-group-label {
-  display: grid;
-  place-items: center;
-  min-height: 4.5rem;
-  padding: 0.5rem;
+  display: block;
+  padding: 0.6rem 0.35rem 0.5rem;
   border-right: 1px solid var(--line);
   background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
-  color: var(--muted-ink);
-  font-size: 0.78rem;
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
+  line-height: 1.3;
   text-align: center;
 }
 
@@ -905,16 +969,17 @@ h1 {
   width: 100%;
   height: 100%;
   min-height: 4.5rem;
-  gap: 0.4rem;
-  padding: 0.35rem;
+  gap: 0.5rem;
+  padding: 0.4rem;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--blue) 55%, var(--line));
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--blue-soft) 78%, var(--card));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  box-shadow: inset 0.14rem 0 0 color-mix(in srgb, var(--blue) 45%, var(--line));
   color: var(--ink);
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .timeline-event {
@@ -934,20 +999,25 @@ h1 {
 }
 
 .calendar-event-detail:hover {
-  border-color: var(--blue);
-  box-shadow: 0 0.35rem 0.8rem rgb(31 41 51 / 15%);
-  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  box-shadow: inset 0.14rem 0 0 var(--blue);
 }
 
 .calendar-event.is-today .calendar-event-detail {
-  border-color: var(--mint-deep);
-  box-shadow: inset 0 0 0 1px var(--mint);
+  border-color: color-mix(in srgb, var(--mint-deep) 50%, var(--line));
+  box-shadow: inset 0.14rem 0 0 var(--mint-deep);
 }
 
 .calendar-event.is-watched .calendar-event-detail {
-  border-color: color-mix(in srgb, var(--muted-ink) 42%, var(--line));
-  background: color-mix(in srgb, var(--paper-deep) 64%, var(--card));
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--paper) 55%, var(--card));
+  box-shadow: inset 0.14rem 0 0 var(--line);
   color: var(--muted-ink);
+}
+
+.calendar-event.is-watched .calendar-event-detail:hover {
+  border-color: color-mix(in srgb, var(--muted-ink) 65%, var(--line));
+  box-shadow: inset 0.14rem 0 0 var(--muted-ink);
 }
 
 .calendar-event.is-watched .calendar-event-cover {
@@ -964,24 +1034,34 @@ h1 {
   height: 0.75rem;
   padding: 0;
   place-items: center;
-  border: 1px solid var(--muted-ink);
-  border-radius: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--muted-ink) 70%, var(--line));
+  border-radius: 0.22rem;
   background: var(--card);
-  color: var(--muted-ink);
+  color: #fff;
   cursor: pointer;
+  font-size: 0.58rem;
   font-weight: 800;
   line-height: 1;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.episode-watch-toggle:hover {
+  border-color: var(--blue);
 }
 
 .episode-watch-toggle[aria-pressed="true"] {
-  border-color: var(--muted-ink);
-  background: var(--muted-ink);
-  color: var(--card);
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+.episode-watch-toggle[aria-pressed="true"]:hover {
+  border-color: color-mix(in srgb, var(--blue) 82%, var(--ink));
+  background: color-mix(in srgb, var(--blue) 82%, var(--ink));
 }
 
 .episode-watch-toggle:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .timeline-event .episode-watch-toggle {
@@ -989,7 +1069,7 @@ h1 {
   right: 0.13rem;
   width: 0.75rem;
   height: 0.75rem;
-  font-size: 0.65rem;
+  font-size: 0.58rem;
 }
 
 .calendar-event-cover {
@@ -998,8 +1078,10 @@ h1 {
   width: 100%;
   height: auto;
   aspect-ratio: 3 / 4;
-  border-radius: 0.3rem;
+  border-radius: 0.28rem;
   background-repeat: no-repeat;
+  outline: 1px solid rgb(31 41 51 / 8%);
+  outline-offset: -1px;
 }
 
 .timeline-event .calendar-event-cover {
@@ -1024,8 +1106,9 @@ h1 {
 
 .calendar-event-episode {
   color: var(--muted-ink);
-  font-size: 0.65rem;
-  line-height: 1.2;
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
 }
 
 .calendar-event-detail strong {
@@ -1033,8 +1116,9 @@ h1 {
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: 0.75rem;
-  line-height: 1.18;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .timeline-event .calendar-event-detail strong {
@@ -1042,7 +1126,7 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   line-height: 1.2;
 }
 
@@ -1054,8 +1138,9 @@ h1 {
   display: grid;
   gap: 1.25rem;
   padding: 1.5rem;
-  border-radius: 1rem;
-  background: var(--blue-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
 }
 
 .network-section > div > p:last-child {
@@ -1074,26 +1159,28 @@ h1 {
   grid-template-columns: 4.4rem 1fr;
   min-width: 0;
   gap: 0.75rem;
-  padding: 0.65rem;
-  border: 1px solid transparent;
-  border-radius: 0.7rem;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
   background: var(--card);
   cursor: pointer;
   text-align: left;
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .network-card:hover {
   border-color: var(--blue);
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-raise);
 }
 
 .network-card-cover {
   display: block;
   width: 4.4rem;
   height: 5.8rem;
-  border-radius: 0.45rem;
+  border-radius: 0.3rem;
   background-repeat: no-repeat;
+  outline: 1px solid rgb(31 41 51 / 8%);
+  outline-offset: -1px;
 }
 
 .network-card > span {
@@ -1110,7 +1197,7 @@ h1 {
 }
 
 .network-card strong {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   line-height: 1.35;
 }
 
@@ -1119,15 +1206,17 @@ h1 {
   color: var(--muted-ink);
   font-size: 0.72rem;
   font-style: normal;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .calendar-footer {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding-top: 1.5rem;
-  font-size: 0.82rem;
+  margin-top: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
   line-height: 1.6;
 }
 
@@ -1136,14 +1225,25 @@ h1 {
 }
 
 .detail-dialog {
-  width: min(34rem, 100%);
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  column-gap: 1.75rem;
+  width: min(44rem, 100%);
   max-height: calc(100vh - 2rem);
   overflow: auto;
-  padding: clamp(1.25rem, 4vw, 2rem);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
   border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   background: var(--card);
   box-shadow: 0 1.5rem 4rem rgb(31 41 51 / 30%);
+}
+
+/* 未打开的弹窗不得占用文档流：.detail-dialog 的 display: grid 属于作者样式，
+   会覆盖 UA 的 dialog:not([open]) { display: none }；否则 React 插入节点到
+   showModal() 生效之间弹窗会出现在页面底部，autoFocus 的关闭按钮聚焦时会把
+   背景页面滚动到底部。 */
+.detail-dialog:not([open]) {
+  display: none;
 }
 
 .detail-dialog::backdrop {
@@ -1151,6 +1251,7 @@ h1 {
 }
 
 .detail-dialog-heading {
+  grid-column: 1 / -1;
   align-items: center;
   margin-bottom: 1.25rem;
 }
@@ -1161,59 +1262,97 @@ h1 {
 
 .dialog-close {
   padding: 0.42rem 0.7rem;
-}
-
-.detail-dialog h2 {
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
+  transition: border-color var(--transition), color var(--transition);
 }
 
 .detail-cover {
+  grid-column: 1;
+  grid-row: 2 / span 4;
+  align-self: start;
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 3 / 4;
   max-height: none;
-  margin-bottom: 1rem;
-  border-radius: 0.75rem;
+  margin-bottom: 0;
+  border-radius: var(--radius-card);
   background-repeat: no-repeat;
+  outline: 1px solid rgb(31 41 51 / 10%);
+  outline-offset: -1px;
 }
 
 .detail-title-zh {
-  margin-bottom: 0.35rem;
+  grid-column: 2;
+  margin-bottom: 0.25rem;
   color: var(--blue);
   font-weight: 800;
 }
 
+.detail-dialog h2 {
+  grid-column: 2;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
 .detail-dialog dl {
+  grid-column: 2;
   display: grid;
-  gap: 0.8rem;
+  gap: 0;
   margin: 0 0 1.5rem;
 }
 
 .detail-dialog dl div {
   display: grid;
-  gap: 0.2rem;
-  padding-bottom: 0.75rem;
+  grid-template-columns: 4.75rem minmax(0, 1fr);
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+  padding: 0.625rem 0;
   border-bottom: 1px solid var(--line);
+}
+
+.detail-dialog dl div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .detail-dialog dt {
   color: var(--muted-ink);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
 }
 
 .detail-dialog dd {
   margin: 0;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+.detail-source-link {
+  grid-column: 2;
+  justify-self: start;
 }
 
 @media (max-width: 860px) {
   .week-pager {
     position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     min-height: 0;
     margin-bottom: 1rem;
     padding: 0;
+    border-bottom: 0;
     background: transparent;
+  }
+
+  .week-pager p {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    font-size: 1.05rem;
+    text-align: left;
+  }
+
+  .week-pager button {
+    padding: 0.45rem 0.6rem;
   }
 
   .site-shell {
@@ -1222,7 +1361,9 @@ h1 {
 
   .page-sidebar {
     position: static;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
     min-height: 0;
     padding: 0.75rem 1rem;
     border-right: 0;
@@ -1230,8 +1371,29 @@ h1 {
   }
 
   .site-name {
-    grid-column: 1 / -1;
-    margin-bottom: 0.15rem;
+    width: 100%;
+    margin-bottom: 0.35rem;
+    padding: 0 0 0.5rem;
+    font-size: 1.15rem;
+  }
+
+  .page-sidebar button {
+    padding: 0.4rem 0.75rem;
+    border-color: var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    text-align: center;
+  }
+
+  .page-sidebar button:hover {
+    background: color-mix(in srgb, var(--blue-soft) 55%, var(--card));
+  }
+
+  .page-sidebar button.is-active {
+    border-color: var(--blue);
+    background: var(--blue);
+    box-shadow: none;
+    color: #fff;
   }
 
   .calendar-page {
@@ -1277,17 +1439,6 @@ h1 {
     text-align: left;
   }
 
-  .week-pager {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .week-pager p {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    text-align: left;
-  }
-
   .timeline-grid {
     display: none;
   }
@@ -1300,7 +1451,7 @@ h1 {
   .mobile-day-picker {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 0.4rem;
+    gap: 0.3rem;
   }
 
   .mobile-day-picker button {
@@ -1311,22 +1462,27 @@ h1 {
     font-size: 0.68rem;
     line-height: 1.2;
     white-space: nowrap;
+    transition: border-color var(--transition), background var(--transition), color var(--transition);
+  }
+
+  .mobile-day-picker button b {
+    font-variant-numeric: tabular-nums;
   }
 
   .mobile-day-picker button.is-selected {
     border-color: var(--blue);
-    background: var(--blue-soft);
-    color: var(--ink);
+    background: var(--blue);
+    color: #fff;
   }
 
-.mobile-agenda {
+  .mobile-agenda {
     display: grid;
-    gap: 0.55rem;
-    min-height: 16rem;
+    gap: 0;
+    min-height: 10rem;
     overflow: hidden;
     padding: 0;
     border: 1px solid var(--line);
-    border-radius: 0.75rem;
+    border-radius: var(--radius-panel);
     background: var(--card);
   }
 
@@ -1343,7 +1499,7 @@ h1 {
   }
 
   .mobile-agenda .calendar-event-detail strong {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   .mobile-agenda > p {
@@ -1362,15 +1518,58 @@ h1 {
   }
 }
 
+@media (max-width: 520px) {
+  .detail-dialog {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    column-gap: 1rem;
+  }
+
+  .detail-dialog dl div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
 .mobile-date-only-events {
   display: grid;
   gap: 0.4rem;
-  padding: 0.55rem 0.55rem 0;
+  padding: 0.55rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+/* 单列 grid 容器统一限定轨道宽度：长标题等不可断内容（最大内容宽度）
+   不再把容器撑出页面宽度，保持移动端议程与各面板不横向溢出。 */
+.statistics-page,
+.anime-search-page,
+.anime-selection-details,
+.network-section,
+.mobile-calendar,
+.mobile-agenda {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 860px) {
+  /* 移动端周导航的“下一周”独占一行，避免右侧留空。 */
+  .week-pager button:nth-of-type(3) {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .anime-search input,
+  .anime-selection,
   .calendar-event-detail,
-  .network-card {
+  .date-only-event,
+  .dialog-close,
+  .episode-watch-toggle,
+  .mobile-day-picker button,
+  .network-card,
+  .page-sidebar button,
+  .season-picker select,
+  .statistics-anime-card,
+  .statistics-season-picker select,
+  .statistics-section-chevron,
+  .week-pager button {
     transition: none;
   }
 }
