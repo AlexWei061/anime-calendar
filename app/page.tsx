@@ -2,6 +2,7 @@
 
 import {
   type CSSProperties,
+  type FormEvent,
   useEffect,
   useRef,
   useState,
@@ -56,6 +57,8 @@ type SelectedAnime = Anime & {
   selectedReleaseKind?: "network";
 };
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
+type AuthUser = { email: string; displayName: string };
+type AuthDialogMode = "login" | "register";
 type Page = "all" | "mine" | "stats" | "search";
 type StatisticsSection = "today" | "overview";
 
@@ -169,11 +172,18 @@ export default function Home() {
   const [watchedEpisodeError, setWatchedEpisodeError] = useState<string | null>(null);
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
   const [selectedOverallSeasonId, setSelectedOverallSeasonId] = useState("");
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [authLoaded, setAuthLoaded] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState<AuthDialogMode | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
   const [activeMobileDate, setActiveMobileDate] = useState(initialWeekStart);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
+  const authDialogRef = useRef<HTMLDialogElement>(null);
+  const authOpenerRef = useRef<HTMLButtonElement | null>(null);
   const didSetInitialWeek = useRef(false);
   const currentBeijingDate = useSyncExternalStore<string | null>(
     subscribeToBeijingDate,
@@ -266,6 +276,39 @@ export default function Home() {
   }, [selected]);
 
   useEffect(() => {
+    if (authDialogMode && authDialogRef.current && !authDialogRef.current.open) {
+      authDialogRef.current.showModal();
+    }
+  }, [authDialogMode]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadCurrentUser() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (!response.ok) return;
+        const payload = (await response.json()) as { email?: unknown; displayName?: unknown };
+        if (
+          typeof payload.email === "string" &&
+          typeof payload.displayName === "string" &&
+          !cancelled
+        ) {
+          setCurrentUser({ email: payload.email, displayName: payload.displayName });
+        }
+      } catch {
+        // 未登录或网络错误都按未登录处理。
+      } finally {
+        if (!cancelled) setAuthLoaded(true);
+      }
+    }
+
+    void loadCurrentUser();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const syncPageFromUrl = () => {
       const page = new URLSearchParams(window.location.search).get("page");
       setActivePage(page === "mine" || page === "stats" || page === "search" ? page : "all");
@@ -288,6 +331,10 @@ export default function Home() {
     async function loadAnimeSelections() {
       try {
         const response = await fetch("/api/anime-selections");
+        if (response.status === 401) {
+          if (!cancelled) setSelectionError("登录后可同步你的追番列表。");
+          return;
+        }
         if (!response.ok) throw new Error("Unable to load anime selections");
 
         const payload = (await response.json()) as { animeIds?: unknown };
@@ -304,13 +351,17 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [activePage, selectedAnimeIds]);
+  }, [activePage, selectedAnimeIds, currentUser]);
 
   useEffect(() => {
     let cancelled = false;
     async function loadWatchedEpisodes() {
       try {
         const response = await fetch("/api/anime-episode-views");
+        if (response.status === 401) {
+          if (!cancelled) setWatchedEpisodeError("登录后可同步你的已看记录。");
+          return;
+        }
         if (!response.ok) throw new Error("Unable to load watched episodes");
 
         const payload = (await response.json()) as { watchedEpisodes?: unknown };
@@ -337,7 +388,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [currentUser]);
 
   const changePage = (page: Page) => {
     if (page === activePage) return;
@@ -433,6 +484,74 @@ export default function Home() {
     }
   };
 
+  const openAuthDialog = (mode: AuthDialogMode, opener: HTMLButtonElement) => {
+    authOpenerRef.current = opener;
+    setAuthError(null);
+    setAuthDialogMode(mode);
+  };
+
+  const handleAuthDialogClose = () => {
+    setAuthDialogMode(null);
+    setAuthError(null);
+    if (authOpenerRef.current?.isConnected) authOpenerRef.current.focus();
+  };
+
+  const submitAuth = async (submitEvent: FormEvent<HTMLFormElement>) => {
+    submitEvent.preventDefault();
+    if (isSubmittingAuth || !authDialogMode) return;
+
+    const form = new FormData(submitEvent.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
+    const displayName = String(form.get("displayName") ?? "");
+
+    setIsSubmittingAuth(true);
+    setAuthError(null);
+    try {
+      const response = await fetch(`/api/auth/${authDialogMode}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(
+          authDialogMode === "register" ? { email, password, displayName } : { email, password },
+        ),
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        email?: unknown;
+        displayName?: unknown;
+        error?: unknown;
+      };
+      if (
+        !response.ok ||
+        typeof payload.email !== "string" ||
+        typeof payload.displayName !== "string"
+      ) {
+        setAuthError(typeof payload.error === "string" ? payload.error : "操作失败，请重试。");
+        return;
+      }
+      setCurrentUser({ email: payload.email, displayName: payload.displayName });
+      setSelectionError(null);
+      setWatchedEpisodeError(null);
+      authDialogRef.current?.close();
+    } catch {
+      setAuthError("网络错误，请重试。");
+    } finally {
+      setIsSubmittingAuth(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // 即使请求失败也在本地按退出处理。
+    }
+    setCurrentUser(null);
+    setSelectedAnimeIds(null);
+    setWatchedEpisodes(null);
+    setSelectionError(null);
+    setWatchedEpisodeError(null);
+  };
+
   const openDetail = (
     record: Anime,
     opener: HTMLButtonElement,
@@ -447,6 +566,17 @@ export default function Home() {
 
   const isStatisticsSectionCollapsed = (section: StatisticsSection) =>
     collapsedStatisticsSections.includes(section);
+  const signInPromptButton =
+    !currentUser && authLoaded ? (
+      <button
+        className="sign-in-prompt-button"
+        type="button"
+        aria-haspopup="dialog"
+        onClick={(clickEvent) => openAuthDialog("login", clickEvent.currentTarget)}
+      >
+        登录 / 注册
+      </button>
+    ) : null;
   const toggleStatisticsSection = (section: StatisticsSection) => {
     setCollapsedStatisticsSections((sections) =>
       sections.includes(section)
@@ -628,6 +758,26 @@ export default function Home() {
         >
           查询番剧
         </button>
+        <div className="account-area">
+          {currentUser ? (
+            <>
+              <span className="account-name" title={currentUser.email}>
+                {currentUser.displayName}
+              </span>
+              <button type="button" onClick={() => void signOut()}>
+                退出
+              </button>
+            </>
+          ) : authLoaded ? (
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              onClick={(clickEvent) => openAuthDialog("login", clickEvent.currentTarget)}
+            >
+              登录 / 注册
+            </button>
+          ) : null}
+        </div>
       </nav>
       <main className="calendar-page">
       <header className="calendar-header">
@@ -698,6 +848,7 @@ export default function Home() {
           {selectedAnimeIds === null || watchedEpisodes === null ? (
             <p className="selection-status" aria-live="polite">
               {selectionError ?? watchedEpisodeError ?? "正在读取你的追番和已看记录…"}
+              {selectionError || watchedEpisodeError ? signInPromptButton : null}
             </p>
           ) : (
             <>
@@ -865,7 +1016,7 @@ export default function Home() {
                 本季度想追什么？
               </span>
               <span className="anime-selection-summary-copy">
-                选择会自动保存，并在登录同一 ChatGPT 账号的设备间同步。
+                选择会自动保存，并在登录同一账号的设备间同步。
               </span>
             </summary>
             {selectedAnimeIds ? (
@@ -885,6 +1036,7 @@ export default function Home() {
             ) : (
               <p className="selection-status" aria-live="polite">
                 {selectionError ?? "正在读取你的追番列表…"}
+                {selectionError ? signInPromptButton : null}
               </p>
             )}
             {selectedAnimeIds && selectionError ? (
@@ -976,6 +1128,7 @@ export default function Home() {
         {watchedEpisodeError ? (
           <p className="selection-status" aria-live="polite">
             {watchedEpisodeError}
+            {signInPromptButton}
           </p>
         ) : null}
 
@@ -1157,6 +1310,95 @@ export default function Home() {
           勾选上方的番剧后，这里会显示你的专属时间表。
         </p>
         ) : null
+      ) : null}
+
+      {authDialogMode ? (
+        <dialog
+          ref={authDialogRef}
+          className="auth-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="auth-dialog-title"
+          onClose={handleAuthDialogClose}
+          onClick={(clickEvent) => {
+            const rect = clickEvent.currentTarget.getBoundingClientRect();
+            if (
+              clickEvent.clientX < rect.left ||
+              clickEvent.clientX > rect.right ||
+              clickEvent.clientY < rect.top ||
+              clickEvent.clientY > rect.bottom
+            ) {
+              clickEvent.currentTarget.close();
+            }
+          }}
+        >
+          <div className="detail-dialog-heading">
+            <p className="section-kicker">账号</p>
+            <button
+              className="dialog-close"
+              type="button"
+              aria-label="关闭登录窗口"
+              onClick={() => authDialogRef.current?.close()}
+              autoFocus
+            >
+              关闭
+            </button>
+          </div>
+          <h2 id="auth-dialog-title">{authDialogMode === "login" ? "登录" : "注册"}</h2>
+          <form className="auth-form" onSubmit={(submitEvent) => void submitAuth(submitEvent)}>
+            <label>
+              邮箱
+              <input
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="you@example.com"
+              />
+            </label>
+            <label>
+              密码
+              <input
+                name="password"
+                type="password"
+                autoComplete={authDialogMode === "login" ? "current-password" : "new-password"}
+                required
+                minLength={8}
+                maxLength={72}
+                placeholder="至少 8 位"
+              />
+            </label>
+            {authDialogMode === "register" ? (
+              <label>
+                昵称（可选）
+                <input name="displayName" type="text" autoComplete="nickname" maxLength={40} />
+              </label>
+            ) : null}
+            {authError ? (
+              <p className="auth-error" role="alert">
+                {authError}
+              </p>
+            ) : null}
+            <button className="auth-submit" type="submit" disabled={isSubmittingAuth}>
+              {isSubmittingAuth
+                ? "正在提交…"
+                : authDialogMode === "login"
+                  ? "登录"
+                  : "注册并登录"}
+            </button>
+          </form>
+          <p className="auth-switch">
+            {authDialogMode === "login" ? "还没有账号？" : "已有账号？"}
+            <button
+              type="button"
+              onClick={(clickEvent) =>
+                openAuthDialog(authDialogMode === "login" ? "register" : "login", clickEvent.currentTarget)
+              }
+            >
+              {authDialogMode === "login" ? "立即注册" : "直接登录"}
+            </button>
+          </p>
+        </dialog>
       ) : null}
 
       {selected ? (

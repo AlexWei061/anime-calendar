@@ -18,7 +18,7 @@ test("declares authenticated per-update watched storage and a generated migratio
   assert.match(schema, /integer\("episode_start"\)/);
   assert.match(schema, /integer\("episode"\)/);
   assert.match(schema, /userEmail, table\.animeId, table\.episodeStart, table\.episode/);
-  assert.match(route, /getChatGPTUser/);
+  assert.match(route, /getSessionUser/);
   assert.match(route, /status: 401/);
   assert.match(route, /validateEpisodeView/);
   assert.match(route, /filterKnownEpisodeViews/);

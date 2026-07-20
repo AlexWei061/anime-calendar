@@ -6,12 +6,12 @@ import {
   filterKnownEpisodeViews,
   validateEpisodeView,
 } from "../../../lib/anime-episode-views.js";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getSessionUser } from "../../auth";
 
 const animeById = new Map(allAnime.map((anime) => [anime.id, anime]));
 
 export async function GET() {
-  const user = await getChatGPTUser();
+  const user = await getSessionUser();
   if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
 
   try {
@@ -30,7 +30,7 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const user = await getChatGPTUser();
+  const user = await getSessionUser();
   if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
 
   let watchedEpisode: { animeId: string; episodeStart: number; episode: number };

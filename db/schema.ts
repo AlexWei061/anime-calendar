@@ -1,5 +1,18 @@
 import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+export const users = sqliteTable("users", {
+  email: text("email").primaryKey(),
+  passwordHash: text("password_hash").notNull(),
+  displayName: text("display_name").notNull(),
+  createdAt: integer("created_at").notNull(),
+});
+
+export const authSessions = sqliteTable("auth_sessions", {
+  tokenHash: text("token_hash").primaryKey(),
+  userEmail: text("user_email").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+});
+
 export const animeSelections = sqliteTable(
   "anime_selections",
   {

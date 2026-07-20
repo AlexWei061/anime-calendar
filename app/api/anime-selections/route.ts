@@ -3,12 +3,12 @@ import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
 import { filterKnownAnimeIds, selectionInsertBatches } from "../../../lib/anime-selections.js";
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getSessionUser } from "../../auth";
 
 const validAnimeIds = new Set(allAnime.map(({ id }) => id));
 
 async function currentUser() {
-  return getChatGPTUser();
+  return getSessionUser();
 }
 
 export async function GET() {

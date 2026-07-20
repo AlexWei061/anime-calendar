@@ -12,7 +12,7 @@ test("declares a D1 table and authenticated selection route", async () => {
   assert.equal(JSON.parse(hosting).d1, "DB");
   assert.match(schema, /animeSelections/);
   assert.match(schema, /primaryKey/);
-  assert.match(route, /getChatGPTUser/);
+  assert.match(route, /getSessionUser/);
   assert.match(route, /status: 401/);
   assert.doesNotMatch(route, /validateAnimeIds/);
   assert.match(route, /import \{[^}]*filterKnownAnimeIds[^}]*\} from/);

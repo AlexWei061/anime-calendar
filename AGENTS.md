@@ -30,7 +30,7 @@
 ## 项目定位
 
 这是一个展示 **2020 年至 2025 年四季及 2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
-并允许连续跨季度前后翻周；移动端提供单日议程。登录同一 ChatGPT 账号的用户可以维护自己的追番列表，
+并允许连续跨季度前后翻周；移动端提供单日议程。注册登录账号的用户可以维护自己的追番列表，
 并永久保存逐集“已看”标记。
 
 技术栈：Next.js 16、React 19、TypeScript、vinext/Vite、Cloudflare Worker、Cloudflare D1、
@@ -43,7 +43,9 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `app/page.tsx` | 客户端日历界面、季度定位、周切换、桌面/移动视图、详情弹窗、个人追番、逐集已看和全库番剧查询交互。 |
 | `app/globals.css` | 全站视觉样式、桌面时间轴、全库查询结果卡与移动端断点（`860px`）。 |
 | `app/layout.tsx` | 中文页面元数据和根布局。 |
-| `app/chatgpt-auth.ts` | 读取 Sites 注入的 ChatGPT 身份，生成安全的登录/退出跳转地址。 |
+| `app/auth.ts` | 基于 `ac_session` Cookie 与 D1 会话表的自有账号认证；签发、校验与销毁会话。 |
+| `lib/auth.js` | 邮箱/密码/昵称校验、PBKDF2 密码哈希与校验、会话令牌生成与哈希。 |
+| `app/api/auth/` | 注册、登录、退出与当前用户查询 API；登录/注册成功时写入会话 Cookie。 |
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表保存 API。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的单集已看标记读取与单条更新 API。 |
 | `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录（含人工核对的特殊先行排期）和统一的 `allAnime` 目录。 |
@@ -101,11 +103,11 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 
 ## 个人追番与数据库边界
 
-- 追番列表是服务器端、按 ChatGPT 邮箱隔离的数据；浏览器不能决定用户邮箱。API 必须先调用 `getChatGPTUser()`，未登录时返回 `401`。
+- 追番列表是服务器端、按账号邮箱隔离的数据；浏览器不能决定用户邮箱。API 必须先调用 `getSessionUser()` 校验 `ac_session` 会话 Cookie，未登录时返回 `401`。
 - 写入前必须通过 `filterKnownAnimeIds` 去重并过滤掉不在 `allAnime` 中的 ID；保存采用“该用户整表替换”的现有语义。
 - D1 单条语句最多绑定 100 个参数；每个追番写入会绑定邮箱和番剧 ID 两个参数，所以插入必须按最多 50 个 ID 分批。删除旧列表与所有插入批次必须放进同一次 `db.batch()`，保持原子替换；不要先删除再单独插入，否则大列表插入失败会清空用户原有追番。
-- 已看标记同样按 ChatGPT 邮箱隔离并永久保存在 D1；单条记录由 `animeId`、`episodeStart` 和 `episode` 唯一标识。API 必须先认证，再通过 `validateEpisodeView` 校验，不能接受浏览器提供的用户身份。
-- 认证辅助函数依赖 Sites 保留的登录路由。不要在应用内实现 `/signin-with-chatgpt`、`/signout-with-chatgpt` 或 `/callback`。
+- 已看标记同样按账号邮箱隔离并永久保存在 D1；单条记录由 `animeId`、`episodeStart` 和 `episode` 唯一标识。API 必须先认证，再通过 `validateEpisodeView` 校验，不能接受浏览器提供的用户身份。
+- 账号体系是应用自有的邮箱+密码：密码只存 `lib/auth.js` 生成的 PBKDF2 哈希，会话只存令牌的 SHA-256 哈希；数据库中不得出现明文密码或明文会话令牌。
 - 修改 D1 schema 时，同时更新 `db/schema.ts` 并运行 `npm run db:generate`，检查新迁移后将其提交。不要手写与 schema 不一致的 SQL。
 - 保持 `.openai/hosting.json` 的逻辑 D1 声明和 `getDb()` 使用的 `DB` 绑定一致；不要把真实资源 ID、密钥或环境变量写入仓库。
 
