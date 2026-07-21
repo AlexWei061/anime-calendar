@@ -405,6 +405,16 @@ export default function Home() {
     setActivePage(page);
   };
 
+  const submitPageSearch = (submitEvent: FormEvent<HTMLFormElement>) => {
+    submitEvent.preventDefault();
+    const query = String(
+      new FormData(submitEvent.currentTarget).get("pageSearch") ?? "",
+    ).trim();
+    if (!query) return;
+    setAnimeQuery(query);
+    changePage("search");
+  };
+
   const changeWeek = (days: number) => {
     const nextWeekStart = addDays(activeWeekStart, days);
     setActiveWeekStart(nextWeekStart);
@@ -752,14 +762,6 @@ export default function Home() {
         >
           追番统计
         </button>
-        <button
-          className={activePage === "search" ? "is-active" : ""}
-          type="button"
-          aria-current={activePage === "search" ? "page" : undefined}
-          onClick={() => changePage("search")}
-        >
-          查询番剧
-        </button>
         <div className="account-area">
           {currentUser ? (
             <>
@@ -844,6 +846,21 @@ export default function Home() {
           </div>
         ) : null}
       </header>
+
+      {activePage !== "search" ? (
+        <form
+          className="page-search"
+          role="search"
+          aria-label="查询番剧"
+          onSubmit={submitPageSearch}
+        >
+          <label className="page-search-field">
+            查询番剧
+            <input name="pageSearch" type="search" placeholder="输入中文或日文名" />
+          </label>
+          <button type="submit">查询</button>
+        </form>
+      ) : null}
 
       {activePage === "stats" ? (
         <section className="statistics-page" aria-label="我的追番统计">

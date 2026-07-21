@@ -9,3 +9,11 @@ test("npm test runs every test file", async () => {
 
   assert.match(packageJson.scripts.test, /tests\/\*\.test\.mjs/);
 });
+
+test("npm run dev exposes the development server on the local network", async () => {
+  const packageJson = JSON.parse(
+    await readFile(new URL("../package.json", import.meta.url), "utf8"),
+  );
+
+  assert.match(packageJson.scripts.dev, /vinext dev --hostname 0\.0\.0\.0/);
+});

@@ -735,6 +735,20 @@ test("keeps global title search separate from calendar schedules", async () => {
   );
 });
 
+test("offers a search box on calendar pages that jumps to the search page", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(
+    page,
+    /const submitPageSearch = \(submitEvent: FormEvent<HTMLFormElement>\) => \{[\s\S]*?setAnimeQuery\(query\);\s*changePage\("search"\);/,
+  );
+  assert.match(
+    page,
+    /\{activePage !== "search" \? \([\s\S]*?className="page-search"[\s\S]*?role="search"[\s\S]*?name="pageSearch"[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/,
+  );
+  assert.match(page, /className="page-search-field"/);
+});
+
 test("keeps accessible contrast tokens and generated build metadata out of the deliverable", async () => {
   const [styles, readme, gitignore] = await Promise.all([
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),

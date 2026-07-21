@@ -161,6 +161,54 @@ a {
   border-bottom: 1px solid var(--line);
 }
 
+.page-search {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.page-search-field {
+  flex: 1;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.page-search-field input {
+  width: 100%;
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  transition: border-color var(--transition);
+}
+
+.page-search-field input:hover {
+  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+}
+
+.page-search > button {
+  min-height: 2.4rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-control);
+  background: var(--blue);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+  transition: background var(--transition);
+}
+
+.page-search > button:hover {
+  background: color-mix(in srgb, var(--blue) 88%, #000);
+}
+
 .calendar-header-controls {
   display: grid;
   justify-items: end;
@@ -1837,6 +1885,8 @@ h1 {
   .dialog-close,
   .episode-watch-toggle,
   .mobile-day-picker button,
+  .page-search-field input,
+  .page-search > button,
   .network-card,
   .page-sidebar button,
   .season-picker select,
