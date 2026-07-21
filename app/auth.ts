@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { getDb } from "../db";
 import { authSessions, users } from "../db/schema";
-import { generateSessionToken, hashSessionToken } from "../lib/auth.js";
+import { generateSessionToken, hashSessionToken, sessionCookieAttributes } from "../lib/auth.js";
 
 export type SessionUser = {
   email: string;
@@ -36,21 +36,21 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   return { email: row.email, displayName: row.displayName };
 }
 
-export async function createSession(userEmail: string): Promise<string> {
+export async function createSession(userEmail: string, requestUrl: string): Promise<string> {
   const token = generateSessionToken();
   const tokenHash = await hashSessionToken(token);
   const expiresAt = Date.now() + SESSION_MAX_AGE_SECONDS * 1000;
   await (await getDb()).insert(authSessions).values({ tokenHash, userEmail, expiresAt });
-  return `${SESSION_COOKIE}=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${SESSION_MAX_AGE_SECONDS}`;
+  return `${SESSION_COOKIE}=${token}; ${sessionCookieAttributes(requestUrl, SESSION_MAX_AGE_SECONDS)}`;
 }
 
-export async function destroySession(): Promise<string> {
+export async function destroySession(requestUrl: string): Promise<string> {
   const token = readSessionToken(await headers());
   if (token) {
     const tokenHash = await hashSessionToken(token);
     await (await getDb()).delete(authSessions).where(eq(authSessions.tokenHash, tokenHash));
   }
-  return `${SESSION_COOKIE}=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`;
+  return `${SESSION_COOKIE}=; ${sessionCookieAttributes(requestUrl, 0)}`;
 }
 
 function readSessionToken(requestHeaders: Pick<Headers, "get">): string | null {

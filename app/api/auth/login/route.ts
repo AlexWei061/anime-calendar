@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "邮箱或密码不正确" }, { status: 401 });
     }
 
-    const sessionCookie = await createSession(user.email);
+    const sessionCookie = await createSession(user.email, request.url);
     return Response.json(
       { email: user.email, displayName: user.displayName },
       { headers: { "Set-Cookie": sessionCookie } },

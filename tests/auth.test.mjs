@@ -6,6 +6,7 @@ import {
   hashPassword,
   hashSessionToken,
   normalizeDisplayName,
+  sessionCookieAttributes,
   validateEmail,
   validatePassword,
   verifyPassword,
@@ -58,6 +59,17 @@ test("session tokens are random and only their SHA-256 hash is stored", async ()
   assert.equal(await hashSessionToken(token), hash);
 });
 
+test("session cookie is Secure only for HTTPS requests", () => {
+  assert.equal(
+    sessionCookieAttributes("http://192.168.1.50:3000/api/auth/login", 60),
+    "HttpOnly; SameSite=Lax; Path=/; Max-Age=60",
+  );
+  assert.equal(
+    sessionCookieAttributes("https://calendar.example.com/api/auth/login", 60),
+    "HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=60",
+  );
+});
+
 test("auth routes exist and business routes use session auth", async () => {
   const [register, login, logout, me, selections, episodeViews, appAuth] = await Promise.all([
     readFile(new URL("../app/api/auth/register/route.ts", import.meta.url), "utf8"),
@@ -73,12 +85,15 @@ test("auth routes exist and business routes use session auth", async () => {
   assert.match(register, /Set-Cookie/);
   assert.match(login, /status: 401/);
   assert.match(login, /verifyPassword/);
+  assert.match(login, /createSession\(user\.email, request\.url\)/);
+  assert.match(register, /createSession\(email, request\.url\)/);
   assert.match(logout, /destroySession/);
+  assert.match(logout, /destroySession\(request\.url\)/);
   assert.match(me, /getSessionUser/);
   assert.match(me, /status: 401/);
   assert.match(selections, /getSessionUser/);
   assert.match(episodeViews, /getSessionUser/);
-  assert.match(appAuth, /HttpOnly; Secure; SameSite=Lax/);
+  assert.match(appAuth, /sessionCookieAttributes\(requestUrl, SESSION_MAX_AGE_SECONDS\)/);
   assert.doesNotMatch(selections + episodeViews + appAuth, /getChatGPTUser|oai-authenticated-user/);
 });
 

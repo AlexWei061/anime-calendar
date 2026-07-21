@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     const passwordHash = await hashPassword(password);
     await db.insert(users).values({ email, passwordHash, displayName, createdAt: Date.now() });
-    const sessionCookie = await createSession(email);
+    const sessionCookie = await createSession(email, request.url);
     return Response.json(
       { email, displayName },
       { status: 201, headers: { "Set-Cookie": sessionCookie } },
