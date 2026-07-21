@@ -12,7 +12,7 @@ import { allAnime, seasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { matchesAnimeTitle } from "../lib/anime-search.js";
-import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.js";
+import { episodeViewKey, episodeViewUnitsForAnime, updateEpisodeViews } from "../lib/anime-episode-views.js";
 import {
   broadcastsForDate,
   progressForAnime,
@@ -260,6 +260,8 @@ export default function Home() {
       : selected
         ? selected.selectedTime ?? selected.beijingTime
         : undefined;
+  const selectedProgress = selected ? progressForAnime([selected], watchedEpisodes ?? [])[0] : null;
+  const selectedEpisodeUnits = selected ? episodeViewUnitsForAnime(selected) : [];
 
   useEffect(() => {
     if (!currentBeijingDate || didSetInitialWeek.current) return;
@@ -1436,6 +1438,25 @@ export default function Home() {
           <CoverArt anime={selected} className="detail-cover" />
           <p className="detail-title-zh">{selected.titleZh}</p>
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
+          <div className="detail-actions">
+            <button
+              className={
+                "detail-follow-button" +
+                (selectedAnimeIds?.includes(selected.id) ? " is-followed" : "")
+              }
+              type="button"
+              aria-pressed={selectedAnimeIds?.includes(selected.id) ?? false}
+              aria-label={
+                (selectedAnimeIds?.includes(selected.id) ? "取消追番《" : "追番《") +
+                selected.titleZh +
+                "》"
+              }
+              disabled={selectedAnimeIds === null || isSavingSelection}
+              onClick={() => void toggleAnimeSelection(selected.id)}
+            >
+              {selectedAnimeIds?.includes(selected.id) ? "已追番 ✓" : "追番"}
+            </button>
+          </div>
           <dl>
             <div>
               <dt>本次放送</dt>
@@ -1504,6 +1525,62 @@ export default function Home() {
               </dd>
             </div>
           </dl>
+          <div className="detail-watch" aria-label="观看情况">
+            <p className="detail-watch-summary">
+              观看情况：
+              {!currentUser
+                ? "登录后可记录观看进度"
+                : watchedEpisodes === null || !selectedProgress
+                  ? "正在读取…"
+                  : `已看 ${selectedProgress.watchedEpisodeCount} / ${selected.episodeCount} 集 · ${progressStatusLabel(selectedProgress.status)}`}
+            </p>
+            <span className="detail-watch-progress" aria-hidden="true">
+              <span
+                style={{
+                  width: `${((selectedProgress?.watchedEpisodeCount ?? 0) / selected.episodeCount) * 100}%`,
+                }}
+              />
+            </span>
+          </div>
+          {!currentUser && authLoaded ? (
+            <p className="detail-auth-hint">
+              登录后可追番并记录每集观看进度。
+              {signInPromptButton}
+            </p>
+          ) : null}
+          <div className="detail-episodes">
+            <p className="detail-episodes-label">逐集已看</p>
+            <div className="detail-episode-grid">
+              {selectedEpisodeUnits.map((unit) => {
+                const unitWatchedEpisode = { animeId: selected.id, ...unit };
+                const key = episodeViewKey(unitWatchedEpisode);
+                const isWatched =
+                  watchedEpisodes?.some((candidate) => episodeViewKey(candidate) === key) ?? false;
+                const episodeLabel = formatEpisodeLabel(unit.episodeStart, unit.episode);
+                return (
+                  <button
+                    key={key}
+                    className={"detail-episode-button" + (isWatched ? " is-watched" : "")}
+                    type="button"
+                    aria-pressed={isWatched}
+                    aria-label={
+                      (isWatched ? "取消标记《" : "标记《") +
+                      selected.titleZh +
+                      "》" +
+                      episodeLabel +
+                      "已看"
+                    }
+                    disabled={watchedEpisodes === null || savingEpisodeKeys.includes(key)}
+                    onClick={() => void toggleEpisodeView(unitWatchedEpisode)}
+                  >
+                    {unit.episodeStart === unit.episode
+                      ? unit.episode
+                      : `${unit.episodeStart}–${unit.episode}`}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <a
             className="detail-source-link"
             href={selected.sourceUrl}

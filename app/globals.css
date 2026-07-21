@@ -1370,6 +1370,116 @@ h1 {
   justify-self: start;
 }
 
+.detail-actions {
+  grid-column: 2;
+  margin: -0.75rem 0 1.25rem;
+}
+
+.detail-follow-button {
+  min-width: 6.5rem;
+  min-height: 2.3rem;
+  padding: 0 1rem;
+  border: 1px solid var(--blue);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 800;
+  transition: background var(--transition), color var(--transition);
+}
+
+.detail-follow-button:hover {
+  background: var(--blue-soft);
+}
+
+.detail-follow-button.is-followed {
+  background: var(--blue);
+  color: #fff;
+}
+
+.detail-follow-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.detail-watch {
+  grid-column: 2;
+  margin-bottom: 1.25rem;
+}
+
+.detail-watch-summary {
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.detail-watch-progress {
+  display: block;
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 55%, var(--paper));
+}
+
+.detail-watch-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mint-deep);
+  transition: width var(--transition);
+}
+
+.detail-auth-hint {
+  grid-column: 2;
+  margin: -0.5rem 0 1.25rem;
+  color: var(--muted-ink);
+  font-size: 0.85rem;
+}
+
+.detail-episodes {
+  grid-column: 2;
+  margin-bottom: 1.5rem;
+}
+
+.detail-episodes-label {
+  margin: 0 0 0.5rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.detail-episode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr));
+  gap: 0.4rem;
+}
+
+.detail-episode-button {
+  min-height: 2.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.detail-episode-button:hover {
+  border-color: color-mix(in srgb, var(--mint-deep) 65%, var(--line));
+}
+
+.detail-episode-button.is-watched {
+  border-color: var(--mint-deep);
+  background: var(--mint-deep);
+  color: #fff;
+}
+
+.detail-episode-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .auth-dialog {
   display: grid;
   width: min(24rem, 100%);
@@ -1684,6 +1794,10 @@ h1 {
   .detail-title-zh,
   .detail-dialog h2,
   .detail-dialog dl,
+  .detail-actions,
+  .detail-watch,
+  .detail-auth-hint,
+  .detail-episodes,
   .detail-source-link {
     grid-column: 1;
   }
