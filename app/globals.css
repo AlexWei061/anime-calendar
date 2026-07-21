@@ -483,7 +483,8 @@ h1 {
 .statistics-anime-card-list {
   display: grid;
   gap: 0.65rem;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  /* auto-fill 保留空轨道：不满一行的卡片与满行卡片同宽，不会被拉伸。 */
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .statistics-anime-card-list.anime-search-results {
