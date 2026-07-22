@@ -6,7 +6,6 @@ import { anime, seasons } from "../data/anime.js";
 
 const templateRoot = new URL("../", import.meta.url);
 const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
-const tsBuildInfo = new URL("../tsconfig.tsbuildinfo", import.meta.url);
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -212,15 +211,21 @@ test("ships interactive, collapsible personal statistics cards with sticky seaso
     /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)(?=[^}]*\bsortProgressBySeasonThenWatchedEpisodes\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
   );
   assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
-  assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\);/);
+  assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\)(?: as AnimeProgress\[\])?;/);
   assert.match(page, /const selectedOverallSeason = seasons\.find\(\(\{ id \}\) => id === selectedOverallSeasonId\);/);
-  assert.match(page, /const displayedOverallProgressTotals = progressTotals\(displayedOverallProgress\);/);
+  assert.match(page, /const displayedOverallProgressTotals = progressTotals\(displayedOverallProgress\)(?: as ProgressTotals)?;/);
   assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
-  assert.match(page, /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(allProgress, seasonIndexByAnimeId\);/);
+  assert.match(
+    page,
+    /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(\s*allProgress,\s*seasonIndexByAnimeId,?\s*\)(?: as AnimeProgress\[\])?;/,
+  );
   assert.match(page, /const overallProgressBySeason = seasons/);
   assert.match(page, /const displayedOverallProgressBySeason = overallProgressBySeason;/);
   assert.match(page, /\.reverse\(\);/);
-  assert.match(page, /const todayBroadcasts = currentBeijingDate \? broadcastsForDate\(selectedAnime, currentBeijingDate\) : \[\];/);
+  assert.match(
+    page,
+    /const todayBroadcasts = \(currentBeijingDate\s*\? broadcastsForDate\(selectedAnime, currentBeijingDate\)\s*: \[\]\) as BroadcastEvent\[\];/,
+  );
   assert.match(page, /今日播出/);
   assert.match(page, /只显示你收藏的番剧/);
   assert.match(page, /type StatisticsSection = "today" \| "overview";/);
@@ -327,7 +332,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /useRef/);
   assert.match(page, /useSyncExternalStore<string \| null>/);
   assert.match(page, /const \[activePage, setActivePage\] = useState/);
-  assert.match(page, /const activeSeason = seasonForWeek\(seasons, activeWeekStart\);/);
+  assert.match(page, /const activeSeason = seasonForWeek\(seasons, activeWeekStart\) as Season;/);
   assert.doesNotMatch(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
   assert.match(page, /const initialSeasonId = "2026-july";/);
   assert.match(page, /activeSeason\.label/);
@@ -646,16 +651,20 @@ test("keeps global title search separate from calendar schedules", async () => {
 
   assert.match(page, /const \[animeQuery, setAnimeQuery\] = useState\(""\);/);
   assert.match(page, /const searchResults = allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/);
+  assert.doesNotMatch(
+    page,
+    /activePage !== "mine" && activePage !== "stats" && activePage !== "search"/,
+  );
   assert.match(
     page,
-    /if \(\s*\(activePage !== "mine" && activePage !== "stats" && activePage !== "search"\) \|\|\s*selectedAnimeIds !== null\s*\) \{\s*return;/,
+    /const selectionLoadError = selectionError \?\? \(\s*!currentUser && activePage !== "all" \? "登录后可同步你的追番列表。" : null\s*\);/,
   );
-  assert.match(page, /const searchProgress = progressForAnime\(searchResults, watchedEpisodes \?\? \[\]\);/);
+  assert.match(page, /const searchProgress = progressForAnime\(searchResults, watchedEpisodes \?\? \[\]\) as AnimeProgress\[\];/);
   assert.match(
     page,
     /const searchProgressByAnimeId = new Map\(\s*searchProgress\.map\(\(progress\) => \[progress\.record\.id, progress\]\),\s*\);/,
   );
-  assert.match(page, /const searchProgressError = selectionError \?\? watchedEpisodeError;/);
+  assert.match(page, /const searchProgressError = selectionLoadError \?\? watchedEpisodeError;/);
   assert.match(
     page,
     /const isSearchProgressLoading =\s*\(\s*selectedAnimeIds === null \|\| watchedEpisodes === null\s*\) && !searchProgressError;/,
@@ -760,9 +769,8 @@ test("keeps accessible contrast tokens and generated build metadata out of the d
   assert.match(styles, /--mint-deep:\s*#2f6d60;/);
   assert.match(
     readme,
-    /- `npm test`：构建应用并验证日历数据、集数排期、封面图集映射和渲染后的时间表。/,
+    /- `npm test`：先进行严格类型检查和构建，再验证日历数据、集数排期、封面图集映射和渲染后的时间表。/,
   );
   assert.doesNotMatch(readme, /npm test[^\n]*loading skeleton/i);
   assert.match(gitignore, /^tsconfig\.tsbuildinfo$/m);
-  await assert.rejects(access(tsBuildInfo), { code: "ENOENT" });
 });

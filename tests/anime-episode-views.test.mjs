@@ -11,7 +11,10 @@ import {
 
 const animeById = new Map([
   ["regular", { id: "regular", episodeCount: 12 }],
-  ["three-at-once", { id: "three-at-once", episodeCount: 12 }],
+  [
+    "three-at-once",
+    { id: "three-at-once", episodeCount: 12, premiereKind: "network", premiereEpisodeCount: 3 },
+  ],
 ]);
 
 test("accepts one watched multi-episode update and gives it a stable key", () => {
@@ -75,6 +78,10 @@ test("rejects impossible watched updates from a browser request", () => {
   );
   assert.throws(
     () => validateEpisodeView({ animeId: "regular", episodeStart: 1.5, episode: 2 }, animeById),
+    /Invalid episode range/,
+  );
+  assert.throws(
+    () => validateEpisodeView({ animeId: "regular", episodeStart: 1, episode: 12 }, animeById),
     /Invalid episode range/,
   );
 });

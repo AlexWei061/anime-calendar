@@ -4,6 +4,8 @@ import { users } from "../../../../db/schema";
 import { validateEmail, verifyPassword } from "../../../../lib/auth.js";
 import { createSession } from "../../../auth";
 
+const DUMMY_PASSWORD_HASH = "pbkdf2$100000$00000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000";
+
 export async function POST(request: Request) {
   let email: string;
   let password: string;
@@ -26,7 +28,8 @@ export async function POST(request: Request) {
       .from(users)
       .where(eq(users.email, email));
     const user = rows[0];
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const passwordMatches = await verifyPassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+    if (!user || !passwordMatches) {
       return Response.json({ error: "邮箱或密码不正确" }, { status: 401 });
     }
 

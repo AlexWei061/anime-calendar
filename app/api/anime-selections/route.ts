@@ -49,7 +49,7 @@ export async function PUT(request: Request) {
     const db = await getDb();
     await db.batch([
       db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)),
-      ...selectionInsertBatches(animeIds).map((batch) =>
+      ...selectionInsertBatches(animeIds).map((batch: string[]) =>
         db.insert(animeSelections).values(batch.map((animeId) => ({ userEmail: user.email, animeId }))),
       ),
     ]);

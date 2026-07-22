@@ -8,7 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { allAnime, seasons } from "../data/anime.js";
+import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { matchesAnimeTitle } from "../lib/anime-search.js";
@@ -39,7 +39,44 @@ const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "�
 const initialSeasonId = "2026-july";
 const initialWeekStart = "2026-07-06";
 
-type Anime = (typeof allAnime)[number];
+type EpisodeSchedule = {
+  episodeStart: number;
+  episodeEnd: number;
+  broadcastDateBeijing: string;
+  beijingTime: string;
+  intervalDays: number;
+};
+type Anime = {
+  id: string;
+  titleZh: string;
+  titleJa: string;
+  coverUrl: string;
+  coverAlt: string;
+  episodeCount: number;
+  premiereDateBeijing: string | null;
+  scheduleWeekday: string | null;
+  beijingTime: string | null;
+  station?: string;
+  sourceUrl: string;
+  premiereKind?: "network";
+  episodeCountStatus?: "estimated" | "exact";
+  episodeSchedules?: EpisodeSchedule[];
+  scheduleChannel?: string;
+};
+type Season = {
+  id: string;
+  firstWeekStart: string;
+  timelineStartHour: number;
+  label: string;
+  timeZoneLabel: string;
+  updatedAt: string;
+  catalogCount: number;
+  sourceName: string;
+  sourceUrl: string;
+  anime: Anime[];
+};
+const allAnime = catalogAnime as Anime[];
+const seasons = catalogSeasons as Season[];
 type CalendarEvent = Anime & {
   date: string;
   broadcastDate: string;
@@ -56,7 +93,30 @@ type SelectedAnime = Anime & {
   selectedEpisode?: number;
   selectedReleaseKind?: "network";
 };
+type DetailSelection = Pick<
+  SelectedAnime,
+  "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode" | "selectedReleaseKind"
+>;
 type WatchedEpisode = { animeId: string; episodeStart: number; episode: number };
+type AnimeProgress = {
+  record: Anime;
+  watchedEpisodeCount: number;
+  latestWatchedEpisode: number | null;
+  status: "not-started" | "in-progress" | "completed";
+};
+type ProgressTotals = {
+  total: number;
+  inProgress: number;
+  completed: number;
+  notStarted: number;
+};
+type BroadcastEvent = Anime & {
+  broadcastDate: string;
+  broadcastTime: string;
+  episodeStart: number;
+  episode: number;
+  releaseKind: "scheduled" | "network";
+};
 type AuthUser = { email: string; displayName: string };
 type AuthDialogMode = "login" | "register";
 type Page = "all" | "mine" | "stats" | "search";
@@ -176,6 +236,7 @@ export default function Home() {
   const [authLoaded, setAuthLoaded] = useState(false);
   const [authDialogMode, setAuthDialogMode] = useState<AuthDialogMode | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [accountError, setAccountError] = useState<string | null>(null);
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
@@ -190,7 +251,7 @@ export default function Home() {
     getBeijingDate,
     getServerBeijingDate,
   );
-  const activeSeason = seasonForWeek(seasons, activeWeekStart);
+  const activeSeason = seasonForWeek(seasons, activeWeekStart) as Season;
   const isHistoricalSeason = activeSeason.id !== initialSeasonId;
   const defaultTimelineStartMinutes = 5 * 60;
   const defaultTimelineEndMinutes = 29 * 60;
@@ -201,17 +262,23 @@ export default function Home() {
       : allAnime;
   const hasAnimeQuery = animeQuery.trim().length > 0;
   const searchResults = allAnime.filter((record) => matchesAnimeTitle(record, animeQuery));
-  const searchProgress = progressForAnime(searchResults, watchedEpisodes ?? []);
+  const searchProgress = progressForAnime(searchResults, watchedEpisodes ?? []) as AnimeProgress[];
   const searchProgressByAnimeId = new Map(
     searchProgress.map((progress) => [progress.record.id, progress]),
   );
-  const searchProgressError = selectionError ?? watchedEpisodeError;
+  const selectionLoadError = selectionError ?? (
+    !currentUser && activePage !== "all" ? "登录后可同步你的追番列表。" : null
+  );
+  const searchProgressError = selectionLoadError ?? watchedEpisodeError;
   const isSearchProgressLoading =
     (selectedAnimeIds === null || watchedEpisodes === null) && !searchProgressError;
   const selectedAnime = allAnime.filter((record) => selectedAnimeIds?.includes(record.id));
   const selectedSeasonAnime = activeSeason.anime.filter((record) => selectedAnimeIds?.includes(record.id));
-  const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []);
-  const overallProgress = sortProgressBySeasonThenWatchedEpisodes(allProgress, seasonIndexByAnimeId);
+  const allProgress = progressForAnime(selectedAnime, watchedEpisodes ?? []) as AnimeProgress[];
+  const overallProgress = sortProgressBySeasonThenWatchedEpisodes(
+    allProgress,
+    seasonIndexByAnimeId,
+  ) as AnimeProgress[];
   const overallProgressBySeason = seasons
     .map((season, seasonIndex) => ({
       season,
@@ -226,8 +293,10 @@ export default function Home() {
     ? overallProgressBySeason.find(({ season }) => season.id === selectedOverallSeason.id)?.progress ?? []
     : overallProgress;
   const displayedOverallProgressBySeason = overallProgressBySeason;
-  const displayedOverallProgressTotals = progressTotals(displayedOverallProgress);
-  const todayBroadcasts = currentBeijingDate ? broadcastsForDate(selectedAnime, currentBeijingDate) : [];
+  const displayedOverallProgressTotals = progressTotals(displayedOverallProgress) as ProgressTotals;
+  const todayBroadcasts = (currentBeijingDate
+    ? broadcastsForDate(selectedAnime, currentBeijingDate)
+    : []) as BroadcastEvent[];
   const events = eventsForWeek(calendarAnime, activeWeekStart) as CalendarEvent[];
   const dateOnlyEvents = dateOnlyEventsForWeek(
     calendarAnime,
@@ -260,7 +329,9 @@ export default function Home() {
       : selected
         ? selected.selectedTime ?? selected.beijingTime
         : undefined;
-  const selectedProgress = selected ? progressForAnime([selected], watchedEpisodes ?? [])[0] : null;
+  const selectedProgress = selected
+    ? (progressForAnime([selected], watchedEpisodes ?? [])[0] as AnimeProgress | undefined)
+    : null;
   const selectedEpisodeUnits = selected ? episodeViewUnitsForAnime(selected) : [];
 
   useEffect(() => {
@@ -322,10 +393,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (
-      (activePage !== "mine" && activePage !== "stats" && activePage !== "search") ||
-      selectedAnimeIds !== null
-    ) {
+    if (selectedAnimeIds !== null) return;
+    if (!currentUser) {
       return;
     }
 
@@ -543,6 +612,7 @@ export default function Home() {
       setCurrentUser({ email: payload.email, displayName: payload.displayName });
       setSelectionError(null);
       setWatchedEpisodeError(null);
+      setAccountError(null);
       authDialogRef.current?.close();
     } catch {
       setAuthError("网络错误，请重试。");
@@ -552,10 +622,13 @@ export default function Home() {
   };
 
   const signOut = async () => {
+    setAccountError(null);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("Unable to sign out");
     } catch {
-      // 即使请求失败也在本地按退出处理。
+      setAccountError("退出失败，请重试。");
+      return;
     }
     setCurrentUser(null);
     setSelectedAnimeIds(null);
@@ -567,10 +640,7 @@ export default function Home() {
   const openDetail = (
     record: Anime,
     opener: HTMLButtonElement,
-    selection: Pick<
-      SelectedAnime,
-      "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode"
-    > = {},
+    selection: DetailSelection = {},
   ) => {
     openerRef.current = opener;
     setSelected({ ...record, ...selection });
@@ -600,10 +670,7 @@ export default function Home() {
     record: Anime,
     description: string,
     status?: string,
-    selection: Pick<
-      SelectedAnime,
-      "selectedDate" | "selectedTime" | "selectedEpisodeStart" | "selectedEpisode" | "selectedReleaseKind"
-    > = {},
+    selection: DetailSelection = {},
     watchedEpisodeCount?: number,
   ) => (
     <button
@@ -771,6 +838,7 @@ export default function Home() {
               <button type="button" onClick={() => void signOut()}>
                 退出
               </button>
+              {accountError ? <span role="alert">{accountError}</span> : null}
             </>
           ) : authLoaded ? (
             <button
@@ -866,8 +934,8 @@ export default function Home() {
         <section className="statistics-page" aria-label="我的追番统计">
           {selectedAnimeIds === null || watchedEpisodes === null ? (
             <p className="selection-status" aria-live="polite">
-              {selectionError ?? watchedEpisodeError ?? "正在读取你的追番和已看记录…"}
-              {selectionError || watchedEpisodeError ? signInPromptButton : null}
+              {selectionLoadError ?? watchedEpisodeError ?? "正在读取你的追番和已看记录…"}
+              {selectionLoadError || watchedEpisodeError ? signInPromptButton : null}
             </p>
           ) : (
             <>
@@ -1054,13 +1122,13 @@ export default function Home() {
               </div>
             ) : (
               <p className="selection-status" aria-live="polite">
-                {selectionError ?? "正在读取你的追番列表…"}
-                {selectionError ? signInPromptButton : null}
+                {selectionLoadError ?? "正在读取你的追番列表…"}
+                {selectionLoadError ? signInPromptButton : null}
               </p>
             )}
-            {selectedAnimeIds && selectionError ? (
+            {selectedAnimeIds && selectionLoadError ? (
               <p className="selection-status" aria-live="polite">
-                {selectionError}
+                {selectionLoadError}
               </p>
             ) : null}
           </details>

@@ -43,7 +43,7 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `app/page.tsx` | 客户端日历界面、季度定位、周切换、桌面/移动视图、详情弹窗、个人追番、逐集已看和全库番剧查询交互。 |
 | `app/globals.css` | 全站视觉样式、桌面时间轴、全库查询结果卡与移动端断点（`860px`）。 |
 | `app/layout.tsx` | 中文页面元数据和根布局。 |
-| `app/auth.ts` | 基于 `ac_session` Cookie 与 D1 会话表的自有账号认证；签发、校验与销毁会话。 |
+| `app/auth.ts` | 基于 `ac_session` Cookie 与 D1 会话表的自有账号认证；签发、校验与销毁会话，并仅在 HTTPS 请求中附加 `Secure` Cookie 属性。 |
 | `lib/auth.js` | 邮箱/密码/昵称校验、PBKDF2 密码哈希与校验、会话令牌生成与哈希。 |
 | `app/api/auth/` | 注册、登录、退出与当前用户查询 API；登录/注册成功时写入会话 Cookie。 |
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表保存 API。 |
@@ -51,16 +51,19 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 | `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录（含人工核对的特殊先行排期）和统一的 `allAnime` 目录。 |
 | `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
 | `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
+| `data/syoboi-history-<year>.js` | 由 しょぼい导入脚本生成的电视排期快照，供历史目录生成时补齐空字段；不得手工编辑。 |
 | `data/cover-sprites.js` | 由图集脚本生成的逻辑封面路径到本地 WebP 图集坐标的映射；不得手工编辑。 |
 | `scripts/generate-anilist-pilot.mjs` | 拉取指定年份的 AniList 首播、时刻与集数资料。 |
-| `scripts/generate-yuc-history-pilot.mjs` | 合并 YUC 中文名/封面与 AniList 排期，下载本地封面并生成历史目录。 |
+| `scripts/generate-yuc-history-pilot.mjs` | 合并 YUC 中文名/封面、AniList 排期和已有的 しょぼい快照，下载本地封面并生成历史目录。 |
+| `scripts/generate-syoboi-history.mjs` | 按当前历史目录匹配并抓取 しょぼい电视排期，生成每年的排期快照。 |
 | `scripts/convert-covers-to-webp.mjs` | 将下载的独立封面无损转换为 WebP，并同步目录中的逻辑封面路径。 |
 | `scripts/generate-cover-sprites.mjs` | 将全部 WebP 封面打包为 4×10、quality 90 的网格图集，生成映射并移除已打包的独立文件。 |
 | `lib/calendar.js` | ISO 日期计算、每周集数展开、凌晨时刻显示、时间轴裁切与布局。 |
 | `lib/schedule.js` | JST 转北京时间和按星期归类的通用排期辅助函数。 |
 | `lib/anime-search.js` | 中文、日文标题的规范化与全库匹配。 |
+| `lib/anime-statistics.js`、`lib/anime-labels.js` | 已看进度、今日播出聚合，以及网络放送文案。 |
 | `lib/anime-selections.js` | API 提交的番剧 ID 去重与白名单校验。 |
-| `lib/anime-episode-views.js` | 已看单集的稳定键、白名单校验、乐观更新辅助函数，以及与周历一致的逐集可标记单元展开。 |
+| `lib/anime-episode-views.js` | 已看单集的稳定键、白名单和规范集数范围校验、乐观更新辅助函数，以及与周历一致的逐集可标记单元展开。 |
 | `db/schema.ts`、`db/index.ts` | D1 表定义及数据库连接。 |
 | `drizzle/` | 已生成的 D1 迁移；与 schema 共同构成数据库历史。 |
 | `worker/index.ts` | vinext 的 Cloudflare Worker 入口和图片优化处理。 |
@@ -73,8 +76,9 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 ## 番剧数据规则
 
 - `data/anime.js` 是季度和 `allAnime` 的入口；每个 `id` 必须稳定且全局唯一，不能用标题作为身份标识。
-- 历史目录由 `scripts/generate-yuc-history-pilot.mjs <year>` 写入 `data/yuc-history-<year>.js`；先运行
-  `scripts/generate-anilist-pilot.mjs <year>` 更新 AniList 原始资料，再生成历史目录。不要手工编辑生成结果。
+- 历史目录由 `scripts/generate-yuc-history-pilot.mjs <year>` 写入 `data/yuc-history-<year>.js`，しょぼい快照由
+  `scripts/generate-syoboi-history.mjs <year>` 写入 `data/syoboi-history-<year>.js`。只更新 AniList/YUC 目录时，先运行
+  AniList 再生成历史目录；重新核对电视排期时，顺序必须是 AniList → YUC 目录 → しょぼい快照 → 再生成 YUC 目录，才能把新快照合并回最终目录。不要手工编辑生成结果。
 - 每个季度的 `catalogCount` 必须等于该季度 `anime.length`。每个条目都要有中日标题、集数、来源、封面路径和无障碍替代文本。
 - 所有封面均在本地处理，页面运行时不依赖第三方图片链接。条目的 `coverUrl` 是稳定的逻辑封面键：7 月使用稳定 slug，历史目录使用 `history-<year>-*`；它不一定对应单独的静态文件。
 - 运行时封面由 `data/cover-sprites.js` 映射到 `public/covers/yuc/sprites/` 中的 4×10 WebP 图集。中间封面使用无损 WebP，最终图集使用 quality 90；更新或新增封面后，依次运行 `npm run convert:covers-webp` 和 `npm run generate:cover-sprites`。不要手工编辑图集或映射文件，也不要恢复为每部番一个部署静态文件。
@@ -106,8 +110,8 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 - 追番列表是服务器端、按账号邮箱隔离的数据；浏览器不能决定用户邮箱。API 必须先调用 `getSessionUser()` 校验 `ac_session` 会话 Cookie，未登录时返回 `401`。
 - 写入前必须通过 `filterKnownAnimeIds` 去重并过滤掉不在 `allAnime` 中的 ID；保存采用“该用户整表替换”的现有语义。
 - D1 单条语句最多绑定 100 个参数；每个追番写入会绑定邮箱和番剧 ID 两个参数，所以插入必须按最多 50 个 ID 分批。删除旧列表与所有插入批次必须放进同一次 `db.batch()`，保持原子替换；不要先删除再单独插入，否则大列表插入失败会清空用户原有追番。
-- 已看标记同样按账号邮箱隔离并永久保存在 D1；单条记录由 `animeId`、`episodeStart` 和 `episode` 唯一标识。API 必须先认证，再通过 `validateEpisodeView` 校验，不能接受浏览器提供的用户身份。
-- 账号体系是应用自有的邮箱+密码：密码只存 `lib/auth.js` 生成的 PBKDF2 哈希，会话只存令牌的 SHA-256 哈希；数据库中不得出现明文密码或明文会话令牌。
+- 已看标记同样按账号邮箱隔离并永久保存在 D1；单条记录由 `animeId`、`episodeStart` 和 `episode` 唯一标识。API 必须先认证，再通过 `validateEpisodeView` 校验；只接受 `episodeViewUnitsForAnime` 生成的规范单集或先行/连播范围，不能接受浏览器提供的用户身份或任意集数范围。
+- 账号体系是应用自有的邮箱+密码：密码只存 `lib/auth.js` 生成的 PBKDF2 哈希，会话只存令牌的 SHA-256 哈希；数据库中不得出现明文密码或明文会话令牌。会话 Cookie 保持 `HttpOnly`、`SameSite=Lax` 与 `Path=/`，只在 HTTPS 请求中添加 `Secure`，以兼容本地 HTTP 开发。
 - 修改 D1 schema 时，同时更新 `db/schema.ts` 并运行 `npm run db:generate`，检查新迁移后将其提交。不要手写与 schema 不一致的 SQL。
 - 保持 `.openai/hosting.json` 的逻辑 D1 声明和 `getDb()` 使用的 `DB` 绑定一致；不要把真实资源 ID、密钥或环境变量写入仓库。
 
@@ -125,14 +129,15 @@ Drizzle，以及 Node 内置测试运行器。Node.js 版本必须为 `>=22.13.0
 ```bash
 npm install
 npm run dev                                      # 本地开发
+npm run typecheck                                # TypeScript 严格类型检查
 npm run build                                    # vinext/Worker 构建
 npm run lint -- --ignore-pattern .worktrees      # ESLint，忽略嵌套 worktree
-npm test                                         # 先构建，再运行 tests/*.test.mjs
+npm test                                         # 类型检查、构建，再运行 tests/*.test.mjs
 ```
 
 - 改 bug 先在对应的 `tests/*.test.mjs` 添加能失败的回归测试，再做最小修复。
 - 涉及“先行多集 + 后续周播”的排期，回归测试必须同时断言：先行日显示正确的集数范围且没有虚构时刻，首个固定周播日从下一集开始。
-- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint -- --ignore-pattern .worktrees` 和 `npm test`。`npm test` 会导入构建后的 Worker 并检查服务端 HTML，因此不能用只跑 TypeScript 检查替代它。
+- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint -- --ignore-pattern .worktrees` 和 `npm test`。`npm test` 会先运行严格类型检查，再导入构建后的 Worker 并检查服务端 HTML；不能用只跑 TypeScript 检查替代它。
 - 只改动与需求直接相关的文件。不要顺带格式化大文件、升级依赖、重写模板配置或删除历史设计文档。
 - 测试应验证用户可见行为和数据约束；不要为了让测试通过而削弱数据校验、认证或无障碍语义。
 - 若本文件用于仓库级约定，内容定稿后必须纳入版本控制；未跟踪的 `AGENTS.md` 不会随克隆或新 worktree 提供给后续开发者。
