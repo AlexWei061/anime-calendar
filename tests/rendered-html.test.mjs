@@ -408,7 +408,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[watchedEpisodeError, setWatchedEpisodeError\] = useState<string \| null>\(null\);/);
   assert.match(page, /const \[savingEpisodeKeys, setSavingEpisodeKeys\] = useState<string\[\]>\(\[\]\);/);
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
-  assert.match(page, /episodeViewKey\(watchedEpisode\)/);
+  assert.match(page, /episodeViewUnitsForRange/);
+  assert.match(page, /isEpisodeViewWatched/);
+  assert.match(page, /const episodeViews = episodeViewUnitsForRange\(watchedEpisode\)\.map/);
   assert.match(page, /savingEpisodeKeys\.includes\(key\)/);
   assert.match(
     page,

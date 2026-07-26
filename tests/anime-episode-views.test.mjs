@@ -17,18 +17,22 @@ const animeById = new Map([
   ],
 ]);
 
-test("accepts one watched multi-episode update and gives it a stable key", () => {
+test("accepts an individual episode from a formerly batched premiere", () => {
   const watchedEpisode = validateEpisodeView(
-    { animeId: "three-at-once", episodeStart: 1, episode: 3 },
+    { animeId: "three-at-once", episodeStart: 1, episode: 1 },
     animeById,
   );
 
   assert.deepEqual(watchedEpisode, {
     animeId: "three-at-once",
     episodeStart: 1,
-    episode: 3,
+    episode: 1,
   });
-  assert.equal(episodeViewKey(watchedEpisode), "three-at-once:1-3");
+  assert.equal(episodeViewKey(watchedEpisode), "three-at-once:1-1");
+  assert.throws(
+    () => validateEpisodeView({ animeId: "three-at-once", episodeStart: 1, episode: 3 }, animeById),
+    /Invalid episode range/,
+  );
 });
 
 test("filters removed and duplicate saved watched updates", () => {
@@ -97,7 +101,7 @@ test("lists one unit per episode for a regular weekly anime", () => {
   );
 });
 
-test("keeps a network premiere batch as one unit and starts weekly singles from the next episode", () => {
+test("lists every episode from a network premiere batch separately", () => {
   assert.deepEqual(
     episodeViewUnitsForAnime({
       id: "three-at-once",
@@ -106,14 +110,16 @@ test("keeps a network premiere batch as one unit and starts weekly singles from 
       premiereEpisodeCount: 3,
     }),
     [
-      { episodeStart: 1, episode: 3 },
+      { episodeStart: 1, episode: 1 },
+      { episodeStart: 2, episode: 2 },
+      { episodeStart: 3, episode: 3 },
       { episodeStart: 4, episode: 4 },
       { episodeStart: 5, episode: 5 },
     ],
   );
 });
 
-test("mirrors episodeSchedules batches and fills uncovered episodes with singles", () => {
+test("lists each episode separately when a schedule contains a same-day batch", () => {
   assert.deepEqual(
     episodeViewUnitsForAnime({
       id: "regular",
@@ -124,10 +130,36 @@ test("mirrors episodeSchedules batches and fills uncovered episodes with singles
       ],
     }),
     [
-      { episodeStart: 1, episode: 2 },
+      { episodeStart: 1, episode: 1 },
+      { episodeStart: 2, episode: 2 },
       { episodeStart: 3, episode: 3 },
       { episodeStart: 4, episode: 4 },
       { episodeStart: 5, episode: 5 },
+    ],
+  );
+});
+
+test("expands a valid saved legacy batch into individual watched episodes", () => {
+  assert.deepEqual(
+    filterKnownEpisodeViews(
+      [{ animeId: "three-at-once", episodeStart: 1, episode: 3 }],
+      animeById,
+    ),
+    [
+      { animeId: "three-at-once", episodeStart: 1, episode: 1 },
+      { animeId: "three-at-once", episodeStart: 2, episode: 2 },
+      { animeId: "three-at-once", episodeStart: 3, episode: 3 },
+    ],
+  );
+});
+
+test("expands a batched calendar toggle into individual watched episodes", () => {
+  assert.deepEqual(
+    updateEpisodeViews([], { animeId: "three-at-once", episodeStart: 1, episode: 3 }, true),
+    [
+      { animeId: "three-at-once", episodeStart: 1, episode: 1 },
+      { animeId: "three-at-once", episodeStart: 2, episode: 2 },
+      { animeId: "three-at-once", episodeStart: 3, episode: 3 },
     ],
   );
 });

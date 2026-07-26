@@ -12,7 +12,13 @@ import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/ani
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
 import { matchesAnimeTitle } from "../lib/anime-search.js";
-import { episodeViewKey, episodeViewUnitsForAnime, updateEpisodeViews } from "../lib/anime-episode-views.js";
+import {
+  episodeViewKey,
+  episodeViewUnitsForAnime,
+  episodeViewUnitsForRange,
+  isEpisodeViewWatched,
+  updateEpisodeViews,
+} from "../lib/anime-episode-views.js";
 import {
   broadcastsForDate,
   progressForAnime,
@@ -536,24 +542,30 @@ export default function Home() {
   const toggleEpisodeView = async (watchedEpisode: WatchedEpisode) => {
     if (watchedEpisodes === null) return;
 
-    const key = episodeViewKey(watchedEpisode);
-    if (savingEpisodeKeys.includes(key)) return;
+    const episodeViews = episodeViewUnitsForRange(watchedEpisode).map((unit) => ({
+      animeId: watchedEpisode.animeId,
+      ...unit,
+    }));
+    const keys = episodeViews.map(episodeViewKey);
+    if (keys.some((key) => savingEpisodeKeys.includes(key))) return;
 
-    const isWatched = watchedEpisodes.some(
-      (candidate) => episodeViewKey(candidate) === key,
-    );
+    const isWatched = isEpisodeViewWatched(watchedEpisodes, watchedEpisode);
     const nextWatchedEpisodes = updateEpisodeViews(watchedEpisodes, watchedEpisode, !isWatched);
 
     setWatchedEpisodes(nextWatchedEpisodes);
     setWatchedEpisodeError(null);
-    setSavingEpisodeKeys((keys) => [...keys, key]);
+    setSavingEpisodeKeys((currentKeys) => [...new Set([...currentKeys, ...keys])]);
     try {
-      const response = await fetch("/api/anime-episode-views", {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ...watchedEpisode, watched: !isWatched }),
-      });
-      if (!response.ok) throw new Error("Unable to save watched episode");
+      const responses = await Promise.all(
+        episodeViews.map((episodeView) =>
+          fetch("/api/anime-episode-views", {
+            method: "PUT",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ ...episodeView, watched: !isWatched }),
+          }),
+        ),
+      );
+      if (responses.some((response) => !response.ok)) throw new Error("Unable to save watched episode");
     } catch {
       setWatchedEpisodes((current) => {
         if (current === null) return null;
@@ -561,7 +573,7 @@ export default function Home() {
       });
       setWatchedEpisodeError("保存已看状态失败，请重试。");
     } finally {
-      setSavingEpisodeKeys((keys) => keys.filter((candidate) => candidate !== key));
+      setSavingEpisodeKeys((currentKeys) => currentKeys.filter((key) => !keys.includes(key)));
     }
   };
 
@@ -709,9 +721,11 @@ export default function Home() {
       episodeStart: event.episodeStart,
       episode: event.episode,
     };
-    const key = episodeViewKey(watchedEpisode);
-    const isWatched = watchedEpisodes?.some((candidate) => episodeViewKey(candidate) === key) ?? false;
-    const isSavingWatch = savingEpisodeKeys.includes(key);
+    const watchedEpisodeKeys = episodeViewUnitsForRange(watchedEpisode).map((unit) =>
+      episodeViewKey({ animeId: watchedEpisode.animeId, ...unit }),
+    );
+    const isWatched = watchedEpisodes ? isEpisodeViewWatched(watchedEpisodes, watchedEpisode) : false;
+    const isSavingWatch = watchedEpisodeKeys.some((key) => savingEpisodeKeys.includes(key));
     const eventStyle = layout
       ? ({
           "--event-top": timelineOffsetMinutes(event.time, timelineStartMinutes, timelineEndMinutes) * 1.6 + "px",
@@ -967,9 +981,7 @@ export default function Home() {
                           episodeStart: event.episodeStart,
                           episode: event.episode,
                         };
-                        const isWatched = watchedEpisodes.some(
-                          (candidate) => episodeViewKey(candidate) === episodeViewKey(watchedEpisode),
-                        );
+                        const isWatched = isEpisodeViewWatched(watchedEpisodes, watchedEpisode);
 
                         return (
                           <span key={event.id + "-" + event.episodeStart + "-" + event.episode}>
@@ -1639,8 +1651,9 @@ export default function Home() {
               {selectedEpisodeUnits.map((unit) => {
                 const unitWatchedEpisode = { animeId: selected.id, ...unit };
                 const key = episodeViewKey(unitWatchedEpisode);
-                const isWatched =
-                  watchedEpisodes?.some((candidate) => episodeViewKey(candidate) === key) ?? false;
+                const isWatched = watchedEpisodes
+                  ? isEpisodeViewWatched(watchedEpisodes, unitWatchedEpisode)
+                  : false;
                 const episodeLabel = formatEpisodeLabel(unit.episodeStart, unit.episode);
                 return (
                   <button

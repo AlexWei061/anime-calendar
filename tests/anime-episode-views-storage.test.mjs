@@ -22,6 +22,9 @@ test("declares authenticated per-update watched storage and a generated migratio
   assert.match(route, /status: 401/);
   assert.match(route, /validateEpisodeView/);
   assert.match(route, /filterKnownEpisodeViews/);
+  assert.match(route, /isLegacyEpisodeViewForAnime/);
+  assert.match(route, /episodeViewUnitsForRange/);
+  assert.match(route, /db\.batch\(/);
   assert.match(route, /onConflictDoNothing\(\)/);
   assert.match(route, /and\(/);
   assert.ok(migrationContents.some((sql) => /CREATE TABLE `anime_episode_views`/.test(sql)));
