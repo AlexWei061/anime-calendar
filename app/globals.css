@@ -927,6 +927,10 @@ h1 {
   transform: translateY(-0.85rem);
 }
 
+.timeline-hour:first-child {
+  transform: translateY(0.15rem);
+}
+
 .timeline-day {
   position: relative;
   height: var(--timeline-height);
@@ -1213,6 +1217,20 @@ h1 {
   white-space: nowrap;
   font-size: 0.72rem;
   line-height: 1.2;
+}
+
+.timeline-event .calendar-event-episode {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline-event-compact .calendar-event-detail {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.timeline-event-compact .calendar-event-cover {
+  display: none;
 }
 
 .mobile-calendar {

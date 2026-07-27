@@ -319,6 +319,21 @@ test("renders same-time events side by side on one timeline day", async () => {
   );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
+  assert.ok(
+    sameTimeEvents.every(([markup]) =>
+      /class="[^"]*\btimeline-event-compact\b[^"]*"/.test(markup),
+    ),
+  );
+
+  const singleLaneEvents = [
+    ...cleanHtml.matchAll(
+      /<div\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*style="([^"]*)")[^>]*>/g,
+    ),
+  ].filter(([, style]) => /--event-width:\s*100%/.test(style));
+  assert.ok(singleLaneEvents.length > 0);
+  assert.ok(
+    singleLaneEvents.every(([markup]) => !/\btimeline-event-compact\b/.test(markup)),
+  );
 });
 
 test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
@@ -350,6 +365,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const episodeLabel = formatEpisodeLabel\(event\.episodeStart, event\.episode\);/);
   assert.match(page, /网络配信 · \{episodeLabel\} · 时刻未定/);
   assert.match(page, /"timeline-grid" \+ \(dateOnlyEvents\.length \? " has-date-only-events" : ""\)/);
+  assert.match(page, /layout\.laneCount > 1 \? " timeline-event-compact" : ""/);
   assert.match(page, /className=\{"timeline-date-only" \+/);
   assert.doesNotMatch(styles, /\.date-only-events\s*\{[\s\S]*?position:\s*absolute/);
   assert.match(
@@ -581,6 +597,22 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(
     styles,
     /\.timeline-event \.calendar-event-detail strong\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event \.calendar-event-episode\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event-compact \.calendar-event-detail\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\);/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event-compact \.calendar-event-cover\s*\{[\s\S]*?display:\s*none;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-hour:first-child\s*\{[\s\S]*?transform:\s*translateY\(0/,
   );
   assert.doesNotMatch(styles, /\.time-grid-scroll/);
   assert.doesNotMatch(styles, /\.time-grid\s*\{/);

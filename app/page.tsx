@@ -739,6 +739,7 @@ export default function Home() {
         className={
           "calendar-event" +
           (layout ? " timeline-event" : "") +
+          (layout && layout.laneCount > 1 ? " timeline-event-compact" : "") +
           (isToday ? " is-today" : "") +
           (isWatched ? " is-watched" : "")
         }
