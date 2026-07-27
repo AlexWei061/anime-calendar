@@ -45,12 +45,24 @@ test("server-renders a paged Beijing episode calendar", async () => {
     html,
     /<meta name="description" content="按北京时间查看收录番剧的首播、集数与周播时间。"\s*\/>/,
   );
-  assert.match(html, /2026 年 7 月番时间表/);
+  assert.match(cleanHtml, /<h1\b[^>]*>这季有什么值得追？<\/h1>/);
   assert.match(withoutReactMarkers(html), /66 部番剧/);
   assert.match(html, /class="page-sidebar"/);
+  assert.match(html, /class="seasonal-hero"/);
+  assert.match(html, /class="seasonal-hero-covers"/);
+  assert.match(html, /class="seasonal-hero-cover cover-sprite"/);
+  assert.match(html, /查看本周放送/);
+  assert.match(html, /今天看什么/);
+  assert.match(html, /我的追番/);
+  assert.match(html, /class="seasonal-hero-shortcuts"/);
+  assert.match(html, /localStorage\.getItem\(&quot;ac-theme&quot;\)|localStorage\.getItem\("ac-theme"\)/);
+  assert.match(html, /class="theme-toggle"/);
+  assert.match(html, /深色模式/);
   assert.match(html, /播出表/);
   assert.match(html, /我的番剧/);
   assert.match(html, /<label class="season-picker"/);
+  assert.match(html, /class="weekly-section"/);
+  assert.match(html, /class="mobile-calendar"/);
   assert.match(html, /<option value="2022-january">2022 年 1 月番<\/option>/);
   assert.match(html, /<option value="2022-april">2022 年 4 月番<\/option>/);
   assert.match(html, /<option value="2022-july">2022 年 7 月番<\/option>/);
@@ -71,7 +83,6 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /<option value="2026-april">2026 年 4 月番<\/option>/);
   assert.match(html, /<option value="2026-july" selected="">2026 年 7 月番<\/option>/);
   assert.match(html, /北京时间/);
-  assert.match(html, /从首播日起按周显示/);
   assert.match(html, /上一周/);
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
@@ -287,7 +298,14 @@ test("ships interactive, collapsible personal statistics cards with sticky seaso
   assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
   assert.match(styles, /\.statistics-anime-card-list\s*\{/);
   assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
-  assert.match(styles, /\.statistics-overview-summary\s*\{[\s\S]*?position: sticky;[\s\S]*?top: 0\.75rem;/);
+  assert.match(
+    styles,
+    /\.statistics-overview-summary\s*\{[\s\S]*?position: sticky;[\s\S]*?top:\s*calc\(var\(--site-nav-offset\) \+ 0\.75rem\);/,
+  );
+  assert.match(
+    styles,
+    /\.statistics-overview-season\s*\{[\s\S]*?scroll-margin-top:\s*calc\(var\(--site-nav-offset\) \+ 8rem\);/,
+  );
   assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
 });
 
@@ -351,6 +369,30 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
   assert.match(page, /const initialSeasonId = "2026-july";/);
   assert.match(page, /activeSeason\.label/);
+  assert.match(page, /const seasonalHeroAnime = activeSeason\.anime\.slice\(0, 4\);/);
+  assert.match(page, /const weeklySectionRef = useRef<HTMLElement>\(null\);/);
+  assert.match(
+    page,
+    /const scrollToWeeklySchedule = \(\) => \{[\s\S]*?window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches\s*\?\s*"auto"\s*:\s*"smooth";[\s\S]*?weeklySectionRef\.current\?\.scrollIntoView\(\{[\s\S]*?behavior/,
+  );
+  assert.match(
+    page,
+    /const jumpToTodaySchedule = \(\) => \{[\s\S]*?setActiveWeekStart\(startOfWeek\(date\)\);[\s\S]*?setActiveMobileDate\(date\);/,
+  );
+  assert.match(page, /activePage === "all" \? \([\s\S]*?className="seasonal-hero"/);
+  const seasonalHeroMap = page.match(/seasonalHeroAnime\.map\(\(record\) => \(\s*([\s\S]*?)\s*\)\)/);
+  assert.ok(seasonalHeroMap, "seasonal hero must render its cover list from seasonalHeroAnime");
+  assert.match(
+    seasonalHeroMap[1],
+    /<CoverArt[\s\S]*?className="seasonal-hero-cover"[\s\S]*?decorative/,
+  );
+  const seasonalHeroSection = page.match(/<section className="seasonal-hero"[^>]*>([\s\S]*?)<\/section>/);
+  assert.ok(seasonalHeroSection, "seasonal hero section must exist");
+  assert.match(
+    seasonalHeroSection[1],
+    /className="seasonal-hero-shortcuts"[\s\S]*?<button\b(?=[^>]*onClick=\{\(\) => changePage\("mine"\)\})[^>]*>[\s\S]*?<strong>我的追番<\/strong>[\s\S]*?<\/button>/,
+  );
+  assert.match(page, /ref=\{weeklySectionRef\}[\s\S]*?className="weekly-section"/);
   assert.doesNotMatch(page, /冬番|春番|夏番/);
   assert.doesNotMatch(layout, /冬番|春番|夏番/);
   assert.match(page, /选择季度/);
@@ -532,16 +574,51 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     styles,
     /\.detail-cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;[\s\S]*?max-height:\s*none;[\s\S]*?background-repeat:\s*no-repeat;/,
   );
+  function cssBlock(source, selector) {
+    const match = source.match(new RegExp(`${selector}\\s*\\{([^}]*)\\}`));
+    assert.ok(match, `Missing CSS block: ${selector}`);
+    return match[1];
+  }
+  function cssMediaBlock(source, query) {
+    const queryStart = source.indexOf(query);
+    assert.notEqual(queryStart, -1, `Missing CSS media query: ${query}`);
+    const openingBrace = source.indexOf("{", queryStart);
+    let depth = 1;
+    for (let index = openingBrace + 1; index < source.length; index += 1) {
+      if (source[index] === "{") depth += 1;
+      if (source[index] === "}") depth -= 1;
+      if (depth === 0) return source.slice(openingBrace + 1, index);
+    }
+    assert.fail(`Unclosed CSS media query: ${query}`);
+  }
+  const pageSidebarStyles = cssBlock(styles, "\\.page-sidebar");
+  const seasonalHeroStyles = cssBlock(styles, "\\.seasonal-hero");
+  const seasonalHeroCoversStyles = cssBlock(styles, "\\.seasonal-hero-covers");
+  const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
+  const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
+  const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
+  const mobileSeasonalHeroStyles = cssBlock(mobileStyles, "\\.seasonal-hero");
+  const mobileCalendarStyles = cssBlock(mobileStyles, "\\.mobile-calendar");
   assert.match(styles, /:focus-visible/);
-  assert.match(
-    styles,
-    /\.site-shell\s*\{[\s\S]*?grid-template-columns:\s*13rem minmax\(0, 1fr\);/,
-  );
   assert.match(styles, /\.page-sidebar button\.is-active/);
+  assert.match(pageSidebarStyles, /position:\s*sticky;/);
+  assert.match(pageSidebarStyles, /display:\s*flex;/);
   assert.match(
-    styles,
-    /\.page-sidebar\s*\{[\s\S]*?align-self:\s*start;[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0;/,
+    statisticsOverviewSummaryStyles,
+    /top:\s*calc\(var\(--site-nav-offset\) \+ 0\.75rem\);/,
   );
+  assert.match(
+    statisticsOverviewSeasonStyles,
+    /scroll-margin-top:\s*calc\(var\(--site-nav-offset\) \+ 8rem\);/,
+  );
+  assert.doesNotMatch(styles, /grid-template-columns:\s*13rem minmax\(0, 1fr\)/);
+  assert.match(seasonalHeroStyles, /display:\s*grid;/);
+  assert.match(
+    seasonalHeroCoversStyles,
+    /grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/,
+  );
+  assert.match(mobileSeasonalHeroStyles, /grid-template-columns:\s*1fr;/);
+  assert.match(mobileCalendarStyles, /display:\s*grid;/);
   assert.match(styles, /\.season-picker\s*\{/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
@@ -584,7 +661,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-day\.is-today\s*\{[\s\S]*?background-color:\s*color-mix\(/,
+    /\.timeline-day\.is-today\s*\{[\s\S]*?background-color:\s*var\(--card\);[\s\S]*?background-image:\s*var\(--timeline-lines\),[\s\S]*?linear-gradient\(/,
   );
   assert.match(
     styles,
@@ -785,10 +862,21 @@ test("offers a search box on calendar pages that jumps to the search page", asyn
     page,
     /const submitPageSearch = \(submitEvent: FormEvent<HTMLFormElement>\) => \{[\s\S]*?setAnimeQuery\(query\);\s*changePage\("search"\);/,
   );
-  assert.match(
-    page,
-    /\{activePage !== "search" \? \([\s\S]*?className="page-search"[\s\S]*?role="search"[\s\S]*?name="pageSearch"[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/,
+  const allPageHero = page.match(
+    /\{activePage === "all" \? \(\s*(<section className="seasonal-hero"[\s\S]*?<\/section>)/,
   );
+  const personalPageSearch = page.match(
+    /\{activePage === "mine" \|\| activePage === "stats" \? \(\s*(<form\b[\s\S]*?<\/form>)/,
+  );
+  assert.ok(allPageHero, "the all page must render a seasonal hero");
+  assert.ok(personalPageSearch, "mine and stats pages must render their shared search form");
+  for (const source of [allPageHero[1], personalPageSearch[1]]) {
+    assert.match(
+      source,
+      /<form\b(?=[^>]*className="page-search")(?=[^>]*role="search")[^>]*>[\s\S]*?<input\b(?=[^>]*name="pageSearch")(?=[^>]*type="search")(?=[^>]*placeholder="输入中文或日文名")[^>]*>/,
+    );
+  }
+  assert.equal((page.match(/<form\b(?=[^>]*className="page-search")/g) ?? []).length, 2);
   assert.match(page, /className="page-search-field"/);
 });
 
@@ -799,12 +887,120 @@ test("keeps accessible contrast tokens and generated build metadata out of the d
     readFile(new URL("../.gitignore", import.meta.url), "utf8"),
   ]);
 
-  assert.match(styles, /--muted-ink:\s*#5d6870;/);
-  assert.match(styles, /--mint-deep:\s*#2f6d60;/);
+  assert.match(styles, /--muted-ink:\s*#7c6a76;/);
+  assert.match(styles, /--accent-2-deep:\s*#236e69;/);
+  assert.match(styles, /--accent:\s*#c24371;/);
   assert.match(
     readme,
     /- `npm test`：先进行严格类型检查和构建，再验证日历数据、集数排期、封面图集映射和渲染后的时间表。/,
   );
   assert.doesNotMatch(readme, /npm test[^\n]*loading skeleton/i);
   assert.match(gitignore, /^tsconfig\.tsbuildinfo$/m);
+});
+
+test("supports light and neon-dark themes through one set of design tokens", async () => {
+  const [styles, page, layout] = await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(styles, /:root\s*\{[\s\S]*?color-scheme:\s*light;/);
+  assert.match(styles, /--accent-gradient:\s*linear-gradient\(/);
+  assert.match(styles, /--on-accent:\s*#fff;/);
+  assert.doesNotMatch(styles, /--blue\b|--blue-soft|--mint\b|--mint-deep/);
+  assert.match(
+    layout,
+    /<html\b(?=[^>]*\blang="zh-CN")(?=[^>]*\bsuppressHydrationWarning\b)[^>]*>/,
+  );
+
+  const lightBlock = styles.match(/:root\s*\{([\s\S]*?)\n\}/);
+  assert.ok(lightBlock, "light theme must define its root tokens");
+  const lightTokens = lightBlock[1];
+  const tokenValue = (tokens, tokenName) => {
+    const token = tokens.match(new RegExp(`--${tokenName}:\\s*([^;]+);`));
+    assert.ok(token, `missing --${tokenName} token`);
+    return token[1].trim();
+  };
+  const relativeLuminance = (hex) => {
+    const normalizedHex = hex.length === 4
+      ? `#${hex.slice(1).split("").map((channel) => channel + channel).join("")}`
+      : hex;
+    const channels = normalizedHex.slice(1).match(/\w\w/g).map((channel) => Number.parseInt(channel, 16) / 255);
+    const linear = channels.map((channel) => (
+      channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+    ));
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+  const contrastRatio = (left, right) => {
+    const [lighter, darker] = [relativeLuminance(left), relativeLuminance(right)].sort((a, b) => b - a);
+    return (lighter + 0.05) / (darker + 0.05);
+  };
+  const lightAccentStops = tokenValue(lightTokens, "accent-gradient").match(/#[\da-f]{6}\b/gi);
+  assert.ok(lightAccentStops?.length, "light accent gradient must use hex color stops");
+  const lightOnAccent = tokenValue(lightTokens, "on-accent");
+  for (const stop of lightAccentStops) {
+    assert.ok(
+      contrastRatio(stop, lightOnAccent) >= 4.5,
+      `${stop} must have at least 4.5:1 contrast against ${lightOnAccent}`,
+    );
+  }
+  const lightAccentInk = tokenValue(lightTokens, "accent-ink");
+  const lightAccentSoft = tokenValue(lightTokens, "accent-soft");
+  assert.ok(
+    contrastRatio(lightAccentInk, lightAccentSoft) >= 4.5,
+    "--accent-ink must have at least 4.5:1 contrast against --accent-soft",
+  );
+  const lightAccent2Deep = tokenValue(lightTokens, "accent-2-deep");
+  assert.ok(
+    contrastRatio(lightAccent2Deep, lightOnAccent) >= 4.5,
+    "--accent-2-deep must have at least 4.5:1 contrast against --on-accent",
+  );
+  assert.match(
+    styles,
+    /\.statistics-anime-card-status\s*\{[\s\S]*?color:\s*var\(--accent-ink\);/,
+  );
+
+  // 暗色 token 由 <html data-theme="dark"> 触发，便于手动切换与系统跟随共用一套规则。
+  assert.doesNotMatch(styles, /@media \(prefers-color-scheme/);
+  const darkBlock = styles.match(/:root\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/);
+  assert.ok(darkBlock, "dark theme must override the same tokens on :root[data-theme]");
+  const darkTokens = darkBlock[1];
+  assert.match(darkTokens, /color-scheme:\s*dark;/);
+  assert.match(darkTokens, /--paper:\s*#141221;/);
+  assert.match(darkTokens, /--card:\s*#23203a;/);
+  assert.match(darkTokens, /--ink:\s*#ece9f7;/);
+  assert.match(darkTokens, /--accent:\s*#ff7ba9;/);
+  assert.match(darkTokens, /--accent-2-deep:\s*#6fe3f2;/);
+  assert.match(darkTokens, /--accent-gradient:\s*linear-gradient\(/);
+  assert.match(darkTokens, /--accent-ink:/);
+  assert.match(darkTokens, /--backdrop:/);
+
+  // 首屏前的内联脚本：手动选择优先，否则跟随系统，避免主题闪屏。
+  assert.match(layout, /localStorage\.getItem\("ac-theme"\)/);
+  assert.match(layout, /matchMedia\("\(prefers-color-scheme: dark\)"\)/);
+  assert.match(layout, /document\.documentElement\.dataset\.theme/);
+  assert.match(layout, /dangerouslySetInnerHTML/);
+
+  // 手动切换做成常驻浮动按钮，并把选择写回 localStorage 与 <html data-theme>。
+  assert.match(page, /className="theme-toggle"/);
+  assert.match(page, /aria-pressed=\{theme === "dark"\}/);
+  assert.match(page, /localStorage\.setItem\("ac-theme", nextTheme\)/);
+  assert.match(page, /document\.documentElement\.dataset\.theme = nextTheme;/);
+  assert.match(
+    styles,
+    /\.theme-toggle\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*4;/,
+  );
+
+  // 硬编码颜色必须收口到 token，暗色主题才能整体换肤。
+  assert.doesNotMatch(styles, /rgb\(31 41 51|#a33b2e/);
+  assert.doesNotMatch(styles, /grayscale/);
+  // 新增 hover 上浮过渡必须纳入减少动态效果的关闭列表。
+  const reducedMotion = styles.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
+  assert.ok(reducedMotion);
+  assert.match(reducedMotion[1], /\.calendar-event-detail/);
+  assert.match(reducedMotion[1], /\.network-card/);
+  assert.match(reducedMotion[1], /\.statistics-anime-card/);
+  assert.match(reducedMotion[1], /\.theme-toggle/);
+  assert.match(reducedMotion[1], /transform:\s*none;/);
 });

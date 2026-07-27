@@ -1,21 +1,49 @@
 :root {
-  --paper: #f5f0e5;
-  --paper-deep: #e9dfcf;
-  --card: #fffdf8;
-  --ink: #1f2933;
-  --muted-ink: #5d6870;
-  --line: #d6c9b8;
-  --blue: #155e75;
-  --blue-soft: #dceff1;
-  --mint: #b9ded1;
-  --mint-deep: #2f6d60;
+  color-scheme: light;
+  --paper: #fdf4f7;
+  --paper-deep: #f7e3ec;
+  --card: #fffcfd;
+  --ink: #32262e;
+  --muted-ink: #7c6a76;
+  --line: #efd3e0;
+  --accent: #c24371;
+  --accent-soft: #fbe0ea;
+  --accent-ink: #9f2654;
+  --accent-2: #b8e8e4;
+  --accent-2-deep: #236e69;
+  --accent-gradient: linear-gradient(120deg, #b83263 0%, #c24371 55%, #91348f 100%);
+  --on-accent: #fff;
+  --shadow-color: 50 30 45;
+  --backdrop: rgb(50 30 45 / 52%);
+  --danger: #c0432f;
   --font-ui: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-display: Georgia, "Noto Serif SC", "Songti SC", serif;
-  --radius-control: 0.4rem;
-  --radius-card: 0.5rem;
-  --radius-panel: 0.65rem;
-  --shadow-raise: 0 0.3rem 0.8rem rgb(31 41 51 / 10%);
+  --radius-control: 0.55rem;
+  --radius-card: 0.7rem;
+  --radius-panel: 0.9rem;
+  --shadow-raise: 0 0.35rem 0.9rem rgb(var(--shadow-color) / 12%);
   --transition: 150ms ease;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #141221;
+  --paper-deep: #1c1930;
+  --card: #23203a;
+  --ink: #ece9f7;
+  --muted-ink: #a49ec4;
+  --line: #3b3658;
+  --accent: #ff7ba9;
+  --accent-soft: #43263f;
+  --accent-ink: #ffb5cf;
+  --accent-2: #2a5a5e;
+  --accent-2-deep: #6fe3f2;
+  --accent-gradient: linear-gradient(120deg, #ff9ec0 0%, #ff7ba9 50%, #c98bf0 100%);
+  --on-accent: #2a0f1d;
+  --shadow-color: 5 4 16;
+  --backdrop: rgb(10 8 20 / 62%);
+  --danger: #ff8a75;
+  --shadow-raise: 0 0.35rem 0.9rem rgb(var(--shadow-color) / 55%);
 }
 
 * {
@@ -44,78 +72,88 @@ button {
 }
 
 a {
-  color: var(--blue);
+  color: var(--accent);
 }
 
 :focus-visible {
-  outline: 3px solid var(--mint-deep);
+  outline: 3px solid var(--accent-2-deep);
   outline-offset: 3px;
 }
 
 .site-shell {
+  --site-nav-offset: 4rem;
   display: grid;
-  grid-template-columns: 13rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   width: min(1920px, 100%);
   margin: 0 auto;
 }
 
 .page-sidebar {
-  align-self: start;
   position: sticky;
   top: 0;
-  display: grid;
-  align-content: start;
-  gap: 0.25rem;
-  min-height: 100vh;
-  padding: 1.75rem 0.85rem;
-  border-right: 1px solid var(--line);
-  background: var(--paper-deep);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: auto;
+  padding: 0.65rem clamp(1rem, 3vw, 3.5rem);
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 1.1rem 1.1rem, color-mix(in srgb, var(--accent) 16%, transparent) 0 0.15rem, transparent 0.16rem),
+    radial-gradient(circle at 3rem 2.9rem, color-mix(in srgb, var(--accent-2-deep) 18%, transparent) 0 0.11rem, transparent 0.12rem),
+    linear-gradient(105deg, color-mix(in srgb, var(--accent-soft) 60%, var(--paper-deep)) 0%, var(--paper-deep) 48%, color-mix(in srgb, var(--accent-2) 34%, var(--paper-deep)) 100%);
+  background-size: 4.2rem 4.2rem, 4.2rem 4.2rem, 100% 100%;
 }
 
 .site-name {
-  margin: 0 0 0.9rem;
-  padding: 0 0.7rem 0.85rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--blue);
+  flex: 0 0 auto;
+  margin: 0 0.75rem 0 0;
+  padding: 0;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-family: var(--font-display);
   font-size: 1.3rem;
   font-weight: 800;
+  letter-spacing: 0.06em;
 }
 
 .page-sidebar button {
-  padding: 0.6rem 0.7rem;
+  padding: 0.48rem 0.72rem;
   border: 1px solid transparent;
-  border-radius: var(--radius-card);
+  border-radius: 999px;
   background: transparent;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   transition: background var(--transition), color var(--transition), box-shadow var(--transition);
 }
 
 .page-sidebar button:hover {
   background: color-mix(in srgb, var(--card) 62%, transparent);
-  color: var(--blue);
+  color: var(--accent);
 }
 
 .page-sidebar button.is-active {
   border-color: color-mix(in srgb, var(--line) 70%, var(--card));
   background: var(--card);
-  box-shadow: inset 0.14rem 0 0 var(--blue);
-  color: var(--blue);
+  box-shadow: inset 0 -0.14rem 0 var(--accent);
+  color: var(--accent);
   font-weight: 800;
 }
 
 .account-area {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: 0.25rem;
-  margin-top: 1rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
+  min-width: 0;
+  margin-left: auto;
 }
 
 .account-name {
   overflow: hidden;
-  padding: 0 0.7rem 0.35rem;
+  max-width: 12rem;
+  padding: 0 0.35rem;
   color: var(--muted-ink);
   font-size: 0.82rem;
   font-weight: 700;
@@ -126,10 +164,10 @@ a {
 .sign-in-prompt-button {
   margin-left: 0.5rem;
   padding: 0.2rem 0.6rem;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--accent);
   border-radius: 999px;
   background: transparent;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 700;
@@ -137,14 +175,186 @@ a {
 }
 
 .sign-in-prompt-button:hover {
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* 主题切换做成常驻浮动按钮：所有页面、任意滚动位置都固定在右下角。 */
+.theme-toggle {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 4;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-raise);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+  transition: border-color var(--transition), box-shadow var(--transition), color var(--transition), transform var(--transition);
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  box-shadow:
+    var(--shadow-raise),
+    0 0.2rem 0.8rem color-mix(in srgb, var(--accent) 25%, transparent);
+  transform: translateY(-2px);
 }
 
 .calendar-page {
   width: min(1680px, 100%);
   margin: 0 auto;
   padding: 2rem clamp(1rem, 3vw, 3.5rem) 2rem;
+}
+
+.seasonal-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
+  grid-template-areas:
+    "copy covers"
+    "shortcuts shortcuts";
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  overflow: hidden;
+  padding: clamp(1.25rem, 3vw, 2.4rem);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(circle at 9% 12%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 32%),
+    radial-gradient(circle at 91% 18%, color-mix(in srgb, var(--accent-2) 54%, transparent), transparent 33%),
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 48%, var(--card)), color-mix(in srgb, var(--paper-deep) 76%, var(--card)));
+  box-shadow: var(--shadow-raise);
+}
+
+.seasonal-hero-copy {
+  grid-area: copy;
+  align-self: center;
+  min-width: 0;
+}
+
+.seasonal-hero-copy h1 {
+  max-width: 13ch;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+}
+
+.seasonal-hero-copy .intro {
+  max-width: 35rem;
+}
+
+.seasonal-hero-copy .source-link {
+  margin-top: 1rem;
+}
+
+.seasonal-hero-actions {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.seasonal-hero-actions > button {
+  min-height: 2.4rem;
+  padding: 0 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-control);
+  background: var(--accent-gradient);
+  color: var(--on-accent);
+  cursor: pointer;
+  font-weight: 800;
+  transition: filter var(--transition), transform var(--transition);
+}
+
+.seasonal-hero-actions > button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.seasonal-hero-covers {
+  grid-area: covers;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(0.35rem, 1vw, 0.7rem);
+  min-width: 0;
+  padding: 0.75rem 0;
+}
+
+.seasonal-hero-cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--line));
+  border-radius: var(--radius-card);
+  background-repeat: no-repeat;
+  box-shadow: 0 0.7rem 1.4rem rgb(var(--shadow-color) / 18%);
+  outline: 1px solid color-mix(in srgb, var(--card) 72%, transparent);
+  outline-offset: -2px;
+}
+
+.seasonal-hero-cover:nth-child(1),
+.seasonal-hero-cover:nth-child(3) {
+  transform: translateY(0.65rem) rotate(-1.5deg);
+}
+
+.seasonal-hero-cover:nth-child(2),
+.seasonal-hero-cover:nth-child(4) {
+  transform: translateY(-0.65rem) rotate(1.5deg);
+}
+
+.seasonal-hero-shortcuts {
+  grid-area: shortcuts;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(10rem, 0.7fr)) minmax(18rem, 1.5fr);
+  gap: 0.75rem;
+  min-width: 0;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+
+.seasonal-hero-shortcuts > button {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.seasonal-hero-shortcuts > button:hover {
+  border-color: var(--accent);
+  background: var(--card);
+  transform: translateY(-1px);
+}
+
+.seasonal-hero-shortcuts > button strong {
+  color: var(--accent);
+}
+
+.seasonal-hero-shortcuts > button span {
+  overflow: hidden;
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seasonal-hero-shortcuts .page-search {
+  align-self: stretch;
+  min-width: 0;
+  margin-top: 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--accent-2-deep) 24%, var(--line));
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--card) 78%, transparent);
 }
 
 .calendar-header,
@@ -190,23 +400,23 @@ a {
 }
 
 .page-search-field input:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .page-search > button {
   min-height: 2.4rem;
   padding: 0 1.1rem;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-control);
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent-gradient);
+  color: var(--on-accent);
   cursor: pointer;
   font-weight: 800;
-  transition: background var(--transition);
+  transition: filter var(--transition);
 }
 
 .page-search > button:hover {
-  background: color-mix(in srgb, var(--blue) 88%, #000);
+  filter: brightness(1.08);
 }
 
 .calendar-header-controls {
@@ -242,7 +452,7 @@ a {
 }
 
 .anime-search input:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .anime-search-empty {
@@ -275,7 +485,7 @@ a {
 }
 
 .season-picker select:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .season-picker span,
@@ -291,8 +501,12 @@ a {
 
 .season-kicker,
 .section-kicker {
+  width: fit-content;
   margin: 0 0 0.45rem;
-  color: var(--blue);
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--card));
+  color: var(--accent-ink);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -314,8 +528,34 @@ strong {
 
 h1 {
   margin-bottom: 0.5rem;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-size: clamp(1.6rem, 2.6vw, 2.3rem);
   line-height: 1.15;
+}
+
+/* 标题下的渐变小彩条，模仿番剧官网的标题装饰。 */
+h1::after {
+  content: "";
+  display: block;
+  width: 3.2rem;
+  height: 0.22rem;
+  margin-top: 0.45rem;
+  border-radius: 999px;
+  background: var(--accent-gradient);
+}
+
+@media (forced-colors: active) {
+  .site-name,
+  h1 {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: CanvasText;
+    color: CanvasText;
+  }
 }
 
 .intro,
@@ -338,7 +578,7 @@ h1 {
   align-items: center;
   gap: 0.3rem;
   border-bottom: 1px solid currentColor;
-  color: var(--blue);
+  color: var(--accent);
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
@@ -346,7 +586,17 @@ h1 {
 
 .weekly-section {
   --week-pager-height: 3.25rem;
+  scroll-margin-top: calc(var(--site-nav-offset) + 1rem);
   padding: 1.5rem 0;
+}
+
+.site-shell .week-pager {
+  top: var(--site-nav-offset);
+}
+
+.site-shell .timeline-corner,
+.site-shell .timeline-day-header {
+  top: calc(var(--site-nav-offset) + var(--week-pager-height));
 }
 
 .statistics-page {
@@ -422,14 +672,14 @@ h1 {
   margin-right: 0.2rem;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  color: var(--blue);
+  color: var(--accent);
   transform: rotate(45deg);
   transition: color 150ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .statistics-section-heading-toggle:hover .statistics-section-chevron,
 .statistics-section-heading-toggle:focus-visible .statistics-section-chevron {
-  color: color-mix(in srgb, var(--blue) 72%, var(--ink));
+  color: color-mix(in srgb, var(--accent) 72%, var(--ink));
 }
 
 .statistics-section-heading-toggle[aria-expanded="false"] .statistics-section-chevron {
@@ -455,7 +705,7 @@ h1 {
 
 .statistics-overview-summary {
   position: sticky;
-  top: 0.75rem;
+  top: calc(var(--site-nav-offset) + 0.75rem);
   z-index: 2;
   margin: -0.5rem -0.6rem 1rem;
   padding: 0.5rem 0.6rem 0.6rem;
@@ -469,7 +719,7 @@ h1 {
 }
 
 .statistics-overview-season {
-  scroll-margin-top: 12rem;
+  scroll-margin-top: calc(var(--site-nav-offset) + 8rem);
 }
 
 .statistics-overview-season + .statistics-overview-season {
@@ -480,14 +730,14 @@ h1 {
 
 .statistics-overview-season h3 {
   margin: 0 0 0.65rem;
-  color: var(--blue);
+  color: var(--accent);
   font-size: 0.92rem;
 }
 
 .statistics-overview-grid div {
   padding: 0.9rem;
   border-radius: var(--radius-card);
-  background: color-mix(in srgb, var(--blue-soft) 52%, var(--card));
+  background: color-mix(in srgb, var(--accent-soft) 52%, var(--card));
 }
 
 .statistics-overview-grid dt {
@@ -497,7 +747,7 @@ h1 {
 
 .statistics-overview-grid dd {
   margin: 0.35rem 0 0;
-  color: var(--blue);
+  color: var(--accent);
   font-family: var(--font-display);
   font-size: clamp(1.45rem, 3vw, 2rem);
   font-variant-numeric: tabular-nums;
@@ -525,7 +775,7 @@ h1 {
 }
 
 .statistics-season-picker select:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .statistics-anime-card-list {
@@ -580,12 +830,15 @@ h1 {
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
 .statistics-anime-card:hover {
-  border-color: var(--blue);
-  box-shadow: var(--shadow-raise);
+  border-color: var(--accent);
+  box-shadow:
+    var(--shadow-raise),
+    0 0.2rem 0.8rem color-mix(in srgb, var(--accent) 22%, transparent);
+  transform: translateY(-2px);
 }
 
 .statistics-anime-card-cover {
@@ -594,7 +847,7 @@ h1 {
   aspect-ratio: 3 / 4;
   border-radius: 0.3rem;
   background-repeat: no-repeat;
-  outline: 1px solid rgb(31 41 51 / 8%);
+  outline: 1px solid rgb(var(--shadow-color) / 10%);
   outline-offset: -1px;
 }
 
@@ -636,15 +889,15 @@ h1 {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--blue);
+  background: var(--accent-gradient);
 }
 
 .statistics-anime-card-status {
   align-self: start;
   padding: 0.26rem 0.45rem;
   border-radius: 999px;
-  background: var(--blue-soft);
-  color: var(--blue);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   font-size: 0.72rem;
   font-weight: 800;
   white-space: nowrap;
@@ -717,18 +970,18 @@ h1 {
 }
 
 .anime-selection:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .anime-selection:has(input:checked) {
-  border-color: var(--blue);
-  background: var(--blue-soft);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .anime-selection input {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--blue);
+  accent-color: var(--accent);
 }
 
 .anime-selection span {
@@ -782,7 +1035,9 @@ h1 {
   margin-bottom: 0;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--line);
-  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .week-pager button,
@@ -803,8 +1058,8 @@ h1 {
 
 .week-pager button:hover,
 .dialog-close:hover {
-  border-color: var(--blue);
-  color: var(--blue);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* “回到本周”是辅助操作：视觉降级为文字按钮，翻周按钮保持主样式。DOM 顺序为 上一周 / 日期 / 回到本周 / 下一周。 */
@@ -818,7 +1073,7 @@ h1 {
 .week-pager button:nth-of-type(2):hover {
   border-color: transparent;
   background: color-mix(in srgb, var(--card) 70%, transparent);
-  color: var(--blue);
+  color: var(--accent);
 }
 
 .week-pager p {
@@ -865,7 +1120,9 @@ h1 {
   top: var(--week-pager-height);
   z-index: 2;
   min-width: 0;
-  background: color-mix(in srgb, var(--card) 84%, var(--paper-deep));
+  background: color-mix(in srgb, var(--card) 78%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 
 .timeline-day-header {
@@ -876,7 +1133,8 @@ h1 {
 }
 
 .timeline-day-header.is-today {
-  background: color-mix(in srgb, var(--mint) 42%, var(--card));
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 20%, var(--card)), color-mix(in srgb, var(--accent-2) 38%, var(--card)));
 }
 
 .timeline-day-header h3 {
@@ -896,8 +1154,8 @@ h1 {
   right: 0.55rem;
   padding: 0.12rem 0.4rem;
   border-radius: 999px;
-  background: var(--mint-deep);
-  color: #fff;
+  background: var(--accent-2-deep);
+  color: var(--on-accent);
   font-size: 0.62rem;
   font-weight: 700;
 }
@@ -940,7 +1198,10 @@ h1 {
 }
 
 .timeline-day.is-today {
-  background-color: color-mix(in srgb, var(--mint) 18%, var(--card));
+  background-color: var(--card);
+  background-image:
+    var(--timeline-lines),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, var(--card)), color-mix(in srgb, var(--accent-2) 15%, var(--card)));
 }
 
 .timeline-date-only-corner,
@@ -954,7 +1215,8 @@ h1 {
 }
 
 .timeline-date-only.is-today {
-  background: color-mix(in srgb, var(--mint) 18%, var(--card));
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 10%, var(--card)), color-mix(in srgb, var(--accent-2) 16%, var(--card)));
 }
 
 .timeline-date-only-events {
@@ -967,9 +1229,9 @@ h1 {
   gap: 0.12rem;
   width: 100%;
   padding: 0.35rem 0.4rem;
-  border: 1px dashed color-mix(in srgb, var(--blue) 55%, var(--line));
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
   border-radius: var(--radius-control);
-  background: color-mix(in srgb, var(--blue-soft) 70%, var(--card));
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--card));
   color: var(--ink);
   cursor: pointer;
   text-align: left;
@@ -977,8 +1239,8 @@ h1 {
 }
 
 .date-only-event:hover {
-  border-color: var(--blue);
-  background: color-mix(in srgb, var(--blue-soft) 85%, var(--card));
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 85%, var(--card));
 }
 
 .date-only-event strong {
@@ -1064,11 +1326,11 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--card);
-  box-shadow: inset 0.14rem 0 0 color-mix(in srgb, var(--blue) 45%, var(--line));
+  box-shadow: inset 0.14rem 0 0 color-mix(in srgb, var(--accent) 45%, var(--line));
   color: var(--ink);
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
 .timeline-event {
@@ -1088,13 +1350,16 @@ h1 {
 }
 
 .calendar-event-detail:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
-  box-shadow: inset 0.14rem 0 0 var(--blue);
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+  box-shadow:
+    inset 0.14rem 0 0 var(--accent),
+    0 0.25rem 0.7rem color-mix(in srgb, var(--accent) 26%, transparent);
+  transform: translateY(-1px);
 }
 
 .calendar-event.is-today .calendar-event-detail {
-  border-color: color-mix(in srgb, var(--mint-deep) 50%, var(--line));
-  box-shadow: inset 0.14rem 0 0 var(--mint-deep);
+  border-color: color-mix(in srgb, var(--accent-2-deep) 50%, var(--line));
+  box-shadow: inset 0.14rem 0 0 var(--accent-2-deep);
 }
 
 .calendar-event.is-watched .calendar-event-detail {
@@ -1126,7 +1391,7 @@ h1 {
   border: 1px solid color-mix(in srgb, var(--muted-ink) 70%, var(--line));
   border-radius: 0.22rem;
   background: var(--card);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   font-size: 0.58rem;
   font-weight: 800;
@@ -1135,17 +1400,17 @@ h1 {
 }
 
 .episode-watch-toggle:hover {
-  border-color: var(--blue);
+  border-color: var(--accent);
 }
 
 .episode-watch-toggle[aria-pressed="true"] {
-  border-color: var(--blue);
-  background: var(--blue);
+  border-color: var(--accent);
+  background: var(--accent);
 }
 
 .episode-watch-toggle[aria-pressed="true"]:hover {
-  border-color: color-mix(in srgb, var(--blue) 82%, var(--ink));
-  background: color-mix(in srgb, var(--blue) 82%, var(--ink));
+  border-color: color-mix(in srgb, var(--accent) 82%, var(--ink));
+  background: color-mix(in srgb, var(--accent) 82%, var(--ink));
 }
 
 .episode-watch-toggle:disabled {
@@ -1169,7 +1434,7 @@ h1 {
   aspect-ratio: 3 / 4;
   border-radius: 0.28rem;
   background-repeat: no-repeat;
-  outline: 1px solid rgb(31 41 51 / 8%);
+  outline: 1px solid rgb(var(--shadow-color) / 10%);
   outline-offset: -1px;
 }
 
@@ -1268,12 +1533,15 @@ h1 {
   background: var(--card);
   cursor: pointer;
   text-align: left;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
 
 .network-card:hover {
-  border-color: var(--blue);
-  box-shadow: var(--shadow-raise);
+  border-color: var(--accent);
+  box-shadow:
+    var(--shadow-raise),
+    0 0.2rem 0.8rem color-mix(in srgb, var(--accent) 22%, transparent);
+  transform: translateY(-2px);
 }
 
 .network-card-cover {
@@ -1282,7 +1550,7 @@ h1 {
   height: 5.8rem;
   border-radius: 0.3rem;
   background-repeat: no-repeat;
-  outline: 1px solid rgb(31 41 51 / 8%);
+  outline: 1px solid rgb(var(--shadow-color) / 10%);
   outline-offset: -1px;
 }
 
@@ -1338,7 +1606,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--card);
-  box-shadow: 0 1.5rem 4rem rgb(31 41 51 / 30%);
+  box-shadow: 0 1.5rem 4rem rgb(var(--shadow-color) / 32%);
 }
 
 /* 未打开的弹窗不得占用文档流：.detail-dialog 的 display: grid 属于作者样式，
@@ -1350,7 +1618,7 @@ h1 {
 }
 
 .detail-dialog::backdrop {
-  background: rgb(31 41 51 / 52%);
+  background: var(--backdrop);
 }
 
 .detail-dialog-heading {
@@ -1380,15 +1648,15 @@ h1 {
   margin-bottom: 0;
   border-radius: var(--radius-card);
   background-repeat: no-repeat;
-  outline: 1px solid rgb(31 41 51 / 10%);
+  outline: 1px solid rgb(var(--shadow-color) / 12%);
   outline-offset: -1px;
-  box-shadow: 0 0.75rem 2rem rgb(31 41 51 / 18%);
+  box-shadow: 0 0.75rem 2rem rgb(var(--shadow-color) / 20%);
 }
 
 .detail-title-zh {
   grid-column: 2;
   margin-bottom: 0.25rem;
-  color: var(--blue);
+  color: var(--accent);
   font-size: 1.05rem;
   font-weight: 800;
 }
@@ -1446,22 +1714,22 @@ h1 {
   min-width: 6.5rem;
   min-height: 2.3rem;
   padding: 0 1rem;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--accent);
   border-radius: 999px;
   background: transparent;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   font-weight: 800;
   transition: background var(--transition), color var(--transition);
 }
 
 .detail-follow-button:hover {
-  background: var(--blue-soft);
+  background: var(--accent-soft);
 }
 
 .detail-follow-button.is-followed {
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent-gradient);
+  color: var(--on-accent);
 }
 
 .detail-follow-button:disabled {
@@ -1492,7 +1760,7 @@ h1 {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--mint-deep);
+  background: var(--accent-gradient);
   transition: width var(--transition);
 }
 
@@ -1533,13 +1801,13 @@ h1 {
 }
 
 .detail-episode-button:hover {
-  border-color: color-mix(in srgb, var(--mint-deep) 65%, var(--line));
+  border-color: color-mix(in srgb, var(--accent-2-deep) 65%, var(--line));
 }
 
 .detail-episode-button.is-watched {
-  border-color: var(--mint-deep);
-  background: var(--mint-deep);
-  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .detail-episode-button:disabled {
@@ -1556,7 +1824,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--card);
-  box-shadow: 0 1.5rem 4rem rgb(31 41 51 / 30%);
+  box-shadow: 0 1.5rem 4rem rgb(var(--shadow-color) / 32%);
 }
 
 /* 同 .detail-dialog：作者样式的 display: grid 会覆盖 UA 的 dialog:not([open]) 隐藏规则。 */
@@ -1565,7 +1833,7 @@ h1 {
 }
 
 .auth-dialog::backdrop {
-  background: rgb(31 41 51 / 52%);
+  background: var(--backdrop);
 }
 
 .auth-dialog h2 {
@@ -1599,29 +1867,29 @@ h1 {
 }
 
 .auth-form input:hover {
-  border-color: color-mix(in srgb, var(--blue) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
 }
 
 .auth-error {
   margin: 0;
-  color: #a33b2e;
+  color: var(--danger);
   font-size: 0.85rem;
   font-weight: 700;
 }
 
 .auth-submit {
   min-height: 2.5rem;
-  border: 1px solid var(--blue);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-control);
-  background: var(--blue);
-  color: #fff;
+  background: var(--accent-gradient);
+  color: var(--on-accent);
   cursor: pointer;
   font-weight: 800;
-  transition: background var(--transition);
+  transition: filter var(--transition);
 }
 
 .auth-submit:hover {
-  background: color-mix(in srgb, var(--blue) 88%, #000);
+  filter: brightness(1.08);
 }
 
 .auth-submit:disabled {
@@ -1639,13 +1907,49 @@ h1 {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--blue);
+  color: var(--accent);
   cursor: pointer;
   font-weight: 800;
   text-decoration: underline;
 }
 
 @media (max-width: 860px) {
+  .seasonal-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "covers"
+      "shortcuts";
+    gap: 1rem;
+    padding: 1.15rem;
+  }
+
+  .seasonal-hero-copy h1 {
+    font-size: clamp(1.8rem, 8vw, 2.7rem);
+  }
+
+  .seasonal-hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .seasonal-hero-actions > button {
+    min-height: 2.6rem;
+  }
+
+  .seasonal-hero-covers {
+    padding: 0.65rem 0.2rem;
+  }
+
+  .seasonal-hero-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 0.85rem;
+  }
+
+  .seasonal-hero-shortcuts .page-search {
+    grid-column: 1 / -1;
+  }
+
   .week-pager {
     position: static;
     display: grid;
@@ -1669,6 +1973,7 @@ h1 {
   }
 
   .site-shell {
+    --site-nav-offset: 0rem;
     grid-template-columns: 1fr;
   }
 
@@ -1699,14 +2004,14 @@ h1 {
   }
 
   .page-sidebar button:hover {
-    background: color-mix(in srgb, var(--blue-soft) 55%, var(--card));
+    background: color-mix(in srgb, var(--accent-soft) 55%, var(--card));
   }
 
   .page-sidebar button.is-active {
-    border-color: var(--blue);
-    background: var(--blue);
+    border-color: var(--accent);
+    background: var(--accent-gradient);
     box-shadow: none;
-    color: #fff;
+    color: var(--on-accent);
   }
 
   .account-area {
@@ -1796,9 +2101,9 @@ h1 {
   }
 
   .mobile-day-picker button.is-selected {
-    border-color: var(--blue);
-    background: var(--blue);
-    color: #fff;
+    border-color: var(--accent);
+    background: var(--accent-gradient);
+    color: var(--on-accent);
   }
 
   .mobile-agenda {
@@ -1845,6 +2150,18 @@ h1 {
 }
 
 @media (max-width: 520px) {
+  .seasonal-hero-covers {
+    gap: 0.25rem;
+  }
+
+  .seasonal-hero-shortcuts {
+    grid-template-columns: 1fr;
+  }
+
+  .seasonal-hero-shortcuts .page-search {
+    grid-column: auto;
+  }
+
   .detail-dialog {
     grid-template-columns: 1fr;
   }
@@ -1907,11 +2224,21 @@ h1 {
   .page-search > button,
   .network-card,
   .page-sidebar button,
+  .seasonal-hero-actions > button,
+  .seasonal-hero-shortcuts > button,
   .season-picker select,
   .statistics-anime-card,
   .statistics-season-picker select,
   .statistics-section-chevron,
+  .theme-toggle,
   .week-pager button {
     transition: none;
+  }
+
+  .seasonal-hero-actions > button,
+  .seasonal-hero-shortcuts > button,
+  .theme-toggle,
+  .seasonal-hero-cover {
+    transform: none;
   }
 }

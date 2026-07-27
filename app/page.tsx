@@ -192,6 +192,39 @@ function subscribeToBeijingDate(onStoreChange: () => void) {
   return () => window.clearInterval(interval);
 }
 
+// 主题保存在 <html data-theme>（由 layout 内联脚本在首屏前写入），这里用
+// useSyncExternalStore 订阅它；applyTheme 是唯一写入口，负责持久化并通知订阅者。
+type ThemeName = "light" | "dark";
+
+const themeListeners = new Set<() => void>();
+
+function getThemeSnapshot(): ThemeName {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function getServerThemeSnapshot(): ThemeName {
+  return "light";
+}
+
+function subscribeToTheme(onStoreChange: () => void) {
+  themeListeners.add(onStoreChange);
+  return () => {
+    themeListeners.delete(onStoreChange);
+  };
+}
+
+function applyTheme(nextTheme: ThemeName, persist: boolean) {
+  if (persist) {
+    try {
+      localStorage.setItem("ac-theme", nextTheme);
+    } catch {
+      // 存储失败时仅本次会话生效。
+    }
+  }
+  document.documentElement.dataset.theme = nextTheme;
+  for (const listener of themeListeners) listener();
+}
+
 function getServerBeijingDate() {
   return null;
 }
@@ -252,12 +285,19 @@ export default function Home() {
   const authDialogRef = useRef<HTMLDialogElement>(null);
   const authOpenerRef = useRef<HTMLButtonElement | null>(null);
   const didSetInitialWeek = useRef(false);
+  const weeklySectionRef = useRef<HTMLElement>(null);
   const currentBeijingDate = useSyncExternalStore<string | null>(
     subscribeToBeijingDate,
     getBeijingDate,
     getServerBeijingDate,
   );
+  const theme = useSyncExternalStore<ThemeName>(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getServerThemeSnapshot,
+  );
   const activeSeason = seasonForWeek(seasons, activeWeekStart) as Season;
+  const seasonalHeroAnime = activeSeason.anime.slice(0, 4);
   const isHistoricalSeason = activeSeason.id !== initialSeasonId;
   const defaultTimelineStartMinutes = 5 * 60;
   const defaultTimelineEndMinutes = 29 * 60;
@@ -347,6 +387,27 @@ export default function Home() {
     setActiveWeekStart(startOfWeek(currentBeijingDate));
     setActiveMobileDate(currentBeijingDate);
   }, [currentBeijingDate]);
+
+  // 与 layout 内联脚本共同维护 <html data-theme>：脚本负责首屏前定主题，
+  // 用户未手动选择时这里继续跟随系统主题变化。
+  useEffect(() => {
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const followSystemTheme = () => {
+      try {
+        if (localStorage.getItem("ac-theme")) return;
+      } catch {
+        // localStorage 不可用时按未手动选择处理。
+      }
+      applyTheme(systemTheme.matches ? "dark" : "light", false);
+    };
+
+    systemTheme.addEventListener("change", followSystemTheme);
+    return () => systemTheme.removeEventListener("change", followSystemTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    applyTheme(theme === "dark" ? "light" : "dark", true);
+  };
 
   useEffect(() => {
     if (selected && dialogRef.current && !dialogRef.current.open) {
@@ -511,6 +572,20 @@ export default function Home() {
       : firstFullWeekStart(activeSeason);
     setActiveWeekStart(startOfWeek(date));
     setActiveMobileDate(date);
+  };
+
+  const scrollToWeeklySchedule = () => {
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
+    weeklySectionRef.current?.scrollIntoView({ behavior, block: "start" });
+  };
+
+  const jumpToTodaySchedule = () => {
+    const date = currentBeijingDate ?? activeWeekStart;
+    setActiveWeekStart(startOfWeek(date));
+    setActiveMobileDate(date);
+    window.requestAnimationFrame(scrollToWeeklySchedule);
   };
 
   const toggleAnimeSelection = async (animeId: string) => {
@@ -867,70 +942,85 @@ export default function Home() {
         </div>
       </nav>
       <main className="calendar-page">
-      <header className="calendar-header">
-        <div>
-          <p className="season-kicker">
-            {activePage === "all"
-              ? activeSeason.label
-              : activePage === "mine"
-                ? "我的番剧"
-                : activePage === "search"
-                  ? "全部目录"
-                  : "我的进度"}
-          </p>
-          <h1>
-            {activePage === "all"
-              ? activeSeason.label + "时间表"
-              : activePage === "mine"
-                ? "我的番剧时间表"
-                : activePage === "search"
-                  ? "查询番剧"
-                  : "追番统计"}
-          </h1>
-          <p className="intro">
-            {activePage === "all"
-              ? "共 " +
-                activeSeason.catalogCount +
-                " 部番剧" +
-                "，从首播日起按周显示；未明确集数的作品暂按 12 集安排，时间均为北京时间。"
-              : activePage === "mine"
+      {activePage === "all" ? (
+        <section className="seasonal-hero" aria-labelledby="seasonal-hero-heading">
+          <div className="seasonal-hero-copy">
+            <p className="season-kicker">{activeSeason.label}</p>
+            <h1 id="seasonal-hero-heading">这季有什么值得追？</h1>
+            <p className="intro">共 {activeSeason.catalogCount} 部番剧，按北京时间追踪每一集的播出时间。</p>
+            <div className="seasonal-hero-actions">
+              <button type="button" onClick={scrollToWeeklySchedule}>查看本周放送</button>
+              <label className="season-picker">
+                选择季度
+                <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
+                  {seasons.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>{candidate.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <a className="source-link" href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
+              {activeSeason.sourceName} <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <div className="seasonal-hero-covers" aria-hidden="true">
+            {seasonalHeroAnime.map((record) => (
+              <CoverArt anime={record} className="seasonal-hero-cover" decorative key={record.id} />
+            ))}
+          </div>
+          <div className="seasonal-hero-shortcuts">
+            <button type="button" onClick={jumpToTodaySchedule}>
+              <strong>今天看什么</strong><span>定位到今天的放送安排</span>
+            </button>
+            <button type="button" onClick={() => changePage("mine")}>
+              <strong>我的追番</strong><span>登录后继续查看已收藏作品</span>
+            </button>
+            <form className="page-search" role="search" aria-label="查询番剧" onSubmit={submitPageSearch}>
+              <label className="page-search-field">查询番剧<input name="pageSearch" type="search" placeholder="输入中文或日文名" /></label>
+              <button type="submit">查询</button>
+            </form>
+          </div>
+        </section>
+      ) : (
+        <header className="calendar-header">
+          <div>
+            <p className="season-kicker">
+              {activePage === "mine" ? "我的番剧" : activePage === "search" ? "全部目录" : "我的进度"}
+            </p>
+            <h1>
+              {activePage === "mine" ? "我的番剧时间表" : activePage === "search" ? "查询番剧" : "追番统计"}
+            </h1>
+            <p className="intro">
+              {activePage === "mine"
                 ? "勾选想追的番剧，只查看属于你的播出时间表。"
                 : activePage === "search"
                   ? "搜索本应用已收录的全部番剧，支持中文和日文标题。"
                   : "查看今天要追的番剧、整体进度，以及每个季度的追番记录。"}
-          </p>
-          {(activePage === "all" || activePage === "mine") && isHistoricalSeason ? (
-            <p className="pilot-note">
-              名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。
             </p>
-          ) : null}
-        </div>
-        {activePage === "all" || activePage === "mine" ? (
-          <div className="calendar-header-controls">
-            <label className="season-picker">
-              选择季度
-              <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
-                {seasons.map((candidate) => (
-                  <option key={candidate.id} value={candidate.id}>
-                    {candidate.label}
-                  </option>
-                ))}
-              </select>
-              <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
-            </label>
-            <a
-              className="source-link"
-              href={activeSeason.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {activeSeason.sourceName} <span aria-hidden="true">↗</span>
-            </a>
+            {activePage === "mine" && isHistoricalSeason ? (
+              <p className="pilot-note">名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</p>
+            ) : null}
           </div>
-        ) : null}
-      </header>
+          {activePage === "mine" ? (
+            <div className="calendar-header-controls">
+              <label className="season-picker">
+                选择季度
+                <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
+                  {seasons.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>{candidate.label}</option>
+                  ))}
+                </select>
+                <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
+              </label>
+              <a className="source-link" href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
+                {activeSeason.sourceName} <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          ) : null}
+        </header>
+      )}
 
-      {activePage !== "search" ? (
+      {activePage === "mine" || activePage === "stats" ? (
         <form
           className="page-search"
           role="search"
@@ -1217,7 +1307,7 @@ export default function Home() {
       {activePage === "all" || activePage === "mine" ? (
         activePage === "all" || calendarAnime.length ? (
         <>
-      <section className="weekly-section" aria-labelledby="weekly-heading">
+      <section ref={weeklySectionRef} className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">
           <div>
             <p className="section-kicker">放送安排</p>
@@ -1691,6 +1781,15 @@ export default function Home() {
         </dialog>
       ) : null}
       </main>
+      <button
+        className="theme-toggle"
+        type="button"
+        aria-pressed={theme === "dark"}
+        aria-label={theme === "dark" ? "切换到浅色模式" : "切换到深色模式"}
+        onClick={toggleTheme}
+      >
+        {theme === "dark" ? "浅色模式" : "深色模式"}
+      </button>
     </div>
   );
 }
