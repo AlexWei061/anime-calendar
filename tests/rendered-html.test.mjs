@@ -779,6 +779,22 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /\{activePage === "mine" \? \(\s*<section className="personal-hero personal-hero-mine"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>今天要追什么？<\/h1>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/section>/,
   );
+  const mineHeroIndex = page.indexOf('className="personal-hero personal-hero-mine"');
+  const mineWeeklyScheduleIndex = page.indexOf(
+    'ref={weeklySectionRef} className="weekly-section"',
+  );
+  const mineSelectionPanelIndex = page.indexOf('className="anime-selection-panel"');
+  assert.ok(mineHeroIndex >= 0, "the mine page must render its personal hero");
+  assert.ok(
+    mineWeeklyScheduleIndex > mineHeroIndex,
+    "the mine weekly schedule must follow the personal hero",
+  );
+  assert.ok(
+    mineSelectionPanelIndex > mineWeeklyScheduleIndex,
+    "the mine selection panel must follow the weekly schedule",
+  );
+  assert.match(page, /请先在“选择番剧”中勾选想追的作品。/);
+  assert.doesNotMatch(page, /勾选上方的番剧/);
   assert.match(
     page,
     /\{activePage === "stats" \? \(\s*<section className="personal-hero personal-hero-stats"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>这一路追到哪了？<\/h1>[\s\S]*?displayedOverallProgressTotals\.inProgress[\s\S]*?displayedOverallProgressTotals\.completed[\s\S]*?displayedOverallProgressTotals\.notStarted[\s\S]*?<\/section>/,
