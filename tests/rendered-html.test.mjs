@@ -465,6 +465,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const \[watchedEpisodes, setWatchedEpisodes\] = useState<WatchedEpisode\[\] \| null>\(null\);/);
   assert.match(page, /const \[watchedEpisodeError, setWatchedEpisodeError\] = useState<string \| null>\(null\);/);
   assert.match(page, /const \[savingEpisodeKeys, setSavingEpisodeKeys\] = useState<string\[\]>\(\[\]\);/);
+  assert.match(
+    page,
+    /const isPersonalProgressLoading = selectedAnimeIds === null \|\| watchedEpisodes === null;/,
+  );
+  assert.match(page, /const personalWatchedEpisodeCount = overallProgress\.reduce\(/);
+  assert.match(page, /const personalEpisodeCount = overallProgress\.reduce\(/);
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewUnitsForRange/);
   assert.match(page, /isEpisodeViewWatched/);
@@ -594,10 +600,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   const pageSidebarStyles = cssBlock(styles, "\\.page-sidebar");
   const seasonalHeroStyles = cssBlock(styles, "\\.seasonal-hero");
   const seasonalHeroCoversStyles = cssBlock(styles, "\\.seasonal-hero-covers");
+  const personalHeroStyles = cssBlock(styles, "\\.personal-hero");
+  const personalHeroMetricsStyles = cssBlock(styles, "\\.personal-hero-metrics");
   const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
   const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
   const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
   const mobileSeasonalHeroStyles = cssBlock(mobileStyles, "\\.seasonal-hero");
+  const mobilePersonalHeroStyles = cssBlock(mobileStyles, "\\.personal-hero");
+  const mobilePersonalMetricsStyles = cssBlock(mobileStyles, "\\.personal-hero-metrics");
   const mobileCalendarStyles = cssBlock(mobileStyles, "\\.mobile-calendar");
   assert.match(styles, /:focus-visible/);
   assert.match(styles, /\.page-sidebar button\.is-active/);
@@ -613,11 +623,18 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.doesNotMatch(styles, /grid-template-columns:\s*13rem minmax\(0, 1fr\)/);
   assert.match(seasonalHeroStyles, /display:\s*grid;/);
+  assert.match(personalHeroStyles, /display:\s*grid;/);
+  assert.match(
+    personalHeroMetricsStyles,
+    /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
+  );
   assert.match(
     seasonalHeroCoversStyles,
     /grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/,
   );
   assert.match(mobileSeasonalHeroStyles, /grid-template-columns:\s*1fr;/);
+  assert.match(mobilePersonalHeroStyles, /grid-template-columns:\s*1fr;/);
+  assert.match(mobilePersonalMetricsStyles, /grid-template-columns:\s*1fr;/);
   assert.match(mobileCalendarStyles, /display:\s*grid;/);
   assert.match(styles, /\.season-picker\s*\{/);
   assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
@@ -752,6 +769,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.detail-dialog::backdrop/);
   assert.match(styles, /\.network-card/);
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
+  assert.match(
+    page,
+    /\{activePage === "mine" \? \(\s*<section className="personal-hero personal-hero-mine"[^>]*>[\s\S]*?<h1>今天要追什么？<\/h1>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/section>/,
+  );
+  assert.match(
+    page,
+    /\{activePage === "stats" \? \(\s*<section className="personal-hero personal-hero-stats"[^>]*>[\s\S]*?<h1>这一路追到哪了？<\/h1>[\s\S]*?displayedOverallProgressTotals\.inProgress[\s\S]*?displayedOverallProgressTotals\.completed[\s\S]*?displayedOverallProgressTotals\.notStarted[\s\S]*?<\/section>/,
+  );
 });
 
 test("keeps global title search separate from calendar schedules", async () => {
@@ -865,18 +890,23 @@ test("offers a search box on calendar pages that jumps to the search page", asyn
   const allPageHero = page.match(
     /\{activePage === "all" \? \(\s*(<section className="seasonal-hero"[\s\S]*?<\/section>)/,
   );
-  const personalPageSearch = page.match(
-    /\{activePage === "mine" \|\| activePage === "stats" \? \(\s*(<form\b[\s\S]*?<\/form>)/,
+  const minePageHero = page.match(
+    /\{activePage === "mine" \? \(\s*(<section className="personal-hero personal-hero-mine"[\s\S]*?<\/section>)/,
+  );
+  const statsPageHero = page.match(
+    /\{activePage === "stats" \? \(\s*(<section className="personal-hero personal-hero-stats"[\s\S]*?<\/section>)/,
   );
   assert.ok(allPageHero, "the all page must render a seasonal hero");
-  assert.ok(personalPageSearch, "mine and stats pages must render their shared search form");
-  for (const source of [allPageHero[1], personalPageSearch[1]]) {
+  assert.ok(minePageHero, "the mine page must render a personal hero");
+  assert.ok(statsPageHero, "the stats page must render a personal hero");
+  for (const source of [allPageHero[1], minePageHero[1], statsPageHero[1]]) {
     assert.match(
       source,
       /<form\b(?=[^>]*className="page-search")(?=[^>]*role="search")[^>]*>[\s\S]*?<input\b(?=[^>]*name="pageSearch")(?=[^>]*type="search")(?=[^>]*placeholder="输入中文或日文名")[^>]*>/,
     );
   }
-  assert.equal((page.match(/<form\b(?=[^>]*className="page-search")/g) ?? []).length, 2);
+  assert.equal((page.match(/<form className="page-search">/g) ?? []).length, 3);
+  assert.doesNotMatch(page, /\{activePage === "mine" \|\| activePage === "stats" \? \(/);
   assert.match(page, /className="page-search-field"/);
 });
 
