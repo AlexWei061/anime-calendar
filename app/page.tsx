@@ -1485,28 +1485,6 @@ export default function Home() {
       </section>
       : null}
 
-      <footer className="calendar-footer">
-        <p>
-          数据来源：{" "}
-          <a href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
-            {activeSeason.sourceName}
-          </a>
-          ，更新于 {activeSeason.updatedAt}。
-        </p>
-        {isHistoricalSeason ? (
-          <p>YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。</p>
-        ) : (
-          <p>周表时刻按资料来源公开排期展示为 {activeSeason.timeZoneLabel}。</p>
-        )}
-      </footer>
-        </>
-      ) : selectedAnimeIds ? (
-        <p className="my-schedule-empty">
-          请先在“选择番剧”中勾选想追的作品。
-        </p>
-        ) : null
-      ) : null}
-
       {activePage === "mine" ? (
         <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
           <details className="anime-selection-details">
@@ -1546,6 +1524,28 @@ export default function Home() {
             ) : null}
           </details>
         </section>
+      ) : null}
+
+      <footer className="calendar-footer">
+        <p>
+          数据来源：{" "}
+          <a href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
+            {activeSeason.sourceName}
+          </a>
+          ，更新于 {activeSeason.updatedAt}。
+        </p>
+        {isHistoricalSeason ? (
+          <p>YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。</p>
+        ) : (
+          <p>周表时刻按资料来源公开排期展示为 {activeSeason.timeZoneLabel}。</p>
+        )}
+      </footer>
+        </>
+      ) : selectedAnimeIds ? (
+        <p className="my-schedule-empty">
+          请先在“选择番剧”中勾选想追的作品。
+        </p>
+      ) : null
       ) : null}
 
       {authDialogMode ? (
