@@ -325,6 +325,18 @@ export default function Home() {
     allProgress,
     seasonIndexByAnimeId,
   ) as AnimeProgress[];
+  const isPersonalProgressLoading = selectedAnimeIds === null || watchedEpisodes === null;
+  const personalWatchedEpisodeCount = overallProgress.reduce(
+    (total, progress) => total + progress.watchedEpisodeCount,
+    0,
+  );
+  const personalEpisodeCount = overallProgress.reduce(
+    (total, progress) => total + progress.record.episodeCount,
+    0,
+  );
+  const personalProgressLabel = personalEpisodeCount
+    ? `已看 ${personalWatchedEpisodeCount} / ${personalEpisodeCount} 集`
+    : "还没有追番记录";
   const overallProgressBySeason = seasons
     .map((season, seasonIndex) => ({
       season,
@@ -981,58 +993,48 @@ export default function Home() {
             </form>
           </div>
         </section>
-      ) : (
+      ) : activePage === "search" ? (
         <header className="calendar-header">
           <div>
             <p className="season-kicker">
-              {activePage === "mine" ? "我的番剧" : activePage === "search" ? "全部目录" : "我的进度"}
+              全部目录
             </p>
             <h1>
-              {activePage === "mine" ? "我的番剧时间表" : activePage === "search" ? "查询番剧" : "追番统计"}
+              查询番剧
             </h1>
             <p className="intro">
-              {activePage === "mine"
-                ? "勾选想追的番剧，只查看属于你的播出时间表。"
-                : activePage === "search"
-                  ? "搜索本应用已收录的全部番剧，支持中文和日文标题。"
-                  : "查看今天要追的番剧、整体进度，以及每个季度的追番记录。"}
+              搜索本应用已收录的全部番剧，支持中文和日文标题。
             </p>
-            {activePage === "mine" && isHistoricalSeason ? (
-              <p className="pilot-note">名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</p>
-            ) : null}
           </div>
-          {activePage === "mine" ? (
-            <div className="calendar-header-controls">
-              <label className="season-picker">
-                选择季度
-                <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
-                  {seasons.map((candidate) => (
-                    <option key={candidate.id} value={candidate.id}>{candidate.label}</option>
-                  ))}
-                </select>
-                <span>1 月番和 4 月番：名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
-              </label>
-              <a className="source-link" href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
-                {activeSeason.sourceName} <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          ) : null}
         </header>
-      )}
+      ) : null}
 
-      {activePage === "mine" || activePage === "stats" ? (
-        <form
-          className="page-search"
-          role="search"
-          aria-label="查询番剧"
-          onSubmit={submitPageSearch}
-        >
-          <label className="page-search-field">
-            查询番剧
-            <input name="pageSearch" type="search" placeholder="输入中文或日文名" />
-          </label>
-          <button type="submit">查询</button>
-        </form>
+      {activePage === "stats" ? (
+        <section className="personal-hero personal-hero-stats" aria-labelledby="stats-hero-heading">
+          <div className="personal-hero-copy">
+            <p className="seasonal-kicker">追番档案</p>
+            <h1 id="stats-hero-heading">这一路追到哪了？</h1>
+            <p className="seasonal-hero-intro">把看过的、正在追的和还没开始的作品放进同一张档案里。</p>
+          </div>
+          <dl className="personal-hero-metrics" aria-label="追番档案概览">
+            <div>
+              <dt>正在追</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : `${displayedOverallProgressTotals.inProgress} 部`}</dd>
+            </div>
+            <div>
+              <dt>已补完</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : `${displayedOverallProgressTotals.completed} 部`}</dd>
+            </div>
+            <div>
+              <dt>还没开始</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : `${displayedOverallProgressTotals.notStarted} 部`}</dd>
+            </div>
+          </dl>
+          <form className="page-search" role="search" aria-label="查询番剧" onSubmit={submitPageSearch}>
+            <label className="page-search-field">查询番剧<input name="pageSearch" type="search" placeholder="输入中文或日文名" /></label>
+            <button type="submit">查询</button>
+          </form>
+        </section>
       ) : null}
 
       {activePage === "stats" ? (
@@ -1194,6 +1196,50 @@ export default function Home() {
 
             </>
           )}
+        </section>
+      ) : null}
+
+      {activePage === "mine" ? (
+        <section className="personal-hero personal-hero-mine" aria-labelledby="mine-hero-heading">
+          <div className="personal-hero-copy">
+            <p className="seasonal-kicker">我的番剧</p>
+            <h1 id="mine-hero-heading">今天要追什么？</h1>
+            <p className="seasonal-hero-intro">把这一周的追番安排在眼前，按自己的节奏慢慢补完。</p>
+            <div className="personal-hero-controls">
+              <label className="season-picker">
+                选择季度
+                <select value={activeSeason.id} onChange={(event) => changeSeason(event.target.value)}>
+                  {seasons.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>{candidate.label}</option>
+                  ))}
+                </select>
+                {isHistoricalSeason ? (
+                  <span>名称和封面来自 YUC；首播日期、北京时间与集数使用 AniList 历史记录。</span>
+                ) : null}
+              </label>
+              <a className="source-link" href={activeSeason.sourceUrl} target="_blank" rel="noreferrer">
+                {activeSeason.sourceName} <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+          <dl className="personal-hero-metrics" aria-label="我的番剧概览">
+            <div>
+              <dt>本季在追</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : `${selectedSeasonAnime.length} 部`}</dd>
+            </div>
+            <div>
+              <dt>今天待看</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : `${todayBroadcasts.length} 集`}</dd>
+            </div>
+            <div>
+              <dt>整体进度</dt>
+              <dd>{isPersonalProgressLoading ? "读取中" : personalProgressLabel}</dd>
+            </div>
+          </dl>
+          <form className="page-search" role="search" aria-label="查询番剧" onSubmit={submitPageSearch}>
+            <label className="page-search-field">查询番剧<input name="pageSearch" type="search" placeholder="输入中文或日文名" /></label>
+            <button type="submit">查询</button>
+          </form>
         </section>
       ) : null}
 
