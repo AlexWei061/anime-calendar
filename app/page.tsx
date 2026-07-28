@@ -1243,47 +1243,6 @@ export default function Home() {
         </section>
       ) : null}
 
-      {activePage === "mine" ? (
-        <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
-          <details className="anime-selection-details">
-            <summary className="anime-selection-summary">
-              <span className="section-kicker">选择番剧</span>
-              <span className="anime-selection-title" id="anime-selection-heading">
-                本季度想追什么？
-              </span>
-              <span className="anime-selection-summary-copy">
-                选择会自动保存，并在登录同一账号的设备间同步。
-              </span>
-            </summary>
-            {selectedAnimeIds ? (
-              <div className="anime-selection-list">
-                {activeSeason.anime.map((record) => (
-                  <label className="anime-selection" key={record.id}>
-                    <input
-                      type="checkbox"
-                      checked={selectedAnimeIds.includes(record.id)}
-                      disabled={isSavingSelection}
-                      onChange={() => void toggleAnimeSelection(record.id)}
-                    />
-                    <span title={record.titleZh}>{record.titleZh}</span>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <p className="selection-status" aria-live="polite">
-                {selectionLoadError ?? "正在读取你的追番列表…"}
-                {selectionLoadError ? signInPromptButton : null}
-              </p>
-            )}
-            {selectedAnimeIds && selectionLoadError ? (
-              <p className="selection-status" aria-live="polite">
-                {selectionLoadError}
-              </p>
-            ) : null}
-          </details>
-        </section>
-      ) : null}
-
       {activePage === "search" ? (
         <section className="anime-search-page" aria-labelledby="anime-search-heading">
           <div className="section-heading">
@@ -1543,9 +1502,50 @@ export default function Home() {
         </>
       ) : selectedAnimeIds ? (
         <p className="my-schedule-empty">
-          勾选上方的番剧后，这里会显示你的专属时间表。
+          请先在“选择番剧”中勾选想追的作品。
         </p>
         ) : null
+      ) : null}
+
+      {activePage === "mine" ? (
+        <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
+          <details className="anime-selection-details">
+            <summary className="anime-selection-summary">
+              <span className="section-kicker">选择番剧</span>
+              <span className="anime-selection-title" id="anime-selection-heading">
+                本季度想追什么？
+              </span>
+              <span className="anime-selection-summary-copy">
+                选择会自动保存，并在登录同一账号的设备间同步。
+              </span>
+            </summary>
+            {selectedAnimeIds ? (
+              <div className="anime-selection-list">
+                {activeSeason.anime.map((record) => (
+                  <label className="anime-selection" key={record.id}>
+                    <input
+                      type="checkbox"
+                      checked={selectedAnimeIds.includes(record.id)}
+                      disabled={isSavingSelection}
+                      onChange={() => void toggleAnimeSelection(record.id)}
+                    />
+                    <span title={record.titleZh}>{record.titleZh}</span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="selection-status" aria-live="polite">
+                {selectionLoadError ?? "正在读取你的追番列表…"}
+                {selectionLoadError ? signInPromptButton : null}
+              </p>
+            )}
+            {selectedAnimeIds && selectionLoadError ? (
+              <p className="selection-status" aria-live="polite">
+                {selectionLoadError}
+              </p>
+            ) : null}
+          </details>
+        </section>
       ) : null}
 
       {authDialogMode ? (
