@@ -469,8 +469,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /const isPersonalProgressLoading = selectedAnimeIds === null \|\| watchedEpisodes === null;/,
   );
-  assert.match(page, /const personalWatchedEpisodeCount = overallProgress\.reduce\(/);
-  assert.match(page, /const personalEpisodeCount = overallProgress\.reduce\(/);
+  assert.match(
+    page,
+    /const personalWatchedEpisodeCount = overallProgress\.reduce\([\s\S]*?progress\.watchedEpisodeCount/,
+  );
+  assert.match(
+    page,
+    /const personalEpisodeCount = overallProgress\.reduce\([\s\S]*?progress\.record\.episodeCount/,
+  );
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewUnitsForRange/);
   assert.match(page, /isEpisodeViewWatched/);
@@ -905,7 +911,7 @@ test("offers a search box on calendar pages that jumps to the search page", asyn
       /<form\b(?=[^>]*className="page-search")(?=[^>]*role="search")[^>]*>[\s\S]*?<input\b(?=[^>]*name="pageSearch")(?=[^>]*type="search")(?=[^>]*placeholder="输入中文或日文名")[^>]*>/,
     );
   }
-  assert.equal((page.match(/<form className="page-search">/g) ?? []).length, 3);
+  assert.equal((page.match(/<form\b(?=[^>]*className="page-search")[^>]*>/g) ?? []).length, 3);
   assert.doesNotMatch(page, /\{activePage === "mine" \|\| activePage === "stats" \? \(/);
   assert.match(page, /className="page-search-field"/);
 });
