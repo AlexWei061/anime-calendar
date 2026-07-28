@@ -2051,6 +2051,10 @@ h1::after {
     flex-direction: column;
   }
 
+  .personal-hero .season-picker {
+    flex: 0 1 auto;
+  }
+
   .week-pager {
     position: static;
     display: grid;
