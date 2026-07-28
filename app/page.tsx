@@ -1012,9 +1012,9 @@ export default function Home() {
       {activePage === "stats" ? (
         <section className="personal-hero personal-hero-stats" aria-labelledby="stats-hero-heading">
           <div className="personal-hero-copy">
-            <p className="seasonal-kicker">追番档案</p>
+            <p className="season-kicker">追番档案</p>
             <h1 id="stats-hero-heading">这一路追到哪了？</h1>
-            <p className="seasonal-hero-intro">把看过的、正在追的和还没开始的作品放进同一张档案里。</p>
+            <p className="intro">把看过的、正在追的和还没开始的作品放进同一张档案里。</p>
           </div>
           <dl className="personal-hero-metrics" aria-label="追番档案概览">
             <div>
@@ -1202,9 +1202,9 @@ export default function Home() {
       {activePage === "mine" ? (
         <section className="personal-hero personal-hero-mine" aria-labelledby="mine-hero-heading">
           <div className="personal-hero-copy">
-            <p className="seasonal-kicker">我的番剧</p>
+            <p className="season-kicker">我的番剧</p>
             <h1 id="mine-hero-heading">今天要追什么？</h1>
-            <p className="seasonal-hero-intro">把这一周的追番安排在眼前，按自己的节奏慢慢补完。</p>
+            <p className="intro">把这一周的追番安排在眼前，按自己的节奏慢慢补完。</p>
             <div className="personal-hero-controls">
               <label className="season-picker">
                 选择季度
