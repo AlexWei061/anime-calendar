@@ -783,6 +783,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   const mineWeeklyScheduleIndex = page.indexOf(
     'ref={weeklySectionRef} className="weekly-section"',
   );
+  const mineCalendarGateIndex = page.indexOf('activePage === "all" || calendarAnime.length ? (');
+  const mineCalendarGateEndIndex = page.indexOf(') : selectedAnimeIds ? (', mineCalendarGateIndex);
   const mineSelectionPanelIndex = page.indexOf('className="anime-selection-panel"');
   const calendarFooterIndex = page.indexOf('className="calendar-footer"');
   assert.ok(mineHeroIndex >= 0, "the mine page must render its personal hero");
@@ -793,6 +795,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.ok(
     mineSelectionPanelIndex > mineWeeklyScheduleIndex,
     "the mine selection panel must follow the weekly schedule",
+  );
+  assert.ok(
+    mineCalendarGateEndIndex > mineCalendarGateIndex,
+    "the shared mine calendar conditional must retain its empty-schedule branch",
+  );
+  assert.ok(
+    mineSelectionPanelIndex > mineCalendarGateEndIndex,
+    "the mine selection panel must not be gated by a nonempty weekly calendar",
   );
   assert.ok(
     mineSelectionPanelIndex < calendarFooterIndex,
