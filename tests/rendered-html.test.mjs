@@ -777,11 +777,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
   assert.match(
     page,
-    /\{activePage === "mine" \? \(\s*<section className="personal-hero personal-hero-mine"[^>]*>[\s\S]*?<h1>今天要追什么？<\/h1>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/section>/,
+    /\{activePage === "mine" \? \(\s*<section className="personal-hero personal-hero-mine"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>今天要追什么？<\/h1>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/section>/,
   );
   assert.match(
     page,
-    /\{activePage === "stats" \? \(\s*<section className="personal-hero personal-hero-stats"[^>]*>[\s\S]*?<h1>这一路追到哪了？<\/h1>[\s\S]*?displayedOverallProgressTotals\.inProgress[\s\S]*?displayedOverallProgressTotals\.completed[\s\S]*?displayedOverallProgressTotals\.notStarted[\s\S]*?<\/section>/,
+    /\{activePage === "stats" \? \(\s*<section className="personal-hero personal-hero-stats"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>这一路追到哪了？<\/h1>[\s\S]*?displayedOverallProgressTotals\.inProgress[\s\S]*?displayedOverallProgressTotals\.completed[\s\S]*?displayedOverallProgressTotals\.notStarted[\s\S]*?<\/section>/,
   );
 });
 
