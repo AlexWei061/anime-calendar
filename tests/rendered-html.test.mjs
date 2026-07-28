@@ -784,6 +784,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     'ref={weeklySectionRef} className="weekly-section"',
   );
   const mineSelectionPanelIndex = page.indexOf('className="anime-selection-panel"');
+  const calendarFooterIndex = page.indexOf('className="calendar-footer"');
   assert.ok(mineHeroIndex >= 0, "the mine page must render its personal hero");
   assert.ok(
     mineWeeklyScheduleIndex > mineHeroIndex,
@@ -792,6 +793,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.ok(
     mineSelectionPanelIndex > mineWeeklyScheduleIndex,
     "the mine selection panel must follow the weekly schedule",
+  );
+  assert.ok(
+    mineSelectionPanelIndex < calendarFooterIndex,
+    "the mine selection panel must appear before the calendar footer",
   );
   assert.match(page, /请先在“选择番剧”中勾选想追的作品。/);
   assert.doesNotMatch(page, /勾选上方的番剧/);
