@@ -1310,7 +1310,8 @@ export default function Home() {
       ) : null}
 
       {activePage === "all" || activePage === "mine" ? (
-        activePage === "all" || calendarAnime.length ? (
+        <>
+        {activePage === "all" || calendarAnime.length ? (
         <>
       <section ref={weeklySectionRef} className="weekly-section" aria-labelledby="weekly-heading">
         <div className="section-heading">
@@ -1485,6 +1486,13 @@ export default function Home() {
       </section>
       : null}
 
+        </>
+      ) : selectedAnimeIds ? (
+        <p className="my-schedule-empty">
+          请先在“选择番剧”中勾选想追的作品。
+        </p>
+      ) : null}
+
       {activePage === "mine" ? (
         <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
           <details className="anime-selection-details">
@@ -1541,11 +1549,6 @@ export default function Home() {
         )}
       </footer>
         </>
-      ) : selectedAnimeIds ? (
-        <p className="my-schedule-empty">
-          请先在“选择番剧”中勾选想追的作品。
-        </p>
-      ) : null
       ) : null}
 
       {authDialogMode ? (
