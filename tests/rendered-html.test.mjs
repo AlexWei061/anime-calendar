@@ -471,11 +471,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     page,
-    /const personalWatchedEpisodeCount = overallProgress\.reduce\([\s\S]*?progress\.watchedEpisodeCount/,
+    /const personalWatchedEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.watchedEpisodeCount,\s*0,\s*\);/,
   );
   assert.match(
     page,
-    /const personalEpisodeCount = overallProgress\.reduce\([\s\S]*?progress\.record\.episodeCount/,
+    /const personalEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.record\.episodeCount,\s*0,\s*\);/,
   );
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewUnitsForRange/);
