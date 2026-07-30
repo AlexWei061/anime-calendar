@@ -647,6 +647,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
   );
   assert.match(minePersonalHeroMetricsStyles, /align-self:\s*start;/);
+  assert.match(minePersonalHeroMetricsStyles, /align-items:\s*start;/);
   assert.match(
     styles,
     /\.personal-progress-metric dd\s*\{[\s\S]*?display:\s*grid;/,
