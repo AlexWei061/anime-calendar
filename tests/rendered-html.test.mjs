@@ -477,9 +477,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /const personalEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.record\.episodeCount,\s*0,\s*\);/,
   );
+  const mineHeroSection = page.match(
+    /<section className="personal-hero personal-hero-mine"[^>]*>([\s\S]*?)<\/section>/,
+  );
+  assert.ok(mineHeroSection, "mine hero section must exist");
   assert.match(
-    page,
-    /<div className="personal-progress-metric">[\s\S]*?<dt>整体进度<\/dt>[\s\S]*?isPersonalProgressLoading \? "读取中" : personalEpisodeCount \? \([\s\S]*?<progress\b(?=[^>]*className="personal-progress-bar")(?=[^>]*aria-label="整体观看进度")(?=[^>]*value=\{personalWatchedEpisodeCount\})(?=[^>]*max=\{personalEpisodeCount\})[^>]*>[\s\S]*?personalProgressLabel[\s\S]*?<\/progress>[\s\S]*?\) : personalProgressLabel[\s\S]*?<\/div>/,
+    mineHeroSection[1],
+    /<dl className="personal-hero-metrics"[^>]*>[\s\S]*?<div>[\s\S]*?<dt>本季在追<\/dt>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?<\/div>[\s\S]*?<div>[\s\S]*?<dt>今天待看<\/dt>[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/div>[\s\S]*?<div className="personal-progress-metric">[\s\S]*?<dt>整体进度<\/dt>[\s\S]*?isPersonalProgressLoading \? "读取中" : personalEpisodeCount \? \([\s\S]*?<span className="personal-progress-label">\{personalProgressLabel\}<\/span>[\s\S]*?<progress\b(?=[^>]*className="personal-progress-bar")(?=[^>]*aria-label="整体观看进度")(?=[^>]*value=\{personalWatchedEpisodeCount\})(?=[^>]*max=\{personalEpisodeCount\})[^>]*>[\s\S]*?personalProgressLabel[\s\S]*?<\/progress>[\s\S]*?\) : personalProgressLabel[\s\S]*?<\/div>[\s\S]*?<\/dl>/,
   );
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewUnitsForRange/);
