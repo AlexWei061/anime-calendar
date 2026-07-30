@@ -1608,7 +1608,7 @@ h1::after {
   white-space: nowrap;
 }
 
-.timeline-event-compact .calendar-event-detail strong {
+.timeline-event-compact .calendar-event-episode {
   display: none;
 }
 
