@@ -1231,9 +1231,23 @@ export default function Home() {
               <dt>今天待看</dt>
               <dd>{isPersonalProgressLoading ? "读取中" : `${todayBroadcasts.length} 集`}</dd>
             </div>
-            <div>
+            <div className="personal-progress-metric">
               <dt>整体进度</dt>
-              <dd>{isPersonalProgressLoading ? "读取中" : personalProgressLabel}</dd>
+              <dd>
+                {isPersonalProgressLoading ? "读取中" : personalEpisodeCount ? (
+                  <>
+                    <span>{personalProgressLabel}</span>
+                    <progress
+                      className="personal-progress-bar"
+                      aria-label="整体观看进度"
+                      value={personalWatchedEpisodeCount}
+                      max={personalEpisodeCount}
+                    >
+                      {personalProgressLabel}
+                    </progress>
+                  </>
+                ) : personalProgressLabel}
+              </dd>
             </div>
           </dl>
           <form className="page-search" role="search" aria-label="查询番剧" onSubmit={submitPageSearch}>
