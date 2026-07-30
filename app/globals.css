@@ -409,6 +409,10 @@ a {
   margin: 0;
 }
 
+.personal-hero-mine .personal-hero-metrics {
+  align-self: start;
+}
+
 .personal-hero-metrics div {
   min-width: 0;
   padding: 0.8rem;
@@ -431,6 +435,36 @@ a {
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   line-height: 1.2;
+}
+
+.personal-progress-metric dd {
+  display: grid;
+  gap: 0.45rem;
+  font-size: clamp(1rem, 1.55vw, 1.25rem);
+}
+
+.personal-progress-bar {
+  width: 100%;
+  height: 0.4rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--line));
+}
+
+.personal-progress-bar::-webkit-progress-bar {
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--line));
+}
+
+.personal-progress-bar::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.personal-progress-bar::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: inherit;
 }
 
 .personal-hero .page-search {
