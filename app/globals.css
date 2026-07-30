@@ -411,6 +411,7 @@ a {
 
 .personal-hero-mine .personal-hero-metrics {
   align-self: start;
+  align-items: start;
 }
 
 .personal-hero-metrics div {
