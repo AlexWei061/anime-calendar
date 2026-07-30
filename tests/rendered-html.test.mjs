@@ -338,6 +338,11 @@ test("renders same-time events side by side on one timeline day", async () => {
   assert.ok(
     sameTimeEvents.every(([, , card]) => /class="[^"]*\bcalendar-event-episode\b[^"]*"/.test(card)),
   );
+  assert.ok(
+    sameTimeEvents.every(([, , card]) =>
+      /<strong\b(?=[^>]*title="[^"]+")[^>]*>[^<]+<\/strong>/.test(card),
+    ),
+  );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
   assert.ok(
@@ -744,9 +749,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     styles,
     /\.timeline-event-compact \.calendar-event-cover\s*\{[^}]*display:\s*none;/,
   );
-  assert.match(
+  assert.doesNotMatch(
     styles,
     /\.timeline-event-compact \.calendar-event-detail strong\s*\{[^}]*display:\s*none;/,
+  );
+  assert.match(
+    styles,
+    /\.timeline-event-compact \.calendar-event-episode\s*\{[^}]*display:\s*none;/,
   );
   assert.match(
     styles,
