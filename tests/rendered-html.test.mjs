@@ -477,6 +477,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /const personalEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.record\.episodeCount,\s*0,\s*\);/,
   );
+  assert.match(
+    page,
+    /<div className="personal-progress-metric">[\s\S]*?<dt>整体进度<\/dt>[\s\S]*?isPersonalProgressLoading \? "读取中" : personalEpisodeCount \? \([\s\S]*?<progress\b(?=[^>]*className="personal-progress-bar")(?=[^>]*aria-label="整体观看进度")(?=[^>]*value=\{personalWatchedEpisodeCount\})(?=[^>]*max=\{personalEpisodeCount\})[^>]*>[\s\S]*?personalProgressLabel[\s\S]*?<\/progress>[\s\S]*?\) : personalProgressLabel[\s\S]*?<\/div>/,
+  );
   assert.match(page, /fetch\("\/api\/anime-episode-views"/);
   assert.match(page, /episodeViewUnitsForRange/);
   assert.match(page, /isEpisodeViewWatched/);
@@ -608,6 +612,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   const seasonalHeroCoversStyles = cssBlock(styles, "\\.seasonal-hero-covers");
   const personalHeroStyles = cssBlock(styles, "\\.personal-hero");
   const personalHeroMetricsStyles = cssBlock(styles, "\\.personal-hero-metrics");
+  const minePersonalHeroMetricsStyles = cssBlock(
+    styles,
+    "\\.personal-hero-mine \\.personal-hero-metrics",
+  );
   const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
   const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
   const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
@@ -633,6 +641,20 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(
     personalHeroMetricsStyles,
     /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
+  );
+  assert.match(minePersonalHeroMetricsStyles, /align-self:\s*start;/);
+  assert.match(
+    styles,
+    /\.personal-progress-metric dd\s*\{[\s\S]*?display:\s*grid;/,
+  );
+  assert.match(styles, /\.personal-progress-bar\s*\{[\s\S]*?width:\s*100%;/);
+  assert.match(
+    styles,
+    /\.personal-progress-bar::-webkit-progress-value\s*\{[\s\S]*?background(?:-color)?:\s*var\(--accent\);/,
+  );
+  assert.match(
+    styles,
+    /\.personal-progress-bar::-moz-progress-bar\s*\{[\s\S]*?background(?:-color)?:\s*var\(--accent\);/,
   );
   assert.match(
     seasonalHeroCoversStyles,
