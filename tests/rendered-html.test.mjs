@@ -333,7 +333,10 @@ test("renders same-time events side by side on one timeline day", async () => {
   assert.ok(laneOffsets.includes("0%"));
   assert.ok(laneOffsets.includes("50%"));
   assert.ok(
-    sameTimeEvents.every(([, , card]) => /class="calendar-event-cover cover-sprite"/.test(card)),
+    sameTimeEvents.every(([, , card]) => /class="(?=[^"]*\bcalendar-event-cover\b)(?=[^"]*\bcover-sprite\b)[^"]*"/.test(card)),
+  );
+  assert.ok(
+    sameTimeEvents.every(([, , card]) => /class="[^"]*\bcalendar-event-episode\b[^"]*"/.test(card)),
   );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
@@ -731,11 +734,19 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-detail\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\);/,
+    /\.timeline-event \.calendar-event-detail\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.85rem\) minmax\(0, 1fr\);/,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.timeline-event-compact \.calendar-event-detail\s*\{[^}]*grid-template-columns\s*:/,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.timeline-event-compact \.calendar-event-cover\s*\{[^}]*display:\s*none;/,
   );
   assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-cover\s*\{[\s\S]*?display:\s*none;/,
+    /\.timeline-event-compact \.calendar-event-detail strong\s*\{[^}]*display:\s*none;/,
   );
   assert.match(
     styles,
