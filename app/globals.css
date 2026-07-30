@@ -1608,11 +1608,7 @@ h1::after {
   white-space: nowrap;
 }
 
-.timeline-event-compact .calendar-event-detail {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.timeline-event-compact .calendar-event-cover {
+.timeline-event-compact .calendar-event-detail strong {
   display: none;
 }
 
