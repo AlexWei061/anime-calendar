@@ -765,13 +765,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-current-time\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*var\(--timeline-current-time-top\);[\s\S]*?height:\s*2px;[\s\S]*?pointer-events:\s*none;/,
+    /\.timeline-current-time\s*\{[^}]*?position:\s*absolute;[^}]*?top:\s*var\(--timeline-current-time-top\);[^}]*?height:\s*2px;[^}]*?pointer-events:\s*none;/,
   );
   assert.match(
     styles,
-    /\.timeline-current-time\s*\{[\s\S]*?background:\s*linear-gradient\([\s\S]*?var\(--accent-2\)[\s\S]*?var\(--accent\)[\s\S]*?box-shadow:/,
+    /\.timeline-current-time\s*\{[^}]*?background:\s*linear-gradient\([^}]*?var\(--accent-2\)[^}]*?var\(--accent\)[^}]*?box-shadow:/,
   );
-  assert.match(styles, /\.timeline-current-time time\s*\{[\s\S]*?border-radius:\s*999px;/);
+  assert.match(styles, /\.timeline-current-time time\s*\{[^}]*?border-radius:\s*999px;/);
   assert.match(
     styles,
     /\.timeline-event\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*var\(--event-top\);[\s\S]*?left:\s*calc\(var\(--event-left\) \+ var\(--timeline-event-gutter\)\);[\s\S]*?width:\s*calc\(var\(--event-width\) - var\(--timeline-event-gutter\)\);[\s\S]*?height:\s*40px;/,
