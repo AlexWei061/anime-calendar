@@ -521,7 +521,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /eventsForWeek\(searchResults, activeWeekStart\)/);
   assert.doesNotMatch(page, /dateOnlyEventsForWeek\(\s*searchResults,\s*activeWeekStart,\s*\)/);
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
-  assert.match(page, /timelineMarkerForDateTime/);
+  assert.match(
+    page,
+    /import \{[\s\S]*?timelineMarkerForDateTime,[\s\S]*?\} from "\.\.\/lib\/calendar\.js";/,
+  );
+  assert.match(
+    page,
+    /timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)/,
+  );
   assert.match(page, /function getBeijingDateTime\(\) \{/);
   assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
   assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
