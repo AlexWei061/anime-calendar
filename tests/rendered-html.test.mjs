@@ -633,6 +633,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
   const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
+  const animeSelectionListStyles = cssBlock(styles, "\\.anime-selection-list");
+  const animeSelectionStyles = cssBlock(styles, "\\.anime-selection");
   const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
   const mobileSeasonalHeroStyles = cssBlock(mobileStyles, "\\.seasonal-hero");
   const mobilePersonalHeroStyles = cssBlock(mobileStyles, "\\.personal-hero");
@@ -681,13 +683,15 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(mobilePersonalMetricsStyles, /grid-template-columns:\s*1fr;/);
   assert.match(mobileCalendarStyles, /display:\s*grid;/);
   assert.match(styles, /\.season-picker\s*\{/);
+  assert.match(animeSelectionListStyles, /\S/);
   assert.match(
-    styles,
-    /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns:\s*repeat\(auto-fit, minmax\(15rem, 1fr\)\);/,
+    animeSelectionListStyles,
+    /grid-template-columns:\s*repeat\(auto-fit, minmax\(15rem, 1fr\)\);/,
   );
+  assert.match(animeSelectionStyles, /\S/);
   assert.match(
-    styles,
-    /\.anime-selection\s*\{[\s\S]*?display:\s*grid;[\s\S]*?grid-template-columns:\s*1rem 3rem minmax\(0, 1fr\);/,
+    animeSelectionStyles,
+    /display:\s*grid;[\s\S]*?grid-template-columns:\s*1rem 3rem minmax\(0, 1fr\);/,
   );
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
   assert.match(styles, /\.my-schedule-empty/);
