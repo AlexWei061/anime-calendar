@@ -462,7 +462,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /<summary className="anime-selection-summary">/);
   assert.match(page, /本季度想追什么？/);
   assert.doesNotMatch(page, /本月番想追什么？/);
-  assert.match(page, /<span title=\{record\.titleZh\}>\{record\.titleZh\}<\/span>/);
+  assert.match(
+    page,
+    /<label className="anime-selection" key=\{record\.id\}>[\s\S]*?<input[\s\S]*?type="checkbox"[\s\S]*?<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>[\s\S]*?<span className="statistics-anime-card-content">[\s\S]*?<strong title=\{record\.titleZh\}>\{record\.titleZh\}<\/strong>[\s\S]*?<small title=\{record\.titleJa\}>\{record\.titleJa\}<\/small>/,
+  );
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
   assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
@@ -678,7 +681,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(mobilePersonalMetricsStyles, /grid-template-columns:\s*1fr;/);
   assert.match(mobileCalendarStyles, /display:\s*grid;/);
   assert.match(styles, /\.season-picker\s*\{/);
-  assert.match(styles, /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns/);
+  assert.match(
+    styles,
+    /\.anime-selection-list\s*\{[\s\S]*?grid-template-columns:\s*repeat\(auto-fit, minmax\(15rem, 1fr\)\);/,
+  );
+  assert.match(
+    styles,
+    /\.anime-selection\s*\{[\s\S]*?display:\s*grid;[\s\S]*?grid-template-columns:\s*1rem 3rem minmax\(0, 1fr\);/,
+  );
   assert.match(styles, /\.anime-selection-summary\s*\{[\s\S]*?cursor:\s*pointer;/);
   assert.match(styles, /\.my-schedule-empty/);
   assert.match(
