@@ -462,9 +462,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /<summary className="anime-selection-summary">/);
   assert.match(page, /本季度想追什么？/);
   assert.doesNotMatch(page, /本月番想追什么？/);
+  const animeSelectionLabel = page.match(
+    /\{activeSeason\.anime\.map\(\(record\) => \(\s*<label className="anime-selection" key=\{record\.id\}>([\s\S]*?)<\/label>\s*\)\)\}/,
+  )?.[1] ?? "";
+  assert.match(animeSelectionLabel, /\S/);
   assert.match(
-    page,
-    /<label className="anime-selection" key=\{record\.id\}>[\s\S]*?<input[\s\S]*?type="checkbox"[\s\S]*?<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>[\s\S]*?<span className="statistics-anime-card-content">[\s\S]*?<strong title=\{record\.titleZh\}>\{record\.titleZh\}<\/strong>[\s\S]*?<small title=\{record\.titleJa\}>\{record\.titleJa\}<\/small>/,
+    animeSelectionLabel,
+    /<input[\s\S]*?type="checkbox"[\s\S]*?<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>[\s\S]*?<span className="statistics-anime-card-content">[\s\S]*?<strong title=\{record\.titleZh\}>\{record\.titleZh\}<\/strong>[\s\S]*?<small title=\{record\.titleJa\}>\{record\.titleJa\}<\/small>/,
   );
   assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
   assert.match(page, /fetch\("\/api\/anime-selections"/);
@@ -610,6 +614,9 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     assert.ok(match, `Missing CSS block: ${selector}`);
     return match[1];
   }
+  function rootCssBlock(source, selector) {
+    return new RegExp(`^${selector}\\s*\\{([^}]*)\\}`, "m").exec(source)?.[1] ?? "";
+  }
   function cssMediaBlock(source, query) {
     const queryStart = source.indexOf(query);
     assert.notEqual(queryStart, -1, `Missing CSS media query: ${query}`);
@@ -633,8 +640,8 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
   const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
-  const animeSelectionListStyles = cssBlock(styles, "\\.anime-selection-list");
-  const animeSelectionStyles = cssBlock(styles, "\\.anime-selection");
+  const animeSelectionListStyles = rootCssBlock(styles, "\\.anime-selection-list");
+  const animeSelectionStyles = rootCssBlock(styles, "\\.anime-selection");
   const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
   const mobileSeasonalHeroStyles = cssBlock(mobileStyles, "\\.seasonal-hero");
   const mobilePersonalHeroStyles = cssBlock(mobileStyles, "\\.personal-hero");
