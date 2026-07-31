@@ -37,6 +37,7 @@ import {
   seasonForWeek,
   startOfWeek,
   timelineBoundsForEvents,
+  timelineMarkerForDateTime,
   timelineOffsetMinutes,
   weekDays,
 } from "../lib/calendar.js";
@@ -170,21 +171,28 @@ function CoverArt({
   );
 }
 
-const beijingDateFormatter = new Intl.DateTimeFormat("en-CA", {
+const beijingDateTimeFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Shanghai",
   year: "numeric",
   month: "2-digit",
   day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
 });
 
-function getBeijingDate() {
+function getBeijingDateTime() {
   const parts = Object.fromEntries(
-    beijingDateFormatter
+    beijingDateTimeFormatter
       .formatToParts(new Date())
       .filter(({ type }) => type !== "literal")
       .map(({ type, value }) => [type, value]),
   );
-  return String(parts.year) + "-" + parts.month + "-" + parts.day;
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}`;
+}
+
+function getServerBeijingDateTime() {
+  return null;
 }
 
 function subscribeToBeijingDate(onStoreChange: () => void) {
@@ -223,10 +231,6 @@ function applyTheme(nextTheme: ThemeName, persist: boolean) {
   }
   document.documentElement.dataset.theme = nextTheme;
   for (const listener of themeListeners) listener();
-}
-
-function getServerBeijingDate() {
-  return null;
 }
 
 function shortDate(isoDate: string) {
@@ -286,11 +290,13 @@ export default function Home() {
   const authOpenerRef = useRef<HTMLButtonElement | null>(null);
   const didSetInitialWeek = useRef(false);
   const weeklySectionRef = useRef<HTMLElement>(null);
-  const currentBeijingDate = useSyncExternalStore<string | null>(
+  const currentBeijingDateTime = useSyncExternalStore<string | null>(
     subscribeToBeijingDate,
-    getBeijingDate,
-    getServerBeijingDate,
+    getBeijingDateTime,
+    getServerBeijingDateTime,
   );
+  const currentBeijingDate = currentBeijingDateTime?.slice(0, 10) ?? null;
+  const currentBeijingTime = currentBeijingDateTime?.slice(11) ?? null;
   const theme = useSyncExternalStore<ThemeName>(
     subscribeToTheme,
     getThemeSnapshot,
@@ -372,6 +378,18 @@ export default function Home() {
     "--timeline-hour-count": String(timelineHourCount),
     "--timeline-height": timelineHourCount * 96 + 40 + "px",
   } as CSSProperties;
+  const currentTimelineMarker =
+    currentBeijingDate && currentBeijingTime && dates.includes(currentBeijingDate)
+      ? timelineMarkerForDateTime(
+          currentBeijingDate,
+          currentBeijingTime,
+          timelineStartMinutes,
+          timelineEndMinutes,
+        )
+      : null;
+  const currentTimelineMarkerStyle = currentTimelineMarker
+    ? ({ "--timeline-current-time-top": currentTimelineMarker.offsetMinutes * 1.6 + "px" } as CSSProperties)
+    : undefined;
   const dayEventGroups = dates.map((date) =>
     groupEventsByTime(events.filter((event) => event.date === date)),
   );
@@ -1416,6 +1434,11 @@ export default function Home() {
                   key={date}
                   aria-label={weekdays[index] + " " + date}
                 >
+                  {currentTimelineMarker ? (
+                    <div className="timeline-current-time" style={currentTimelineMarkerStyle} aria-hidden="true">
+                      {index === 0 ? <time>{currentBeijingTime}</time> : null}
+                    </div>
+                  ) : null}
                   {positionedEvents.map(({ event, lane, laneCount }) =>
                     eventButton(event, { lane, laneCount }),
                   )}

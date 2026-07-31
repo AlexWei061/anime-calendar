@@ -521,7 +521,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /eventsForWeek\(searchResults, activeWeekStart\)/);
   assert.doesNotMatch(page, /dateOnlyEventsForWeek\(\s*searchResults,\s*activeWeekStart,\s*\)/);
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
-  assert.match(page, /function getServerBeijingDate\(\) \{\s*return null;/);
+  assert.match(page, /timelineMarkerForDateTime/);
+  assert.match(page, /function getBeijingDateTime\(\) \{/);
+  assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
+  assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
+  assert.match(page, /dates\.includes\(currentBeijingDate\)/);
+  assert.match(page, /className="timeline-current-time"/);
+  assert.match(page, /--timeline-current-time-top/);
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
   assert.match(page, /formatBroadcastTime/);
