@@ -529,12 +529,20 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     page,
     /timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)/,
   );
+  assert.match(
+    page,
+    /const beijingDateTimeFormatter = new Intl\.DateTimeFormat\("en-CA", \{\s*timeZone: "Asia\/Shanghai",[\s\S]*?hour: "2-digit",\s*minute: "2-digit",\s*hourCycle: "h23",\s*\}\);/,
+  );
   assert.match(page, /function getBeijingDateTime\(\) \{/);
   assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
   assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
   assert.match(page, /dates\.includes\(currentBeijingDate\)/);
   assert.match(page, /className="timeline-current-time"/);
   assert.match(page, /--timeline-current-time-top/);
+  assert.match(
+    page,
+    /<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}[\s\S]*?\{currentTimelineMarker \? \(\s*<div className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true">[\s\S]*?\) : null\}\s*\{positionedEvents\.map/,
+  );
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
   assert.match(page, /formatBroadcastTime/);
