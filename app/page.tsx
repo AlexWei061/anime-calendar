@@ -1529,7 +1529,11 @@ export default function Home() {
                       disabled={isSavingSelection}
                       onChange={() => void toggleAnimeSelection(record.id)}
                     />
-                    <span title={record.titleZh}>{record.titleZh}</span>
+                    <CoverArt anime={record} className="statistics-anime-card-cover" decorative />
+                    <span className="statistics-anime-card-content">
+                      <strong title={record.titleZh}>{record.titleZh}</strong>
+                      <small title={record.titleJa}>{record.titleJa}</small>
+                    </span>
                   </label>
                 ))}
               </div>

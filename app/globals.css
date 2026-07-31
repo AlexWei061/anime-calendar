@@ -1070,12 +1070,13 @@ h1::after {
 
 .anime-selection-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: 0.5rem;
 }
 
 .anime-selection {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1rem 3rem minmax(0, 1fr);
   align-items: center;
   gap: 0.55rem;
   min-width: 0;
