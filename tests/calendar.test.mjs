@@ -16,6 +16,7 @@ const {
   stackEventsForDay,
   startOfWeek,
   timelineBoundsForEvents,
+  timelineMarkerForDateTime,
   timelineOffsetMinutes,
   weekDays,
 } = calendar;
@@ -383,6 +384,18 @@ test("accepts 28:59 but rejects 29:00 on the historical timeline", () => {
   assert.equal(timelineOffsetMinutes("06:00", historicalStartMinutes, historicalEndMinutes), 60);
   assert.equal(timelineOffsetMinutes("28:59", historicalStartMinutes, historicalEndMinutes), 1439);
   assert.throws(() => timelineOffsetMinutes("29:00", historicalStartMinutes, historicalEndMinutes), RangeError);
+});
+
+test("maps a current Beijing time onto the visible timeline", () => {
+  assert.deepEqual(
+    timelineMarkerForDateTime("2026-07-31", "14:43", 5 * 60, 29 * 60),
+    { date: "2026-07-31", time: "14:43", offsetMinutes: 583 },
+  );
+  assert.deepEqual(
+    timelineMarkerForDateTime("2026-08-01", "02:15", 5 * 60, 29 * 60),
+    { date: "2026-07-31", time: "26:15", offsetMinutes: 1275 },
+  );
+  assert.equal(timelineMarkerForDateTime("2026-07-31", "14:43", 15 * 60, 29 * 60), null);
 });
 
 test("lays out same-time timeline events in parallel lanes without shifting their starts", () => {
