@@ -1413,6 +1413,11 @@ export default function Home() {
               </>
             ) : null}
             <div className="timeline-axis" aria-hidden="true">
+              {currentTimelineMarker ? (
+                <div className="timeline-current-time timeline-current-time-axis" style={currentTimelineMarkerStyle}>
+                  <time>{currentBeijingTime}</time>
+                </div>
+              ) : null}
               {timelineHours.map((hour) => (
                 <time
                   className={"timeline-hour" + (hour === timelineEndHour ? " is-timeline-end" : "")}
@@ -1435,9 +1440,7 @@ export default function Home() {
                   aria-label={weekdays[index] + " " + date}
                 >
                   {currentTimelineMarker ? (
-                    <div className="timeline-current-time" style={currentTimelineMarkerStyle} aria-hidden="true">
-                      {index === 0 ? <time>{currentBeijingTime}</time> : null}
-                    </div>
+                    <div className="timeline-current-time" style={currentTimelineMarkerStyle} aria-hidden="true" />
                   ) : null}
                   {positionedEvents.map(({ event, lane, laneCount }) =>
                     eventButton(event, { lane, laneCount }),

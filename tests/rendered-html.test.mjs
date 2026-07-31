@@ -537,11 +537,15 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
   assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
   assert.match(page, /dates\.includes\(currentBeijingDate\)/);
-  assert.match(page, /className="timeline-current-time"/);
+  assert.match(page, /className="timeline-current-time timeline-current-time-axis"/);
   assert.match(page, /--timeline-current-time-top/);
   assert.match(
     page,
-    /<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}[\s\S]*?\{currentTimelineMarker \? \(\s*<div className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true">[\s\S]*?\) : null\}\s*\{positionedEvents\.map/,
+    /<div className="timeline-axis" aria-hidden="true">\s*\{currentTimelineMarker \? \(\s*<div className="timeline-current-time timeline-current-time-axis" style=\{currentTimelineMarkerStyle\}>\s*<time>\{currentBeijingTime\}<\/time>[\s\S]*?\) : null\}\s*\{timelineHours\.map/,
+  );
+  assert.match(
+    page,
+    /<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}[\s\S]*?\{currentTimelineMarker \? \(\s*<div className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true" \/>\s*\) : null\}\s*\{positionedEvents\.map/,
   );
   assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
   assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
@@ -749,7 +753,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-axis\s*\{[\s\S]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) 40px;[\s\S]*?height:\s*var\(--timeline-height\);[\s\S]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-axis\s*\{[^}]*?position:\s*relative;[^}]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) 40px;[^}]*?height:\s*var\(--timeline-height\);[^}]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
@@ -769,11 +773,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-current-time\s*\{[^}]*?background:\s*linear-gradient\([^}]*?var\(--accent-2\)[^}]*?var\(--accent\)[^}]*?box-shadow:\s*[^};]*?var\(--accent-2\)[^};]*?var\(--accent\)[^};]*?;/,
+    /\.timeline-current-time\s*\{[^}]*?background:\s*var\(--accent-2\);[^}]*?box-shadow:\s*[^};]*?var\(--accent-2\)[^};]*?;/,
   );
+  assert.doesNotMatch(styles.match(/\.timeline-current-time\s*\{[^}]*\}/)?.[0] ?? "", /linear-gradient/);
   assert.match(
     styles,
-    /\.timeline-current-time time\s*\{[^}]*?border-radius:\s*999px;[^}]*?background:\s*var\(--accent-2\);[^}]*?color:\s*var\(--on-accent\);/,
+    /\.timeline-current-time-axis time\s*\{[^}]*?border-radius:\s*999px;[^}]*?background:\s*var\(--accent-2\);[^}]*?color:\s*var\(--on-accent\);/,
   );
   assert.match(
     styles,

@@ -1280,6 +1280,7 @@ h1::after {
 }
 
 .timeline-axis {
+  position: relative;
   display: grid;
   grid-template-rows: repeat(var(--timeline-hour-count), 96px) 40px;
   height: var(--timeline-height);
@@ -1330,14 +1331,12 @@ h1::after {
   right: 0;
   left: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent-2), var(--accent));
-  box-shadow:
-    0 0 0.35rem color-mix(in srgb, var(--accent-2) 86%, transparent),
-    0 0 1rem color-mix(in srgb, var(--accent) 62%, transparent);
+  background: var(--accent-2);
+  box-shadow: 0 0 0.7rem color-mix(in srgb, var(--accent-2) 80%, transparent);
   pointer-events: none;
 }
 
-.timeline-current-time time {
+.timeline-current-time-axis time {
   position: absolute;
   top: 50%;
   left: 0.35rem;
