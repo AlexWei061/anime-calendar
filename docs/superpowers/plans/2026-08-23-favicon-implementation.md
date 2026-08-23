@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the favicon as one self-contained SVG in `public/favicon.svg`. The asset uses a transparent 64×64 canvas, a rose calendar page, a white play symbol, and a cyan folded corner; no component, metadata, dependency, or theme changes are needed.
 
-**Tech Stack:** SVG, Next.js static assets, `xmllint`, macOS `sips`, ESLint, Node test runner
+**Tech Stack:** SVG, Next.js static assets, `xmllint`, existing `sharp` dependency, ESLint, Node test runner
 
 ---
 
@@ -63,9 +63,7 @@ Expected: both commands exit successfully with no output.
 Run:
 
 ```bash
-sips -s format png public/favicon.svg --out /tmp/anime-calendar-favicon-64.png
-sips -z 32 32 /tmp/anime-calendar-favicon-64.png --out /tmp/anime-calendar-favicon-32.png
-sips -z 16 16 /tmp/anime-calendar-favicon-64.png --out /tmp/anime-calendar-favicon-16.png
+node -e 'const fs=require("node:fs");const sharp=require("sharp");const svg=fs.readFileSync("public/favicon.svg");Promise.all([64,32,16].map(size=>sharp(svg).resize(size,size).png().toFile(`/tmp/anime-calendar-favicon-${size}.png`))).catch(error=>{console.error(error);process.exit(1)})'
 ```
 
 Expected: all three PNG files are created. Inspect them on light and dark backgrounds; the page outline and play symbol must remain clear, and the cyan fold must remain visible at 16px.
