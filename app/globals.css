@@ -143,6 +143,7 @@ a {
 }
 
 .account-area {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -150,15 +151,144 @@ a {
   margin-left: auto;
 }
 
-.account-name {
+.page-sidebar .account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   overflow: hidden;
   max-width: 12rem;
-  padding: 0 0.35rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: var(--radius-control);
   color: var(--muted-ink);
   font-size: 0.82rem;
   font-weight: 700;
+}
+
+.account-trigger > span:first-child {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.account-trigger-chevron {
+  flex: 0 0 auto;
+  transition: transform var(--transition);
+}
+
+.account-trigger[aria-expanded="true"] .account-trigger-chevron {
+  transform: rotate(180deg);
+}
+
+.account-card {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: 0;
+  z-index: 10;
+  width: min(15rem, calc(100vw - 2rem));
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--card);
+  box-shadow: 0 0.8rem 2rem rgb(var(--shadow-color) / 22%);
+}
+
+.account-card::before {
+  position: absolute;
+  top: -0.38rem;
+  right: 1.25rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--card);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  padding: 0.15rem 0.25rem 0.55rem;
+}
+
+.account-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: var(--on-accent);
+  font-weight: 800;
+}
+
+.account-identity {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+  text-align: left;
+}
+
+.account-identity strong,
+.account-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-identity strong {
+  font-size: 0.9rem;
+}
+
+.account-email {
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+}
+
+.account-card-divider {
+  display: block;
+  height: 1px;
+  margin: 0 0 0.35rem;
+  background: var(--line);
+}
+
+.page-sidebar .account-card-action {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.page-sidebar .account-card-action:hover {
+  background: var(--accent-soft);
+}
+
+.account-action-icon {
+  width: 1rem;
+  color: var(--accent);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.page-sidebar .account-card-action-danger,
+.page-sidebar .account-card-action-danger .account-action-icon {
+  color: var(--danger);
+}
+
+.account-card-error {
+  display: block;
+  padding: 0.45rem 0.65rem 0.1rem;
+  color: var(--danger);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .account-notice {
@@ -2195,8 +2325,8 @@ h1::after {
     border-top: 0;
   }
 
-  .account-name {
-    padding: 0 0.25rem;
+  .page-sidebar .account-trigger {
+    padding: 0.4rem 0.6rem;
   }
 
   .calendar-page {

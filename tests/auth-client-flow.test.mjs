@@ -40,7 +40,7 @@ test("offers password change and returns to signed-out state after success", asy
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 
   assert.match(page, /type AuthDialogMode = "login" \| "register" \| "change-password";/);
-  assert.match(page, /openAuthDialog\("change-password", clickEvent\.currentTarget\)/);
+  assert.match(page, /openAuthDialog\("change-password"/);
   assert.match(page, /fetch\("\/api\/auth\/change-password"/);
   assert.match(page, /body: JSON\.stringify\(\{ currentPassword, newPassword \}\)/);
   assert.match(page, /if \(newPassword !== confirmPassword\)/);
@@ -51,4 +51,28 @@ test("offers password change and returns to signed-out state after success", asy
   assert.match(page, /name="currentPassword"/);
   assert.match(page, /name="newPassword"/);
   assert.match(page, /name="confirmPassword"/);
+});
+
+test("moves signed-in account actions into a toggleable profile card", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(page, /const \[isAccountCardOpen, setIsAccountCardOpen\] = useState\(false\);/);
+  assert.match(page, /className="account-trigger"/);
+  assert.match(page, /aria-expanded=\{isAccountCardOpen\}/);
+  assert.match(page, /aria-controls="account-card"/);
+  assert.match(page, /id="account-card"/);
+  assert.match(page, /className="account-avatar"/);
+  assert.match(page, /className="account-email"[^>]*>\s*\{currentUser\.email\}/);
+  assert.match(page, /className="account-action-icon" aria-hidden="true">✎<\/span>\s*修改密码/);
+  assert.match(page, /className="account-action-icon" aria-hidden="true">↪<\/span>\s*退出登录/);
+  assert.doesNotMatch(page, /<span className="account-name"/);
+});
+
+test("closes the profile card with escape or an outside click", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(page, /if \(event\.key === "Escape"\) \{\s*setIsAccountCardOpen\(false\);/);
+  assert.match(page, /!accountAreaRef\.current\?\.contains\(event\.target as Node\)/);
+  assert.match(page, /document\.addEventListener\("pointerdown", handlePointerDown\);/);
+  assert.match(page, /document\.addEventListener\("keydown", handleKeyDown\);/);
 });

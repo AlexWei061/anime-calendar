@@ -281,6 +281,7 @@ export default function Home() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [accountError, setAccountError] = useState<string | null>(null);
   const [accountNotice, setAccountNotice] = useState<string | null>(null);
+  const [isAccountCardOpen, setIsAccountCardOpen] = useState(false);
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
@@ -289,6 +290,8 @@ export default function Home() {
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const authDialogRef = useRef<HTMLDialogElement>(null);
   const authOpenerRef = useRef<HTMLButtonElement | null>(null);
+  const accountAreaRef = useRef<HTMLDivElement>(null);
+  const accountTriggerRef = useRef<HTMLButtonElement>(null);
   const didSetInitialWeek = useRef(false);
   const weeklySectionRef = useRef<HTMLElement>(null);
   const currentBeijingDateTime = useSyncExternalStore<string | null>(
@@ -451,6 +454,29 @@ export default function Home() {
       authDialogRef.current.showModal();
     }
   }, [authDialogMode]);
+
+  useEffect(() => {
+    if (!isAccountCardOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!accountAreaRef.current?.contains(event.target as Node)) {
+        setIsAccountCardOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsAccountCardOpen(false);
+        accountTriggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isAccountCardOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -696,6 +722,12 @@ export default function Home() {
     if (authOpenerRef.current?.isConnected) authOpenerRef.current.focus();
   };
 
+  const openPasswordChangeFromAccount = () => {
+    if (!accountTriggerRef.current) return;
+    setIsAccountCardOpen(false);
+    openAuthDialog("change-password", accountTriggerRef.current);
+  };
+
   const submitAuth = async (submitEvent: FormEvent<HTMLFormElement>) => {
     submitEvent.preventDefault();
     if (isSubmittingAuth || !authDialogMode || authDialogMode === "change-password") return;
@@ -770,6 +802,7 @@ export default function Home() {
 
       authDialogRef.current?.close();
       setCurrentUser(null);
+      setIsAccountCardOpen(false);
       setSelectedAnimeIds(null);
       setWatchedEpisodes(null);
       setSelectionError(null);
@@ -794,6 +827,7 @@ export default function Home() {
       return;
     }
     setCurrentUser(null);
+    setIsAccountCardOpen(false);
     setSelectedAnimeIds(null);
     setWatchedEpisodes(null);
     setSelectionError(null);
@@ -995,21 +1029,49 @@ export default function Home() {
         >
           追番统计
         </button>
-        <div className="account-area">
+        <div className="account-area" ref={accountAreaRef}>
           {currentUser ? (
             <>
-              <span className="account-name" title={currentUser.email}>
-                {currentUser.displayName}
-              </span>
               <button
+                className="account-trigger"
+                ref={accountTriggerRef}
                 type="button"
-                onClick={(clickEvent) => openAuthDialog("change-password", clickEvent.currentTarget)}
+                aria-expanded={isAccountCardOpen}
+                aria-controls="account-card"
+                onClick={() => setIsAccountCardOpen((isOpen) => !isOpen)}
               >
-                修改密码
+                <span>{currentUser.displayName}</span>
+                <span className="account-trigger-chevron" aria-hidden="true">⌄</span>
               </button>
-              <button type="button" onClick={() => void signOut()}>
-                退出
-              </button>
+              {isAccountCardOpen ? (
+                <div className="account-card" id="account-card" role="group" aria-label="账号操作">
+                  <div className="account-profile">
+                    <span className="account-avatar" aria-hidden="true">
+                      {currentUser.displayName.trim().slice(0, 1).toLocaleUpperCase()}
+                    </span>
+                    <span className="account-identity">
+                      <strong>{currentUser.displayName}</strong>
+                      <span className="account-email" title={currentUser.email}>
+                        {currentUser.email}
+                      </span>
+                    </span>
+                  </div>
+                  <span className="account-card-divider" aria-hidden="true" />
+                  <button className="account-card-action" type="button" onClick={openPasswordChangeFromAccount}>
+                    <span className="account-action-icon" aria-hidden="true">✎</span>
+                    修改密码
+                  </button>
+                  <button
+                    className="account-card-action account-card-action-danger"
+                    type="button"
+                    onClick={() => void signOut()}
+                  >
+                    <span className="account-action-icon" aria-hidden="true">↪</span>
+                    退出登录
+                  </button>
+                  {accountError ? <span className="account-card-error" role="alert">{accountError}</span> : null}
+                </div>
+              ) : null}
             </>
           ) : authLoaded ? (
             <button
@@ -1020,7 +1082,7 @@ export default function Home() {
               登录 / 注册
             </button>
           ) : null}
-          {accountError ? <span role="alert">{accountError}</span> : null}
+          {!currentUser && accountError ? <span role="alert">{accountError}</span> : null}
           {accountNotice ? <span className="account-notice" role="status">{accountNotice}</span> : null}
         </div>
       </nav>
