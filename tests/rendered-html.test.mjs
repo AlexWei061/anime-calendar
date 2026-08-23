@@ -45,6 +45,10 @@ test("server-renders a paged Beijing episode calendar", async () => {
     html,
     /<meta name="description" content="按北京时间查看收录番剧的首播、集数与周播时间。"\s*\/>/,
   );
+  assert.match(
+    html,
+    /<link rel="icon" href="\/favicon\.svg" type="image\/svg\+xml"\s*\/>/,
+  );
   assert.match(cleanHtml, /<h1\b[^>]*>这季有什么值得追？<\/h1>/);
   assert.match(withoutReactMarkers(html), /66 部番剧/);
   assert.match(html, /class="page-sidebar"/);

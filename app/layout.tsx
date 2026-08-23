@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "番时表｜新番日历",
   description: "按北京时间查看收录番剧的首播、集数与周播时间。",
+  icons: {
+    icon: { url: "/favicon.svg", type: "image/svg+xml" },
+  },
 };
 
 // 首屏前同步确定主题：手动选择（localStorage）优先，否则跟随系统；
