@@ -161,6 +161,12 @@ a {
   white-space: nowrap;
 }
 
+.account-notice {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .sign-in-prompt-button {
   margin-left: 0.5rem;
   padding: 0.2rem 0.6rem;

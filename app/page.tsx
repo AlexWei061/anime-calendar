@@ -125,7 +125,7 @@ type BroadcastEvent = Anime & {
   releaseKind: "scheduled" | "network";
 };
 type AuthUser = { email: string; displayName: string };
-type AuthDialogMode = "login" | "register";
+type AuthDialogMode = "login" | "register" | "change-password";
 type Page = "all" | "mine" | "stats" | "search";
 type StatisticsSection = "today" | "overview";
 
@@ -280,6 +280,7 @@ export default function Home() {
   const [authDialogMode, setAuthDialogMode] = useState<AuthDialogMode | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [accountError, setAccountError] = useState<string | null>(null);
+  const [accountNotice, setAccountNotice] = useState<string | null>(null);
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
   const [collapsedStatisticsSections, setCollapsedStatisticsSections] = useState<StatisticsSection[]>([]);
   const [activeWeekStart, setActiveWeekStart] = useState(initialWeekStart);
@@ -685,6 +686,7 @@ export default function Home() {
   const openAuthDialog = (mode: AuthDialogMode, opener: HTMLButtonElement) => {
     authOpenerRef.current = opener;
     setAuthError(null);
+    setAccountNotice(null);
     setAuthDialogMode(mode);
   };
 
@@ -696,7 +698,7 @@ export default function Home() {
 
   const submitAuth = async (submitEvent: FormEvent<HTMLFormElement>) => {
     submitEvent.preventDefault();
-    if (isSubmittingAuth || !authDialogMode) return;
+    if (isSubmittingAuth || !authDialogMode || authDialogMode === "change-password") return;
 
     const form = new FormData(submitEvent.currentTarget);
     const email = String(form.get("email") ?? "");
@@ -730,7 +732,50 @@ export default function Home() {
       setSelectionError(null);
       setWatchedEpisodeError(null);
       setAccountError(null);
+      setAccountNotice(null);
       authDialogRef.current?.close();
+    } catch {
+      setAuthError("网络错误，请重试。");
+    } finally {
+      setIsSubmittingAuth(false);
+    }
+  };
+
+  const submitPasswordChange = async (submitEvent: FormEvent<HTMLFormElement>) => {
+    submitEvent.preventDefault();
+    if (isSubmittingAuth || authDialogMode !== "change-password") return;
+
+    const form = new FormData(submitEvent.currentTarget);
+    const currentPassword = String(form.get("currentPassword") ?? "");
+    const newPassword = String(form.get("newPassword") ?? "");
+    const confirmPassword = String(form.get("confirmPassword") ?? "");
+    if (newPassword !== confirmPassword) {
+      setAuthError("两次输入的新密码不一致。");
+      return;
+    }
+
+    setIsSubmittingAuth(true);
+    setAuthError(null);
+    try {
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: unknown };
+      if (!response.ok) {
+        setAuthError(typeof payload.error === "string" ? payload.error : "修改失败，请重试。");
+        return;
+      }
+
+      authDialogRef.current?.close();
+      setCurrentUser(null);
+      setSelectedAnimeIds(null);
+      setWatchedEpisodes(null);
+      setSelectionError(null);
+      setWatchedEpisodeError(null);
+      setAccountError(null);
+      setAccountNotice("密码已修改，请使用新密码重新登录。");
     } catch {
       setAuthError("网络错误，请重试。");
     } finally {
@@ -740,6 +785,7 @@ export default function Home() {
 
   const signOut = async () => {
     setAccountError(null);
+    setAccountNotice(null);
     try {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok) throw new Error("Unable to sign out");
@@ -955,10 +1001,15 @@ export default function Home() {
               <span className="account-name" title={currentUser.email}>
                 {currentUser.displayName}
               </span>
+              <button
+                type="button"
+                onClick={(clickEvent) => openAuthDialog("change-password", clickEvent.currentTarget)}
+              >
+                修改密码
+              </button>
               <button type="button" onClick={() => void signOut()}>
                 退出
               </button>
-              {accountError ? <span role="alert">{accountError}</span> : null}
             </>
           ) : authLoaded ? (
             <button
@@ -969,6 +1020,8 @@ export default function Home() {
               登录 / 注册
             </button>
           ) : null}
+          {accountError ? <span role="alert">{accountError}</span> : null}
+          {accountNotice ? <span className="account-notice" role="status">{accountNotice}</span> : null}
         </div>
       </nav>
       <main className="calendar-page">
@@ -1620,37 +1673,89 @@ export default function Home() {
             <button
               className="dialog-close"
               type="button"
-              aria-label="关闭登录窗口"
+              aria-label="关闭账号窗口"
               onClick={() => authDialogRef.current?.close()}
               autoFocus
             >
               关闭
             </button>
           </div>
-          <h2 id="auth-dialog-title">{authDialogMode === "login" ? "登录" : "注册"}</h2>
-          <form className="auth-form" onSubmit={(submitEvent) => void submitAuth(submitEvent)}>
-            <label>
-              邮箱
-              <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="you@example.com"
-              />
-            </label>
-            <label>
-              密码
-              <input
-                name="password"
-                type="password"
-                autoComplete={authDialogMode === "login" ? "current-password" : "new-password"}
-                required
-                minLength={8}
-                maxLength={72}
-                placeholder="至少 8 位"
-              />
-            </label>
+          <h2 id="auth-dialog-title">
+            {authDialogMode === "login"
+              ? "登录"
+              : authDialogMode === "register"
+                ? "注册"
+                : "修改密码"}
+          </h2>
+          <form
+            className="auth-form"
+            onSubmit={(submitEvent) =>
+              void (authDialogMode === "change-password"
+                ? submitPasswordChange(submitEvent)
+                : submitAuth(submitEvent))
+            }
+          >
+            {authDialogMode === "change-password" ? (
+              <>
+                <label>
+                  当前密码
+                  <input
+                    name="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                  />
+                </label>
+                <label>
+                  新密码
+                  <input
+                    name="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    maxLength={72}
+                    placeholder="至少 8 位"
+                  />
+                </label>
+                <label>
+                  确认新密码
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    maxLength={72}
+                  />
+                </label>
+              </>
+            ) : (
+              <>
+                <label>
+                  邮箱
+                  <input
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="you@example.com"
+                  />
+                </label>
+                <label>
+                  密码
+                  <input
+                    name="password"
+                    type="password"
+                    autoComplete={authDialogMode === "login" ? "current-password" : "new-password"}
+                    required
+                    minLength={8}
+                    maxLength={72}
+                    placeholder="至少 8 位"
+                  />
+                </label>
+              </>
+            )}
             {authDialogMode === "register" ? (
               <label>
                 昵称（可选）
@@ -1667,20 +1772,24 @@ export default function Home() {
                 ? "正在提交…"
                 : authDialogMode === "login"
                   ? "登录"
-                  : "注册并登录"}
+                  : authDialogMode === "register"
+                    ? "注册并登录"
+                    : "修改密码并退出"}
             </button>
           </form>
-          <p className="auth-switch">
-            {authDialogMode === "login" ? "还没有账号？" : "已有账号？"}
-            <button
-              type="button"
-              onClick={(clickEvent) =>
-                openAuthDialog(authDialogMode === "login" ? "register" : "login", clickEvent.currentTarget)
-              }
-            >
-              {authDialogMode === "login" ? "立即注册" : "直接登录"}
-            </button>
-          </p>
+          {authDialogMode !== "change-password" ? (
+            <p className="auth-switch">
+              {authDialogMode === "login" ? "还没有账号？" : "已有账号？"}
+              <button
+                type="button"
+                onClick={(clickEvent) =>
+                  openAuthDialog(authDialogMode === "login" ? "register" : "login", clickEvent.currentTarget)
+                }
+              >
+                {authDialogMode === "login" ? "立即注册" : "直接登录"}
+              </button>
+            </p>
+          ) : null}
         </dialog>
       ) : null}
 

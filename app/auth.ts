@@ -50,6 +50,10 @@ export async function destroySession(requestUrl: string): Promise<string> {
     const tokenHash = await hashSessionToken(token);
     await (await getDb()).delete(authSessions).where(eq(authSessions.tokenHash, tokenHash));
   }
+  return expiredSessionCookie(requestUrl);
+}
+
+export function expiredSessionCookie(requestUrl: string): string {
   return `${SESSION_COOKIE}=; ${sessionCookieAttributes(requestUrl, 0)}`;
 }
 

@@ -35,3 +35,20 @@ test("uses a dummy PBKDF2 hash for unknown-email login attempts", async () => {
   );
   assert.match(login, /if \(!user \|\| !passwordMatches\) \{/);
 });
+
+test("offers password change and returns to signed-out state after success", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(page, /type AuthDialogMode = "login" \| "register" \| "change-password";/);
+  assert.match(page, /openAuthDialog\("change-password", clickEvent\.currentTarget\)/);
+  assert.match(page, /fetch\("\/api\/auth\/change-password"/);
+  assert.match(page, /body: JSON\.stringify\(\{ currentPassword, newPassword \}\)/);
+  assert.match(page, /if \(newPassword !== confirmPassword\)/);
+  assert.match(page, /setCurrentUser\(null\);/);
+  assert.match(page, /setSelectedAnimeIds\(null\);/);
+  assert.match(page, /setWatchedEpisodes\(null\);/);
+  assert.match(page, /密码已修改，请使用新密码重新登录。/);
+  assert.match(page, /name="currentPassword"/);
+  assert.match(page, /name="newPassword"/);
+  assert.match(page, /name="confirmPassword"/);
+});

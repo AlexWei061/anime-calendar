@@ -113,3 +113,24 @@ test("schema declares users and auth_sessions tables with a migration", async ()
   assert.ok(migrationContents.some((sql) => /CREATE TABLE `users`/.test(sql)));
   assert.ok(migrationContents.some((sql) => /CREATE TABLE `auth_sessions`/.test(sql)));
 });
+
+test("changing a password verifies the current password and revokes every session atomically", async () => {
+  const authRouteNames = await readdir(new URL("../app/api/auth/", import.meta.url));
+  assert.ok(authRouteNames.includes("change-password"), "missing change-password auth route");
+
+  const [route, appAuth] = await Promise.all([
+    readFile(new URL("../app/api/auth/change-password/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/auth.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(route, /getSessionUser\(\)/);
+  assert.match(route, /status: 401/);
+  assert.match(route, /validatePassword\(payload\.newPassword\)/);
+  assert.match(route, /verifyPassword\(currentPassword, storedPasswordHash\)/);
+  assert.match(route, /hashPassword\(newPassword\)/);
+  assert.match(route, /db\.batch\(\[/);
+  assert.match(route, /db\.update\(users\)[\s\S]*db\.delete\(authSessions\)/);
+  assert.match(route, /eq\(authSessions\.userEmail, user\.email\)/);
+  assert.match(route, /"Set-Cookie": expiredSessionCookie\(request\.url\)/);
+  assert.match(appAuth, /export function expiredSessionCookie\(requestUrl: string\)/);
+});
