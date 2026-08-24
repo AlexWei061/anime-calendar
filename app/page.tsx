@@ -27,6 +27,7 @@ import {
 } from "../lib/anime-statistics.js";
 import {
   addDays,
+  calendarDateForDateTime,
   dateOnlyEventsForWeek,
   eventsForWeek,
   firstFullWeekStart,
@@ -303,6 +304,10 @@ export default function Home() {
   );
   const currentBeijingDate = currentBeijingDateTime?.slice(0, 10) ?? null;
   const currentBeijingTime = currentBeijingDateTime?.slice(11) ?? null;
+  const currentCalendarDate =
+    currentBeijingDate && currentBeijingTime
+      ? calendarDateForDateTime(currentBeijingDate, currentBeijingTime)
+      : currentBeijingDate;
   const theme = useSyncExternalStore<ThemeName>(
     subscribeToTheme,
     getThemeSnapshot,
@@ -384,14 +389,18 @@ export default function Home() {
     "--timeline-hour-count": String(timelineHourCount),
     "--timeline-height": timelineHourCount * 96 + 40 + "px",
   } as CSSProperties;
-  const currentTimelineMarker =
-    currentBeijingDate && currentBeijingTime && dates.includes(currentBeijingDate)
+  const mappedCurrentTimelineMarker =
+    currentBeijingDate && currentBeijingTime
       ? timelineMarkerForDateTime(
           currentBeijingDate,
           currentBeijingTime,
           timelineStartMinutes,
           timelineEndMinutes,
         )
+      : null;
+  const currentTimelineMarker =
+    mappedCurrentTimelineMarker && dates.includes(mappedCurrentTimelineMarker.date)
+      ? mappedCurrentTimelineMarker
       : null;
   const currentTimelineMarkerStyle = currentTimelineMarker
     ? ({ "--timeline-current-time-top": currentTimelineMarker.offsetMinutes * 1.6 + "px" } as CSSProperties)
@@ -417,12 +426,12 @@ export default function Home() {
   const selectedEpisodeUnits = selected ? episodeViewUnitsForAnime(selected) : [];
 
   useEffect(() => {
-    if (!currentBeijingDate || didSetInitialWeek.current) return;
+    if (!currentCalendarDate || didSetInitialWeek.current) return;
 
     didSetInitialWeek.current = true;
-    setActiveWeekStart(startOfWeek(currentBeijingDate));
-    setActiveMobileDate(currentBeijingDate);
-  }, [currentBeijingDate]);
+    setActiveWeekStart(startOfWeek(currentCalendarDate));
+    setActiveMobileDate(currentCalendarDate);
+  }, [currentCalendarDate]);
 
   // 与 layout 内联脚本共同维护 <html data-theme>：脚本负责首屏前定主题，
   // 用户未手动选择时这里继续跟随系统主题变化。
@@ -627,7 +636,7 @@ export default function Home() {
 
   const returnToCurrentWeek = () => {
     const date = !isHistoricalSeason
-      ? currentBeijingDate ?? initialWeekStart
+      ? currentCalendarDate ?? initialWeekStart
       : firstFullWeekStart(activeSeason);
     setActiveWeekStart(startOfWeek(date));
     setActiveMobileDate(date);
@@ -641,7 +650,7 @@ export default function Home() {
   };
 
   const jumpToTodaySchedule = () => {
-    const date = currentBeijingDate ?? activeWeekStart;
+    const date = currentCalendarDate ?? activeWeekStart;
     setActiveWeekStart(startOfWeek(date));
     setActiveMobileDate(date);
     window.requestAnimationFrame(scrollToWeeklySchedule);
@@ -896,7 +905,7 @@ export default function Home() {
   };
 
   const eventButton = (event: CalendarEvent, layout?: { lane: number; laneCount: number }) => {
-    const isToday = event.date === currentBeijingDate;
+    const isToday = event.date === currentCalendarDate;
     const displayTime = formatBroadcastTime(event.time);
     const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
     const watchedEpisode = {
@@ -1494,7 +1503,7 @@ export default function Home() {
           >
             <div className="timeline-corner" aria-hidden="true" />
             {dates.map((date, index) => {
-              const isToday = date === currentBeijingDate;
+              const isToday = date === currentCalendarDate;
 
               return (
                 <header
@@ -1513,7 +1522,7 @@ export default function Home() {
                 <div className="timeline-date-only-corner" aria-hidden="true" />
                 {dates.map((date, index) => (
                   <div
-                    className={"timeline-date-only" + (date === currentBeijingDate ? " is-today" : "")}
+                    className={"timeline-date-only" + (date === currentCalendarDate ? " is-today" : "")}
                     key={date}
                   >
                     {dayDateOnlyEvents[index].length ? (
@@ -1541,7 +1550,7 @@ export default function Home() {
               ))}
             </div>
             {dates.map((date, index) => {
-              const isToday = date === currentBeijingDate;
+              const isToday = date === currentCalendarDate;
               const positionedEvents = layoutTimelineEvents(
                 events.filter((event) => event.date === date),
               );
