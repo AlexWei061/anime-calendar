@@ -134,3 +134,26 @@ test("changing a password verifies the current password and revokes every sessio
   assert.match(route, /"Set-Cookie": expiredSessionCookie\(request\.url\)/);
   assert.match(appAuth, /export function expiredSessionCookie\(requestUrl: string\)/);
 });
+
+test("declares authenticated avatar storage and profile responses", async () => {
+  const [schema, hosting, workerTypes, appAuth, login, register, me, avatarRoute] =
+    await Promise.all([
+      readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
+      readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
+      readFile(new URL("../cloudflare-workers.d.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/auth.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/api/auth/login/route.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/api/auth/register/route.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/api/auth/me/route.ts", import.meta.url), "utf8"),
+      readFile(new URL("../app/api/auth/avatar/route.ts", import.meta.url), "utf8"),
+    ]);
+  assert.match(schema, /avatarVersion: text\("avatar_version"\)/);
+  assert.equal(JSON.parse(hosting).r2, "AVATARS");
+  assert.match(workerTypes, /AVATARS\?/);
+  assert.match(appAuth, /avatarUrl/);
+  assert.match(login, /avatarUrl/);
+  assert.match(register, /avatarUrl/);
+  assert.match(me, /avatarUrl/);
+  assert.match(avatarRoute, /getSessionUser\(\)/);
+  assert.doesNotMatch(avatarRoute, /payload\.email|searchParams\.get\("email"\)/);
+});
