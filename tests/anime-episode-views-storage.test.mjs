@@ -43,7 +43,7 @@ test("saves a watched range through one request and one atomic database batch", 
   assert.match(putRoute, /validateEpisodeViewBatch\(payload\.watchedEpisodes, animeById\)/);
   assert.match(putRoute, /db\.batch\(/);
   assert.match(putRoute, /watchedEpisodes\.map/);
-  assert.match(putRoute, /values\(watchedEpisodes\.map/);
+  assert.match(putRoute, /values\(\s*watchedEpisodes\.map/);
   assert.match(putRoute, /return Response\.json\(\{ watchedEpisodes, watched \}\)/);
 
   assert.match(

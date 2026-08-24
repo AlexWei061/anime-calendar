@@ -690,16 +690,12 @@ export default function Home() {
     setWatchedEpisodeError(null);
     setSavingEpisodeKeys((currentKeys) => [...new Set([...currentKeys, ...keys])]);
     try {
-      const responses = await Promise.all(
-        episodeViews.map((episodeView) =>
-          fetch("/api/anime-episode-views", {
-            method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ ...episodeView, watched: !isWatched }),
-          }),
-        ),
-      );
-      if (responses.some((response) => !response.ok)) throw new Error("Unable to save watched episode");
+      const response = await fetch("/api/anime-episode-views", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ watchedEpisodes: episodeViews, watched: !isWatched }),
+      });
+      if (!response.ok) throw new Error("Unable to save watched episode");
     } catch {
       setWatchedEpisodes((current) => {
         if (current === null) return null;

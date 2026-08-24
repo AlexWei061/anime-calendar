@@ -6,7 +6,7 @@ import {
   episodeViewUnitsForRange,
   filterKnownEpisodeViews,
   isLegacyEpisodeViewForAnime,
-  validateEpisodeView,
+  validateEpisodeViewBatch,
 } from "../../../lib/anime-episode-views.js";
 import { getSessionUser } from "../../auth";
 
@@ -81,11 +81,11 @@ export async function PUT(request: Request) {
   const user = await getSessionUser();
   if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
 
-  let watchedEpisode: { animeId: string; episodeStart: number; episode: number };
+  let watchedEpisodes: { animeId: string; episodeStart: number; episode: number }[];
   let watched: boolean;
   try {
-    const payload = (await request.json()) as { watched?: unknown };
-    watchedEpisode = validateEpisodeView(payload, animeById);
+    const payload = (await request.json()) as { watchedEpisodes?: unknown; watched?: unknown };
+    watchedEpisodes = validateEpisodeViewBatch(payload.watchedEpisodes, animeById);
     if (typeof payload.watched !== "boolean") throw new TypeError("watched must be a boolean");
     watched = payload.watched;
   } catch (error) {
@@ -93,23 +93,35 @@ export async function PUT(request: Request) {
     return Response.json({ error: message }, { status: 400 });
   }
 
-  const where = and(
-    eq(animeEpisodeViews.userEmail, user.email),
-    eq(animeEpisodeViews.animeId, watchedEpisode.animeId),
-    eq(animeEpisodeViews.episodeStart, watchedEpisode.episodeStart),
-    eq(animeEpisodeViews.episode, watchedEpisode.episode),
-  );
   try {
     const db = await getDb();
     if (watched) {
-      await db
-        .insert(animeEpisodeViews)
-        .values({ userEmail: user.email, ...watchedEpisode })
-        .onConflictDoNothing();
+      await db.batch([
+        db
+          .insert(animeEpisodeViews)
+          .values(
+            watchedEpisodes.map((watchedEpisode) => ({ userEmail: user.email, ...watchedEpisode })),
+          )
+          .onConflictDoNothing(),
+      ]);
     } else {
-      await db.delete(animeEpisodeViews).where(where);
+      const [firstWatchedEpisode, ...remainingWatchedEpisodes] = watchedEpisodes;
+      if (!firstWatchedEpisode) throw new Error("Missing watched episode");
+      const deleteWatchedEpisode = (watchedEpisode: typeof firstWatchedEpisode) =>
+        db.delete(animeEpisodeViews).where(
+          and(
+            eq(animeEpisodeViews.userEmail, user.email),
+            eq(animeEpisodeViews.animeId, watchedEpisode.animeId),
+            eq(animeEpisodeViews.episodeStart, watchedEpisode.episodeStart),
+            eq(animeEpisodeViews.episode, watchedEpisode.episode),
+          ),
+        );
+      await db.batch([
+        deleteWatchedEpisode(firstWatchedEpisode),
+        ...remainingWatchedEpisodes.map(deleteWatchedEpisode),
+      ]);
     }
-    return Response.json({ watchedEpisode, watched });
+    return Response.json({ watchedEpisodes, watched });
   } catch {
     return Response.json({ error: "Unable to save watched episode" }, { status: 500 });
   }
