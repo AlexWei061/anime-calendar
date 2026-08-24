@@ -10600,6 +10600,8 @@ export const coverSprites = Object.freeze({
   }
 });
 
-export function coverSpriteFor(coverUrl) {
-  return coverSprites[coverUrl] ?? null;
+export function coverSpriteFor(coverUrl, variant = "thumbnail") {
+  const sprite = coverSprites[coverUrl] ?? null;
+  if (!sprite || variant === "detail") return sprite;
+  return { ...sprite, url: sprite.url.replace(/\.webp$/, "-thumb.webp") };
 }

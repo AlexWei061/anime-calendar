@@ -9,6 +9,8 @@ const coverDirectory = join(projectRoot, "public", "covers", "yuc");
 const spriteDirectory = join(coverDirectory, "sprites");
 const cellWidth = 600;
 const cellHeight = 750;
+const thumbnailCellWidth = cellWidth / 2;
+const thumbnailCellHeight = cellHeight / 2;
 const columns = 4;
 const rows = 10;
 const coversPerSprite = columns * rows;
@@ -25,6 +27,8 @@ for (let offset = 0; offset < covers.length; offset += coversPerSprite) {
   const page = covers.slice(offset, offset + coversPerSprite);
   const spriteRows = Math.ceil(page.length / columns);
   const spriteUrl = `/covers/yuc/sprites/cover-sheet-${String(offset / coversPerSprite + 1).padStart(2, "0")}.webp`;
+  const thumbnailUrl = spriteUrl.replace(/\.webp$/, "-thumb.webp");
+  const spritePath = join(projectRoot, "public", spriteUrl.slice(1));
   const composite = await Promise.all(
     page.map(async ({ coverUrl }, index) => ({
       input: await sharp(join(projectRoot, "public", coverUrl.slice(1)))
@@ -45,7 +49,12 @@ for (let offset = 0; offset < covers.length; offset += coversPerSprite) {
   })
     .composite(composite)
     .webp({ quality: 90, effort: 4 })
-    .toFile(join(projectRoot, "public", spriteUrl.slice(1)));
+    .toFile(spritePath);
+
+  await sharp(spritePath)
+    .resize(columns * thumbnailCellWidth, spriteRows * thumbnailCellHeight)
+    .webp({ quality: 82, effort: 4 })
+    .toFile(join(projectRoot, "public", thumbnailUrl.slice(1)));
 
   for (const [index, { coverUrl }] of page.entries()) {
     sprites[coverUrl] = {
@@ -64,7 +73,11 @@ await writeFile(
     "export const coverSprites = Object.freeze(" +
     JSON.stringify(sprites, null, 2) +
     ");\n\n" +
-    "export function coverSpriteFor(coverUrl) {\n  return coverSprites[coverUrl] ?? null;\n}\n",
+    "export function coverSpriteFor(coverUrl, variant = \"thumbnail\") {\n" +
+    "  const sprite = coverSprites[coverUrl] ?? null;\n" +
+    "  if (!sprite || variant === \"detail\") return sprite;\n" +
+    "  return { ...sprite, url: sprite.url.replace(/\\.webp$/, \"-thumb.webp\") };\n" +
+    "}\n",
 );
 
 await Promise.all(covers.map(({ coverUrl }) => rm(join(projectRoot, "public", coverUrl.slice(1)))));

@@ -144,12 +144,14 @@ function CoverArt({
   anime,
   className,
   decorative = false,
+  variant = "thumbnail",
 }: {
   anime: Anime;
   className: string;
   decorative?: boolean;
+  variant?: "thumbnail" | "detail";
 }) {
-  const sprite = coverSpriteFor(anime.coverUrl);
+  const sprite = coverSpriteFor(anime.coverUrl, variant);
   if (!sprite) return null;
 
   const style = {
@@ -1887,7 +1889,7 @@ export default function Home() {
               关闭
             </button>
           </div>
-          <CoverArt anime={selected} className="detail-cover" />
+          <CoverArt anime={selected} className="detail-cover" variant="detail" />
           <p className="detail-title-zh">{selected.titleZh}</p>
           <h2 id="anime-detail-title">{selected.titleJa}</h2>
           <div className="detail-actions">
