@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
@@ -9,7 +8,8 @@ import {
 } from "../../../../lib/avatar.js";
 import { getSessionUser } from "../../../auth";
 
-function getAvatarBucket() {
+async function getAvatarBucket() {
+  const { env } = await import("cloudflare:workers");
   if (!env.AVATARS) {
     throw new Error("Cloudflare R2 binding `AVATARS` is unavailable.");
   }
@@ -18,7 +18,7 @@ function getAvatarBucket() {
 
 async function deleteObjectBestEffort(key: string | Promise<string>) {
   try {
-    await getAvatarBucket().delete(await key);
+    await (await getAvatarBucket()).delete(await key);
   } catch {
     // The active D1 value remains authoritative; stale versions can be cleaned later.
   }
@@ -32,7 +32,7 @@ export async function GET() {
   }
 
   try {
-    const object = await getAvatarBucket().get(
+    const object = await (await getAvatarBucket()).get(
       await avatarObjectKey(user.email, user.avatarVersion),
     );
     if (!object) return Response.json({ error: "Avatar not found" }, { status: 404 });
@@ -63,7 +63,7 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const bucket = getAvatarBucket();
+    const bucket = await getAvatarBucket();
     const version = crypto.randomUUID();
     const key = await avatarObjectKey(user.email, version);
     await bucket.put(key, bytes, {
@@ -100,7 +100,7 @@ export async function DELETE() {
   if (!user.avatarVersion) return Response.json({ avatarUrl: null });
 
   try {
-    getAvatarBucket();
+    await getAvatarBucket();
     await (await getDb())
       .update(users)
       .set({ avatarVersion: null })

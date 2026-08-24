@@ -155,5 +155,7 @@ test("declares authenticated avatar storage and profile responses", async () => 
   assert.match(register, /avatarUrl/);
   assert.match(me, /avatarUrl/);
   assert.match(avatarRoute, /getSessionUser\(\)/);
+  assert.match(avatarRoute, /await import\("cloudflare:workers"\)/);
+  assert.doesNotMatch(avatarRoute, /^import \{ env \} from "cloudflare:workers";/m);
   assert.doesNotMatch(avatarRoute, /payload\.email|searchParams\.get\("email"\)/);
 });
