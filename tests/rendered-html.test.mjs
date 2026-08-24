@@ -527,11 +527,19 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
   assert.match(
     page,
-    /import \{[\s\S]*?timelineMarkerForDateTime,[\s\S]*?\} from "\.\.\/lib\/calendar\.js";/,
+    /import \{(?=[^}]*\bcalendarDateForDateTime\b)(?=[^}]*\btimelineMarkerForDateTime\b)[^}]*\} from "\.\.\/lib\/calendar\.js";/,
   );
   assert.match(
     page,
-    /timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)/,
+    /const currentCalendarDate =\s*currentBeijingDate && currentBeijingTime\s*\? calendarDateForDateTime\(currentBeijingDate, currentBeijingTime\)\s*:\s*currentBeijingDate;/,
+  );
+  assert.match(
+    page,
+    /const mappedCurrentTimelineMarker =\s*currentBeijingDate && currentBeijingTime\s*\? timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)\s*:\s*null;/,
+  );
+  assert.match(
+    page,
+    /const currentTimelineMarker =\s*mappedCurrentTimelineMarker && dates\.includes\(mappedCurrentTimelineMarker\.date\)\s*\? mappedCurrentTimelineMarker\s*:\s*null;/,
   );
   assert.match(
     page,
@@ -540,7 +548,25 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /function getBeijingDateTime\(\) \{/);
   assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
   assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
-  assert.match(page, /dates\.includes\(currentBeijingDate\)/);
+  assert.match(
+    page,
+    /if \(!currentCalendarDate \|\| didSetInitialWeek\.current\) return;[\s\S]*?setActiveWeekStart\(startOfWeek\(currentCalendarDate\)\);[\s\S]*?setActiveMobileDate\(currentCalendarDate\);[\s\S]*?\}, \[currentCalendarDate\]\);/,
+  );
+  assert.match(page, /currentCalendarDate \?\? initialWeekStart/);
+  assert.match(page, /const date = currentCalendarDate \?\? activeWeekStart;/);
+  assert.match(page, /const isToday = event\.date === currentCalendarDate;/);
+  assert.match(
+    page,
+    /dates\.map\(\(date, index\) => \{\s*const isToday = date === currentCalendarDate;\s*return \(\s*<header\s+className=\{"timeline-day-header" \+ \(isToday \? " is-today" : ""\)\}/,
+  );
+  assert.match(
+    page,
+    /dates\.map\(\(date, index\) => \{\s*const isToday = date === currentCalendarDate;\s*const positionedEvents = layoutTimelineEvents\(\s*events\.filter\(\(event\) => event\.date === date\),\s*\);\s*return \(\s*<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}/,
+  );
+  assert.match(page, /date === currentCalendarDate \? " is-today" : ""/);
+  assert.doesNotMatch(page, /dates\.includes\(currentBeijingDate\)/);
+  assert.doesNotMatch(page, /startOfWeek\(currentBeijingDate\)/);
+  assert.doesNotMatch(page, /date === currentBeijingDate/);
   assert.match(page, /className="timeline-current-time timeline-current-time-axis"/);
   assert.match(page, /--timeline-current-time-top/);
   assert.match(
@@ -568,7 +594,6 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(page, /const changeWeek = \(days: number\)/);
   assert.match(page, /changeWeek\(-7\)/);
   assert.match(page, /changeWeek\(7\)/);
-  assert.match(page, /startOfWeek\(currentBeijingDate\)/);
   assert.match(page, /formatEpisodeLabel\(event\.episodeStart, event\.episode\)/);
   assert.match(page, /event\.episode/);
   assert.match(page, /selectedEpisodeStart/);
