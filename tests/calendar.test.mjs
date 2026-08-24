@@ -6,6 +6,7 @@ import * as calendar from "../lib/calendar.js";
 
 const {
   addDays,
+  calendarDateForDateTime,
   dateOnlyEventsForWeek,
   eventsForWeek,
   formatBroadcastTime,
@@ -384,6 +385,12 @@ test("accepts 28:59 but rejects 29:00 on the historical timeline", () => {
   assert.equal(timelineOffsetMinutes("06:00", historicalStartMinutes, historicalEndMinutes), 60);
   assert.equal(timelineOffsetMinutes("28:59", historicalStartMinutes, historicalEndMinutes), 1439);
   assert.throws(() => timelineOffsetMinutes("29:00", historicalStartMinutes, historicalEndMinutes), RangeError);
+});
+
+test("keeps the calendar on the previous broadcast day until 05:00", () => {
+  assert.equal(calendarDateForDateTime("2026-08-01", "00:00"), "2026-07-31");
+  assert.equal(calendarDateForDateTime("2026-08-01", "04:59"), "2026-07-31");
+  assert.equal(calendarDateForDateTime("2026-08-01", "05:00"), "2026-08-01");
 });
 
 test("maps a current Beijing time onto the visible timeline", () => {
