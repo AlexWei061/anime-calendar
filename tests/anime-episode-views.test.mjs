@@ -7,6 +7,7 @@ import {
   filterKnownEpisodeViews,
   updateEpisodeViews,
   validateEpisodeView,
+  validateEpisodeViewBatch,
 } from "../lib/anime-episode-views.js";
 
 const animeById = new Map([
@@ -31,6 +32,35 @@ test("accepts an individual episode from a formerly batched premiere", () => {
   assert.equal(episodeViewKey(watchedEpisode), "three-at-once:1-1");
   assert.throws(
     () => validateEpisodeView({ animeId: "three-at-once", episodeStart: 1, episode: 3 }, animeById),
+    /Invalid episode range/,
+  );
+});
+
+test("validates and deduplicates an atomic watched-episode batch", () => {
+  const firstEpisode = { animeId: "regular", episodeStart: 1, episode: 1 };
+  const secondEpisode = { animeId: "regular", episodeStart: 2, episode: 2 };
+
+  assert.deepEqual(
+    validateEpisodeViewBatch([firstEpisode, firstEpisode, secondEpisode], animeById),
+    [firstEpisode, secondEpisode],
+  );
+});
+
+test("rejects invalid or oversized watched-episode batches", () => {
+  const validEpisode = { animeId: "regular", episodeStart: 1, episode: 1 };
+
+  assert.throws(() => validateEpisodeViewBatch(null, animeById), /must be an array/);
+  assert.throws(() => validateEpisodeViewBatch([], animeById), /must not be empty/);
+  assert.throws(
+    () => validateEpisodeViewBatch(Array.from({ length: 26 }, () => validEpisode), animeById),
+    /at most 25/,
+  );
+  assert.throws(
+    () => validateEpisodeViewBatch([{ animeId: "removed", episodeStart: 1, episode: 1 }], animeById),
+    /Unknown anime ID/,
+  );
+  assert.throws(
+    () => validateEpisodeViewBatch([{ animeId: "regular", episodeStart: 1, episode: 2 }], animeById),
     /Invalid episode range/,
   );
 });
