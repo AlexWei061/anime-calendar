@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
+import { avatarUrl } from "../../../../lib/avatar.js";
 import { validateEmail, verifyPassword } from "../../../../lib/auth.js";
 import { createSession } from "../../../auth";
 
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
         email: users.email,
         passwordHash: users.passwordHash,
         displayName: users.displayName,
+        avatarVersion: users.avatarVersion,
       })
       .from(users)
       .where(eq(users.email, email));
@@ -35,7 +37,11 @@ export async function POST(request: Request) {
 
     const sessionCookie = await createSession(user.email, request.url);
     return Response.json(
-      { email: user.email, displayName: user.displayName },
+      {
+        email: user.email,
+        displayName: user.displayName,
+        avatarUrl: avatarUrl(user.avatarVersion),
+      },
       { headers: { "Set-Cookie": sessionCookie } },
     );
   } catch {
