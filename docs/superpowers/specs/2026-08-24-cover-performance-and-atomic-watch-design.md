@@ -111,4 +111,3 @@ npm run generate:cover-sprites
 3. 生成缩略图集并检查尺寸与包体阈值。
 4. 运行 `npm run lint -- --ignore-pattern .worktrees` 和 `npm test`。
 5. 本地以无缓存方式检查首页封面请求体积，并在桌面与 390px 移动端确认视觉不变。
-
