@@ -2,11 +2,14 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { getDb } from "../db";
 import { authSessions, users } from "../db/schema";
+import { avatarUrl } from "../lib/avatar.js";
 import { generateSessionToken, hashSessionToken, sessionCookieAttributes } from "../lib/auth.js";
 
 export type SessionUser = {
   email: string;
   displayName: string;
+  avatarVersion: string | null;
+  avatarUrl: string | null;
 };
 
 export const SESSION_COOKIE = "ac_session";
@@ -22,6 +25,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     .select({
       email: users.email,
       displayName: users.displayName,
+      avatarVersion: users.avatarVersion,
       expiresAt: authSessions.expiresAt,
     })
     .from(authSessions)
@@ -33,7 +37,12 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     await db.delete(authSessions).where(eq(authSessions.tokenHash, tokenHash));
     return null;
   }
-  return { email: row.email, displayName: row.displayName };
+  return {
+    email: row.email,
+    displayName: row.displayName,
+    avatarVersion: row.avatarVersion,
+    avatarUrl: avatarUrl(row.avatarVersion),
+  };
 }
 
 export async function createSession(userEmail: string, requestUrl: string): Promise<string> {

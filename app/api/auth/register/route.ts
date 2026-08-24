@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     await db.insert(users).values({ email, passwordHash, displayName, createdAt: Date.now() });
     const sessionCookie = await createSession(email, request.url);
     return Response.json(
-      { email, displayName },
+      { email, displayName, avatarUrl: null },
       { status: 201, headers: { "Set-Cookie": sessionCookie } },
     );
   } catch {
