@@ -76,3 +76,36 @@ test("closes the profile card with escape or an outside click", async () => {
   assert.match(page, /document\.addEventListener\("pointerdown", handlePointerDown\);/);
   assert.match(page, /document\.addEventListener\("keydown", handleKeyDown\);/);
 });
+
+test("uploads a manually cropped account avatar", async () => {
+  const [page, editor] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/avatar-editor.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /avatarUrl: string \| null/);
+  assert.match(page, /<AvatarEditor/);
+  assert.match(editor, /accept="image\/jpeg,image\/png,image\/webp"/);
+  assert.match(editor, /<dialog/);
+  assert.match(editor, /type="range"/);
+  assert.match(editor, /onPointerDown/);
+  assert.match(editor, /ArrowLeft/);
+  assert.match(editor, /canvas\.toBlob/);
+  assert.match(editor, /fetch\("\/api\/auth\/avatar"/);
+  assert.match(editor, /method: "PUT"/);
+});
+
+test("deletes an avatar only after confirmation and server success", async () => {
+  const [page, editor] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/avatar-editor.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /window\.confirm\("删除头像并恢复默认头像？"\)/);
+  assert.match(page, /method: "DELETE"/);
+  assert.match(page, /setCurrentUser\(\{ \.\.\.currentUser, avatarUrl: null \}\)/);
+  assert.match(page, /currentUser\.avatarUrl \? \(/);
+  assert.match(page, />删除头像</);
+  assert.match(editor, /avatarUrl && !imageFailed/);
+  assert.match(editor, /displayName\.trim\(\)\.slice\(0, 1\)/);
+});
