@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { access, readdir, readFile } from "node:fs/promises";
+import { access, readdir, readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 import { allAnime, anime, season, seasons } from "../data/anime.js";
-import { coverSpriteFor } from "../data/cover-sprites.js";
+import { coverSpriteFor, coverSprites } from "../data/cover-sprites.js";
 import { addDays, dateOnlyEventsForWeek, eventsForWeek } from "../lib/calendar.js";
 import { groupByBeijingWeekday } from "../lib/schedule.js";
 import {
@@ -545,8 +545,38 @@ function spriteUrlFor(coverUrl) {
 }
 
 test("ships every YUC cover through a local static sprite", async () => {
-  await Promise.all(
-    anime.map(({ coverUrl }) => access(new URL(`../public${spriteUrlFor(coverUrl)}`, import.meta.url))),
+  await Promise.all(Object.keys(coverSprites).flatMap((coverUrl) => {
+    const thumbnail = coverSpriteFor(coverUrl);
+    const detail = coverSpriteFor(coverUrl, "detail");
+    assert.ok(thumbnail, `missing thumbnail sprite for ${coverUrl}`);
+    assert.ok(detail, `missing detail sprite for ${coverUrl}`);
+    assert.match(thumbnail.url, /\/cover-sheet-\d+-thumb\.webp$/);
+    assert.match(detail.url, /\/cover-sheet-\d+\.webp$/);
+    assert.deepEqual(
+      { ...thumbnail, url: detail.url },
+      detail,
+      `sprite coordinates changed between variants for ${coverUrl}`,
+    );
+    return [
+      access(new URL(`../public${thumbnail.url}`, import.meta.url)),
+      access(new URL(`../public${detail.url}`, import.meta.url)),
+    ];
+  }));
+});
+
+test("keeps thumbnail sprites inside the transfer budget", async () => {
+  const spriteRoot = new URL("../public/covers/yuc/sprites/", import.meta.url);
+  const thumbnailFiles = (await readdir(spriteRoot)).filter((file) => /-thumb\.webp$/.test(file));
+  const expectedCount = new Set(Object.values(coverSprites).map(({ url }) => url)).size;
+  assert.equal(thumbnailFiles.length, expectedCount);
+
+  const sizes = await Promise.all(thumbnailFiles.map((file) => stat(new URL(file, spriteRoot))));
+  const twoMiB = 2 * 1024 * 1024;
+  const sixtyMiB = 60 * 1024 * 1024;
+  assert.ok(sizes.every(({ size }) => size <= twoMiB), "expected every thumbnail sheet to be at most 2 MiB");
+  assert.ok(
+    sizes.reduce((total, { size }) => total + size, 0) <= sixtyMiB,
+    "expected all thumbnail sheets to total at most 60 MiB",
   );
 });
 
@@ -563,6 +593,9 @@ test("creates high-quality sprites from lossless local cover intermediates", asy
 
   assert.match(converter, /const webpOptions = \{ lossless: true, effort: 4 \}/);
   assert.match(spriteGenerator, /\.webp\(\{ quality: 90, effort: 4 \}\)/);
+  assert.match(spriteGenerator, /const thumbnailCellWidth = cellWidth \/ 2/);
+  assert.match(spriteGenerator, /const thumbnailCellHeight = cellHeight \/ 2/);
+  assert.match(spriteGenerator, /\.webp\(\{ quality: 82, effort: 4 \}\)/);
 });
 
 test("allows original JPEG covers to be rebuilt after catalog paths already use WebP", async () => {

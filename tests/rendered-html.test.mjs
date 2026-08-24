@@ -105,7 +105,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(cleanHtml, /次日 02:00/);
   assert.match(html, /class="calendar-event/);
   assert.match(html, /class="calendar-event-cover cover-sprite"/);
-  assert.match(html, /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+\.webp\)/);
+  assert.match(html, /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+-thumb\.webp\)/);
   assert.match(cleanHtml, /第 1 集/);
   assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
   assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
@@ -165,7 +165,7 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   ).length;
   assert.equal(networkCards.length, networkOnlyCount);
   assert.match(networkCards.join(""), /刃牙道 Part\.2/);
-  assert.match(networkCards.join(""), /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+\.webp\)/);
+  assert.match(networkCards.join(""), /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+-thumb\.webp\)/);
   assert.match(networkCards.join(""), /\bcover-sprite\b/);
 
   const sourceLinks = [
@@ -579,7 +579,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(page, /\{selected \? \(/);
   assert.match(page, /selected\.titleZh/);
-  assert.match(page, /<CoverArt anime=\{selected\} className="detail-cover" \/>/);
+  assert.match(page, /<CoverArt anime=\{selected\} className="detail-cover" variant="detail" \/>/);
   assert.match(page, /dialogRef\.current\.showModal\(\)/);
   assert.match(
     page,
