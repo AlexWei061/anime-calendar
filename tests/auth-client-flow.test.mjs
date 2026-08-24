@@ -54,14 +54,17 @@ test("offers password change and returns to signed-out state after success", asy
 });
 
 test("moves signed-in account actions into a toggleable profile card", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const [page, editor] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/avatar-editor.tsx", import.meta.url), "utf8"),
+  ]);
 
   assert.match(page, /const \[isAccountCardOpen, setIsAccountCardOpen\] = useState\(false\);/);
   assert.match(page, /className="account-trigger"/);
   assert.match(page, /aria-expanded=\{isAccountCardOpen\}/);
   assert.match(page, /aria-controls="account-card"/);
   assert.match(page, /id="account-card"/);
-  assert.match(page, /className="account-avatar"/);
+  assert.match(editor, /className="account-avatar"/);
   assert.match(page, /className="account-email"[^>]*>\s*\{currentUser\.email\}/);
   assert.match(page, /className="account-action-icon" aria-hidden="true">✎<\/span>\s*修改密码/);
   assert.match(page, /className="account-action-icon" aria-hidden="true">↪<\/span>\s*退出登录/);
@@ -71,7 +74,10 @@ test("moves signed-in account actions into a toggleable profile card", async () 
 test("closes the profile card with escape or an outside click", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 
-  assert.match(page, /if \(event\.key === "Escape"\) \{\s*setIsAccountCardOpen\(false\);/);
+  assert.match(
+    page,
+    /if \(event\.key === "Escape"\) \{\s*if \(document\.querySelector<HTMLDialogElement>\("\.avatar-crop-dialog"\)\?\.open\) return;\s*setIsAccountCardOpen\(false\);/,
+  );
   assert.match(page, /!accountAreaRef\.current\?\.contains\(event\.target as Node\)/);
   assert.match(page, /document\.addEventListener\("pointerdown", handlePointerDown\);/);
   assert.match(page, /document\.addEventListener\("keydown", handleKeyDown\);/);

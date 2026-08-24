@@ -8,6 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { AvatarEditor } from "./avatar-editor";
 import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/anime.js";
 import { coverSpriteFor } from "../data/cover-sprites.js";
 import { networkBroadcastLabel } from "../lib/anime-labels.js";
@@ -124,7 +125,7 @@ type BroadcastEvent = Anime & {
   episode: number;
   releaseKind: "scheduled" | "network";
 };
-type AuthUser = { email: string; displayName: string };
+type AuthUser = { email: string; displayName: string; avatarUrl: string | null };
 type AuthDialogMode = "login" | "register" | "change-password";
 type Page = "all" | "mine" | "stats" | "search";
 type StatisticsSection = "today" | "overview";
@@ -467,6 +468,7 @@ export default function Home() {
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        if (document.querySelector<HTMLDialogElement>(".avatar-crop-dialog")?.open) return;
         setIsAccountCardOpen(false);
         accountTriggerRef.current?.focus();
       }
@@ -486,13 +488,22 @@ export default function Home() {
       try {
         const response = await fetch("/api/auth/me");
         if (!response.ok) return;
-        const payload = (await response.json()) as { email?: unknown; displayName?: unknown };
+        const payload = (await response.json()) as {
+          email?: unknown;
+          displayName?: unknown;
+          avatarUrl?: unknown;
+        };
         if (
           typeof payload.email === "string" &&
           typeof payload.displayName === "string" &&
+          (typeof payload.avatarUrl === "string" || payload.avatarUrl === null) &&
           !cancelled
         ) {
-          setCurrentUser({ email: payload.email, displayName: payload.displayName });
+          setCurrentUser({
+            email: payload.email,
+            displayName: payload.displayName,
+            avatarUrl: payload.avatarUrl,
+          });
         }
       } catch {
         // 未登录或网络错误都按未登录处理。
@@ -748,17 +759,23 @@ export default function Home() {
       const payload = (await response.json().catch(() => ({}))) as {
         email?: unknown;
         displayName?: unknown;
+        avatarUrl?: unknown;
         error?: unknown;
       };
       if (
         !response.ok ||
         typeof payload.email !== "string" ||
-        typeof payload.displayName !== "string"
+        typeof payload.displayName !== "string" ||
+        (typeof payload.avatarUrl !== "string" && payload.avatarUrl !== null)
       ) {
         setAuthError(typeof payload.error === "string" ? payload.error : "操作失败，请重试。");
         return;
       }
-      setCurrentUser({ email: payload.email, displayName: payload.displayName });
+      setCurrentUser({
+        email: payload.email,
+        displayName: payload.displayName,
+        avatarUrl: payload.avatarUrl,
+      });
       setSelectionError(null);
       setWatchedEpisodeError(null);
       setAccountError(null);
@@ -830,6 +847,18 @@ export default function Home() {
     setWatchedEpisodes(null);
     setSelectionError(null);
     setWatchedEpisodeError(null);
+  };
+
+  const deleteAvatar = async () => {
+    if (!currentUser?.avatarUrl || !window.confirm("删除头像并恢复默认头像？")) return;
+    setAccountError(null);
+    try {
+      const response = await fetch("/api/auth/avatar", { method: "DELETE" });
+      if (!response.ok) throw new Error("Unable to delete avatar");
+      setCurrentUser({ ...currentUser, avatarUrl: null });
+    } catch {
+      setAccountError("删除头像失败，请重试。");
+    }
   };
 
   const openDetail = (
@@ -1044,9 +1073,15 @@ export default function Home() {
               {isAccountCardOpen ? (
                 <div className="account-card" id="account-card" role="group" aria-label="账号操作">
                   <div className="account-profile">
-                    <span className="account-avatar" aria-hidden="true">
-                      {currentUser.displayName.trim().slice(0, 1).toLocaleUpperCase()}
-                    </span>
+                    <AvatarEditor
+                      displayName={currentUser.displayName}
+                      avatarUrl={currentUser.avatarUrl}
+                      onAvatarChange={(avatarUrl) => {
+                        setCurrentUser({ ...currentUser, avatarUrl });
+                        setAccountError(null);
+                      }}
+                      onError={setAccountError}
+                    />
                     <span className="account-identity">
                       <strong>{currentUser.displayName}</strong>
                       <span className="account-email" title={currentUser.email}>
@@ -1055,6 +1090,16 @@ export default function Home() {
                     </span>
                   </div>
                   <span className="account-card-divider" aria-hidden="true" />
+                  {currentUser.avatarUrl ? (
+                    <button
+                      className="account-card-action account-card-action-danger"
+                      type="button"
+                      onClick={() => void deleteAvatar()}
+                    >
+                      <span className="account-action-icon" aria-hidden="true">⌫</span>
+                      <span>删除头像</span>
+                    </button>
+                  ) : null}
                   <button className="account-card-action" type="button" onClick={openPasswordChangeFromAccount}>
                     <span className="account-action-icon" aria-hidden="true">✎</span>
                     修改密码

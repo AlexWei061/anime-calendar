@@ -16,9 +16,9 @@ function getAvatarBucket() {
   return env.AVATARS;
 }
 
-async function deleteObjectBestEffort(key: string) {
+async function deleteObjectBestEffort(key: string | Promise<string>) {
   try {
-    await getAvatarBucket().delete(key);
+    await getAvatarBucket().delete(await key);
   } catch {
     // The active D1 value remains authoritative; stale versions can be cleaned later.
   }
@@ -85,7 +85,7 @@ export async function PUT(request: Request) {
 
     if (user.avatarVersion) {
       await deleteObjectBestEffort(
-        await avatarObjectKey(user.email, user.avatarVersion),
+        avatarObjectKey(user.email, user.avatarVersion),
       );
     }
     return Response.json({ avatarUrl: avatarUrl(version) });
@@ -110,7 +110,7 @@ export async function DELETE() {
   }
 
   await deleteObjectBestEffort(
-    await avatarObjectKey(user.email, user.avatarVersion),
+    avatarObjectKey(user.email, user.avatarVersion),
   );
   return Response.json({ avatarUrl: null });
 }
