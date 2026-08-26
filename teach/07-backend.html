@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 · 后端与数据库｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="07">
+<main>
+<h1>后端与数据库</h1>
+<p class="lead">上一章讲的是"死数据"（番剧排期，打包进代码）；这一章讲"活数据"——<strong>你的追番列表和逐集已看标记</strong>，它们按账号隔离、永久存在云端数据库 D1 里。核心只有三个词：<strong>请求 → 校验 → 存库</strong>。跟着一次"保存追番"从头走到尾，你就把 App Router 路由、Cookie 会话、SQL 表、Drizzle ORM 全串起来了。</p>
+<div class="chapter-meta">
+  <span class="badge hot">后端 · 数据库</span>
+  <span class="badge">前置：第 02 章 HTTP、第 05 章数据层</span>
+  <span class="badge">技术栈：Next.js App Router / Cloudflare Worker / D1 / Drizzle</span>
+  <span class="badge">核心：认证 → 白名单校验 → 原子写入</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>跟着一次"保存追番"走完全程</h2>
+<p>你在日历里勾了一堆番，点"保存"。这条"活数据"的完整旅程如下：</p>
+<div class="diagram">
+<svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e75480"/>
+    </marker>
+  </defs>
+  <rect class="dg-box accent" x="10" y="60" width="160" height="92" rx="12"/>
+  <text class="dg-title" x="90" y="86" text-anchor="middle">浏览器</text>
+  <text class="dg-text" x="90" y="106" text-anchor="middle">点“保存追番”</text>
+  <text class="dg-text" x="90" y="124" text-anchor="middle">fetch PUT</text>
+  <text class="dg-text" x="90" y="140" text-anchor="middle">/api/anime-selections</text>
+  <rect class="dg-box" x="185" y="60" width="160" height="92" rx="12"/>
+  <text class="dg-title" x="265" y="86" text-anchor="middle">Cloudflare Worker</text>
+  <text class="dg-text" x="265" y="106" text-anchor="middle">app/api/anime-selections</text>
+  <text class="dg-text" x="265" y="124" text-anchor="middle">route.ts 的 PUT()</text>
+  <text class="dg-text" x="265" y="140" text-anchor="middle">收到请求</text>
+  <rect class="dg-box" x="360" y="60" width="160" height="92" rx="12"/>
+  <text class="dg-title" x="440" y="86" text-anchor="middle">getSessionUser()</text>
+  <text class="dg-text" x="440" y="106" text-anchor="middle">读 ac_session Cookie</text>
+  <text class="dg-text" x="440" y="124" text-anchor="middle">查会话表</text>
+  <text class="dg-text" x="440" y="140" text-anchor="middle">未登录 → 401</text>
+  <rect class="dg-box" x="535" y="60" width="160" height="92" rx="12"/>
+  <text class="dg-title" x="615" y="86" text-anchor="middle">filterKnownAnimeIds</text>
+  <text class="dg-text" x="615" y="106" text-anchor="middle">白名单过滤 + 去重</text>
+  <text class="dg-text" x="615" y="124" text-anchor="middle">不在 allAnime 就丢</text>
+  <rect class="dg-box plain" x="710" y="60" width="170" height="92" rx="12"/>
+  <text class="dg-title" x="795" y="86" text-anchor="middle">数据库 D1</text>
+  <text class="dg-text" x="795" y="106" text-anchor="middle">db.batch(</text>
+  <text class="dg-text" x="795" y="124" text-anchor="middle">  delete + insert…)</text>
+  <text class="dg-text" x="795" y="140" text-anchor="middle">原子提交</text>
+  <path class="dg-edge" d="M 170 106 L 181 106" marker-end="url(#arr7)"/>
+  <path class="dg-edge" d="M 345 106 L 356 106" marker-end="url(#arr7)"/>
+  <path class="dg-edge" d="M 520 106 L 531 106" marker-end="url(#arr7)"/>
+  <path class="dg-edge" d="M 695 106 L 706 106" marker-end="url(#arr7)"/>
+  <path class="dg-edge muted" d="M 795 152 L 795 180 L 90 180 L 90 156" marker-end="url(#arr7)"/>
+  <text class="dg-edge-label" x="440" y="196" text-anchor="middle">返回 Response.json({ animeIds }) 给浏览器</text>
+</svg>
+</div>
+<p>再用步骤列表把每一步钉死（下面每一行都能在第 5、6 节找到对应源码）：</p>
+<ol class="steps">
+  <li>你点"保存"，浏览器把当前追番 ID 列表 <code>fetch</code> 一个 <code>PUT</code> 请求发到 <code>/api/anime-selections</code>。</li>
+  <li>Cloudflare Worker 收到请求，按 App Router 约定把它交给 <span class="filepath">app/api/anime-selections/route.ts</span> 导出的 <code>PUT</code> 函数。</li>
+  <li><code>getSessionUser()</code> 读 <code>ac_session</code> Cookie，哈希后查会话表；没登录 → 返回 <code>401</code>。</li>
+  <li>解析请求体 JSON（<code>request.json()</code>），解析失败 → <code>400</code>。</li>
+  <li><code>filterKnownAnimeIds()</code> 做<strong>白名单过滤</strong>（丢掉不在 <code>allAnime</code> 里的 ID）+ <strong>去重</strong>。</li>
+  <li>把"删除旧列表 + 分批插入新列表"放进<strong>同一个 <code>db.batch()</code></strong>，D1 原子提交。</li>
+  <li>返回 <code>Response.json({ animeIds })</code>，浏览器据此更新界面。</li>
+</ol>
+<div class="callout analogy"><strong>类比（评测机的三段式）：</strong>做 OJ 题时，你的程序"读入 → 计算 → 输出"；这里每个 API 也是"读请求 → 校验 → 查/写库 → 输出 JSON"。差异在于：OJ 一次评测只服务你一个人，而 Worker 同时服务成千上万人，所以每一步都要假设输入可能是<strong>恶意的</strong>——这解释了为什么校验环节那么啰嗦。</div>
+</section>
+<section id="s2">
+<h2><span class="sec-num">2</span>API 路由约定：文件系统就是路由表</h2>
+<p>Next.js App Router 的规矩一句话：<strong>文件路径 = URL，导出的函数 = HTTP 方法</strong>。不需要像传统后端那样手写一张"URL → 处理函数"的路由表，目录结构本身就是路由表。</p>
+<div class="table-wrap">
+<table>
+  <tr><th>文件</th><th>URL</th><th>导出的函数</th></tr>
+  <tr><td><span class="filepath">app/api/anime-selections/route.ts</span></td><td><code>/api/anime-selections</code></td><td><code>GET</code>（读追番列表）、<code>PUT</code>（整表保存）</td></tr>
+  <tr><td><span class="filepath">app/api/anime-episode-views/route.ts</span></td><td><code>/api/anime-episode-views</code></td><td><code>GET</code>（读已看）、<code>PUT</code>（标记/取消已看）</td></tr>
+  <tr><td><span class="filepath">app/api/auth/register/route.ts</span></td><td><code>/api/auth/register</code></td><td><code>POST</code>（注册）</td></tr>
+  <tr><td><span class="filepath">app/api/auth/login/route.ts</span></td><td><code>/api/auth/login</code></td><td><code>POST</code>（登录）</td></tr>
+</table>
+</div>
+<p>约定细节：</p>
+<ul>
+  <li>文件必须叫 <code>route.ts</code>（不是 <code>page.tsx</code>——那个是渲染网页的，<code>route.ts</code> 是纯 API）。</li>
+  <li>导出的函数名必须大写，对应 HTTP 方法：<code>export async function GET()</code>、<code>export async function PUT(request: Request)</code> 等。</li>
+  <li>函数返回一个 <code>Response</code>（本项目统一用 <code>Response.json(...)</code>）。</li>
+</ul>
+<div class="callout analogy"><strong>类比（文件系统）：</strong>这和 <code>#include</code> 按路径找头文件一样——<code>app/api/foo/route.ts</code> 就是"URL <code>/api/foo</code> 的处理器"，路由表自动从目录树长出来，不用你维护任何注册代码。</div>
+</section>
+<section id="s3">
+<h2><span class="sec-num">3</span>D1 与 SQL 速成 + 四张表</h2>
+<p><strong>D1</strong> 是 Cloudflare 的托管 SQLite：一个能跑 SQL 的关系型数据库。SQL 那些术语，用你熟悉的类比一分钟说清：</p>
+<dl class="terms">
+  <dt>表 <span class="en">table</span></dt>
+  <dd>一张二维表格，类似 C++ 里 <code>vector&lt;struct&gt;</code> 的"struct 定义"——规定每行有哪些列。</dd>
+  <dt>行 <span class="en">row</span></dt>
+  <dd>一条记录，相当于 <code>struct</code> 的一个实例。</dd>
+  <dt>列 <span class="en">column</span></dt>
+  <dd>记录的一个字段，相当于 <code>struct</code> 里的成员变量。</dd>
+  <dt>主键 <span class="en">primary key</span></dt>
+  <dd>唯一标识一行的字段（组）。像 <code>unordered_map</code> 的 key，同一张表里不允许两行主键相同。</dd>
+  <dt>复合主键 <span class="en">composite key</span></dt>
+  <dd>用<strong>多个列</strong>合起来当唯一标识。相当于 <code>pair&lt;A,B&gt;</code> 作为 map 的 key。</dd>
+</dl>
+<p>本项目四张表，全写在 <span class="filepath">db/schema.ts</span>：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">db/schema.ts</span>（全文）</div>
+<pre><code class="lang-ts">import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+export const users = sqliteTable("users", {
+  email: text("email").primaryKey(),
+  passwordHash: text("password_hash").notNull(),
+  displayName: text("display_name").notNull(),
+  avatarVersion: text("avatar_version"),
+  createdAt: integer("created_at").notNull(),
+});
+export const authSessions = sqliteTable("auth_sessions", {
+  tokenHash: text("token_hash").primaryKey(),
+  userEmail: text("user_email").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+});
+export const animeSelections = sqliteTable(
+  "anime_selections",
+  {
+    userEmail: text("user_email").notNull(),
+    animeId: text("anime_id").notNull(),
+  },
+  (table) =&gt; [primaryKey({ columns: [table.userEmail, table.animeId] })],
+);
+
+export const animeEpisodeViews = sqliteTable(
+  "anime_episode_views",
+  {
+    userEmail: text("user_email").notNull(),
+    animeId: text("anime_id").notNull(),
+    episodeStart: integer("episode_start").notNull(),
+    episode: integer("episode").notNull(),
+  },
+  (table) =&gt; [
+    primaryKey({
+      columns: [table.userEmail, table.animeId, table.episodeStart, table.episode],
+    }),
+  ],
+);</code></pre>
+</div>
+<div class="table-wrap">
+<table>
+  <tr><th>表</th><th>主键</th><th>存什么</th></tr>
+  <tr><td><code>users</code></td><td><code>email</code>（单列）</td><td>账号：邮箱、密码哈希、昵称、头像版本、注册时间</td></tr>
+  <tr><td><code>auth_sessions</code></td><td><code>token_hash</code>（单列）</td><td>登录会话：会话令牌的哈希、所属邮箱、过期时间</td></tr>
+  <tr><td><code>anime_selections</code></td><td><code>user_email + anime_id</code>（复合）</td><td>追番：某个用户追了哪部番，一行一条</td></tr>
+  <tr><td><code>anime_episode_views</code></td><td><code>user_email + anime_id + episode_start + episode</code>（四列复合）</td><td>已看：某个用户看了某部番的某单集，一行一条</td></tr>
+</table>
+</div>
+<p>两个注意点：</p>
+<ul>
+  <li><code>anime_selections</code> 的复合主键保证"同一个用户 + 同一部番"最多出现一行——主键重复的 insert 会被拒。</li>
+  <li><code>anime_episode_views</code> 的主键里 <code>episode_start</code> 和 <code>episode</code> 通常相等（单集），但旧版遗留过"连播范围"记录（<code>start &lt; episode</code>），所以两列都得进主键。第 6 节会看到它怎么被迁移。</li>
+</ul>
+</section>
+<section id="s4">
+<h2><span class="sec-num">4</span>Drizzle ORM：用 TypeScript 描述表，再生成 SQL 迁移</h2>
+<p>你看到的 <span class="filepath">db/schema.ts</span> 不是 SQL，而是 Drizzle 的<strong>表定义代码</strong>。它做两件事：</p>
+<ol class="steps">
+  <li><strong>描述结构</strong>：<code>sqliteTable("users", {...})</code> 用 TS 对象声明"表叫什么、有哪些列、什么类型、谁当主键"。</li>
+  <li><strong>生成迁移</strong>：跑 <span class="kbd">npm run db:generate</span>，drizzle-kit 把 schema 和上一次的 schema 对比，差量生成 SQL 迁移文件写到 <span class="filepath">drizzle/</span>。</li>
+</ol>
+<p>迁移文件是数据库的"<strong>提交历史</strong>"：每个文件是一次 schema 变更，按顺序执行就能从空库一步步长成现在的结构。所以：</p>
+<div class="callout danger"><strong>改表的标准流程：</strong>改 <span class="filepath">db/schema.ts</span> → 跑 <span class="kbd">npm run db:generate</span> → <strong>人工检查新迁移文件</strong> → 连同 schema 一起提交。禁止手写与 schema 不一致的 SQL——一切以 schema.ts 为唯一真相源。</div>
+<p>运行时怎么拿到数据库连接？看 <span class="filepath">db/index.ts</span>：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">db/index.ts</span></div>
+<pre><code class="lang-ts">import { drizzle } from "drizzle-orm/d1";
+import * as schema from "./schema";
+
+export async function getDb() {
+  const { env } = await import("cloudflare:workers");
+  if (!env.DB) {
+    throw new Error(
+      "Cloudflare D1 binding `DB` is unavailable. ..."
+    );
+  }
+
+  return drizzle(env.DB, { schema });
+}</code></pre>
+</div>
+<p><code>getDb()</code> 通过 Cloudflare 的 <code>cloudflare:workers</code> 模块拿到 <code>env.DB</code> 这个<strong>绑定</strong>（binding），再交给 Drizzle 包一层。之后代码里就能用接近 SQL、但由 TS 类型保护的写法查库。</p>
+<div class="callout analogy"><strong>类比（ORM = 类型安全的查询构造器）：</strong>直接用 SQL 字符串写查询，就像用 <code>sprintf</code> 拼 SQL——拼错了要到运行时才知道。Drizzle 用函数链（<code>.select().from().where()</code>）代替字符串拼接，编译器能帮你查错。</div>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>精读 anime-selections/route.ts</h2>
+<p>这是"保存追番"的后端实现，整段读一遍。先看 GET（读列表）：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/anime-selections/route.ts</span> · GET</div>
+<pre><code class="lang-ts">const validAnimeIds = new Set(allAnime.map(({ id }) =&gt; id));
+
+export async function GET() {
+  const user = await currentUser();
+  if (!user) {
+    return Response.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  try {
+    const rows = await (await getDb())
+      .select({ animeId: animeSelections.animeId })
+      .from(animeSelections)
+      .where(eq(animeSelections.userEmail, user.email));
+    return Response.json({
+      animeIds: filterKnownAnimeIds(rows.map(({ animeId }) =&gt; animeId), validAnimeIds),
+    });
+  } catch {
+    return Response.json({ error: "Unable to load anime selections" }, { status: 500 });
+  }
+}</code></pre>
+</div>
+<ul>
+  <li>第一行把 <code>allAnime</code> 里所有合法 id 装进 <code>Set</code>——这就是"白名单"。</li>
+  <li>开头先 <code>currentUser()</code>（即 <code>getSessionUser()</code>），没登录就 401，绝不往下走。</li>
+  <li>查询只查 <code>user.email</code> 自己的行——<strong>账号隔离</strong>，别人看不到你的追番。</li>
+  <li>返回前再 <code>filterKnownAnimeIds</code> 过滤一遍：如果库里存着某部<strong>后来被删掉</strong>的番，它不会重新出现在你的列表里。</li>
+</ul>
+<p>再看 PUT（保存列表）：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/anime-selections/route.ts</span> · PUT</div>
+<pre><code class="lang-ts">export async function PUT(request: Request) {
+  const user = await currentUser();
+  if (!user) {
+    return Response.json({ error: "Sign in required" }, { status: 401 });
+  }
+
+  let animeIds: string[];
+  try {
+    const payload = (await request.json()) as { animeIds?: unknown };
+    animeIds = filterKnownAnimeIds(payload.animeIds, validAnimeIds);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid animeIds";
+    return Response.json({ error: message }, { status: 400 });
+  }
+
+  try {
+    const db = await getDb();
+    await db.batch([
+      db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)),
+      ...selectionInsertBatches(animeIds).map((batch: string[]) =&gt;
+        db.insert(animeSelections).values(batch.map((animeId) =&gt; ({ userEmail: user.email, animeId }))),
+      ),
+    ]);
+    return Response.json({ animeIds });
+  } catch {
+    return Response.json({ error: "Unable to save anime selections" }, { status: 500 });
+  }
+}</code></pre>
+</div>
+<ul>
+  <li><strong>白名单 + 去重</strong>：<code>filterKnownAnimeIds</code> 既丢掉未知 id，也 <code>[...new Set(value)]</code> 去重。</li>
+  <li><strong>整表替换</strong>：<code>db.delete(...)</code> 先删掉该用户旧列表，再插入新列表。</li>
+  <li><strong>原子提交</strong>：删除和所有插入批次都塞进<strong>同一个 <code>db.batch()</code></strong>。要么全成功，要么全失败。</li>
+</ul>
+<p>分批逻辑在 <span class="filepath">lib/anime-selections.js</span>：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/anime-selections.js</span> · selectionInsertBatches</div>
+<pre><code class="lang-js">export function selectionInsertBatches(animeIds) {
+  return Array.from({ length: Math.ceil(animeIds.length / 50) }, (_, index) =&gt;
+    animeIds.slice(index * 50, (index + 1) * 50),
+  );
+}</code></pre>
+</div>
+<div class="callout warn"><strong>为什么每批最多 50 条：</strong>D1 单条 SQL 语句最多绑定 100 个参数。每条追番记录要绑定 <code>email</code> + <code>animeId</code> 两个参数，所以一批最多 100 ÷ 2 = <strong>50 条</strong>。超过就拆成多批。</div>
+<div class="callout danger"><strong>为什么必须同一个 <code>db.batch()</code>：</strong>"先删后插"分两次做，如果中间插入失败，就会<strong>清空用户原有追番</strong>。这像银行转账：<strong>不能"先扣钱再打款"分两步</strong>——扣完钱、打款失败，钱就丢了。放进同一个事务（batch）里，要么两步都成，要么一起回滚。</div>
+</section>
+
+<section id="s6">
+<h2><span class="sec-num">6</span>精读 anime-episode-views/route.ts</h2>
+<p>已看标记和追番几乎同构：同样先认证、同样写 D1。区别在于<strong>校验更严</strong>，因为单集标记是精细数据，且要兼容旧版"连播范围"记录。</p>
+<p>先看纯函数校验链（在 <span class="filepath">lib/anime-episode-views.js</span>）：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/anime-episode-views.js</span> · validateEpisodeView（单条校验）</div>
+<pre><code class="lang-js">export function validateEpisodeView(value, animeById) {
+  if (!value || typeof value !== "object") {
+    throw new TypeError("watched episode must be an object");
+  }
+
+  const { animeId, episodeStart, episode } = value;
+  if (typeof animeId !== "string") {
+    throw new TypeError("animeId must be a string");
+  }
+
+  const anime = animeById.get(animeId);
+  if (!anime) {
+    throw new RangeError("Unknown anime ID: " + animeId);
+  }
+  if (
+    !Number.isInteger(episodeStart) ||
+    !Number.isInteger(episode) ||
+    episodeStart &lt; 1 ||
+    episode &lt; episodeStart ||
+    episode &gt; anime.episodeCount ||
+    episodeStart !== episode
+  ) {
+    throw new RangeError("Invalid episode range");
+  }
+
+  return { animeId, episodeStart, episode };
+}</code></pre>
+</div>
+<p>校验链（<code>validateEpisodeViewBatch</code> 循环调用上面的单条校验）一共挡住这些非法输入：</p>
+<ul>
+  <li><code>animeId</code> 必须在 <code>allAnime</code> 里（白名单）。</li>
+  <li>必须是<strong>单集</strong>：<code>episodeStart === episode</code>（旧版允许 <code>start &lt; episode</code> 的连播范围，新版只收单集）。</li>
+  <li>范围合法：<code>1 ≤ episode ≤ anime.episodeCount</code>。</li>
+  <li>去重（同 key 只保留一条），且一批最多 25 条。</li>
+</ul>
+<p>再看 route.ts 的 PUT 核心：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/anime-episode-views/route.ts</span> · PUT（标记已看）</div>
+<pre><code class="lang-ts">export async function PUT(request: Request) {
+  const user = await getSessionUser();
+  if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
+
+  let watchedEpisodes: { animeId: string; episodeStart: number; episode: number }[];
+  let watched: boolean;
+  try {
+    const payload = (await request.json()) as { watchedEpisodes?: unknown; watched?: unknown };
+    watchedEpisodes = validateEpisodeViewBatch(payload.watchedEpisodes, animeById);
+    if (typeof payload.watched !== "boolean") throw new TypeError("watched must be a boolean");
+    watched = payload.watched;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid watched episode";
+    return Response.json({ error: message }, { status: 400 });
+  }
+
+  try {
+    const db = await getDb();
+    if (watched) {
+      await db.batch([
+        db
+          .insert(animeEpisodeViews)
+          .values(
+            watchedEpisodes.map((watchedEpisode) =&gt; ({ userEmail: user.email, ...watchedEpisode })),
+          )
+          .onConflictDoNothing(),
+      ]);
+    }
+    // watched === false 时：按主键逐条 delete（代码略）
+    return Response.json({ watchedEpisodes, watched });
+  } catch {
+    return Response.json({ error: "Unable to save watched episode" }, { status: 500 });
+  }
+}</code></pre>
+</div>
+<ul>
+  <li><code>onConflictDoNothing()</code>：主键冲突（这条已看过）就<strong>跳过不报错</strong>——这就是"<strong>幂等</strong>"，同一请求发两遍结果一样，不会产生重复行。</li>
+  <li><code>watched === false</code> 时走删除分支（源码里 <code>deleteWatchedEpisode</code> 按主键四列逐条删），这里省略。</li>
+  <li>返回体只回显服务器实际认可的值，<strong>不信任浏览器给的身份</strong>——<code>userEmail</code> 始终来自会话，不是请求体。</li>
+</ul>
+<p>GET 里还有个"历史包袱"处理：旧版本允许把"连播范围"（比如 <code>episodeStart: 1, episode: 3</code>）存成一行。读取时，<code>isLegacyEpisodeViewForAnime</code> 认出这些旧记录，用 <code>episodeViewUnitsForRange</code> 把它们<strong>展开成单集</strong>，写回一批单集记录，并删掉旧的范围行——一次读取就把老数据<strong>原地迁移</strong>成新格式。这些纯函数都在 <span class="filepath">lib/anime-episode-views.js</span>，route.ts 只是调用它们。</p>
+<div class="callout tip"><strong>为什么"写入幂等"很重要：</strong>网络不可靠，浏览器可能重发同一个请求。幂等保证重发不会把"已看"写坏。这跟竞赛里"重复提交同一答案不会改变结果"是一个道理。</div>
+</section>
+
+<section id="s7">
+<h2><span class="sec-num">7</span>HTTP 状态码 + 本地开发数据库</h2>
+<p>后端和浏览器之间靠状态码沟通"结果如何"。本项目用到的状态码：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>状态码</th><th>含义</th><th>本项目哪里用</th></tr>
+  <tr><td><code>200</code></td><td>成功</td><td>读取、保存、标记成功</td></tr>
+  <tr><td><code>201</code></td><td>创建成功</td><td>注册新账号</td></tr>
+  <tr><td><code>400</code></td><td>请求参数不合法</td><td>body 不是合法 JSON、id 不在白名单、集数越界</td></tr>
+  <tr><td><code>401</code></td><td>未登录 / 凭据错误</td><td><code>getSessionUser()</code> 返回 null</td></tr>
+  <tr><td><code>409</code></td><td>冲突</td><td>注册时邮箱已被占用</td></tr>
+  <tr><td><code>500</code></td><td>服务器内部错误</td><td>数据库读写异常等 catch 分支</td></tr>
+</table>
+</div>
+<p>响应格式全站统一：<code>Response.json({ ... }, { status })</code>——第一个参数是 JSON 对象，第二个参数指定状态码。</p>
+<p>最后是"本地开发的数据库从哪来"。开发时没有真的 Cloudflare D1，靠配置模拟：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">.openai/hosting.json</span> · 逻辑资源声明（省略无关的 project_id）</div>
+<pre><code class="lang-json">{
+  "d1": "DB",
+  "r2": "AVATARS"
+}</code></pre>
+</div>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">vite.config.ts</span> · localBindingConfig（节选）</div>
+<pre><code class="lang-ts">const { d1, r2 } = hostingConfig as { d1?: string; r2?: string };
+
+const localBindingConfig = {
+  main: "./worker/index.ts",
+  compatibility_flags: ["nodejs_compat"],
+  d1_databases: d1
+    ? [
+        {
+          binding: d1,
+          database_name: "site-creator-d1",
+          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
+        },
+      ]
+    : [],
+};</code></pre>
+</div>
+<ul>
+  <li><span class="filepath">.openai/hosting.json</span> 声明逻辑资源名：D1 绑定叫 <code>DB</code>（和 <code>getDb()</code> 里读的 <code>env.DB</code> 对上）。</li>
+  <li><span class="filepath">vite.config.ts</span> 的 <code>localBindingConfig</code> 用 wrangler/miniflare 在本地<strong>模拟</strong>这个 D1 绑定，<code>database_id</code> 只是占位符（全 0 的 UUID）。</li>
+  <li>本地数据落在 <span class="filepath">.wrangler/</span>，<strong>不要提交</strong>；真实数据库 ID 和密钥只留在被忽略的 <span class="filepath">.env*</span> 里。</li>
+</ul>
+<div class="callout warn"><strong>记住绑定名要一致：</strong><code>hosting.json</code> 的 <code>d1</code>、<code>localBindingConfig</code> 的 <code>binding</code>、<code>getDb()</code> 的 <code>env.DB</code> 三处必须都是 <code>DB</code>。任何一处改名，本地立刻报 "D1 binding DB is unavailable"。</div>
+</section>
+
+<section id="s8">
+<h2><span class="sec-num">8</span>本章测验</h2>
+
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">1. PUT 保存追番时，为什么 <code>delete</code> 旧列表和 <code>insert</code> 新列表必须放进同一个 <code>db.batch()</code>？</p>
+  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. 这样代码更短、跑得更快</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. 保证"整表替换"原子：分两步做，插入失败会清空用户原有追番</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. D1 规定 delete 和 insert 必须写在同一个数组里</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. 为了绕过"每批 50 条"的限制</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p><code>db.batch()</code> 是一个事务：要么全部执行，要么全部回滚。若"先删后插"分成两次独立提交，中途插入失败就会留下"已删光、没插进去"的空列表。类比银行转账：不能先扣钱再打款分两步。</p></div>
+</form>
+
+<form class="quiz" data-answer="A,B,C">
+  <p class="quiz-q">2.（多选）浏览器发来请求后，API 端必须先做的检查/处理有哪些？</p>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="A"><span>A. 调 <code>getSessionUser()</code> 校验会话，未登录返回 401</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="B"><span>B. 解析 body JSON，失败返回 400</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="C"><span>C. 用 <code>filterKnownAnimeIds</code> 白名单过滤 + 去重</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="D"><span>D. 直接信任请求体里的 <code>userEmail</code>，拿它当用户身份</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>A、B、C 都是必须的。D 是错的：<strong>用户身份只能来自服务端会话（<code>getSessionUser()</code>），绝不信浏览器传来的邮箱</strong>——否则任何人都能伪造请求读写别人的追番。这是"账号隔离"的根基。</p></div>
+</form>
+
+<form class="quiz" data-answer="A">
+  <p class="quiz-q">3. 追番插入为什么要按每批最多 50 条分批（<code>selectionInsertBatches</code>）？</p>
+  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. D1 单条语句最多 100 个绑定参数，每条绑 email + animeId 两个参数，所以一批最多 50</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 50 是 Drizzle 库的默认上限</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. HTTP 请求体有大小限制，只能装 50 条</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 为了让界面看起来更整齐</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>D1 对单条 SQL 的<strong>绑定参数有 100 个的上限</strong>。每条追番记录绑定 <code>email</code> 和 <code>animeId</code> 两个参数，因此一批最多 100 ÷ 2 = 50 条。<code>selectionInsertBatches</code> 用 <code>Math.ceil(n / 50)</code> 算出批数，逐批 slice。</p></div>
+</form>
+</section>
+</main>
+</body>
+</html>

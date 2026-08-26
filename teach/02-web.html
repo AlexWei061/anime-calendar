@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 · 网页是怎么跑起来的｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="02">
+<main>
+<h1>网页是怎么跑起来的：从“双击打开”到“前后端对话”</h1>
+<p class="lead">你双击 <span class="filepath">index.html</span> 能看网页，但为什么番剧日历要 <span class="kbd">npm run dev</span> 启动？这一章把浏览器、HTTP、前后端、数据库这些“黑话”翻译成竞赛选手听得懂的话。</p>
+<div class="chapter-meta">
+  <span class="badge hot">原理</span>
+  <span class="badge">阶段一 · 补地基</span>
+  <span class="badge">预计 40～50 分钟</span>
+  <span class="badge">前置：第 01 章</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>浏览器是什么：三件套并行的“解释器”</h2>
+<p>浏览器就是一个能运行“网页程序”的运行时，它同时读懂三种语言，各管一摊：</p>
+<div class="grid grid3">
+  <div class="card">
+    <div class="num">HTML</div>
+    <h4>内容（骨头）</h4>
+    <p>页面里有什么：标题、按钮、输入框、链接。它只负责“结构”，不负责好看。</p>
+  </div>
+  <div class="card">
+    <div class="num">CSS</div>
+    <h4>长相（皮肤）</h4>
+    <p>长什么样：颜色、间距、圆角、布局。本项目集中在 <span class="filepath">app/globals.css</span>。</p>
+  </div>
+  <div class="card">
+    <div class="num">JS</div>
+    <h4>行为（肌肉）</h4>
+    <p>干什么：点击后跳转、弹出详情、发请求改数据。第 01 章刚学的那门语言。</p>
+  </div>
+</div>
+<div class="callout analogy"><strong>类比：</strong>HTML 是 <code>struct</code> 里声明了哪些字段（内容结构）；CSS 是给这些字段渲染时的格式（显示样式）；JS 是操作这些字段的逻辑（行为）。三者不是先后执行，而是<strong>同时加载、互相配合</strong>——浏览器一边解析 HTML 搭骨架，一边读 CSS 上色，一边跑 JS 加行为。</div>
+</section>
+
+<section id="s2">
+<h2><span class="sec-num">2</span>HTML 骨架与常用标签（CSS 一句话带过）</h2>
+<p>一个网页文件的最小骨架长这样：</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">index.html</span> 最小骨架</div><pre><code class="lang-js">&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;页面标题&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;大标题&lt;/h1&gt;
+  &lt;p&gt;一段文字，&lt;a href="style.css"&gt;这是个链接&lt;/a&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+<p>标签（tag）就是一对尖括号里的名字：<code>&lt;p&gt;…&lt;/p&gt;</code> 是“段落”，<code>&lt;h1&gt;…&lt;/h1&gt;</code> 是“一级标题”。大多数标签成对出现，中间夹内容。常用标签就这几个：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>标签</th><th>作用</th><th>备注</th></tr>
+  <tr><td><code>&lt;h1&gt;</code>～<code>&lt;h6&gt;</code></td><td>标题，数字越小越重要</td><td>页面主标题用 <code>h1</code></td></tr>
+  <tr><td><code>&lt;p&gt;</code></td><td>段落文字</td><td>本文每个自然段都是它</td></tr>
+  <tr><td><code>&lt;a href="..."&gt;</code></td><td>链接，<code>href</code> 是要跳的地址</td><td>点它跳到另一页</td></tr>
+  <tr><td><code>&lt;div&gt;</code></td><td>无意义的“盒子”，用来分组布局</td><td>网页里满屏都是它</td></tr>
+  <tr><td><code>&lt;button&gt;</code></td><td>按钮</td><td>“提交”“追番”都是它</td></tr>
+  <tr><td><code>&lt;input&gt;</code></td><td>输入框</td><td>登录框、查询框</td></tr>
+</table>
+</div>
+<p>尖括号里的 <code>href</code>、<code>class</code>、<code>id</code> 叫<strong>属性</strong>，给标签附加信息。<strong>CSS 两句话带过</strong>：选择器 <code>.class</code>（点号）/<code>#id</code>（井号）用来“选中哪些元素”；盒模型指每个元素都是“内容 + 内边距 + 边框 + 外边距”四层盒子。本项目样式都在 <span class="filepath">app/globals.css</span>，先知道存在即可，第 03 章再细看。</p>
+</section>
+
+<section id="s3">
+<h2><span class="sec-num">3</span>DOM 树：浏览器把 HTML 变成一棵树</h2>
+<p>浏览器读完 HTML，会把它解析成一棵<strong>树</strong>——这就是 DOM（Document Object Model，文档对象模型）。每个标签是树上的一个节点，嵌套关系就是父子关系。</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">概念示意</span> 标签嵌套 → 树</div><pre><code class="lang-js">body
+ ├─ h1  "大标题"
+ └─ div
+     ├─ p  "一段文字"
+     └─ button  "点我"</code></pre></div>
+<div class="callout analogy"><strong>类比：</strong>这和竞赛里把 <code>(1+2)*3</code> 解析成表达式树一模一样——<code>*</code> 是根，左子树是 <code>+</code>。只是这里树上的节点不是运算符，而是标签和文字。</div>
+<p>重点来了：JS 通过 <strong>DOM API</strong> 操作这棵树，就能“改页面”。你看到的“点击后弹详情”“进度条变长”，本质都是 JS 找到某个节点、改它的内容或样式：</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">Console 里可试</span> 用 DOM API 改页面</div><pre><code class="lang-js">const h1 = document.querySelector("h1");   // 在树里找到第一个 h1 节点
+h1.textContent = "改了标题";                // 改它的文字，页面立刻变
+
+const btn = document.querySelector("button");
+btn.addEventListener("click", () =&gt; alert("被点了")); // 给节点挂一个点击行为</code></pre></div>
+<p>你不需要背这些 API——记住“页面 = 一棵树，JS 可以增删改查树上的节点”就够。React（第 03 章）会把这套手动操作再包一层，让你改“状态”而不是手动改节点。</p>
+</section>
+
+<section id="s4">
+<h2><span class="sec-num">4</span>HTTP：浏览器和服务器之间的“评测协议”</h2>
+<div class="callout analogy"><strong>核心类比（务必记住）：</strong>你给 OJ 交代码，本质是：<strong>你发请求</strong>（代码 + 题目号）→ 评测机处理 → <strong>返回响应</strong>（AC / WA / CE / TLE）。HTTP 就是浏览器和服务器之间这套“评测协议”：浏览器发<strong>请求</strong>，服务器回<strong>响应</strong>，双方都按固定格式来。</div>
+<p>一个 <strong>请求（request）</strong> 由四部分组成：<strong>方法</strong>（你想干什么）+ <strong>URL</strong>（对哪个资源）+ <strong>头部</strong>（附加信息，如登录凭证）+ 可选的<strong>正文</strong>（比如要提交的数据）。方法对应“增删改查”：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>方法</th><th>含义</th><th>项目里的例子</th></tr>
+  <tr><td><code>GET</code></td><td>读数据</td><td>读我的追番列表</td></tr>
+  <tr><td><code>POST</code></td><td>新建</td><td>注册、登录</td></tr>
+  <tr><td><code>PUT</code></td><td>整体替换</td><td>整表保存我的追番列表</td></tr>
+  <tr><td><code>DELETE</code></td><td>删除</td><td>删除会话（退出登录）</td></tr>
+</table>
+</div>
+<p>一个 <strong>响应（response）</strong> 最关键是开头三位数的<strong>状态码</strong>——就像评测结果：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>状态码</th><th>含义</th><th>对 OJ 的类比</th></tr>
+  <tr><td><code>200</code></td><td>成功</td><td>AC</td></tr>
+  <tr><td><code>301</code></td><td>资源搬走了，去新地址</td><td>—（跳转）</td></tr>
+  <tr><td><code>400</code></td><td>你发的参数格式不对</td><td>CE / 格式错误</td></tr>
+  <tr><td><code>401</code></td><td>未登录（没带会话）</td><td>—（本项目 API 常返回它）</td></tr>
+  <tr><td><code>404</code></td><td>请求的资源不存在</td><td>题目编号不存在</td></tr>
+  <tr><td><code>409</code></td><td>与当前状态冲突</td><td>—（重复提交等）</td></tr>
+  <tr><td><code>500</code></td><td>服务器自己出错</td><td>评测机挂了</td></tr>
+</table>
+</div>
+<p>响应正文里放的数据，绝大多数是 <strong>JSON</strong>——一种跨语言的纯文本数据格式，就是“Python 的 <code>dict</code> 写成字符串”，键值对、可以嵌套数组。任何语言都能解析它，所以浏览器、服务器、数据库之间用 JSON 交流。你会在本项目 <span class="filepath">app/api/</span> 里看到满屏的 <code>Response.json(...)</code>：</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">响应正文示例</span> JSON</div><pre><code class="lang-json">{ "animeIds": ["yuc-1", "history-2025-3"] }</code></pre></div>
+<p>你也能用 <code>curl</code> 手动发一个请求、亲眼看看响应（和 OJ 用命令行交题一个思路）：</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">终端</span> 手动发请求</div><pre><code class="lang-bash">curl -i https://anime-calendar.example.com/api/anime-selections
+# 响应头第一行就是状态码，如 HTTP/1.1 401 Unauthorized（未登录）</code></pre></div>
+<div class="callout tip"><strong>认路诀窍：</strong>本项目的 API 路径和文件路径一一对应——<span class="filepath">app/api/anime-selections/route.ts</span> 处理的就是 <code>/api/anime-selections</code> 这个 URL，<span class="filepath">app/api/auth/login/route.ts</span> 处理 <code>/api/auth/login</code>。想找某个接口的逻辑，顺着 URL 找同名文件夹即可。</div>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">小测：沿用“交代码给 OJ”的类比，HTTP 状态码 <code>404</code> 最接近下面哪种情况？</p>
+  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. 程序运行超时（TLE）</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. 你提交了一个不存在的题目编号，OJ 说“找不到这道题”</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. 编译错误（CE）</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. 答案正确（AC）</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p><code>404 Not Found</code> 的意思是“你请求的资源不存在”——URL 打错、接口路径写错、资源被删时出现。类比 OJ，就是你提交的<strong>题目编号不存在</strong>。AC 对应 <code>200</code>，CE/参数错对应 <code>400</code>，超时没有完全对应但接近 <code>504</code>（网关超时）。</p></div>
+</form>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>JSON、Cookie、前后端与数据库的分工</h2>
+<p>JSON 就三条规则：<strong>花括号包对象、方括号包数组、键值对用冒号</strong>。值可以是字符串、数字、布尔、<code>null</code>、或再嵌套对象/数组：</p>
+<div class="codeblock"><div class="codehead"><span class="filepath">一部番的 JSON</span> 键值对 + 嵌套</div><pre><code class="lang-json">{
+  "id": "yuc-1",
+  "title": "某番",
+  "episodes": 12,
+  "following": true,
+  "staff": { "director": "某人" }
+}</code></pre></div>
+<div class="callout analogy"><strong>类比：</strong>JSON ≈ Python 的 <code>dict</code>/<code>list</code> 组合的“文本化”。你用 <code>json.loads()</code> 把字符串变回 <code>dict</code>；浏览器里 JS 用 <code>res.json()</code> 干同一件事（第 01 章见过）。</div>
+<p><strong>Cookie 一句话：</strong>服务器让浏览器贴在身上的“名牌贴纸”——登录后服务器在响应里发一块小数据（比如会话令牌），浏览器存下来，之后每次请求自动带回去，服务器一看就知道“这是谁”。本项目第 08 章会用它做登录态。现在只需记住：<strong>HTTP 本身不记人，靠 Cookie 认人</strong>。</p>
+<p>那么一个“追番”动作，三台“机器”怎么分工？</p>
+<div class="diagram">
+<svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e75480"/>
+    </marker>
+  </defs>
+  <rect class="dg-box accent" x="20" y="40" width="200" height="100" rx="12"/>
+  <text class="dg-title" x="120" y="68" text-anchor="middle">浏览器（你这端）</text>
+  <text class="dg-text" x="120" y="92" text-anchor="middle">日历界面 app/page.tsx</text>
+  <text class="dg-text" x="120" y="110" text-anchor="middle">点“追番”→ 发请求</text>
+  <rect class="dg-box" x="300" y="40" width="200" height="100" rx="12"/>
+  <text class="dg-title" x="400" y="68" text-anchor="middle">Cloudflare Worker</text>
+  <text class="dg-text" x="400" y="92" text-anchor="middle">服务器 · app/api/</text>
+  <text class="dg-text" x="400" y="110" text-anchor="middle">校验登录 · 读写数据</text>
+  <rect class="dg-box plain" x="580" y="40" width="160" height="100" rx="12"/>
+  <text class="dg-title" x="660" y="68" text-anchor="middle">数据库 D1</text>
+  <text class="dg-text" x="660" y="92" text-anchor="middle">账号 · 会话</text>
+  <text class="dg-text" x="660" y="110" text-anchor="middle">追番 · 已看</text>
+  <path class="dg-edge" d="M 220 90 L 292 90" marker-end="url(#arr)"/>
+  <text class="dg-edge-label" x="256" y="80" text-anchor="middle">HTTP 请求</text>
+  <path class="dg-edge" d="M 500 90 L 572 90" marker-end="url(#arr)"/>
+  <text class="dg-edge-label" x="536" y="80" text-anchor="middle">查询/写入</text>
+  <path class="dg-edge muted" d="M 292 160 L 220 160" marker-end="url(#arr)"/>
+  <path class="dg-edge muted" d="M 572 160 L 500 160" marker-end="url(#arr)"/>
+  <text class="dg-edge-label" x="256" y="150" text-anchor="middle">响应 JSON</text>
+</svg>
+</div>
+<p>一句话分工：<strong>浏览器负责“画”和“交互”，Worker 负责“处理请求 + 把关”，D1 负责“长期记住数据”</strong>。注意番剧排期（<span class="filepath">data/</span>）是打包进代码的静态数据，<strong>不在数据库里</strong>；数据库只存你的账号、追番、已看。</p>
+<form class="quiz" data-answer="A,C">
+  <p class="quiz-q">小测（多选）：关于本项目浏览器 / Worker / D1 的分工，哪些说法正确？</p>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="A"><span>A. 浏览器负责画界面、响应用户点击，不直接读写数据库</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="B"><span>B. 数据库 D1 负责渲染日历界面</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="C"><span>C. Worker（服务器）处理 API 请求、校验登录，再读写数据库</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="D"><span>D. 番剧排期数据存在 D1 里，每次打开页面现查</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>正确分工：浏览器画界面（A 对），Worker 处理请求并读写数据库（C 对）。数据库不渲染界面（B 错）；番剧排期是打包进代码的静态数据，数据库只存个人数据（D 错）。</p></div>
+</form>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">小测：JSON 最准确的描述是？</p>
+  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. 一种只能在浏览器里运行的编程语言</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 一种跨语言的纯文本数据格式，键值对 + 数组，≈ dict 的文本化</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. 一种数据库软件</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 一种 CSS 样式写法</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>JSON 是<strong>数据格式</strong>，不是语言也不是数据库。它的语法就是“键值对 + 数组”，和 Python 的 <code>dict</code>/<code>list</code> 一一对应，任何语言都能读写，所以用来在浏览器、服务器、数据库之间传数据。</p></div>
+</form>
+</section>
+
+<section id="s6">
+<h2><span class="sec-num">6</span>静态网页 vs 现代应用：为什么本教程双击就能开，番剧日历不行</h2>
+<p>本教学站是<strong>纯静态</strong>的：几个 HTML + CSS + JS，浏览器直接读就行，双击 <span class="filepath">teach/index.html</span> 就能看，不需要任何服务器。但番剧日历是<strong>现代 Web 应用</strong>，它至少需要三件静态页面没有的东西：</p>
+<ol class="steps">
+  <li><strong>构建（build）</strong>：<span class="filepath">.tsx</span>/<span class="filepath">.ts</span> 要先编译成浏览器能跑的 JS，React 组件要打包——所以要先 <span class="kbd">npm run dev</span> 或 <span class="kbd">npm run build</span>。</li>
+  <li><strong>服务器渲染 + API</strong>：登录、读追番这些必须有个服务器（Cloudflare Worker）在跑，<span class="filepath">app/api/</span> 里的接口才能响应。</li>
+  <li><strong>数据库</strong>：你的账号和已看记录要永久存，得连数据库 D1。</li>
+</ol>
+<p>最后拆一个 URL，你会在地址栏和代码里反复见到它：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>URL 片段</th><th>名称</th><th>例子里的值</th><th>含义</th></tr>
+  <tr><td><code>https://</code></td><td>协议</td><td>https</td><td>用加密的 HTTP 通信</td></tr>
+  <tr><td><code>anime-calendar.example.com</code></td><td>域名</td><td>主机地址</td><td>服务器在哪</td></tr>
+  <tr><td><code>/</code></td><td>路径</td><td>/</td><td>要哪个资源</td></tr>
+  <tr><td><code>?page=mine</code></td><td>查询参数</td><td>page=mine</td><td>给页面的附加参数（本项目用它切换“我的番剧”视图）</td></tr>
+</table>
+</div>
+<p>本项目里 <code>?page=mine</code>、<code>?page=stats</code>、<code>?page=search</code> 就是用查询参数切换视图——这也是第 01～03 章读完你能直接读懂的细节。</p>
+</section>
+
+<section id="s7">
+<h2><span class="sec-num">7</span>开发者工具速览：你的“单步调试 + REPL”</h2>
+<p>按 <span class="kbd">F12</span>（Mac 是 <span class="kbd">Cmd</span>+<span class="kbd">Option</span>+<span class="kbd">I</span>）打开开发者工具，三个面板对应你竞赛时已经会的东西：</p>
+<div class="grid grid3">
+  <div class="card">
+    <div class="num">Console</div>
+    <h4>交互式 REPL</h4>
+    <p>像 Python 的交互式解释器：直接输入 JS 表达式回车，立刻出结果。还能看到 <code>console.log</code> 的输出和报错。</p>
+  </div>
+  <div class="card">
+    <div class="num">Network</div>
+    <h4>看请求/响应</h4>
+    <p>列出发出的每个 HTTP 请求，点开能看到状态码、请求方法、响应的 JSON——就是第 4 节的“评测协议”实录。</p>
+  </div>
+  <div class="card">
+    <div class="num">Elements</div>
+    <h4>看 DOM 树</h4>
+    <p>把页面当前状态的 DOM 树展示出来，等于第 3 节那棵树的可视化，还能实时改。</p>
+  </div>
+</div>
+<div class="callout exercise"><strong>30 秒小实验：</strong>在本页按 <span class="kbd">F12</span> → 切到 <strong>Console</strong> 面板 → 输入 <code>2 + 3</code> 回车。你会看到 <code>5</code>。再输入 <code>document.querySelector("h1").textContent</code>，会打印出本页主标题——你刚刚用 DOM API 读了一棵树的节点。</div>
+<p>这套工具就是你以后修 bug 的“单步调试器”：第 11 章会教你怎么用它定位“为什么点了没反应”。到这里，你已经知道网页的三件套、DOM、HTTP、前后端分工了——下一章，我们看看 React 怎么把“界面 = 状态的函数”这件事变得优雅。</p>
+<h3>本章术语速查</h3>
+<dl class="terms">
+  <dt>DOM <span class="en">Document Object Model</span></dt>
+  <dd>浏览器把 HTML 解析出的树，JS 通过 DOM API 操作它。</dd>
+  <dt>HTTP <span class="en">HyperText Transfer Protocol</span></dt>
+  <dd>浏览器与服务器之间的“评测协议”：请求 + 响应。</dd>
+  <dt>JSON <span class="en">JavaScript Object Notation</span></dt>
+  <dd>跨语言的纯文本数据格式，键值对 + 数组。</dd>
+  <dt>API <span class="en">Application Programming Interface</span></dt>
+  <dd>服务器对外开放的一批“函数入口”，走 HTTP 调用。</dd>
+  <dt>Cookie <span class="en">Cookie</span></dt>
+  <dd>服务器让浏览器贴在身上的名牌，用于认人。</dd>
+</dl>
+</section>
+</main>
+</body>
+</html>

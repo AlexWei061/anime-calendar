@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 · 账号与会话安全｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="08">
+<main>
+<h1>账号与会话安全：网站凭什么认得你</h1>
+<p class="lead">上一章你知道数据怎么存进 D1。这一章解决真正要害的问题：<strong>存进去的东西，凭什么只能被它的主人读到、别人偷不走</strong>。用竞赛的话说，这一整章就是在解一道 OJ 题——"如何在不泄露密码的前提下验证密码"。</p>
+<div class="chapter-meta">
+  <span class="badge hot">第 08 章</span>
+  <span class="badge">前置：第 07 章 后端与数据库</span>
+  <span class="badge">涉及 lib/auth.js · app/auth.ts · app/api/auth/</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>威胁模型：两个问题，三个敌人</h2>
+<p>一个带登录的网站，每时每刻都在回答两个问题：</p>
+<ul>
+  <li><strong>你是谁？</strong>——认证（authentication）。用户自称是 <code>alex@example.com</code>，怎么证明他真的持有这个账号？</li>
+  <li><strong>你现在还是你吗？</strong>——会话（session）。用户刚才登录过，之后一连串请求，怎么知道每一个还是同一个人、而且登录没过期？</li>
+</ul>
+<div class="callout analogy"><strong>类比：</strong>认证像进考场时<strong>查验身份证</strong>——一次性、相对昂贵、要拿出真凭实据；会话像老师发给你贴在桌上的<strong>"已签到"便签</strong>——之后你起身去厕所再回来，不用再掏身份证，亮一下便签就行。便签被人偷走或伪造，就是"会话劫持"。</div>
+<p>要做安全设计，先列出敌人。这个项目要防的三个攻击者：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>敌人</th><th>它干什么</th><th>对策（对应后文）</th></tr>
+  <tr><td>偷看流量（窃听者 / 中间人）</td><td>在公共 WiFi 上抓包，截获你发出去的明文密码或房卡</td><td>HTTPS 加密传输；Cookie 加 <code>Secure</code></td></tr>
+  <tr><td>伪造身份（冒充者）</td><td>不偷看，直接假装成你，往服务器发"我是 alex"的请求</td><td>密码校验；会话 token 足够随机、无法猜中</td></tr>
+  <tr><td>数据库泄露（拖库）</td><td>把整个数据库文件偷走</td><td>密码只存哈希、会话只存 token 的哈希</td></tr>
+</table>
+</div>
+<dl class="terms">
+  <dt>认证 <span class="en">authentication</span></dt>
+  <dd>验证"你是谁"。本项目靠邮箱 + 密码。</dd>
+  <dt>会话 <span class="en">session</span></dt>
+  <dd>登录后保持"你还是你"的一段有效状态。本项目靠 <code>ac_session</code> Cookie + <code>auth_sessions</code> 表。</dd>
+  <dt>哈希 <span class="en">hash</span></dt>
+  <dd>把任意长度输入变成定长"指纹"的单向函数，见下一节。</dd>
+  <dt>明文 / 密文 <span class="en">plaintext / ciphertext</span></dt>
+  <dd>能直接读的原样数据 vs 经过变换的数据。数据库里不允许出现密码或 token 的明文。</dd>
+</dl>
+<div class="callout danger"><strong>安全设计的铁律：</strong>这三个敌人不是三选一，而是会叠加。正确的姿势是假设<strong>最坏情况已经发生</strong>——数据库已经被偷了——然后去设计"就算拖库，攻击者也拿不到能直接登录的东西"。下文所有机制都围绕这一条展开。</div>
+</section>
+
+<section id="s2">
+<h2><span class="sec-num">2</span>密码存储：为什么明文是灾难</h2>
+<p>新手最容易犯的错：把密码原样存进 <code>users</code> 表。后果是——数据库一旦泄露，所有用户的邮箱和密码一起裸奔；而大多数人好几个网站共用同一个密码，等于其他网站也一起沦陷。所以数据库里<strong>永远不能出现明文密码</strong>。</p>
+<h3>哈希：单向函数，只能正着算</h3>
+<p>哈希函数把任意长度的输入变成固定长度的"指纹"，关键是<strong>单向</strong>：正着算极快，逆着算（从指纹反推原文）在计算上不可行。</p>
+<div class="callout analogy"><strong>类比：</strong>搅拌机——把一堆水果打成泥只要几秒，但你想从果泥还原出"原本有几颗草莓、几片香蕉"是不可能的。或者更数学一点：把两个大质数相乘很快（<code>1009 × 1013</code> 一秒钟出答案），但把乘积 <code>1022117</code> 做因数分解却没有高效算法——这正是 RSA 加密的地基。哈希同理：从密码算哈希容易，从哈希反推密码<strong>只能暴力试</strong>。</div>
+<h3>加盐：两个人都设 "12345678"，哈希也不同</h3>
+<p>如果只做哈希，密码相同则哈希相同，攻击者一眼能看出哪些人用了同一个弱密码；还能用<strong>彩虹表</strong>（预先算好"常见密码 → 哈希"的对照表）直接反查。解法：注册时给每个用户随机生成一段<strong>盐 salt</strong>，把"盐 + 密码"一起哈希。盐就公开存在哈希串里，但因为人人不同，同一个密码在不同用户手里得到不同哈希，彩虹表也废了。</p>
+<h3>PBKDF2 迭代 10 万次 = 故意变慢</h3>
+<p>普通哈希（如 SHA-256）追求快；密码哈希却<strong>故意要慢</strong>：把"密码 → 密钥"这个过程重复跑 10 万次。正常登录一次只多花几十毫秒，用户无感；但暴力破解要试几百万个候选密码，每个都慢 10 万倍，直接拖垮攻击者。</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/auth.js</span> 密码哈希与校验（节选）</div>
+<pre><code class="lang-js">const PBKDF2_ITERATIONS = 100000;
+const SALT_BYTES = 16;
+const KEY_BYTES = 32;
+const SESSION_TOKEN_BYTES = 32;
+
+export async function hashPassword(password, salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES))) {
+  const key = await derivePasswordKey(password, salt, PBKDF2_ITERATIONS);
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${toHex(salt)}$${toHex(key)}`;
+}
+
+export async function verifyPassword(password, stored) {
+  if (typeof stored !== "string") return false;
+  const parts = stored.split("$");
+  if (parts.length !== 4 || parts[0] !== "pbkdf2") return false;
+  const iterations = Number.parseInt(parts[1], 10);
+  if (!Number.isInteger(iterations) || iterations &lt;= 0) return false;
+  const salt = fromHex(parts[2]);
+  const expected = fromHex(parts[3]);
+  if (!salt || !expected || expected.length !== KEY_BYTES) return false;
+  const actual = await derivePasswordKey(password, salt, iterations);
+  return constantTimeEqual(actual, expected);
+}</code></pre>
+</div>
+<p>逐行读 <code>hashPassword</code>：</p>
+<ul>
+  <li><code>salt = crypto.getRandomValues(new Uint8Array(16))</code>：生成 16 字节随机盐。注意用的是 Crypto API 的<strong>密码学安全随机源</strong>，不是 <code>Math.random()</code>（后者可预测，不能用来生成盐或 token）。</li>
+  <li><code>derivePasswordKey(password, salt, 100000)</code>：PBKDF2 跑 10 万次，输出 32 字节密钥。</li>
+  <li>返回值是 <code>pbkdf2$100000$&lt;盐hex&gt;$&lt;密钥hex&gt;</code> 四段拼起来：<strong>自描述</strong>。将来改迭代次数，旧哈希也能被正确验证——因为参数都写在哈希串里了。</li>
+</ul>
+<p>再读 <code>verifyPassword</code>：先用 <code>$</code> 拆成四段，逐项校验"前缀、段数、迭代次数、盐/密钥长度"，任何一项不合法直接 <code>false</code>（防御畸形输入）；然后用<strong>存着的盐和迭代次数</strong>重新派生一遍，交给 <code>constantTimeEqual</code> 比较。核心思想：<strong>验证 = 用相同配方重算一遍再比对</strong>。</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/auth.js</span> 常量时间比较（防时序侧信道）</div>
+<pre><code class="lang-js">function constantTimeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let index = 0; index &lt; a.length; index += 1) {
+    diff |= a[index] ^ b[index];
+  }
+  return diff === 0;
+}</code></pre>
+</div>
+<p>为什么不用 <code>a[i] === b[i]</code> 那样"第一个不同的地方就 return"？因为那种短路比较的<strong>耗时随"相同前缀长度"变长</strong>。攻击者测量响应时间，就能一个字节一个字节地逼近真实哈希——这叫<strong>时序侧信道</strong>。而 <code>constantTimeEqual</code> 无论哪一位不同，都老老实实遍历完所有字节，<strong>用时与内容无关</strong>，不泄露任何前缀信息。</p>
+<div class="callout tip"><strong>竞赛老朋友：</strong><code>diff |= a[index] ^ b[index]</code> 就是"异或"——相同为 0、不同为 1，最后 <code>diff === 0</code> 表示逐位全同。这是用位运算在一次遍历里统计差异的经典套路，和你写过的判重、找唯一元素一脉相承。</div>
+</section>
+
+<section id="s3">
+<h2><span class="sec-num">3</span>会话：登录之后，凭什么还认得你</h2>
+<p>HTTP 是<strong>无状态</strong>的：服务器处理完一个请求就"失忆"了，下一个请求它根本不知道和上一个是不是同一个人。所以要靠会话把这几个请求串起来。本项目的做法是"房卡"：</p>
+<div class="callout analogy"><strong>房卡模型：</strong>登录成功，前台（服务器）给你一张写着随机长串数字的房卡（token）。之后你每次进房门（发请求）都出示房卡。前台<strong>不保存房卡的明文</strong>，只存了房卡的"指纹"（哈希）；你出示时它现算指纹对一下，对上了且没过期才放行。这样即使指纹库被偷，攻击者也没法从指纹造出能过闸的房卡。</div>
+<ol class="steps">
+  <li>登录 / 注册成功 → <code>createSession</code>：<code>generateSessionToken()</code> 生成 <strong>32 字节随机 token</strong>（64 个十六进制字符）。</li>
+  <li>明文 token 通过 <code>Set-Cookie</code> 发给浏览器；浏览器自动保存，并在之后的每个请求里<strong>自动带回</strong>。</li>
+  <li>服务端只把 token 的 <strong>SHA-256 哈希</strong> + 邮箱 + 过期时间存进 <code>auth_sessions</code> 表。</li>
+  <li>之后每个请求：从 Cookie 头里取出 token → 再哈希一次 → 查表 → 命中且未过期，才认定登录。</li>
+</ol>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/auth.js</span> 会话令牌的生成与哈希</div>
+<pre><code class="lang-js">export function generateSessionToken() {
+  return toHex(crypto.getRandomValues(new Uint8Array(SESSION_TOKEN_BYTES)));
+}
+
+export async function hashSessionToken(token) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+  return toHex(new Uint8Array(digest));
+}</code></pre>
+</div>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/auth.ts</span> 签发、校验、销毁会话</div>
+<pre><code class="lang-ts">export const SESSION_COOKIE = "ac_session";
+const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+
+export async function getSessionUser(): Promise&lt;SessionUser | null&gt; {
+  const token = readSessionToken(await headers());
+  if (!token) return null;
+
+  const tokenHash = await hashSessionToken(token);
+  const db = await getDb();
+  const rows = await db
+    .select({
+      email: users.email,
+      displayName: users.displayName,
+      avatarVersion: users.avatarVersion,
+      expiresAt: authSessions.expiresAt,
+    })
+    .from(authSessions)
+    .innerJoin(users, eq(authSessions.userEmail, users.email))
+    .where(eq(authSessions.tokenHash, tokenHash));
+  const row = rows[0];
+  if (!row) return null;
+  if (row.expiresAt &lt;= Date.now()) {
+    await db.delete(authSessions).where(eq(authSessions.tokenHash, tokenHash));
+    return null;
+  }
+  return {
+    email: row.email,
+    displayName: row.displayName,
+    avatarVersion: row.avatarVersion,
+    avatarUrl: avatarUrl(row.avatarVersion),
+  };
+}
+
+export async function createSession(userEmail: string, requestUrl: string): Promise&lt;string&gt; {
+  const token = generateSessionToken();
+  const tokenHash = await hashSessionToken(token);
+  const expiresAt = Date.now() + SESSION_MAX_AGE_SECONDS * 1000;
+  await (await getDb()).insert(authSessions).values({ tokenHash, userEmail, expiresAt });
+  return `${SESSION_COOKIE}=${token}; ${sessionCookieAttributes(requestUrl, SESSION_MAX_AGE_SECONDS)}`;
+}
+
+export async function destroySession(requestUrl: string): Promise&lt;string&gt; {
+  const token = readSessionToken(await headers());
+  if (token) {
+    const tokenHash = await hashSessionToken(token);
+    await (await getDb()).delete(authSessions).where(eq(authSessions.tokenHash, tokenHash));
+  }
+  return expiredSessionCookie(requestUrl);
+}</code></pre>
+</div>
+<div class="diagram">
+<svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg">
+  <rect class="dg-box accent" x="20" y="60" width="200" height="80" rx="12"/>
+  <text class="dg-title" x="120" y="92" text-anchor="middle">浏览器</text>
+  <text class="dg-text" x="120" y="112" text-anchor="middle">持有房卡 token 明文</text>
+  <text class="dg-text" x="120" y="128" text-anchor="middle">放在 ac_session Cookie</text>
+  <rect class="dg-box" x="280" y="60" width="200" height="80" rx="12"/>
+  <text class="dg-title" x="380" y="92" text-anchor="middle">服务器 app/auth.ts</text>
+  <text class="dg-text" x="380" y="112" text-anchor="middle">取 token → 再哈希一次</text>
+  <text class="dg-text" x="380" y="128" text-anchor="middle">查 auth_sessions 表</text>
+  <rect class="dg-box plain" x="540" y="60" width="200" height="80" rx="12"/>
+  <text class="dg-title" x="640" y="92" text-anchor="middle">D1 auth_sessions</text>
+  <text class="dg-text" x="640" y="112" text-anchor="middle">只存 SHA-256 哈希</text>
+  <text class="dg-text" x="640" y="128" text-anchor="middle">明文 token 永不落库</text>
+  <path class="dg-edge" d="M 220 100 L 276 100"/>
+  <text class="dg-edge-label" x="248" y="90" text-anchor="middle">请求带 Cookie</text>
+  <path class="dg-edge" d="M 480 100 L 536 100"/>
+  <text class="dg-edge-label" x="508" y="90" text-anchor="middle">tokenHash 查询</text>
+</svg>
+</div>
+<p>读 <code>getSessionUser</code>，这是全站最关键的几行：</p>
+<ul>
+  <li><code>readSessionToken(await headers())</code>：从请求头里解析出名为 <code>ac_session</code> 的 Cookie 值；没有就 <code>null</code>。</li>
+  <li><code>hashSessionToken(token)</code>：拿到明文 token 后<strong>立刻再哈希</strong>——注意服务端全程不把明文 token 写进数据库。</li>
+  <li>联表查询 <code>auth_sessions</code> join <code>users</code>，按 <code>tokenHash</code> 匹配。</li>
+  <li>没查到 → <code>null</code>；查到但已过期 → 顺手删掉这条会话（<strong>懒清理</strong>）再返回 <code>null</code>。</li>
+  <li>命中且未过期 → 返回 <code>{ email, displayName, avatarUrl }</code>。这三样才是"你是谁"的权威答案。</li>
+</ul>
+<div class="callout tip"><strong>两处哈希，用途不同：</strong>密码是用户自己选的<strong>低熵</strong>字符串，容易被猜，所以用 PBKDF2 迭代 10 万次拖慢；token 是<strong>随机生成</strong>、本身不可猜的高熵值，用"快"的 SHA-256 就足够。这是理解"为什么密码和 token 哈希算法不一样"的关键。</div>
+</section>
+
+<section id="s4">
+<h2><span class="sec-num">4</span>Cookie 的四个属性，各防一种攻击</h2>
+<p><code>Set-Cookie</code> 字符串就是 <code>sessionCookieAttributes</code> 拼出来的：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/auth.js</span> 会话 Cookie 属性</div>
+<pre><code class="lang-js">export function sessionCookieAttributes(requestUrl, maxAge) {
+  const secureAttribute = new URL(requestUrl).protocol === "https:" ? " Secure;" : "";
+  return `HttpOnly;${secureAttribute} SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+}</code></pre>
+</div>
+<div class="table-wrap">
+<table>
+  <tr><th>属性</th><th>取值</th><th>作用</th><th>防什么</th></tr>
+  <tr><td><code>HttpOnly</code></td><td>无值，写上即生效</td><td>页面里的 JS 读不到这个 Cookie（<code>document.cookie</code> 拿不到它）</td><td>XSS 注入后偷 Cookie</td></tr>
+  <tr><td><code>Secure</code></td><td>无值，仅 HTTPS 请求加</td><td>只在 HTTPS 请求里携带房卡，明文 HTTP 不泄露</td><td>中间人窃听</td></tr>
+  <tr><td><code>SameSite=Lax</code></td><td><code>Lax</code></td><td>跨站发起的请求不自动带 Cookie（顶级导航除外）</td><td>CSRF 跨站伪造请求</td></tr>
+  <tr><td><code>Path=/</code></td><td><code>/</code></td><td>全站所有路径都携带这个 Cookie</td><td>保证任何页面 / API 都拿得到会话</td></tr>
+  <tr><td><code>Max-Age</code></td><td>秒数（这里 30 天）</td><td>Cookie 有效期，到期浏览器自动丢弃</td><td>会话过期兜底</td></tr>
+</table>
+</div>
+<p>注意 <code>Secure</code> 前面的判断：<code>new URL(requestUrl).protocol === "https:"</code>。意思是<strong>只有 HTTPS 请求才加 Secure</strong>，HTTP 请求（比如本地 <code>http://localhost</code> 开发）不加——否则浏览器会因为"不安全连接却要求 Secure"而拒绝接收 Cookie，本地就登录不了了。线上走 HTTPS 自动加 Secure，本地 HTTP 自动跳过，两者兼容。</p>
+<div class="callout tip"><strong>一句话分工：</strong><code>HttpOnly</code> 防"别人在页面里偷"（XSS）；<code>Secure</code> 防"路上被偷听"（窃听）；<code>SameSite=Lax</code> 防"别的网站冒充你发请求"（CSRF）。这也是 <span class="filepath">tests/auth.test.mjs</span> 里"session cookie is Secure only for HTTPS"那条测试在守护的行为。</div>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>走读一条注册请求</h2>
+<p>把上面的零件串起来，看注册 API 的完整流程：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/auth/register/route.ts</span> 完整代码</div>
+<pre><code class="lang-ts">import { eq } from "drizzle-orm";
+import { getDb } from "../../../../db";
+import { users } from "../../../../db/schema";
+import {
+  hashPassword,
+  normalizeDisplayName,
+  validateEmail,
+  validatePassword,
+} from "../../../../lib/auth.js";
+import { createSession } from "../../../auth";
+
+export async function POST(request: Request) {
+  let email: string;
+  let password: string;
+  let displayName: string;
+  try {
+    const payload = (await request.json()) as {
+      email?: unknown;
+      password?: unknown;
+      displayName?: unknown;
+    };
+    email = validateEmail(payload.email);
+    password = validatePassword(payload.password);
+    displayName = normalizeDisplayName(payload.displayName, email);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Invalid registration";
+    return Response.json({ error: message }, { status: 400 });
+  }
+
+  try {
+    const db = await getDb();
+    const existing = await db
+      .select({ email: users.email })
+      .from(users)
+      .where(eq(users.email, email));
+    if (existing.length &gt; 0) {
+      return Response.json({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+    }
+
+    const passwordHash = await hashPassword(password);
+    await db.insert(users).values({ email, passwordHash, displayName, createdAt: Date.now() });
+    const sessionCookie = await createSession(email, request.url);
+    return Response.json(
+      { email, displayName, avatarUrl: null },
+      { status: 201, headers: { "Set-Cookie": sessionCookie } },
+    );
+  } catch {
+    return Response.json({ error: "Unable to register" }, { status: 500 });
+  }
+}</code></pre>
+</div>
+<ol class="steps">
+  <li><strong>校验输入（400）：</strong>第一个 <code>try</code> 里，<code>validateEmail</code> 校验邮箱格式、<code>validatePassword</code> 校验长度（8～72）、<code>normalizeDisplayName</code> 昵称为空时回退成邮箱。任何一个 <code>throw</code> 都进 <code>catch</code> 返回 <code>400</code>。</li>
+  <li><strong>查重（409）：</strong>按邮箱查 <code>users</code> 表，已存在就返回 409 "<code>该邮箱已注册，请直接登录</code>"。</li>
+  <li><strong>哈希入库：</strong><code>hashPassword</code> 得到哈希串，插入 <code>users</code>。注意字段叫 <code>passwordHash</code>，<strong>明文密码从未落库</strong>。</li>
+  <li><strong>签发会话：</strong><code>createSession(email, request.url)</code> 返回一串 <code>Set-Cookie</code>。</li>
+  <li><strong>返回 201：</strong>在响应头里带上 <code>Set-Cookie</code>，浏览器收到后自动存下房卡。</li>
+</ol>
+<div class="callout warn"><strong>顺序很重要：</strong>必须先"校验"、再"查重"、最后"写库"。反过来会出事故：先写库再查重，重复注册就先插脏了数据；先查重但不校验邮箱格式，非法邮箱就被写进去了。每个状态码都在告诉前端"错在哪一层"。</div>
+<h3>状态码速记</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>状态码</th><th>含义</th><th>本项目里的例子</th></tr>
+  <tr><td><code>400</code> Bad Request</td><td>输入不合法（格式 / 长度）</td><td>邮箱格式错、密码太短</td></tr>
+  <tr><td><code>401</code> Unauthorized</td><td>未登录 / 凭证无效</td><td>登录密码错、数据 API 没会话</td></tr>
+  <tr><td><code>409</code> Conflict</td><td>资源已存在（业务冲突）</td><td>邮箱已注册</td></tr>
+  <tr><td><code>201</code> Created</td><td>新建资源成功</td><td>注册成功、用户已建</td></tr>
+  <tr><td><code>500</code> Internal Server Error</td><td>服务器意外异常</td><td>数据库挂了等</td></tr>
+</table>
+</div>
+<div class="callout exercise"><strong>想一想：</strong>为什么注册成功返回 <code>201</code> 而不是 <code>200</code>？又为什么注册成功后还要顺手 <code>createSession</code>？（提示：注册即登录，用户建完账号立刻就是"已登录"状态，不用再跳去登录一次。）</div>
+</section>
+
+<section id="s6">
+<h2><span class="sec-num">6</span>铁律：数据 API 的第一步永远是 getSessionUser()</h2>
+<p>浏览器是<strong>敌占区</strong>：用户可以改任何前端代码、用命令行手工发任意 HTTP 请求、伪造任意请求体。所以：</p>
+<ul>
+  <li><strong>用户身份只能来自服务端会话，不能来自请求体。</strong>看追番列表的 GET——它根本没有"接收邮箱参数"这个动作，邮箱是从 <code>getSessionUser()</code> 里查出来的。</li>
+  <li><strong>所有用户数据都挂在 <code>userEmail</code> 上</strong>（追番、已看、会话），账号隔离靠它。</li>
+  <li><strong>浏览器传来的东西只当"数据"，绝不当"身份"。</strong></li>
+</ul>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/anime-selections/route.ts</span> 每个数据 API 的开头（节选）</div>
+<pre><code class="lang-ts">async function currentUser() {
+  return getSessionUser();
+}
+
+export async function GET() {
+  const user = await currentUser();
+  if (!user) {
+    return Response.json({ error: "Sign in required" }, { status: 401 });
+  }
+  // ... 之后用 user.email 查这个用户自己的追番列表
+}</code></pre>
+</div>
+<p>三条铁律：</p>
+<ol class="steps">
+  <li>每个数据 API 的<strong>第一行逻辑</strong>必须是 <code>getSessionUser()</code>；返回 <code>null</code> 立刻 <code>401</code>。</li>
+  <li>拿到 <code>user</code> 后，数据库查询全部用 <code>user.email</code> 做条件——<strong>邮箱不是请求参数，是会话里查出来的</strong>。</li>
+  <li>请求体（<code>request.json()</code>、query 参数）只用来传"要存什么数据"，永远不传"我是谁"。</li>
+</ol>
+<div class="callout danger"><strong>如果有人提需求说"前端把邮箱发过来，后端直接用"，立刻拒绝。</strong>那等于让攻击者随便填别人的邮箱，就能读到、改掉别人的追番列表和已看记录。仓库里 <span class="filepath">tests/auth.test.mjs</span> 有一条 <code>doesNotMatch(/payload\.email|searchParams\.get\("email"\)/)</code> 的断言，就是防止将来有人这么改的"哨兵测试"——它守在代码里，谁改了它测试就红。</div>
+</section>
+
+<section id="s7">
+<h2><span class="sec-num">7</span>本章自测</h2>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">1. 用户登录后，数据库 <code>auth_sessions</code> 表里存的是会话 token 的什么？</p>
+  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. 明文 token，方便下次直接比对</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. token 的 SHA-256 哈希</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. 密码的 PBKDF2 哈希</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. 什么都不存，靠 Cookie 自己</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>服务端只存 token 的 SHA-256 哈希（<code>hashSessionToken</code>）。这样即使数据库被拖库，攻击者拿到哈希也造不出能通过校验的房卡——因为哈希是单向的，他没法从指纹反推原文。</p></div>
+</form>
+<form class="quiz" data-answer="A,B,C">
+  <p class="quiz-q">2.（多选）下面哪些是"Cookie 属性 → 它防的攻击"的正确配对？</p>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="A"><span>A. HttpOnly → 防页面里的 JS 偷 Cookie（XSS）</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="B"><span>B. Secure → 防传输路上被窃听</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="C"><span>C. SameSite=Lax → 防跨站伪造请求（CSRF）</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="D"><span>D. Path=/ → 防数据库拖库</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>HttpOnly 让 JS 读不到（防 XSS）、Secure 只在 HTTPS 携带（防窃听）、SameSite=Lax 阻止跨站自动带 Cookie（防 CSRF）。而 <code>Path=/</code> 只决定 Cookie 在哪些路径生效，和"防拖库"无关——防拖库靠的是"只存哈希"。</p></div>
+</form>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">3. 为什么密码哈希用 PBKDF2 还要迭代 10 万次？</p>
+  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. 为了让哈希串更长、更安全</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 故意把每次哈希变慢，拖垮暴力破解</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. 为了让盐更随机</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 为了让 token 更难猜</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>迭代 10 万次是"故意变慢"：正常登录一次只多几十毫秒，用户无感；暴力破解要试几百万个候选密码，每个都慢 10 万倍，攻击成本被拉高到不可承受。长度由 <code>KEY_BYTES = 32</code> 决定，盐的随机性由 <code>crypto.getRandomValues</code> 保证，和迭代次数无关。</p></div>
+</form>
+</section>
+</main>
+</body>
+</html>

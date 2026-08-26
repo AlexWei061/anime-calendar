@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>附录 · 术语表 · 命令卡 · 报错速查｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="appendix">
+<main>
+<h1>附录 · 术语表 · 命令卡 · 报错速查</h1>
+<p class="lead">学完全部章节后，把这一页当"字典 + 说明书"放在手边：看不懂的术语、忘了的命令、眼熟的报错，都在这里一句话查到。它不负责讲原理（原理在正文各章），只负责让你<strong>快速找到答案</strong>。</p>
+<div class="chapter-meta">
+  <span class="badge hot">附录 · 参考手册</span>
+  <span class="badge">66 个术语 · 15 条 npm 命令 · 25 类报错</span>
+  <span class="badge">定位：用到时来查，不要求背</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>术语表</h2>
+<p>按四个板块分组。每个词只给"一句话大白话"，需要原理的回到正文对应章节。看得懂英文原文有助于你日后查官方文档，所以每组都保留 <span class="en">English</span>。</p>
+
+<h3>① 语言与运行时</h3>
+<dl class="terms">
+  <dt>JavaScript<span class="en">JavaScript</span></dt>
+  <dd>在浏览器和 Node.js 里都能跑的脚本语言，本项目几乎全部用它写。</dd>
+  <dt>TypeScript<span class="en">TypeScript</span></dt>
+  <dd>给 JS 加类型标注的超集，靠编译期检查抓类型错误。</dd>
+  <dt>Node.js<span class="en">Node.js</span></dt>
+  <dd>让 JS 脱离浏览器、在命令行/服务器运行的环境（类比 Python 解释器）。</dd>
+  <dt>npm<span class="en">npm</span></dt>
+  <dd>Node 的包管理器：装依赖、跑 scripts 都靠它。</dd>
+  <dt>依赖<span class="en">dependency</span></dt>
+  <dd>项目引用的第三方库，记在 package.json、装在 node_modules。</dd>
+  <dt>模块<span class="en">module</span></dt>
+  <dd>一个文件就是一个模块，通过 import/export 互相取用。</dd>
+  <dt>import / export<span class="en">import / export</span></dt>
+  <dd>模块间"引入/导出"的语法，类比 C++ 的 #include 但更严格。</dd>
+  <dt>Promise<span class="en">Promise</span></dt>
+  <dd>表示"将来才会有结果"的对象，是异步操作的占位符。</dd>
+  <dt>async / await<span class="en">async / await</span></dt>
+  <dd>用同步写法写异步逻辑：await 一个 Promise 直到它完成。</dd>
+  <dt>回调<span class="en">callback</span></dt>
+  <dd>把函数当参数传入，事情做完后由它来调用你。</dd>
+  <dt>严格模式<span class="en">strict mode</span></dt>
+  <dd>"use strict" 开启的 JS 严格规则，禁止未声明赋值等坑。</dd>
+  <dt>console.log<span class="en">console.log</span></dt>
+  <dd>JS 的"printf"，把值打印到浏览器/终端控制台。</dd>
+</dl>
+
+<h3>② 前端</h3>
+<dl class="terms">
+  <dt>HTML<span class="en">HTML</span></dt>
+  <dd>网页结构语言，用标签描述页面"有什么"。</dd>
+  <dt>CSS<span class="en">CSS</span></dt>
+  <dd>网页样式语言，决定页面"长什么样"。</dd>
+  <dt>DOM<span class="en">DOM</span></dt>
+  <dd>浏览器把 HTML 解析成的树；JS 通过它读写页面。</dd>
+  <dt>JSX<span class="en">JSX</span></dt>
+  <dd>在 JS 里直接写"像 HTML 的标签"的语法，编译成 React 元素。</dd>
+  <dt>组件<span class="en">component</span></dt>
+  <dd>React 里返回界面片段的函数，即 UI = f(state) 里的 f。</dd>
+  <dt>props<span class="en">props</span></dt>
+  <dd>传给组件的参数（父传子、只读）。</dd>
+  <dt>state<span class="en">state</span></dt>
+  <dd>组件自己记住、变化时会触发重新渲染的数据。</dd>
+  <dt>Hook<span class="en">Hook</span></dt>
+  <dd>React 提供、只能在组件内调用的特殊函数（useState/useEffect 等）。</dd>
+  <dt>useState<span class="en">useState</span></dt>
+  <dd>给组件加 state 的 Hook，返回 [当前值, 更新函数]。</dd>
+  <dt>useEffect<span class="en">useEffect</span></dt>
+  <dd>渲染后执行"副作用"（发请求、存 localStorage）的 Hook。</dd>
+  <dt>事件<span class="en">event</span></dt>
+  <dd>用户的点击/按键等动作，浏览器把它派发给处理函数。</dd>
+  <dt>响应式布局<span class="en">responsive layout</span></dt>
+  <dd>界面随屏幕宽度自动重排，而不是写死像素。</dd>
+  <dt>断点<span class="en">breakpoint</span></dt>
+  <dd>触发样式切换的临界宽度；本项目是 860px。</dd>
+  <dt>无障碍<span class="en">a11y / ARIA</span></dt>
+  <dd>让屏幕阅读器等辅助工具也能"读懂"页面，靠语义与 ARIA 标注。</dd>
+  <dt>localStorage<span class="en">localStorage</span></dt>
+  <dd>浏览器里按网站持久化的键值存储；本教程存主题与进度。</dd>
+  <dt>hydration<span class="en">hydration</span></dt>
+  <dd>服务端渲染出的 HTML 在浏览器里"接上"JS 交互的过程。</dd>
+  <dt>SSR<span class="en">SSR</span></dt>
+  <dd>服务端先把页面渲染成 HTML 再发给浏览器，加快首屏。</dd>
+</dl>
+
+<h3>③ 后端与数据</h3>
+<dl class="terms">
+  <dt>HTTP<span class="en">HTTP</span></dt>
+  <dd>浏览器与服务器通信的协议：请求 → 响应。</dd>
+  <dt>API<span class="en">API</span></dt>
+  <dd>服务器对外开放的"函数入口"，本项目在 app/api/ 下。</dd>
+  <dt>JSON<span class="en">JSON</span></dt>
+  <dd>数据交换的文本格式，长得和 JS 对象字面量一样。</dd>
+  <dt>状态码<span class="en">status code</span></dt>
+  <dd>响应的三位数：200 成功 / 400 参数错 / 401 未登录 / 409 冲突 / 500 服务器错。</dd>
+  <dt>Cookie<span class="en">Cookie</span></dt>
+  <dd>服务器让浏览器记住、之后每次请求都带回的小段数据。</dd>
+  <dt>会话<span class="en">session</span></dt>
+  <dd>一次登录状态：服务器发的凭证，浏览器之后每次请求带着它。</dd>
+  <dt>路由<span class="en">route</span></dt>
+  <dd>把 URL 路径映射到处理函数，如 /api/auth/login。</dd>
+  <dt>D1<span class="en">D1</span></dt>
+  <dd>Cloudflare 的 SQLite 数据库服务，本项目存账号/追番/已看。</dd>
+  <dt>SQL<span class="en">SQL</span></dt>
+  <dd>操作关系数据库的语言：SELECT / INSERT / UPDATE / DELETE。</dd>
+  <dt>表<span class="en">table</span></dt>
+  <dd>数据库里的一张二维表：行是记录，列是字段。</dd>
+  <dt>主键<span class="en">primary key</span></dt>
+  <dd>唯一标识一行的字段（或字段组合）。</dd>
+  <dt>复合主键<span class="en">composite primary key</span></dt>
+  <dd>用多个字段一起当主键；已看记录用 (animeId, episodeStart, episode)。</dd>
+  <dt>迁移<span class="en">migration</span></dt>
+  <dd>描述数据库结构变更的 SQL 文件，按顺序应用、不可手改。</dd>
+  <dt>Drizzle<span class="en">Drizzle</span></dt>
+  <dd>TypeScript 的 ORM：用代码定义表、生成迁移、写查询。</dd>
+  <dt>ORM<span class="en">ORM</span></dt>
+  <dd>对象关系映射，把"表"对应到代码里的类型与查询函数。</dd>
+  <dt>批处理<span class="en">batch</span></dt>
+  <dd>D1 的 db.batch()：多条语句放进一个事务一起提交。</dd>
+  <dt>原子性<span class="en">atomicity</span></dt>
+  <dd>一批操作要么全部成功、要么全部回滚，不会只做一半。</dd>
+  <dt>绑定参数<span class="en">bound parameter</span></dt>
+  <dd>SQL 用 ? 占位、再填值，防注入也更高效。</dd>
+  <dt>白名单<span class="en">allowlist</span></dt>
+  <dd>只接受预先登记的合法值（如 filterKnownAnimeIds），其余一律拒绝。</dd>
+</dl>
+
+<h3>④ 工程与部署</h3>
+<dl class="terms">
+  <dt>构建<span class="en">build</span></dt>
+  <dd>把源码转成可部署产物的过程（npm run build）。</dd>
+  <dt>打包<span class="en">bundle</span></dt>
+  <dd>把多个模块合并压缩成少数文件，减小体积、加快加载。</dd>
+  <dt>dev server<span class="en">dev server</span></dt>
+  <dd>本地开发服务器，改代码即时生效（npm run dev）。</dd>
+  <dt>热更新<span class="en">HMR</span></dt>
+  <dd>改代码后不刷新页面就局部替换模块。</dd>
+  <dt>Vite<span class="en">Vite</span></dt>
+  <dd>前端构建工具，负责开发服务器与打包。</dd>
+  <dt>vinext<span class="en">vinext</span></dt>
+  <dd>本项目基于 Vite 输出 Cloudflare Worker 的框架。</dd>
+  <dt>Cloudflare Worker<span class="en">Cloudflare Worker</span></dt>
+  <dd>跑在 Cloudflare 边缘节点上的服务端程序。</dd>
+  <dt>wrangler<span class="en">wrangler</span></dt>
+  <dd>Cloudflare 命令行工具，管 Worker、D1 与本地模拟。</dd>
+  <dt>Miniflare<span class="en">Miniflare</span></dt>
+  <dd>本地模拟 Cloudflare 运行时（含 D1 绑定）的环境。</dd>
+  <dt>类型检查<span class="en">typecheck</span></dt>
+  <dd>tsc --noEmit 只查类型、不产出文件。</dd>
+  <dt>ESLint<span class="en">ESLint</span></dt>
+  <dd>静态检查代码风格与常见错误的工具。</dd>
+  <dt>单元测试<span class="en">unit test</span></dt>
+  <dd>对单个函数/模块的自动化测试（node --test 跑）。</dd>
+  <dt>回归测试<span class="en">regression test</span></dt>
+  <dd>先写能复现 bug 的测试再修，防止老 bug 复活。</dd>
+  <dt>断言<span class="en">assert</span></dt>
+  <dd>测试里"预期某值等于某值，否则报错"的语句。</dd>
+  <dt>静态资源<span class="en">static asset</span></dt>
+  <dd>不需要服务器计算的固定文件，如封面 WebP。</dd>
+  <dt>图集<span class="en">sprite</span></dt>
+  <dd>把多张小图拼成一张大图、按坐标取用，减少文件数。</dd>
+  <dt>审计标记<span class="en">audit marker</span></dt>
+  <dd>记录"某字段来自哪个数据源"的标记，如 *Source。</dd>
+  <dt>乐观更新<span class="en">optimistic update</span></dt>
+  <dd>先立即改界面、请求失败再回滚，提升手感。</dd>
+</dl>
+<div class="callout analogy"><strong>怎么用这 66 个词：</strong>不用背。前两组（语言 / 前端）先混个眼熟——正文里天天出现；后两组（后端 / 工程）遇到具体任务时再来查，见过一次就有印象。</div>
+</section>
+
+<section id="s2">
+<h2><span class="sec-num">2</span>命令速查卡</h2>
+<p>下面的 npm 命令与 <span class="filepath">package.json</span> 里的 scripts <strong>逐字一致</strong>。都在项目根目录执行；<span class="kbd">#</span> 后是这条命令在干嘛。开跑前先 <code>node -v</code> 确认版本 ≥ 22.13.0，否则后面会莫名其妙报错。</p>
+<div class="codeblock">
+<div class="codehead"><span>终端 · 项目根目录（npm 命令）</span></div>
+<pre><code class="lang-bash">npm install                              # 第一次克隆后装依赖
+npm run dev                              # 本地开发服务器（vinext dev）
+npm run typecheck                        # TypeScript 严格类型检查（tsc --noEmit）
+npm run build                            # 构建 Worker 生产产物（vinext build）
+npm run start                            # 以生产模式启动已构建产物（vinext start）
+npm run lint -- --ignore-pattern .worktrees  # ESLint，忽略嵌套 worktree
+npm test                                 # 完整测试：typecheck + build + node --test
+npm run db:generate                      # 改 schema 后生成 D1 迁移
+npm run generate:anilist-pilot           # 拉取 AniList 首播/时刻/集数资料
+npm run generate:yuc-history-pilot       # 合并 YUC + AniList + しょぼい，生成历史目录
+npm run generate:syoboi-history          # 抓取しょぼい电视排期，生成快照
+npm run convert:covers-webp              # 把独立封面无损转成 WebP
+npm run generate:cover-sprites           # 打包封面为 4×10 WebP 图集并生成映射
+node --test tests/calendar.test.mjs      # 只跑周历/日期算法这一个测试文件
+node --test tests/anime-data.test.mjs    # 只跑番剧数据校验这一个测试文件</code></pre>
+</div>
+<p><span class="kbd">npm test</span> 不是一条独立脚本，它实际执行 <code>npm run typecheck &amp;&amp; npm run build &amp;&amp; node --test tests/*.test.mjs</code>——即"类型检查 + 构建 + 全部测试"三步，三步全过才算健康。改动后至少跑 <span class="kbd">npm run lint -- --ignore-pattern .worktrees</span> 和 <span class="kbd">npm test</span> 两条。</p>
+<h3>不知道跑哪条？看"任务 → 命令"对应表</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>我想做…</th><th>跑这条</th></tr>
+  <tr><td>刚克隆完项目，先装依赖</td><td><code>npm install</code></td></tr>
+  <tr><td>开始写代码，边改边看效果</td><td><code>npm run dev</code></td></tr>
+  <tr><td>只检查类型对不对</td><td><code>npm run typecheck</code></td></tr>
+  <tr><td>发布前完整验证（类型 + 构建 + 测试）</td><td><code>npm test</code></td></tr>
+  <tr><td>改了 <span class="filepath">db/schema.ts</span> 的数据库结构</td><td><code>npm run db:generate</code></td></tr>
+  <tr><td>更新某年番剧目录 / 排期</td><td><code>npm run generate:anilist-pilot</code> → <code>npm run generate:yuc-history-pilot</code></td></tr>
+  <tr><td>重新核对电视排期</td><td>上述两步后再 <code>npm run generate:syoboi-history</code> → 再生成一次 YUC 目录</td></tr>
+  <tr><td>新增 / 更换了封面图</td><td><code>npm run convert:covers-webp</code> → <code>npm run generate:cover-sprites</code></td></tr>
+  <tr><td>只想跑一个测试文件</td><td><code>node --test tests/xxx.test.mjs</code></td></tr>
+</table>
+</div>
+<div class="codeblock">
+<div class="codehead"><span>终端 · 常用 git</span></div>
+<pre><code class="lang-bash">git status                  # 看哪些文件改了/新增/删除
+git diff                    # 看具体改了什么（未暂存的部分）
+git add &lt;文件&gt;              # 暂存指定文件；git add -A 暂存全部
+git commit -m "说明这次改了什么"   # 提交一条记录
+git push                    # 推送到远程（GitHub）
+git pull                    # 拉取远程最新并合并
+git log --oneline           # 一行一条地看提交历史</code></pre>
+</div>
+<div class="callout warn"><strong>提交纪律：</strong>发布到 GitHub 和 Sites 前，先 <span class="kbd">npm test</span> 验证构建，再提交并推送同一个 main 提交；遇到并发更新先合并验证，绝不 <code>--force</code> 覆盖别人的改动。</div>
+<div class="callout tip"><strong>更新番剧数据的正确顺序：</strong>AniList → YUC 目录 → しょぼい快照 → 再生成 YUC 目录。只更新 AniList/YUC 时，先 AniList 再生成历史目录；重新核对电视排期时，必须四步走全，才能把新快照合并回最终目录。</div>
+</section>
+
+<section id="s3">
+<h2><span class="sec-num">3</span>报错速查表</h2>
+<p>报错信息是<strong>最有价值的线索</strong>：先读报错里给出的"文件:行:列"和关键词，再回来对表。左列是症状，右列是处理动作。</p>
+<p>认前缀能猜八成：<code>TSxxxx</code> 是编译期类型错（改代码即消）、<code>RangeError</code> 是运行时数据格式错（改数据）、三位数是 HTTP 状态码（改请求/登录）、<code>ESLint:</code> 是风格错（改写法）。</p>
+<div class="table-wrap">
+<table>
+  <tr><th>报错片段 / 症状</th><th>含义</th><th>处理</th></tr>
+  <tr><td><code>Type 'X' is not assignable to type 'Y'</code>（TS2322）</td><td>类型不匹配</td><td>看报错的文件:行:列，改字段类型或补 null 处理。</td></tr>
+  <tr><td><code>Property 'x' does not exist on type ...</code>（TS2339）</td><td>对象上没有这个属性</td><td>检查拼写或类型定义。</td></tr>
+  <tr><td><code>'x' is possibly 'null'</code>（TS18047/18048）</td><td>strict 模式下没处理 null</td><td>加 if 判断或用 <code>??</code> 兜底。</td></tr>
+  <tr><td><code>Cannot find name 'x'</code>（TS2304）</td><td>没导入 / 没声明</td><td>补 import。</td></tr>
+  <tr><td><code>RangeError: Invalid schedule time</code></td><td>排期时间格式不对（如 "9:00" 少了前导 0）</td><td>数据文件里改成 "09:00"。</td></tr>
+  <tr><td><code>RangeError: Invalid ISO date</code></td><td>日期不是 YYYY-MM-DD</td><td>改数据里的日期。</td></tr>
+  <tr><td><code>Cloudflare D1 binding `DB` is unavailable</code></td><td>本地/部署没配 D1 绑定</td><td>检查 .openai/hosting.json 的 d1 字段与部署配置。</td></tr>
+  <tr><td><code>Unknown anime ID: xxx</code></td><td>提交了不在 allAnime 里的番剧 ID</td><td>数据 id 改动或前端状态过期，刷新重试。</td></tr>
+  <tr><td><code>watchEpisodes must contain at most 25 items</code> / <code>animeIds must be an array of strings</code></td><td>API 参数校验失败（400）</td><td>按校验信息改正提交内容。</td></tr>
+  <tr><td><code>401 Sign in required</code></td><td>未登录或会话过期</td><td>重新登录；本地 http 与 Secure 属性的关系见第 08 章。</td></tr>
+  <tr><td><code>409 该邮箱已注册</code></td><td>邮箱已存在</td><td>换邮箱注册，或直接登录。</td></tr>
+  <tr><td><code>500 Unable to ...</code></td><td>服务器内部错误（多半是数据库/环境问题）</td><td>看 wrangler 日志（.wrangler/wrangler.log）。</td></tr>
+  <tr><td><code>Cannot find module 'xxx'</code></td><td>依赖没装或路径写错</td><td>npm install；或检查相对路径与扩展名。</td></tr>
+  <tr><td><code>node: bad option</code> / engines 警告</td><td>Node 版本不对</td><td>项目要求 &gt;=22.13.0，用 node -v 查看。</td></tr>
+  <tr><td>drizzle-kit 迁移冲突 / checksum 不对</td><td>手改了已有迁移</td><td>不手改 drizzle/，重新 npm run db:generate。</td></tr>
+  <tr><td>ESLint: <code>'x' is defined but never used</code></td><td>未使用的变量/导入</td><td>删除它。</td></tr>
+  <tr><td>ESLint 大段格式报错</td><td>风格不合规</td><td>跑 lint --fix 前先看差异，避免顺带大改。</td></tr>
+  <tr><td><code>Object literal may only specify known properties</code>（TS2353）</td><td>对象字面量写了不存在的字段名</td><td>对照类型定义检查字段拼写。</td></tr>
+  <tr><td><code>Parameter 'x' implicitly has an 'any' type</code>（TS7006）</td><td>函数参数没标类型</td><td>补参数类型标注。</td></tr>
+  <tr><td><code>Cannot read properties of undefined (reading 'x')</code></td><td>访问了 undefined 的属性</td><td>加判空或用可选链 <code>?.</code>。</td></tr>
+  <tr><td><code>too many SQL variables</code> / 绑定参数超限</td><td>单条语句绑定参数超过 D1 上限（100）</td><td>追番写入按 50 个 ID 分批（每条绑 2 个参数）。</td></tr>
+  <tr><td><code>Module not found: Can't resolve 'xxx'</code></td><td>构建时找不到模块</td><td>检查 import 路径与扩展名，或 npm install。</td></tr>
+  <tr><td><code>The edge runtime does not support Node.js APIs</code></td><td>Worker 边缘环境不支持某些 Node 内置 API</td><td>换成 Cloudflare 兼容实现（见第 07 章）。</td></tr>
+  <tr><td>ESLint a11y: <code>Form elements must have labels</code></td><td>无障碍标注缺失</td><td>补 aria-label / id 关联。</td></tr>
+  <tr><td><code>Cannot redeclare block-scoped variable 'x'</code>（TS2451）</td><td>同一作用域重复声明同名变量</td><td>改名或删除多余的声明。</td></tr>
+</table>
+</div>
+<div class="callout tip"><strong>查报错的通用流程：</strong>① 读第一行错误类型（TSxxxx / RangeError / 状态码）→ ② 定位报错里的"文件:行:列" → ③ 对表找处理动作 → ④ 改完只跑最相关的那条命令验证（如单个测试文件），别一上来就跑全量。</div>
+</section>
+
+<section id="s4">
+<h2><span class="sec-num">4</span>本教学站快捷键卡</h2>
+<p>这些是<strong>教学站本身</strong>（<span class="filepath">teach/</span> 这套页面）的交互，由 <span class="filepath">teach/app.js</span> 实现，和番剧日历项目无关。</p>
+<div class="table-wrap">
+<table>
+  <tr><th>操作</th><th>入口</th><th>说明</th></tr>
+  <tr><td>下一章 / 上一章</td><td><span class="kbd">→</span> / <span class="kbd">←</span></td><td>普通浏览时在章节间翻页。</td></tr>
+  <tr><td>演示模式</td><td>右上角 <span class="kbd">📽</span> 按钮</td><td>页面变成一屏一屏的幻灯片；此时 <span class="kbd">→</span><span class="kbd">←</span> 改为一节一节翻。</td></tr>
+  <tr><td>退出演示</td><td><span class="kbd">Esc</span> 或"退出"按钮</td><td>回到正常滚动浏览。</td></tr>
+  <tr><td>深色 / 浅色</td><td>右上角 <span class="kbd">🌙</span> / <span class="kbd">☀️</span> 按钮</td><td>手动切换主题，选择记在 localStorage 的 teach-theme。</td></tr>
+  <tr><td>勾选进度</td><td>每节末尾复选框</td><td>"本节我已掌握"，按章存 localStorage 的 teach-progress。</td></tr>
+  <tr><td>复制代码</td><td>代码块右上角"复制"按钮</td><td>一键复制整个代码块。</td></tr>
+  <tr><td>回到顶部</td><td>右下角"↑ 回到顶部"按钮</td><td>下滑超过 600px 后出现，点击平滑回顶。</td></tr>
+</table>
+<p>小提示：主题默认跟随系统（浅色/深色），只有你手动点过一次切换按钮后才固定为你的选择；进度按"章 + 节"分别记录，换浏览器或清站点数据会重置。</p>
+</div>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>通用自查清单</h2>
+<p>改完<strong>任何</strong>东西，按下面顺序过一遍再交卷。前三条是硬门槛，后五条是项目专属的易漏点。</p>
+<div class="grid grid2">
+  <div class="card"><div class="num">①</div><h4>typecheck 通过</h4><p><span class="kbd">npm run typecheck</span> 无报错。</p></div>
+  <div class="card"><div class="num">②</div><h4>lint 通过</h4><p><span class="kbd">npm run lint -- --ignore-pattern .worktrees</span> 无 error。</p></div>
+  <div class="card"><div class="num">③</div><h4>测试全绿</h4><p><span class="kbd">npm test</span> = typecheck + build + node --test。</p></div>
+  <div class="card"><div class="num">④</div><h4>两套主题</h4><p>亮/暗色各点一遍，颜色都走 token，无硬编码色值。</p></div>
+  <div class="card"><div class="num">⑤</div><h4>移动端 ≤ 860px</h4><p>缩窄窗口，确认还是单日选择器 + 议程，桌面吸顶已关闭。</p></div>
+  <div class="card"><div class="num">⑥</div><h4>?page= 路由后退</h4><p>搜索/我的/统计来回切，浏览器前进后退不丢状态。</p></div>
+  <div class="card"><div class="num">⑦</div><h4>catalogCount 一致</h4><p>每个季度 catalogCount === 该季度 anime.length。</p></div>
+  <div class="card"><div class="num">⑧</div><h4>封面图集已重生成</h4><p>动过封面后，依次跑 convert:covers-webp 与 generate:cover-sprites。</p></div>
+</div>
+<div class="callout analogy"><strong>类比：</strong>这套清单就是竞赛里的"交卷前检查"——样例过了不算完，还得手造边界数据、检查数组越界、确认没改坏之前的 AC 题。网站也一样：单点能跑不等于整体没回归。改目录数据时再补一条：<strong>保留 *Source 审计标记与数据来源 URL，并更新 season.updatedAt</strong>。</div>
+</section>
+
+<div class="callout tip"><strong>附录不是用来背的：</strong>它是"用到时来查"的手册。第一次查会陌生，查三次就自然记住了——就像查 C++ 的 STL 函数签名，用多了，不需要刻意记。</div>
+</main>
+</body>
+</html>

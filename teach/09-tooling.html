@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 · 工具链与测试｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="09">
+<main>
+<h1>工具链与测试：从"能跑"到"敢改"</h1>
+<p class="lead">前八章你读懂了代码。这一章解决"怎么改、怎么验证"：<strong>npm 命令是什么、构建产物是什么、测试为什么是你在竞赛里写过的对拍</strong>。学完这一章，你才敢动手改项目而不怕改坏。</p>
+<div class="chapter-meta">
+  <span class="badge hot">第 09 章</span>
+  <span class="badge">前置：第 01 章 JS/TS 速通</span>
+  <span class="badge">涉及 package.json · tests/ · tsc/eslint</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>心智模型：Node、npm 是什么</h2>
+<p>你之前学 JS，它大多活在浏览器里；但浏览器没有文件系统、没有进程、不能开服务器。Node.js 让 JS <strong>离开浏览器、直接在电脑上跑</strong>——就像 Python 的解释器 <code>python</code>。有了它，JS 也能读文件、跑脚本、开服务。</p>
+<div class="table-wrap">
+<table>
+  <tr><th>Web/Node 世界</th><th>Python 世界的对应物</th><th>干什么</th></tr>
+  <tr><td>Node.js</td><td><code>python</code> 解释器</td><td>执行 <code>.js</code>/<code>.mjs</code> 文件</td></tr>
+  <tr><td>npm</td><td><code>pip</code></td><td>包管理器，装第三方库</td></tr>
+  <tr><td><code>package.json</code></td><td><code>requirements.txt</code> + 构建脚本</td><td>声明依赖和版本，还声明一堆 <code>scripts</code> 命令</td></tr>
+  <tr><td><code>node_modules/</code></td><td><code>site-packages/</code></td><td>装好的库，体积巨大，<strong>不提交进 git</strong></td></tr>
+  <tr><td><code>npx</code></td><td><code>python -m</code></td><td>临时运行一个包的命令，不必全局安装</td></tr>
+</table>
+</div>
+<div class="callout analogy"><strong>类比：</strong><code>pip install numpy</code> 把 numpy 装进 site-packages，然后 <code>import numpy</code> 就能用；对应地 <code>npm install</code> 把依赖装进 node_modules，然后 <code>import</code> 就能用。<code>python script.py</code> 对应 <code>node script.mjs</code>。唯一区别：Node 用 <code>package.json</code> <strong>显式记录</strong>每个依赖及其版本，而不是靠"我记得我装过"这种脑内记忆。</div>
+<p>两个容易混的细节：</p>
+<ul>
+  <li><code>package.json</code> 记录"我要什么"（依赖名 + 兼容范围）；<code>package-lock.json</code> 记录"我实际装了哪一版"（完整依赖树的精确锁定）。两者都提交进 git，保证队友 <code>npm install</code> 装出来和你一模一样。</li>
+  <li>项目顶部有 <code>"type": "module"</code>，声明这是 ES Module 项目——所以源码用 <code>import</code>/<code>export</code>，测试文件后缀是 <code>.mjs</code>（module JS）。这就像"这是 .py 而不是 .pyc"，是模块系统的标记。</li>
+</ul>
+<p>这个项目对 Node 版本有硬性门槛：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">package.json</span> engines 字段</div>
+<pre><code class="lang-json">"engines": {
+  "node": "&gt;=22.13.0"
+}</code></pre>
+</div>
+<p>太旧的 Node 会缺 API（比如 <code>node:test</code> 的某些特性）。装环境第一步，先 <span class="kbd">node --version</span> 确认版本达标。</p>
+</section>
+
+<section id="s2">
+<h2><span class="sec-num">2</span>package.json 的 scripts：项目的命令面板</h2>
+<p>所有 <code>npm run xxx</code> 都定义在 <span class="filepath">package.json</span> 的 <code>scripts</code> 字段里。下面是本项目的全部脚本，逐条讲：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>命令</th><th>实际内容</th><th>什么时候用</th><th>产出</th></tr>
+  <tr><td><code>npm run dev</code></td><td><code>WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev --hostname 0.0.0.0</code></td><td>本地开发</td><td>开发服务器，改代码热更新</td></tr>
+  <tr><td><code>npm run build</code></td><td><code>WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build</code></td><td>提交 / 部署前</td><td><code>dist/</code> 生产产物</td></tr>
+  <tr><td><code>npm run start</code></td><td><code>WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start</code></td><td>本地跑构建产物</td><td>起一个托管 <code>dist/</code> 的服务</td></tr>
+  <tr><td><code>npm run typecheck</code></td><td><code>tsc --noEmit</code></td><td>每次改完代码</td><td>类型错误报告（不产出文件）</td></tr>
+  <tr><td><code>npm test</code></td><td><code>npm run typecheck &amp;&amp; npm run build &amp;&amp; node --test tests/*.test.mjs</code></td><td>交付前</td><td>三步全绿才算健康</td></tr>
+  <tr><td><code>npm run lint</code></td><td><code>eslint . --ignore-pattern dist --ignore-pattern .next</code></td><td>改完代码</td><td>风格 / 潜在 bug 报告</td></tr>
+  <tr><td><code>npm run db:generate</code></td><td><code>drizzle-kit generate</code></td><td>改 <span class="filepath">db/schema.ts</span> 后</td><td><code>drizzle/</code> 迁移文件</td></tr>
+  <tr><td><code>npm run generate:anilist-pilot</code></td><td><code>node scripts/generate-anilist-pilot.mjs</code></td><td>更新 AniList 排期</td><td><code>data/anilist-&lt;year&gt;.js</code></td></tr>
+  <tr><td><code>npm run generate:syoboi-history</code></td><td><code>node scripts/generate-syoboi-history.mjs</code></td><td>抓电视排期快照</td><td><code>data/syoboi-history-&lt;year&gt;.js</code></td></tr>
+  <tr><td><code>npm run generate:yuc-history-pilot</code></td><td><code>node scripts/generate-yuc-history-pilot.mjs</code></td><td>生成历史目录</td><td><code>data/yuc-history-&lt;year&gt;.js</code></td></tr>
+  <tr><td><code>npm run convert:covers-webp</code></td><td><code>node scripts/convert-covers-to-webp.mjs</code></td><td>封面转 WebP</td><td>本地 WebP 封面 + 更新逻辑路径</td></tr>
+  <tr><td><code>npm run generate:cover-sprites</code></td><td><code>node scripts/generate-cover-sprites.mjs</code></td><td>打包封面图集</td><td><code>data/cover-sprites.js</code> + 图集文件</td></tr>
+</table>
+</div>
+<p>几个要点：</p>
+<ul>
+  <li><code>WRANGLER_LOG_PATH=.wrangler/wrangler.log</code> 是<strong>环境变量前缀</strong>（Linux 里 <code>VAR=value cmd</code> 的写法），把 Wrangler 的日志写到文件里，避免污染终端输出。</li>
+  <li><code>npm test</code> 里的 <code>&amp;&amp;</code> 是"短路与"：前一步失败，后面就不跑了。所以它是<strong>类型检查 → 构建 → 测试</strong>的三步流水线。</li>
+  <li><code>npm run lint</code> 仓库约定还要额外加 <code>--ignore-pattern .worktrees</code>（嵌套 worktree 场景），见 <span class="filepath">AGENTS.md</span> 的"开发与验证"一节。</li>
+</ul>
+<div class="callout tip"><strong>数据 / 封面脚本有顺序：</strong>改排期数据时，顺序是 AniList → YUC 目录 → しょぼい快照 → 再生成 YUC 目录；改封面时先 <code>convert:covers-webp</code> 再 <code>generate:cover-sprites</code>。顺序反了，合并或打包结果会缺字段。这些生成出来的文件都标注"不得手工编辑"——改完记得跑对应脚本，再跑测试。</div>
+<p>第一次克隆项目，先 <code>npm install</code> 把依赖装进 <code>node_modules/</code>，之后 <code>npm run xxx</code> 才找得到工具。日常你基本不需要碰 <code>node_modules/</code>——它只是"工具的家"，改了没意义，删了重装即可。</p>
+</section>
+
+<section id="s3">
+<h2><span class="sec-num">3</span>dev 与 build：开发态 vs 生产态</h2>
+<p>同一个项目活在两个"世界"里：</p>
+<div class="grid grid2">
+  <div class="card">
+    <div class="num">dev</div>
+    <h4>开发服务器（npm run dev）</h4>
+    <p>源码即真相，改一行立刻热更新，反馈要快。像竞赛里"本地跑样例"，随时改随时看，不在乎启动慢一点。</p>
+  </div>
+  <div class="card">
+    <div class="num">build</div>
+    <h4>生产构建（npm run build）</h4>
+    <p>把源码打包压缩成体积小、启动快的产物放进 <code>dist/</code>，Cloudflare Worker 运行时用它。像交卷前把程序编译成最终可执行文件。</p>
+  </div>
+</div>
+<p>构建产物的关键区别：<strong>改了源码不重新 build，部署出去的东西不会变</strong>。下面这些目录都是"生成物"，不要手改、不要提交（它们已被 git 忽略）：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>目录</th><th>谁生成的</th><th>为什么别碰</th></tr>
+  <tr><td><code>dist/</code></td><td><code>npm run build</code></td><td>打包产物，下次 build 整个覆盖</td></tr>
+  <tr><td><code>.next/</code></td><td>Next 开发 / 构建中间缓存</td><td>缓存，可随时删</td></tr>
+  <tr><td><code>.wrangler/</code></td><td>Wrangler 本地状态与日志</td><td>本地状态，可能含敏感信息，不可提交</td></tr>
+</table>
+</div>
+<div class="diagram">
+<svg viewBox="0 0 760 150" xmlns="http://www.w3.org/2000/svg">
+  <rect class="dg-box accent" x="20" y="40" width="170" height="70" rx="12"/>
+  <text class="dg-title" x="105" y="70" text-anchor="middle">源码</text>
+  <text class="dg-text" x="105" y="90" text-anchor="middle">app/ · lib/ · data/</text>
+  <rect class="dg-box" x="270" y="40" width="200" height="70" rx="12"/>
+  <text class="dg-title" x="370" y="70" text-anchor="middle">vinext build</text>
+  <text class="dg-text" x="370" y="90" text-anchor="middle">打包 + 压缩 + 复制元数据</text>
+  <rect class="dg-box plain" x="550" y="40" width="190" height="70" rx="12"/>
+  <text class="dg-title" x="645" y="70" text-anchor="middle">dist/</text>
+  <text class="dg-text" x="645" y="90" text-anchor="middle">Worker 运行时用的产物</text>
+  <path class="dg-edge" d="M 190 75 L 266 75"/>
+  <path class="dg-edge" d="M 470 75 L 546 75"/>
+</svg>
+</div>
+<div class="callout warn"><strong>顺带一提：</strong><span class="filepath">build/sites-vite-plugin.ts</span> 在构建时会把 <span class="filepath">.openai/hosting.json</span> 和 <span class="filepath">drizzle/</span> 复制进 <code>dist/.openai/</code>。所以你直接往 <code>dist/</code> 里塞东西没用——它每次构建都被重建。要改部署相关的东西，去改真正的源文件。</div>
+</section>
+
+<section id="s4">
+<h2><span class="sec-num">4</span>关键依赖一句话定位</h2>
+<p><span class="filepath">package.json</span> 把依赖分成 <code>dependencies</code>（运行时用）和 <code>devDependencies</code>（开发时用）两类。你只要认识下面这些：</p>
+<div class="grid grid2">
+  <div class="card"><h4>next</h4><p>全栈框架：路由、页面、API 的总调度。</p></div>
+  <div class="card"><h4>react / react-dom</h4><p>界面库，"UI = f(state)" 的实现。</p></div>
+  <div class="card"><h4>typescript</h4><p>给 JS 加类型的编译器（<code>tsc</code>）。</p></div>
+  <div class="card"><h4>vinext + vite</h4><p>把 Next 打包成 Cloudflare Worker 的构建器。</p></div>
+  <div class="card"><h4>wrangler</h4><p>Cloudflare 命令行工具：本地模拟绑定、部署。</p></div>
+  <div class="card"><h4>drizzle-orm + drizzle-kit</h4><p>操作 D1 数据库、生成迁移。</p></div>
+  <div class="card"><h4>eslint（+ eslint-config-next）</h4><p>代码静态检查，抓潜在 bug 和风格问题。</p></div>
+  <div class="card"><h4>@types/*</h4><p>给第三方库补类型提示，让编辑器会提示。</p></div>
+</div>
+<div class="callout tip"><strong>不用背版本号：</strong>依赖的精确版本都锁在 <span class="filepath">package.json</span> 里（比如 <code>next</code> 16.2.6、<code>vinext</code> 0.0.50）。你要记的只是"这个包管什么"，具体装哪个版本交给 npm。</div>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>静态检查：改完先让编译器帮你找 bug</h2>
+<h3>tsc --noEmit：只检查，不产出</h3>
+<p>TypeScript 编译器 <code>tsc</code> 会把 <code>.ts</code> 编译成 JS；加 <code>--noEmit</code> 后它"<strong>只查不产</strong>"——像竞赛里"只编译不运行"，让类型系统在程序跑起来之前就把错误报出来。其中最关键的是 <strong>strict null 检查</strong>：类型是 <code>string | null</code> 的值，必须先判 <code>null</code> 才能用，否则报错。</p>
+<p>这正好解释了上一章 <code>getSessionUser(): Promise&lt;SessionUser | null&gt;</code> 为什么逼着每个调用点写 <code>if (!user) return ...</code>——<strong>类型系统在强制你处理"未登录"这个分支</strong>，漏了就直接编译报错，而不是等到线上才发现空指针。</p>
+<div class="callout tip"><strong>报错怎么读：</strong>格式是"文件:行:列 + 错误码 + 信息"，例如 <code>app/auth.ts:36:5 - error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'</code>。常见错误码：<code>TS2345</code> 类型不匹配、<code>TS2322</code> 赋值类型不对、<code>TS2339</code> 属性不存在。像 OJ 的 CE/Warning，错误码可以直接搜索查含义。</div>
+<h3>strict null 检查长什么样</h3>
+<p>看一个最小例子——类型是 <code>string | null</code>，不判空直接当字符串用，<code>tsc</code> 直接报错：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">概念演示</span> 不是项目代码，只为说明报错</div>
+<pre><code class="lang-ts">function upper(name: string | null) {
+  return name.toUpperCase(); // ❌ 报错：name 可能是 null
+}
+
+function upperSafe(name: string | null) {
+  if (name === null) return ""; // 先判空
+  return name.toUpperCase();    // ✅ 这里 name 一定是 string
+}</code></pre>
+</div>
+<div class="table-wrap">
+<table>
+  <tr><th>错误码</th><th>含义</th><th>像竞赛里的什么</th></tr>
+  <tr><td><code>TS2345</code></td><td>传给函数的参数类型不对</td><td>把 int 传进要 string 的函数</td></tr>
+  <tr><td><code>TS2322</code></td><td>赋值类型不对</td><td>给 int 变量赋了个 string</td></tr>
+  <tr><td><code>TS2339</code></td><td>对象上不存在这个属性</td><td>访问结构体里没有的成员</td></tr>
+  <tr><td><code>TS2531</code></td><td>对象可能是 null，直接用了</td><td>解引用空指针</td></tr>
+</table>
+</div>
+<h3>ESLint：抓"长得像 bug"的写法</h3>
+<p>ESLint 不关心类型，关心<strong>风格和常见坑</strong>：未使用的变量、<code>==</code> 写成 <code>===</code>、定义后没用、JSX 的无障碍（a11y）问题等。命令：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">终端</span> 静态检查两条命令</div>
+<pre><code class="lang-bash">npm run typecheck
+npm run lint -- --ignore-pattern .worktrees</code></pre>
+</div>
+<div class="callout tip"><strong>三层防线分工：</strong>lint（风格 / 潜在 bug）→ typecheck（类型）→ test（行为）。前两层都是"静态"的，不运行代码，快；第三层才真正验证程序行为。三者不互相替代。</div>
+</section>
+
+<section id="s6">
+<h2><span class="sec-num">6</span>测试：把"对拍"变成能自动重跑的断言</h2>
+<p>竞赛里你做对拍（暴力 vs 正解）、手造数据、拿样例验证。单元测试就是把这件事<strong>固化下来</strong>：给输入 → 断言输出，之后每次改动都自动重跑，谁改坏了立刻报警。</p>
+<h3>node:test + assert：Node 内置，不用装框架</h3>
+<p><code>node:test</code> 提供 <code>test()</code> 函数；<code>node:assert/strict</code> 提供 <code>assert.equal / deepEqual / match / throws</code> 等断言。它们都是 Node 内置模块、零依赖——这也是为什么本项目 <span class="filepath">package.json</span> 里没有任何测试框架。</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">tests/calendar.test.mjs</span> 一个真实测试（节选，省略其余导入与测试）</div>
+<pre><code class="lang-js">import assert from "node:assert/strict";
+import test from "node:test";
+import * as calendar from "../lib/calendar.js";
+
+const { seasonForWeek } = calendar; // 真实文件解构了 20+ 个导出，这里只留用到的
+
+const seasons = [
+  { id: "2024-april", firstWeekStart: "2024-04-01" },
+  { id: "2025-january", firstWeekStart: "2024-12-30" },
+  { id: "2025-april", firstWeekStart: "2025-03-31" },
+  { id: "2025-october", firstWeekStart: "2025-09-29" },
+  { id: "2026-january", firstWeekStart: "2025-12-29" },
+  { id: "2026-april", firstWeekStart: "2026-03-30" },
+];
+
+test("keeps a cross-quarter week in its previous season until the next full week", () =&gt; {
+  assert.equal(seasonForWeek(seasons, "2024-04-01").id, "2024-april");
+  assert.equal(seasonForWeek(seasons, "2025-03-31").id, "2025-january");
+  assert.equal(seasonForWeek(seasons, "2025-04-07").id, "2025-april");
+  assert.equal(seasonForWeek(seasons, "2025-12-29").id, "2025-october");
+  assert.equal(seasonForWeek(seasons, "2026-01-05").id, "2026-january");
+  assert.equal(seasonForWeek(seasons, "2026-04-06").id, "2026-april");
+});</code></pre>
+</div>
+<p>这一串 <code>assert.equal</code> 翻译成人话就是："某周的 3/31 还属于上一季度 1 月番，直到 4/7 进入完整的新一周才算 4 月番"。每一个 <code>assert</code> 都是一句"给定输入，期望输出"——和你对拍里"这组数据暴力程序输出 X"一模一样。测试挂了，等于对拍发现暴力与正解不一致，说明有人改坏了 <code>seasonForWeek</code> 的跨季度归属逻辑。</p>
+<h3>assert 的几个常用招式</h3>
+<p>把竞赛里的验证动作翻译成断言，就这几条：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>断言</th><th>验证什么</th><th>竞赛对应</th></tr>
+  <tr><td><code>assert.equal(a, b)</code></td><td>两个值严格相等</td><td>程序输出 == 样例输出</td></tr>
+  <tr><td><code>assert.deepEqual(a, b)</code></td><td>对象 / 数组逐字段相等</td><td>比较两个结构体每个成员</td></tr>
+  <tr><td><code>assert.match(s, /re/)</code></td><td>字符串匹配正则</td><td>输出里必须含某段</td></tr>
+  <tr><td><code>assert.throws(fn, Error)</code></td><td>调用应当抛错</td><td>非法输入应返回错误码</td></tr>
+</table>
+</div>
+<p>比如 <code>assert.throws</code> 就对应"非法输入要报错"：<span class="filepath">tests/calendar.test.mjs</span> 里 <code>assert.throws(() =&gt; timelineOffsetMinutes("14:59"), RangeError)</code>，就是断言"14:59 这个越界时间必须抛 <code>RangeError</code>，而不是静默算出个错值"。</p>
+<h3>tests/ 目录 16 个文件各测什么</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>文件</th><th>测什么</th></tr>
+  <tr><td><code>calendar.test.mjs</code></td><td>日期 / 周历 / 时间轴核心算法（本章示例）</td></tr>
+  <tr><td><code>schedule.test.mjs</code></td><td>JST → 北京时间转换、按星期归类</td></tr>
+  <tr><td><code>anime-data.test.mjs</code></td><td><span class="filepath">data/</span> 目录完整性：id 唯一、catalogCount、必备字段</td></tr>
+  <tr><td><code>anime-search.test.mjs</code></td><td>中日文标题的规范化匹配</td></tr>
+  <tr><td><code>anime-statistics.test.mjs</code></td><td>已看进度、今日播出聚合</td></tr>
+  <tr><td><code>anime-labels.test.mjs</code></td><td>网络放送等文案标签</td></tr>
+  <tr><td><code>anime-selections.test.mjs</code></td><td>追番 ID 去重与白名单校验</td></tr>
+  <tr><td><code>anime-selection-storage.test.mjs</code></td><td>追番列表整表替换的分批与原子性</td></tr>
+  <tr><td><code>anime-episode-views.test.mjs</code></td><td>单集"已看"单元展开、白名单与范围校验</td></tr>
+  <tr><td><code>anime-episode-views-storage.test.mjs</code></td><td>已看标记存储语义与旧连播记录迁移</td></tr>
+  <tr><td><code>auth.test.mjs</code></td><td>密码哈希 / 会话 token / 校验规则，以及 auth 路由契约</td></tr>
+  <tr><td><code>auth-client-flow.test.mjs</code></td><td>注册 → 登录 → 退出 → 当前用户的端到端流程</td></tr>
+  <tr><td><code>avatar.test.mjs</code></td><td>头像 URL 生成</td></tr>
+  <tr><td><code>rendered-html.test.mjs</code></td><td>构建后 Worker 渲染出的服务端 HTML</td></tr>
+  <tr><td><code>package-scripts.test.mjs</code></td><td>守护 <span class="filepath">package.json</span> 脚本本身的正确性</td></tr>
+  <tr><td><code>syoboi.test.mjs</code></td><td>しょぼい电视排期快照解析</td></tr>
+</table>
+</div>
+<div class="callout tip"><strong>注意两类测试：</strong>像 <code>calendar.test.mjs</code> 是"纯函数测试"，直接 <code>import</code> 模块断言；像 <code>auth.test.mjs</code> 会去<strong>读源文件内容做断言</strong>（比如检查路由里有没有 <code>status: 409</code>、有没有 <code>getSessionUser()</code>），把"代码长这样"也变成可自动验证的契约。这就是那些"哨兵测试"的原理。</div>
+</section>
+
+<section id="s7">
+<h2><span class="sec-num">7</span>修 bug 的正确姿势：红 → 绿 → 永不复发</h2>
+<p>这是 <span class="filepath">AGENTS.md</span> 里反复强调的核心工作流——<strong>回归测试方法论</strong>：</p>
+<ol class="steps">
+  <li><strong>红：</strong>先写一个"复现当前 bug 行为"的测试，运行它，确认它<strong>失败</strong>。比如发现某跨季度周显示错了季度，先写 <code>assert.equal(seasonForWeek(seasons, "2025-03-31").id, "2025-january")</code>，现在代码是错的 → 测试红。</li>
+  <li><strong>绿：</strong>做<strong>最小修复</strong>，让这个新测试通过，同时不破坏别的测试。</li>
+  <li><strong>守护：</strong>提交。以后任何人改坏这个逻辑，<code>npm test</code> 立刻报警。</li>
+</ol>
+<div class="callout analogy"><strong>为什么先写测试？</strong>因为 bug 的本质是"代码的实际行为 ≠ 我们以为的行为"。先把"以为的正确行为"用断言写死，修复才有靶子，也能证明你真的修对了——而不是"看起来好了"。这和竞赛里"先确定正解输出，再修 WA 的程序"是同一个道理。</div>
+<h3>日常工作流</h3>
+<ol class="steps">
+  <li>改代码——只动与任务直接相关的文件，别顺手格式化大文件。</li>
+  <li>跑 <code>npm run typecheck</code> 和 <code>npm run lint -- --ignore-pattern .worktrees</code>（静态两道防线，快）。</li>
+  <li>跑 <code>npm test</code>（类型 → 构建 → 测试三步流水线，全绿才健康）。</li>
+  <li><code>git</code> 提交。</li>
+</ol>
+<div class="callout warn"><strong>改数据 / 封面之后：</strong>先跑对应生成脚本（<code>generate:yuc-history-pilot</code>、<code>convert:covers-webp</code>、<code>generate:cover-sprites</code> 等），<strong>再</strong>跑测试——因为测试会断言生成后的数据 / 图集，顺序反了测试会红。而且 <code>npm test</code> 会先做严格类型检查、再导入构建后的 Worker 检查服务端 HTML，不能只拿 <code>tsc</code> 糊弄过去。</div>
+<div class="callout exercise"><strong>动手练：</strong>打开 <span class="filepath">tests/calendar.test.mjs</span>，找到任意一个 <code>test(...)</code>，逐句读出"输入是什么、期望输出是什么"。然后运行 <code>node --test tests/calendar.test.mjs</code>，看看绿勾长什么样。这是你第一次"亲手跑对拍"。</div>
+<p>几个顺手的小技巧：只跑一个测试文件用 <code>node --test tests/calendar.test.mjs</code>；只跑一个用例按名字过滤用 <code>node --test --test-name-pattern "cross-quarter" tests/calendar.test.mjs</code>。排查单个失败时不用每次跑全套，先精准复现、修好，再跑一次全绿收尾。</p>
+<h3>命令速查（背下来）</h3>
+<ul>
+  <li><code>npm run dev</code> —— 本地开发，改代码热更新。</li>
+  <li><code>npm run typecheck</code> / <code>npm run lint</code> —— 改完先跑的两道静态防线。</li>
+  <li><code>npm test</code> —— 交付前三连：类型 → 构建 → 测试。</li>
+  <li><code>npm run db:generate</code> —— 只在你改了 <span class="filepath">db/schema.ts</span> 后跑。</li>
+  <li><code>npm run generate:*</code> / <code>convert:*</code> —— 只在你改了数据 / 封面后跑。</li>
+</ul>
+</section>
+
+<section id="s8">
+<h2><span class="sec-num">8</span>本章自测</h2>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">1. <code>npm test</code> 一步实际做了哪三步？</p>
+  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. typecheck → lint → build</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. typecheck → build → 跑 tests/*.test.mjs</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. build → deploy → test</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. lint → build → test</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p><span class="filepath">package.json</span> 写得清清楚楚：<code>test = npm run typecheck &amp;&amp; npm run build &amp;&amp; node --test tests/*.test.mjs</code>。三步全过才算健康，<code>&amp;&amp;</code> 保证前一步失败后面就不跑。</p></div>
+</form>
+<form class="quiz" data-answer="A,B,C">
+  <p class="quiz-q">2.（多选）下面哪些是"生成物目录"，不能手改、不能提交？</p>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="A"><span>A. dist/</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="B"><span>B. .next/</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="C"><span>C. .wrangler/</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="D"><span>D. lib/calendar.js</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p><code>dist/</code> 是构建产物（每次 build 覆盖）、<code>.next/</code> 是中间缓存、<code>.wrangler/</code> 是本地状态，三者都被 git 忽略、不可提交。而 <code>lib/calendar.js</code> 是真正的源码，正是你该改的地方。</p></div>
+</form>
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">3. <code>tsc --noEmit</code> 的作用是？</p>
+  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. 编译 TS 并输出 JS 文件</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 只做类型检查，不产出任何文件</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. 运行测试</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 压缩代码体积</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p><code>--noEmit</code> 直译就是"不产出"：<code>tsc</code> 照常做全部类型检查、该报的错照报，但不会生成任何 <code>.js</code> 文件。它像"只编译不运行"，是改完代码后最快的一道防线。</p></div>
+</form>
+</section>
+</main>
+</body>
+</html>

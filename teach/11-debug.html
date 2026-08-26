@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11 · 修 bug 方法论｜番剧日历教学站</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body data-chapter="11">
+<main>
+<h1>修 bug 方法论：把它当成一道证明题</h1>
+<p class="lead">修 bug 不是「碰运气多试几次」，而是一套可以复用的推理流程。你打竞赛练出来的三种能力——<strong>不慌、会二分、会造数据</strong>——在这里全部用得上。这一章教你把「这个页面怎么又坏了」翻译成「我该怎么定位到那一行」。</p>
+<div class="chapter-meta">
+  <span class="badge hot">核心方法论</span>
+  <span class="badge">前置：第 01～09 章</span>
+  <span class="badge">配套：第 10 章维护 SOP</span>
+  <span class="badge">工具：浏览器 DevTools</span>
+</div>
+<nav class="chapter-toc" data-auto-toc></nav>
+
+<section id="s1">
+<h2><span class="sec-num">1</span>心态开场：bug 就是「反例」，你找到了一个</h2>
+<p>数学上，一个命题「系统总是正确」被一行现象推翻，那个现象就是<strong>反例</strong>。bug 的定义就是：<strong>系统的实际行为 ≠ 你的预期</strong>。所以出现 bug 是好事——你拿到了一个反例，它精确地告诉你「某个假设不成立」。</p>
+<p>修 bug 和数学证明的节奏完全一样：</p>
+<ul>
+  <li><strong>先构造反例（复现）</strong>——找到能 100% 触发错误的最简操作序列。</li>
+  <li><strong>再缩小范围（二分）</strong>——把「可疑代码」一分为二，判断 bug 在哪半边。</li>
+  <li><strong>最后定位到破坏不变量（invariant）的那一行</strong>——所谓 invariant，就是「任何时候都必须成立的性质」，比如 <code>catalogCount === anime.length</code>、比如「先行集数不能塞进电视时段」。bug 的本质，就是某一行代码破坏了一个你原本以为成立的不变量。</li>
+</ul>
+<div class="callout analogy"><strong>给竞赛选手：</strong>你在考场上已经会「造一组卡掉自己代码的数据 → 二分出错的区间 → 盯着那行找边界」。修 bug 一模一样，只是「数据」换成了「操作步骤」，「printf 大法」换成了 <code>console.log</code>，「gdb 单步」换成了浏览器 Sources 断点。唯一的新东西是 Web 报错的红字格式，下面第 3 节专门教你读。</div>
+<dl class="terms">
+  <dt>反例 <span class="en">counterexample</span></dt>
+  <dd>能让系统行为与预期不一致的最小操作序列。修 bug 第一步永远是先「拿到一个稳定的反例」。</dd>
+  <dt>不变量 <span class="en">invariant</span></dt>
+  <dd>程序任何时刻都必须成立的性质。bug = 某一行破坏了某个不变量；修 bug = 找到并恢复那个不变量。</dd>
+  <dt>调用栈 <span class="en">stack trace</span></dt>
+  <dd>报错时记录下的「谁调用了谁」的函数调用链，从最外层调用到出错的那一行。</dd>
+  <dt>回归测试 <span class="en">regression test</span></dt>
+  <dd>专门为「某个 bug 不能再出现」而写的测试。它先失败、修复后变绿，从此一直帮你盯这个坑。</dd>
+</dl>
+</section>
+
+<section id="s2">
+<h2><span class="sec-num">2</span>五步法：从「它坏了」到「修好了」</h2>
+<ol class="steps">
+  <li><strong>稳定复现</strong>：找到能 100% 触发 bug 的最简操作序列（最小反例）。「偶尔点一下会闪」不算复现——你要的是「第 1 步点 X，第 2 步点 Y，必现」。</li>
+  <li><strong>缩小范围</strong>：二分法。注释掉一半代码、或只留一半数据，看 bug 还在不在——和竞赛里二分定位错误区间一模一样，每步排除一半嫌疑。</li>
+  <li><strong>定位</strong>：读报错（第 3 节）、<code>console.log</code> 打印中间值、Sources 打断点单步、Network 看请求，找到破坏不变量那一行。</li>
+  <li><strong>最小修复</strong>：只改必要的那一处，不顺手重构。能改一行就不改两行。</li>
+  <li><strong>回归</strong>：写/改一条测试，断言「这个 bug 不能再回来」，然后再跑全量测试。</li>
+</ol>
+<div class="callout tip"><strong>记忆锚点：</strong>复现 → 二分 → 定位 → 最小修复 → 回归。前两步是「缩小嫌疑」，第三步是「锁定凶手」，第四步是「动刀」，第五步是「装监控防止再犯」。跳过回归，同一个坑你迟早掉第二次。</div>
+<div class="diagram">
+<svg viewBox="0 0 760 170" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e75480"/>
+    </marker>
+  </defs>
+  <rect class="dg-box accent" x="20" y="30" width="128" height="58" rx="12"/>
+  <text class="dg-title" x="84" y="54" text-anchor="middle">①稳定复现</text>
+  <text class="dg-text" x="84" y="72" text-anchor="middle">最小反例</text>
+  <rect class="dg-box" x="160" y="30" width="128" height="58" rx="12"/>
+  <text class="dg-title" x="224" y="54" text-anchor="middle">②缩小范围</text>
+  <text class="dg-text" x="224" y="72" text-anchor="middle">二分法</text>
+  <rect class="dg-box" x="300" y="30" width="128" height="58" rx="12"/>
+  <text class="dg-title" x="364" y="54" text-anchor="middle">③定位</text>
+  <text class="dg-text" x="364" y="72" text-anchor="middle">破坏点那一行</text>
+  <rect class="dg-box" x="440" y="30" width="128" height="58" rx="12"/>
+  <text class="dg-title" x="504" y="54" text-anchor="middle">④最小修复</text>
+  <text class="dg-text" x="504" y="72" text-anchor="middle">只改必要处</text>
+  <rect class="dg-box" x="580" y="30" width="128" height="58" rx="12"/>
+  <text class="dg-title" x="644" y="54" text-anchor="middle">⑤回归</text>
+  <text class="dg-text" x="644" y="72" text-anchor="middle">写测试防复发</text>
+  <path class="dg-edge" d="M 148 59 L 156 59" marker-end="url(#arr11)"/>
+  <path class="dg-edge" d="M 288 59 L 296 59" marker-end="url(#arr11)"/>
+  <path class="dg-edge" d="M 428 59 L 436 59" marker-end="url(#arr11)"/>
+  <path class="dg-edge" d="M 568 59 L 576 59" marker-end="url(#arr11)"/>
+  <path class="dg-edge muted" d="M 644 88 L 644 140 L 84 140 L 84 92" marker-end="url(#arr11)"/>
+  <text class="dg-edge-label" x="364" y="156" text-anchor="middle">回归后再复现，确认修复</text>
+</svg>
+</div>
+<h3>五步法实战：追番保存后偶尔全丢</h3>
+<p>拿本项目一个真实陷阱走一遍。症状：用户收藏了很多番，点保存后<strong>偶尔</strong>整张追番列表变空。</p>
+<ol class="steps">
+  <li><strong>稳定复现</strong>：发现「收藏超过 50 部」时才触发——50 部以内没事，超过 50 部偶发清空。</li>
+  <li><strong>缩小范围</strong>：定位到写接口 <span class="filepath">app/api/anime-selections/route.ts</span> 的 <code>PUT</code>，是「保存」这条路出问题。</li>
+  <li><strong>定位</strong>：读代码——D1 单条语句最多绑定 100 个参数，每个追番写入绑 2 个参数（邮箱 + 番剧 ID），所以插入必须按最多 50 个 ID 分批。如果「删旧列表」和「各插入批次」不在同一次 <code>db.batch()</code> 里，大列表某批插入失败就会先清空、后失败，留下空列表。</li>
+  <li><strong>最小修复</strong>：把删除 + 所有插入批次放进同一次 <code>db.batch()</code>，保持原子替换。</li>
+  <li><strong>回归</strong>：写测试断言「大列表保存失败不会清空原有追番」。</li>
+</ol>
+<p>修复后的真实代码长这样——注意「删除」和「所有插入批次」被包在同一个 <code>db.batch([...])</code> 里：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">app/api/anime-selections/route.ts</span> PUT 的原子替换（真实代码）</div>
+<pre><code class="lang-ts">const db = await getDb();
+await db.batch([
+  db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)),
+  ...selectionInsertBatches(animeIds).map((batch: string[]) =&gt;
+    db.insert(animeSelections).values(batch.map((animeId) =&gt; ({ userEmail: user.email, animeId }))),
+  ),
+]);</code></pre>
+</div>
+<p>配套的分批函数在 <span class="filepath">lib/anime-selections.js</span>——每 50 个 ID 切一批：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/anime-selections.js</span> selectionInsertBatches（真实代码）</div>
+<pre><code class="lang-js">export function selectionInsertBatches(animeIds) {
+  return Array.from({ length: Math.ceil(animeIds.length / 50) }, (_, index) =&gt;
+    animeIds.slice(index * 50, (index + 1) * 50),
+  );
+}</code></pre>
+</div>
+</section>
+
+<section id="s3">
+<h2><span class="sec-num">3</span>阅读报错三件套：类型 → 信息 → 调用栈</h2>
+<p>浏览器控制台（或终端）的红字不是玄学，它按「三件套」组织，从外到里读：</p>
+<ol class="steps">
+  <li><strong>错误类型</strong>：告诉你「错的是哪一类」。四种最常见：<code>SyntaxError</code>（语法写错了，像 C++ 少个分号）、<code>TypeError</code>（对错误类型做了操作，像对 <code>int</code> 调成员）、<code>ReferenceError</code>（用了没定义的变量）、<code>RangeError</code>（数值越界，像数组越界/时间格式非法）。</li>
+  <li><strong>错误信息 error.message</strong>：黄金线索。例如 <code>TypeError: Cannot read properties of null (reading 'beijingTime')</code> 直接告诉你「某个东西是 <code>null</code>，你却读了它的 <code>beijingTime</code>」。</li>
+  <li><strong>调用栈 stack trace</strong>：一条函数调用链，像递归展开的「谁调用了谁」。从上往下读，<strong>第一处「你自己项目里的文件」就是嫌疑现场</strong>；框架内部帧（react-dom、next 那些）跳过不看。</li>
+</ol>
+<div class="table-wrap">
+<table>
+  <tr><th>错误类型</th><th>含义</th><th>本项目里典型场景</th></tr>
+  <tr><td><code>SyntaxError</code></td><td>代码语法不合法，解析就失败</td><td>改 <span class="filepath">data/anime.js</span> 漏了逗号/括号</td></tr>
+  <tr><td><code>TypeError</code></td><td>对值做了它不支持的操作</td><td><code>null</code>/<code>undefined</code> 上读字段、把字符串当函数调</td></tr>
+  <tr><td><code>ReferenceError</code></td><td>引用了一个不存在的标识符</td><td>拼错了导入名、用了未声明变量</td></tr>
+  <tr><td><code>RangeError</code></td><td>数值超出合法范围</td><td><span class="filepath">lib/calendar.js</span> 的 <code>timeToMinutes</code> 遇到非法时间格式</td></tr>
+</table>
+</div>
+<p>拿 <code>RangeError</code> 举例，<span class="filepath">lib/calendar.js</span> 里真的会主动抛它——时间格式不是 <code>HH:MM</code> 或分钟超过 59 就报：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/calendar.js</span> timeToMinutes（真实代码，省略无关行）</div>
+<pre><code class="lang-js">function timeToMinutes(time) {
+  const match = /^(\d{2}):(\d{2})$/.exec(time);
+  if (!match) throw new RangeError("Invalid schedule time: " + time);
+
+  const [, hour, minute] = match.map(Number);
+  if (minute &gt; 59) throw new RangeError("Invalid schedule time: " + time);
+  return hour * 60 + minute;
+}</code></pre>
+</div>
+<div class="callout analogy"><strong>类比：</strong>错误类型像评测机的 <code>CE / RE / WA</code>，error.message 像「第几组数据错了」，stack trace 像「错误发生在你代码的哪一行」——三者合起来，就是一份自动写好的 debug 报告，先读它，别急着瞎改。</div>
+</section>
+
+<section id="s4">
+<h2><span class="sec-num">4</span>DevTools 四面板实操（按 <span class="kbd">F12</span> 打开）</h2>
+<div class="grid grid2">
+  <div class="card">
+    <div class="num">① Console</div>
+    <h4>控制台 = 你的 printf</h4>
+    <p><code>console.log(x)</code> 打印值、点开对象展开看结构、还能直接输入表达式当 REPL 用（像 Python 交互式解释器）。查「这个变量此刻到底是什么」最快的地方。</p>
+  </div>
+  <div class="card">
+    <div class="num">② Sources</div>
+    <h4>断点 = 你的 gdb</h4>
+    <p>点行号打断点，代码跑到这里停住；再「Step over（跳过这一行）/ Step into（钻进函数里）」，右侧看局部变量。和你 IDE 里单步调试 C++ 一模一样。</p>
+  </div>
+  <div class="card">
+    <div class="num">③ Network</div>
+    <h4>网络 = 看消息怎么传</h4>
+    <p>每个请求一条记录：<strong>状态码</strong>（200 成功 / 401 未登录 / 500 服务器错）、请求与响应头、<code>Preview</code> 看返回的 JSON，还有 cookies 栏。</p>
+  </div>
+  <div class="card">
+    <div class="num">④ Application</div>
+    <h4>存储 = 看状态记在哪</h4>
+    <p>查 <code>localStorage</code> 里的 <code>ac-theme</code>（主题偏好），查 <code>Cookie</code> 里的 <code>ac_session</code>（登录会话）。「我没登录吗？」「主题怎么没存住？」都来这里看。</p>
+  </div>
+</div>
+<p>四个面板各管一段链路，配合着用：</p>
+<ul>
+  <li><strong>Console</strong>：适合看「纯函数」对不对。比如直接在控制台里 import <span class="filepath">lib/calendar.js</span> 的 <code>formatBroadcastTime</code>，输入 <code>"25:00"</code>，看是不是输出 <code>"次日 01:00"</code>——这就是用 REPL 单测一个函数。</li>
+  <li><strong>Sources</strong>：适合「逻辑对但结果不对」的情况。在 <span class="filepath">lib/calendar.js</span> 的 <code>layoutBroadcast</code> 里打断点，单步看 <code>minutes</code> 和 <code>date</code> 怎么变。</li>
+  <li><strong>Network</strong>：适合「请求没走对」。点开一个 <code>/api/...</code> 请求，看状态码是 401（没登录）还是 500（服务器报错），再看 <code>Preview</code> 里服务器返回的 JSON 错误信息。</li>
+  <li><strong>Application</strong>：适合「状态丢了」。登录后这里应该能看到 <code>ac_session</code> Cookie、<code>ac-theme</code> localStorage 条目。</li>
+</ul>
+<div class="callout tip"><strong>项目专属的两个键：</strong><code>ac-theme</code>（localStorage，存亮/暗主题选择）、<code>ac_session</code>（Cookie，登录会话）。排查「主题没记住」「一直提示未登录」时，先到 Application 面板确认这两个值在不在、有没有过期。</div>
+</section>
+
+<section id="s5">
+<h2><span class="sec-num">5</span>本项目高频 bug 速查表</h2>
+<p>先对症状，再按「定位手段」那一列去查，最后按「修复动作」那一列动手：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>症状</th><th>常见根因</th><th>定位手段</th><th>修复动作</th></tr>
+  <tr><td>某部番整个消失 / 季度列表不全</td><td><code>catalogCount ≠ anime.length</code> 或字段缺失</td><td><span class="kbd">npm test</span> 里 anime-data 测试直接报警</td><td>修数据，让两数一致、字段补全</td></tr>
+  <tr><td>凌晨节目跑到错误日期 / 时间显示 25:00</td><td>没走「凌晨归前一天」规则</td><td><span class="filepath">lib/calendar.js</span> 的 <code>layoutBroadcast</code> / <code>formatBroadcastTime</code></td><td>用正确字段，别在页面手挪日期</td></tr>
+  <tr><td>先行 N 话集数错乱</td><td>缺 <code>premiereEpisodeCount</code> / <code>premiereKind</code> / <code>regularBroadcastStartDateBeijing</code></td><td><span class="filepath">tests/calendar.test.mjs</span> 有先行+周播断言</td><td>补全四个字段</td></tr>
+  <tr><td>封面裂图 / 显示错图</td><td>图集没重新生成，或 <code>coverUrl</code> 与映射不匹配</td><td>控制台看图片 404，对照 <span class="filepath">data/cover-sprites.js</span></td><td>重跑 <code>convert:covers-webp</code> + <code>generate:cover-sprites</code></td></tr>
+  <tr><td>类型检查报 <code>Type 'X' is not assignable</code></td><td>改错字段类型 / 漏了 <code>null</code> 处理</td><td>看报错给出的 文件:行:列</td><td>按类型补 <code>null</code> 判空或修正类型</td></tr>
+  <tr><td>追番保存后偶尔全丢</td><td>分批插入没放进同一个 <code>db.batch</code></td><td>读 <span class="filepath">app/api/anime-selections/route.ts</span></td><td>删除+所有插入批次放进一次 <code>db.batch()</code></td></tr>
+  <tr><td>一直提示未登录（401）</td><td>Cookie 丢失 / 过期 / 本地 http 与 <code>Secure</code> 的关系</td><td>Network 看 <code>Set-Cookie</code>；Application 看 <code>ac_session</code></td><td>重新登录；确认协议/域名一致</td></tr>
+  <tr><td>搜索不到已知番剧</td><td>标题规范化（NFKC、小写、去空格）不一致</td><td><span class="filepath">lib/anime-search.js</span> 的 <code>matchesAnimeTitle</code></td><td>让两边用同一套规范化规则</td></tr>
+  <tr><td>移动端布局坏 / 吸顶错乱</td><td>860px 断点漏了，或桌面样式泄漏到移动端</td><td><span class="filepath">app/globals.css</span> 的媒体查询</td><td>在 <code>@media</code> 里关闭桌面专属规则</td></tr>
+  <tr><td>深色模式某处颜色不对</td><td>组件里硬编码了色值</td><td>搜组件规则里有没有 <code>#hex</code>/<code>rgb()</code></td><td>换成 token 并补暗色同名 token</td></tr>
+</table>
+</div>
+<p>搜索匹配是「规范化后子串包含」——两边必须先走同一套 <code>NFKC + 小写 + 去空格</code>：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">lib/anime-search.js</span> 标题规范化（真实代码）</div>
+<pre><code class="lang-js">function normalizedTitleText(value) {
+  return value.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+}
+
+export function matchesAnimeTitle({ titleZh, titleJa }, query) {
+  const normalizedQuery = normalizedTitleText(query);
+  if (!normalizedQuery) return true;
+
+  return [titleZh, titleJa].some((title) =&gt; normalizedTitleText(title).includes(normalizedQuery));
+}</code></pre>
+</div>
+<div class="callout tip"><strong>用法：</strong>这张表是「常见病」索引，不是「万能药」。遇到没在表里的症状，回到第 2 节的五步法一步步走——表只能加速常见情况，方法论才覆盖所有情况。</div>
+</section>
+
+<section id="s6">
+<h2><span class="sec-num">6</span>回归测试示范：先写「会失败的断言」，再修</h2>
+<p>AGENTS.md 的原文要求是：「<strong>改 bug 先在对应的 tests/*.test.mjs 添加能失败的回归测试，再做最小修复</strong>」。这跟「先写一组能卡掉 bug 的测试数据，再改代码直到通过」是一个思路：先让 bug 变成一条红掉的测试，修完它变绿，这条测试就永远帮你盯着。</p>
+<p>下面这条是 <span class="filepath">tests/calendar.test.mjs</span> 里真实存在的测试——「先行多集首播」的场景：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">tests/calendar.test.mjs</span> 先行多集首播的回归测试（真实代码）</div>
+<pre><code class="lang-js">test("keeps the full episode range for a multi-episode premiere", () =&gt; {
+  const multiEpisodePremiere = { ...weeklyShow, premiereEpisodeCount: 3 };
+
+  assert.deepEqual(
+    eventsForWeek([multiEpisodePremiere], "2026-06-29").map(({ episodeStart, episode, date }) =&gt; ({ episodeStart, episode, date })),
+    [{ episodeStart: 1, episode: 3, date: "2026-07-01" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([multiEpisodePremiere], "2026-07-06").map(({ episodeStart, episode, date }) =&gt; ({ episodeStart, episode, date })),
+    [{ episodeStart: 4, episode: 4, date: "2026-07-08" }],
+  );
+});</code></pre>
+</div>
+<p>这条测试断言了两件事：<strong>首播那一周</strong>，7 月 1 日当天把第 1～3 集一起显示成一张卡（<code>episodeStart: 1, episode: 3</code>）；<strong>下一周</strong>，固定周播从第 4 集开始（<code>episodeStart: 4, episode: 4</code>）。</p>
+<div class="callout warn"><strong>本项目一条硬性回归要求：</strong>凡是涉及「先行多集 + 后续周播」的排期，回归测试必须同时断言——① 先行日显示正确的集数范围、且没有虚构时刻；② 首个固定周播日从下一集开始。写测试时这三条缺一不可，别只测「首播日」而漏了「下一集从哪开始」。</div>
+<p>同样的要求在数据层也有一道真实回归测试兜底——<span class="filepath">tests/anime-data.test.mjs</span> 里《无职转生 第3期》的「双集先行 + 周日周播」用例：</p>
+<div class="codeblock">
+<div class="codehead"><span class="filepath">tests/anime-data.test.mjs</span> 无职转生双集首播回归测试（真实代码，省略无关行）</div>
+<pre><code class="lang-js">const mushoku = anime.find(({ id }) =&gt; id === "mushoku-3");
+
+assert.deepEqual(
+  eventsForWeek([mushoku], "2026-06-29").map(({ episodeStart, episode, broadcastDate, time }) =&gt; ({
+    episodeStart, episode, broadcastDate, time,
+  })),
+  [{ episodeStart: 1, episode: 2, broadcastDate: "2026-07-04", time: "19:00" }],
+);
+assert.deepEqual(
+  eventsForWeek([mushoku], "2026-07-06").map(({ episode, broadcastDate, time }) =&gt; ({
+    episode, broadcastDate, time,
+  })),
+  [{ episode: 3, broadcastDate: "2026-07-12", time: "23:00" }],
+);</code></pre>
+</div>
+<p>它断言：首播周显示「第 1～2 集」一张卡，下一周固定周日周播从「第 3 集」开始。算法层（<span class="filepath">tests/calendar.test.mjs</span>）和数据层（<span class="filepath">tests/anime-data.test.mjs</span>）各守一道关——你改哪一层，都逃不掉这组先行+周播断言。</p>
+</section>
+
+<section id="s7">
+<h2><span class="sec-num">7</span>求助技巧：别空手问问题</h2>
+<p>自己卡住超过一段时间，就求助。但「它坏了」不是一个问题——好的求助像一份最小可复现的报告，别人（或 AI、或搜索引擎）一看就能接手：</p>
+<ul>
+  <li><strong>报错全文</strong>：错误类型 + error.message + stack trace，原样贴，别只截「后半句」。</li>
+  <li><strong>最小复现</strong>：一句「在第 X 步点 Y 之后必现」+ 相关代码片段。</li>
+  <li><strong>你已尝试的操作</strong>：改过什么、跑过什么、结果如何——避免对方重复你已经排除的方向。</li>
+</ul>
+<p>对比一下两种问法：</p>
+<div class="table-wrap">
+<table>
+  <tr><th>差的求助</th><th>好的求助</th></tr>
+  <tr><td>「追番保存之后列表没了，怎么办？」</td><td>「收藏 60 部番后点保存，追番列表偶发变空；50 部以内正常。报错 <code>Unable to save anime selections</code>，我已经确认 <code>app/api/anime-selections/route.ts</code> 的 PUT 走了 500 分支。」</td></tr>
+</table>
+</div>
+<div class="callout analogy"><strong>橡皮鸭调试法：</strong>把问题用完整句子讲给一只橡皮鸭听，讲到一半常常自己就明白了。因为「把问题说清楚」这个动作，逼你重新梳理所有假设，bug 往往就藏在某个你「想当然」的假设里。所以哪怕没人听，也先把问题写下来。</div>
+<div class="callout tip"><strong>别忘了项目自带的历史决策：</strong>遇到「为什么要这么设计」的疑问，先翻 <span class="filepath">docs/superpowers/</span>——里面是历史设计和实施计划，能解释很多「看起来奇怪但其实是刻意的」决定。别一上来就把它当 bug 改掉。</div>
+</section>
+
+<section id="s8">
+<h2><span class="sec-num">8</span>本章测验</h2>
+
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">1.（单选）修 bug 五步法的正确顺序是？</p>
+  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. 定位 → 复现 → 缩小 → 修复 → 回归</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. 稳定复现 → 缩小范围 → 定位 → 最小修复 → 回归</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. 修复 → 复现 → 回归 → 定位 → 缩小</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. 缩小 → 定位 → 复现 → 修复 → 回归</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>先拿到「必现的最简反例」（复现），才能二分缩小；缩到嫌疑最小范围后再定位那一行，做最小修复，最后写回归测试防复发。顺序颠倒（比如没复现就急着修）就像没造出卡掉代码的数据就瞎改算法。</p></div>
+</form>
+
+<form class="quiz" data-answer="A,B,D,E">
+  <p class="quiz-q">2.（多选）以下哪些是「定位 bug」的合法手段？</p>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="A"><span>A. console.log 打印中间变量的值</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="B"><span>B. 在 Sources 面板打断点、单步执行看局部变量</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="C"><span>C. 直接把报错的那段代码整段删掉</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="D"><span>D. Network 面板看请求状态码与返回 JSON</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="checkbox" name="q2" value="E"><span>E. 二分注释代码，缩小错误范围</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>console.log、断点单步、Network 看请求、二分注释，都是「缩小+定位」的正规手段。而「整段删掉报错代码」是绕过不是定位——删掉可能让别的功能一起坏，bug 本身还在。定位是「找到破坏不变量那一行」，不是「让红字消失」。</p></div>
+</form>
+
+<form class="quiz" data-answer="B">
+  <p class="quiz-q">3.（单选）读 stack trace（调用栈）时，正确的姿势是？</p>
+  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. 从最底部读起，每一帧都要看懂</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 从上往下找第一处「你自己项目里的文件」，那就是嫌疑现场；框架内部帧跳过</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. 只看最后一行错误信息就够了</span><span class="mark"></span></label>
+  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 整条都是框架的 bug，跟自己无关，不用管</span><span class="mark"></span></label>
+  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
+  <div class="quiz-feedback" hidden><span class="verdict"></span><p>调用栈是「谁调用了谁」的链，最上面通常是你代码离得最近的调用点。正确的读法：从上往下，第一处指向你项目文件（如 <span class="filepath">lib/calendar.js</span>）的帧就是嫌疑现场；<code>react-dom</code>、<code>next</code> 这些框架内部帧跳过。只看最后一行会漏掉真正出错的位置。</p></div>
+</form>
+</section>
+</main>
+</body>
+</html>
