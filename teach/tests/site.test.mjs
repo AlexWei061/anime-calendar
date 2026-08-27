@@ -156,4 +156,32 @@ test("project-depth modules explain current algorithms and operations", () => {
   }
 });
 
+const handbookPages = [
+  "handbook/ui.html",
+  "handbook/schedule.html",
+  "handbook/data-pipeline.html",
+  "handbook/personal-data.html",
+  "handbook/auth.html",
+  "handbook/database.html",
+  "handbook/release.html",
+];
+
+test("every maintenance handbook has the same operational safety structure", () => {
+  for (const path of handbookPages) {
+    const html = read(path);
+    for (const heading of [
+      "成功标准",
+      "先读这些文件",
+      "最小修改顺序",
+      "回归测试",
+      "验证",
+      "停止并确认",
+    ]) {
+      assert.match(html, new RegExp(heading));
+    }
+    assert.match(html, /data-progress-id=/);
+    assert.match(html, /class="risk-level/);
+  }
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };
