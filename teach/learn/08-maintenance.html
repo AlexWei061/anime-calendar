@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="用反例、回归测试、最小修复和验证证据建立番剧日历的安全维护闭环。">
+    <title>08 安全维护闭环｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css"><script src="../search-index.js" defer></script><script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-maintenance">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a><nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav><div class="header-actions" data-enhancement-actions></div></header>
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>08 维护闭环</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide><div class="lesson-kicker"><span class="tag accent">LESSON 08</span><span class="tag">约 55 分钟</span><span class="tag">需求 · TDD · 验证</span></div><h1>“修好了”<br>是一条待证明命题</h1><p class="page-lead">工程能力不是一次写对，而是建立一套让错误容易暴露、改动范围容易审查、结论有证据支持的流程。</p></header>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">THE LOOP</p><h2>八步安全修改闭环</h2>
+          <ol class="reading-steps"><li><strong>定义成功标准</strong><span>把“更好看”“有问题”改写成可观察行为。</span></li><li><strong>定位责任层</strong><span>沿项目地图找第一个错误层，不先猜文件。</span></li><li><strong>最小复现</strong><span>找到稳定输入，让问题可重复出现。</span></li><li><strong>写回归测试</strong><span>把反例转为自动断言，并亲眼看它因目标问题失败。</span></li><li><strong>做最小修复</strong><span>只改变足以让测试通过的规则或数据。</span></li><li><strong>跑针对测试</strong><span>确认新反例变绿，附近行为没有退化。</span></li><li><strong>跑完整验证</strong><span>lint、<code>npm test</code>、<code>git diff --check</code>。</span></li><li><strong>审查范围再交付</strong><span>diff 只含任务文件；提交、推送、部署是三个独立授权。</span></li></ol>
+          <div class="invariant"><strong>证据不变量</strong><span>没有刚刚运行的命令输出，就不能声称测试通过；没有能失败的回归测试，就不能证明测试捕获了原 bug。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">CLARIFY</p><h2>把模糊需求改写成判定条件</h2>
+          <div class="code-compare"><div class="code-panel"><span class="code-label">模糊</span><pre><code>凌晨节目显示不对，修一下。</code></pre></div><div class="code-panel"><span class="code-label">可验证</span><pre><code>周四 04:59 的节目显示在周三栏，
+标签为“次日 04:59”；周四 05:00
+仍显示在周四栏。桌面、移动端一致。</code></pre></div></div>
+          <p>第二种写法直接给出两个边界样例、期望输出和受影响界面。它已经非常接近回归测试。</p>
+          <div class="analogy">像数学命题必须写清定义域、量词和结论。需求越模糊，越无法判断一个实现是否真的满足它。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">RED</p><h2>复现与回归测试：先看到红</h2>
+          <p>修 bug 时，先在最接近规则的测试文件中增加一个最小反例。测试必须因目标缺陷失败，而不是因为路径写错、语法错误或环境没装好。</p>
+          <pre data-copy><code>test("keeps the calendar on the previous broadcast day until 05:00", () =&gt; {
+  assert.equal(
+    calendarDateForDateTime("2026-08-27", "04:59"),
+    "2026-08-26",
+  );
+  assert.equal(
+    calendarDateForDateTime("2026-08-27", "05:00"),
+    "2026-08-27",
+  );
+});</code></pre>
+          <div class="code-reading"><strong>红灯检查</strong><dl><div><dt>失败原因</dt><dd>实际输出与期望日期不同。</dd></div><div><dt>不是环境错</dt><dd>测试文件能正常加载，其他样例仍运行。</dd></div><div><dt>足够小</dt><dd>只证明一个阈值，不同时测试整页样式。</dd></div><div><dt>用户可见</dt><dd>对应节目最终出现在哪一天。</dd></div></dl></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">GREEN</p><h2>最小修复：只改变命题需要的部分</h2>
+          <p>若根因是共享日期阈值，就修 <code>layoutBroadcast</code>；不要同时重写日期库、移动 JSX、格式化大文件或升级依赖。</p>
+          <div class="task-grid"><article class="task-card"><h3>好修复</h3><p>改一个阈值或分支，复用现有函数，新增边界测试。</p></article><article class="task-card"><h3>危险修复</h3><p>在 CSS、桌面 JSX 和移动 JSX 分别加补丁，产生三份日期规则。</p></article><article class="task-card"><h3>好数据修复</h3><p>先确认来源，再按生成流程重建目录和图集。</p></article><article class="task-card"><h3>危险数据修复</h3><p>手改生成文件，下次运行脚本后修复消失。</p></article></div>
+          <div class="invariant"><strong>范围不变量</strong><span>只修改当前成功标准需要的代码；无关问题可以记录，但不顺手修复。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">VERIFY</p><h2>不同证据证明不同结论</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>命令</th><th>能证明</th><th>不能单独证明</th></tr></thead><tbody><tr><td>针对测试</td><td>报告的反例和附近行为</td><td>全仓库无回归</td></tr><tr><td><code>npm run lint -- --ignore-pattern .worktrees</code></td><td>规则检查通过</td><td>构建与业务行为</td></tr><tr><td><code>npm test</code></td><td>类型、生产构建、全部现有测试</td><td>未被测试覆盖的视觉细节</td></tr><tr><td><code>git diff --check</code></td><td>无空白错误和冲突标记</td><td>逻辑正确</td></tr><tr><td><code>git diff --stat</code></td><td>改动规模是否异常</td><td>每一行都必要</td></tr></tbody></table></div>
+          <pre data-copy><code>node --test --test-name-pattern="报告症状" tests/相关文件.test.mjs
+npm run lint -- --ignore-pattern .worktrees
+npm test
+git diff --check
+git status --short</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">PROOF TEMPLATE</p><h2>用五句话交付一次修复</h2>
+          <pre data-copy><code>命题：报告的 bug 已修复。
+修复前反例：新增回归测试在报告输入上失败。
+构造：只修改负责该规则的最小代码或数据。
+修复后证据：回归测试、相关测试、lint、npm test 通过。
+范围证明：git diff 只包含本任务相关文件。</code></pre>
+          <p>如果其中一句写不出来，说明证据链仍有缺口。尤其不要把“代码看起来对”替代为“测试实际通过”。</p>
+          <div class="analogy">这就是构造性证明：给出反例、构造修复，再验证新对象满足约束，并证明没有越出定义域。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">STOP CONDITIONS</p><h2>什么时候必须停下来确认</h2>
+          <ul><li>需求有两种解释，会导致不同数据模型或交互；</li><li>需要删除、覆盖、迁移真实数据或改变访问权限；</li><li>需要推送、部署、发消息或调用外部服务；</li><li>发现工作区已有改动与当前任务重叠；</li><li>测试基线原本就失败，无法区分新旧问题；</li><li>同一个验证错误重复出现，计划中的假设可能错误。</li></ul>
+          <div class="invariant"><strong>授权不变量</strong><span>“完成实现”不自动等于获准推送或部署；外部状态变化需要明确授权。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">CHECK YOUR MODEL</p><h2>小测：测试一写就绿怎么办？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-maintenance"><h3 id="q-maintenance">你为报告的 bug 写了测试，但第一次运行就通过。合理结论是？</h3><div class="quiz-choices"><button class="quiz-choice" type="button" data-quiz-choice data-answer="立即通过没有证明测试能捕获报告问题。">A. 很好，说明修复已经完成</button><button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。要检查是否复现了正确输入、断言是否观察到用户可见行为，或当前代码本来已修复。">B. 检查测试是否真正覆盖报告的反例</button><button class="quiz-choice" type="button" data-quiz-choice data-answer="删测试会失去可重复证据。">C. 删除测试，直接改代码</button></div><p class="feedback" data-quiz-feedback hidden></p><details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。测试必须先证明自己能对目标缺陷变红。</p></details></div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-08-maintenance"><span><strong>我能按“成功标准—反例—回归测试—最小修复—验证”维护项目</strong><br>并知道何时必须停止并请求授权。</span></label>
+        </section>
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="07-tooling.html">← 上一课：工具链</a><a href="../handbook/ui.html">进入任务手册 →</a></nav>
+      </article>
+    </main><noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>

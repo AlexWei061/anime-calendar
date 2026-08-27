@@ -133,4 +133,27 @@ test("foundational modules connect concepts to this repository", () => {
   }
 });
 
+const depthLearningMarkers = new Map([
+  [
+    "learn/05-calendar.html",
+    ["layoutBroadcast", "eventsForWeek", "dateOnlyEventsForWeek", "layoutTimelineEvents"],
+  ],
+  ["learn/06-backend.html", ["getSessionUser", "db.batch", "PBKDF2", "drizzle/"]],
+  ["learn/07-tooling.html", ["typecheck", "vinext", "Cloudflare Worker", "node --test"]],
+  ["learn/08-maintenance.html", ["复现", "回归测试", "最小修复", "git diff --check"]],
+]);
+
+test("project-depth modules explain current algorithms and operations", () => {
+  for (const [path, markers] of depthLearningMarkers) {
+    const html = read(path);
+    for (const marker of markers) {
+      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    assert.match(html, /class="analogy"/);
+    assert.match(html, /class="invariant"/);
+    assert.match(html, /data-progress-id=/);
+    assert.match(html, /data-quiz/);
+  }
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };

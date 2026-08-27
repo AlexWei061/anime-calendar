@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="把番剧日历的日期、凌晨放送、每周集数展开与时间轴分栏当作算法题精读。">
+    <title>05 日历核心算法｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css"><script src="../search-index.js" defer></script><script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-calendar">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a><nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav><div class="header-actions" data-enhancement-actions></div></header>
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>05 日历算法</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide><div class="lesson-kicker"><span class="tag accent">LESSON 05</span><span class="tag">约 70 分钟</span><span class="tag">日期 · 区间 · 贪心</span></div><h1>把日历当成<br>一道算法题</h1><p class="page-lead">这部分最接近你的舒适区：输入是日期与排期记录，输出是一周事件和布局位置。难点来自边界定义，而不是复杂度。</p></header>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">DATE MODEL</p><h2>先消灭“本地时区”这个隐变量</h2>
+          <p><code>lib/calendar.js</code> 将 ISO 日期 <code>YYYY-MM-DD</code> 解析到 UTC 午夜，再只使用 UTC 日期操作。这样同一测试不会因电脑时区不同而变答案。</p>
+          <pre data-copy><code>function parseIsoDate(isoDate) {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  if (date.toISOString().slice(0, 10) !== isoDate) {
+    throw new RangeError(`Invalid ISO date: ${isoDate}`);
+  }
+  return date;
+}</code></pre>
+          <div class="analogy">把日期字符串看成离散整数轴上的点，而不是带本地时区的“当前电脑时间”。函数只允许合法点进入，再做加减。</div>
+          <div class="invariant"><strong>日期不变量</strong><span>日历算法内部只接受严格 ISO 日期；跨天统一通过 <code>addDays</code>，不在 JSX 里手写毫秒运算。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">MODULAR ARITHMETIC</p><h2>周一归一化：一个取模公式</h2>
+          <pre data-copy><code>export function startOfWeek(isoDate) {
+  const date = parseIsoDate(isoDate);
+  const mondayOffset = (date.getUTCDay() + 6) % 7;
+  return addDays(isoDate, -mondayOffset);
+}</code></pre>
+          <p><code>getUTCDay()</code> 中周日是 0、周一是 1。加 6 再模 7 后，周一映射到 0、周日映射到 6；减去偏移就得到所在周周一。</p>
+          <div class="code-reading"><strong>手算两个样例</strong><dl><div><dt>周一</dt><dd><code>(1 + 6) % 7 = 0</code>，日期不变。</dd></div><div><dt>周日</dt><dd><code>(0 + 6) % 7 = 6</code>，向前六天。</dd></div></dl></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">BROADCAST DAY</p><h2>凌晨 04:59 与 05:00 是两侧</h2>
+          <p>日本深夜动画常把自然日凌晨节目视为前一“放送日”。项目用 <code>layoutBroadcast</code> 作为唯一布局转换：</p>
+          <pre data-copy><code>function layoutBroadcast(broadcastDate, broadcastTime) {
+  const minutes = timeToMinutes(broadcastTime);
+  if (minutes &lt; 5 * 60) {
+    return {
+      date: addDays(broadcastDate, -1),
+      time: formatTime(minutes + 24 * 60),
+      broadcastDate,
+      broadcastTime,
+    };
+  }
+  return { date: broadcastDate, time: broadcastTime,
+    broadcastDate, broadcastTime };
+}</code></pre>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>真实播出</th><th>周历栏目</th><th>内部时间</th><th>显示</th></tr></thead><tbody><tr><td>周四 04:59</td><td>周三</td><td>28:59</td><td>次日 04:59</td></tr><tr><td>周四 05:00</td><td>周四</td><td>05:00</td><td>05:00</td></tr></tbody></table></div>
+          <div class="invariant"><strong>单一真源</strong><span><code>calendarDateForDateTime</code>、当前时间标线和事件布局都应复用这一语义；不能在页面里各减一次日期。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">WEEK EXPANSION</p><h2><code>eventsForWeek</code>：从首播推导本周集数</h2>
+          <div class="code-reading"><strong>函数契约</strong><dl><div><dt>输入</dt><dd>番剧记录数组与周一日期。</dd></div><div><dt>输出</dt><dd>布局日期落在该周的定时事件。</dd></div><div><dt>不变量</dt><dd>不超过总集数，不凭空生成无时间网络事件。</dd></div><div><dt>复杂度</dt><dd>近似 O(作品数 × 集数)，当前规模足够小。</dd></div></dl></div>
+          <p>普通周播从首播信息推导每集日期；有 <code>episodeSchedules</code> 时按已核对的分段排期展开。最容易出错的是“先行 N 集 + 后续电视周播”：</p>
+          <pre data-copy><code>const premiereEpisodeCount = record.premiereEpisodeCount ?? 1;
+const firstScheduledEpisode =
+  premiereEpisodeCount + (record.premiereKind === "network" ? 1 : 0);
+
+const firstRegularBroadcastDate =
+  record.regularBroadcastStartDateBeijing ?? calculatedDate;</code></pre>
+          <p>若网络先行 3 集，则电视周播必须从第 4 集开始。首行还没有明确分钟时刻时，不可把 1–3 集塞进电视时段。</p>
+          <div class="analogy">这像两个拼接区间：先行段覆盖 [1, N]，固定周播覆盖 [N+1, episodeCount]。两个区间既不能重叠，也不能漏掉合法集数。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">DATE-ONLY EVENTS</p><h2><code>dateOnlyEventsForWeek</code>：知道日期，不假装知道时刻</h2>
+          <pre data-copy><code>return records
+  .filter(({ premiereDateBeijing, premiereKind }) =&gt;
+    premiereKind === "network" &amp;&amp; dates.has(premiereDateBeijing),
+  )
+  .map((record) =&gt; ({
+    ...record,
+    date: record.premiereDateBeijing,
+    episodeStart: 1,
+    episode: record.premiereEpisodeCount ?? 1,
+  }));</code></pre>
+          <p>这条分支让页面显示“网络配信 · 时刻未定”。<code>null</code> 在这里不是缺陷，而是对来源不确定性的诚实表达。</p>
+          <div class="invariant"><strong>来源不变量</strong><span>低优先级来源只能补空值；没有可靠分钟时刻就保持 <code>null</code>，不能为了让时间轴好看而估算。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">GREEDY LAYOUT</p><h2><code>layoutTimelineEvents</code>：重叠区间的贪心分道</h2>
+          <ol><li>按开始分钟排序。</li><li>将相互重叠的事件组成 cluster。</li><li>维护每条 lane 的结束时间。</li><li>把新事件放入第一条已结束的 lane；没有就新开一条。</li><li>cluster 内所有事件共享最终 <code>laneCount</code>，据此计算宽度。</li></ol>
+          <pre data-copy><code>let lane = laneEnds.findIndex((end) =&gt; end &lt;= start);
+if (lane === -1) lane = laneEnds.length;
+laneEnds[lane] = start + blockDurationMinutes;</code></pre>
+          <div class="analogy">这是会议室分配问题：每条 lane 是一间会议室，事件按开始时间进入第一间已空闲的会议室。</div>
+          <div class="code-reading"><strong>复杂度</strong><dl><div><dt>排序</dt><dd>O(n log n)</dd></div><div><dt>查 lane</dt><dd>朴素 O(n²) 最坏；单日事件很少，清晰性优先。</dd></div></dl></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">TEST THE BOUNDARIES</p><h2>测试不是随机样例，而是分区代表</h2>
+          <div class="task-grid"><article class="task-card"><h3>04:59 / 05:00</h3><p>阈值左右各一个样例，证明放送日切换边界。</p></article><article class="task-card"><h3>先行 N 集</h3><p>同时断言先行日范围和首个固定周播从 N+1 开始。</p></article><article class="task-card"><h3>同一时刻</h3><p>多个事件必须不同 lane，但开始位置不能被串行推迟。</p></article><article class="task-card"><h3>无时刻网络配信</h3><p>只进入日期区域，不能出现在定时时间轴。</p></article></div>
+          <pre class="search-command" data-copy><code>rg -n "04:59|05:00|premiereEpisodeCount|overlapping" tests/calendar.test.mjs</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">CHECK YOUR MODEL</p><h2>小测：凌晨边界 bug 应改哪里？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-calendar"><h3 id="q-calendar">周四 04:59 被放在周四栏，最小且一致的修复方向是？</h3><div class="quiz-choices"><button class="quiz-choice" type="button" data-quiz-choice data-answer="CSS 只能移动视觉位置，其他日期语义仍会错误。">A. 在 CSS 中把卡片向左移动</button><button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。先用 04:59/05:00 回归测试锁定 layoutBroadcast 的阈值，再做最小修复。">B. 测试并修复共享的 layoutBroadcast 语义</button><button class="quiz-choice" type="button" data-quiz-choice data-answer="直接改数据会污染真实播出日期，也只修一个条目。">C. 把该作品日期手工减一天</button></div><p class="feedback" data-quiz-feedback hidden></p><details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。共享算法修复能同时覆盖表头、事件、当前日和时间标线。</p></details></div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-05-calendar"><span><strong>我能把日历逻辑写成输入、输出、不变量和边界样例</strong><br>并理解凌晨、先行多集和贪心分道。</span></label>
+        </section>
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="04-architecture.html">← 上一课：项目架构</a><a href="06-backend.html">下一课：后端与数据库 →</a></nav>
+      </article>
+    </main><noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>

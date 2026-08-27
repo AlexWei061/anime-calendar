@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="理解 Node、npm、TypeScript、vinext、Vite、Cloudflare Worker 与项目测试链。">
+    <title>07 工具链与运行时｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css"><script src="../search-index.js" defer></script><script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-tooling">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a><nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav><div class="header-actions" data-enhancement-actions></div></header>
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>07 工具链</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide><div class="lesson-kicker"><span class="tag accent">LESSON 07</span><span class="tag">约 55 分钟</span><span class="tag">Node · npm · build · test</span></div><h1>工具链不是黑箱，<br>是一条编译流水线</h1><p class="page-lead">你不必精通每个工具。只要知道每一步接收什么、输出什么，以及失败说明哪一层有问题，就能安全维护项目。</p></header>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">RUNTIME VS PACKAGE MANAGER</p><h2>Node 和 npm 分别是什么</h2>
+          <div class="compare-grid"><article class="concept-card"><h3>Node.js</h3><p>在浏览器之外运行 JavaScript 的环境。脚本、测试、构建和本地开发服务器都靠它。</p></article><article class="concept-card"><h3>npm</h3><p>读取 <code>package.json</code>，安装依赖并执行命名脚本。它不是 JavaScript 解释器。</p></article></div>
+          <div class="analogy">Node 类似 C++ 可执行文件的运行环境；npm scripts 类似 Makefile 中命名目标，只是命令入口，不是业务代码。</div>
+          <div class="invariant"><strong>版本不变量</strong><span>本项目要求 Node <code>&gt;=22.13.0</code>。奇怪的语法或运行差异先检查 <code>node --version</code>。</span></div>
+          <pre data-copy><code>node --version
+npm --version
+npm run</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">COMMAND PANEL</p><h2><code>package.json</code> 是项目命令面板</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>命令</th><th>做什么</th><th>什么时候跑</th></tr></thead><tbody>
+            <tr><td><code>npm run dev</code></td><td>启动可热更新的本地站点与 Cloudflare 模拟绑定</td><td>交互开发与浏览器复现</td></tr>
+            <tr><td><code>npm run typecheck</code></td><td>运行 <code>tsc --noEmit</code></td><td>快速检查 TypeScript 类型</td></tr>
+            <tr><td><code>npm run build</code></td><td>由 vinext/Vite 生成 Worker 生产产物</td><td>验证生产构建、发布前</td></tr>
+            <tr><td><code>npm run lint -- --ignore-pattern .worktrees</code></td><td>检查代码规则并忽略嵌套 worktree</td><td>任何代码、数据或 UI 改动后</td></tr>
+            <tr><td><code>npm test</code></td><td>typecheck → build → <code>node --test tests/*.test.mjs</code></td><td>提交或发布前的完整证明</td></tr>
+            <tr><td><code>npm run db:generate</code></td><td>从 schema 生成 Drizzle 迁移</td><td>仅数据库 schema 变化时</td></tr>
+          </tbody></table></div>
+          <div class="invariant"><strong>验证不变量</strong><span><code>npm run typecheck</code> 通过不代表构建和行为测试通过；项目约定的数据、UI、认证改动至少还要跑 lint 与完整 <code>npm test</code>。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">DEV VS BUILD</p><h2>开发态和生产态验证不同问题</h2>
+          <div class="code-reading"><strong>开发态</strong><dl><div><dt>优点</dt><dd>快、热更新、适合 DevTools 与复现。</dd></div><div><dt>不能证明</dt><dd>最终 Worker 能成功打包，生成元数据完整。</dd></div></dl></div>
+          <div class="code-reading"><strong>生产构建</strong><dl><div><dt>检查</dt><dd>客户端、RSC、SSR、Worker ESM 和静态资源。</dd></div><div><dt>输出</dt><dd><code>dist/</code> 等生成物，不手工编辑。</dd></div></dl></div>
+          <p><code>npm test</code> 先 build，是因为部分测试会导入构建后的 Worker 并检查服务端 HTML。只跑源文件单元测试会漏掉打包边界。</p>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">BUILD PIPELINE</p><h2>源码如何成为 Cloudflare Worker</h2>
+          <ol class="reading-steps"><li><strong>Next/React 源码</strong><span><code>app/</code> 描述页面与 API。</span></li><li><strong>vinext</strong><span>把 Next App Router 语义接入 Vite 构建环境。</span></li><li><strong>Vite</strong><span>分析模块、分离客户端/RSC/SSR 环境并打包。</span></li><li><strong>Cloudflare 插件</strong><span>提供本地 Worker、D1、R2 和兼容标志。</span></li><li><strong>Sites 插件</strong><span>把 <code>.openai/hosting.json</code> 与 <code>drizzle/</code> 复制进部署包。</span></li><li><strong><code>worker/index.ts</code></strong><span>处理图片优化路径，其余请求交给 vinext handler。</span></li></ol>
+          <pre class="search-command" data-copy><code>sed -n '1,220p' vite.config.ts
+sed -n '1,220p' worker/index.ts
+sed -n '1,220p' build/sites-vite-plugin.ts</code></pre>
+          <div class="analogy">像编译器多阶段流水线：前端源码不是直接丢给 CPU，而是经过分析、变换、链接和目标平台适配。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">TESTS</p><h2>把“对拍”变成能永久重跑的断言</h2>
+          <p>项目使用 Node 内置测试运行器，不依赖 Jest。测试按职责分组：</p>
+          <div class="task-grid"><article class="task-card"><h3>纯函数测试</h3><p><code>calendar.test.mjs</code>、搜索、统计、校验。输入输出明确，运行最快。</p></article><article class="task-card"><h3>数据审计</h3><p><code>anime-data.test.mjs</code> 检查目录数量、来源、封面与特殊排期。</p></article><article class="task-card"><h3>存储源码约束</h3><p>检查 API 是否认证、批量是否原子、schema 与迁移是否存在。</p></article><article class="task-card"><h3>渲染后 HTML</h3><p><code>rendered-html.test.mjs</code> 检查真实构建产物中的结构与无障碍语义。</p></article></div>
+          <pre data-copy><code>node --test tests/calendar.test.mjs
+node --test --test-name-pattern="04:59" tests/calendar.test.mjs
+node --test tests/rendered-html.test.mjs</code></pre>
+          <div class="invariant"><strong>测试不变量</strong><span>测试验证用户可见行为和数据约束；不能为了让测试通过而放松认证、校验或无障碍语义。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">ERROR TRIAGE</p><h2>命令失败意味着什么</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>失败位置</th><th>通常说明</th><th>先做什么</th></tr></thead><tbody><tr><td>typecheck</td><td>类型、导入、可空值或签名不一致</td><td>读第一条项目源码错误</td></tr><tr><td>build</td><td>服务端/客户端边界、目标平台、打包导入问题</td><td>看失败发生在哪个环境阶段</td></tr><tr><td>单元测试</td><td>行为或约束不符合断言</td><td>只重跑对应测试并查看实际/期望值</td></tr><tr><td>lint</td><td>代码质量规则或潜在 React 问题</td><td>定位文件，不格式化无关代码</td></tr><tr><td>浏览器运行</td><td>HTTP、状态或真实交互问题</td><td>用 DevTools 沿数据流取证</td></tr></tbody></table></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">CHECK YOUR MODEL</p><h2>小测：只跑 typecheck 足够吗？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-tooling"><h3 id="q-tooling">修改认证 API 后，<code>npm run typecheck</code> 通过，可以直接结束吗？</h3><div class="quiz-choices"><button class="quiz-choice" type="button" data-quiz-choice data-answer="类型正确不能证明 Worker 构建、Cookie 行为和认证测试正确。">A. 可以，类型系统已经证明全部行为</button><button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。至少还需相关回归测试、lint 和完整 npm test。">B. 不可以，还要验证构建和行为约束</button><button class="quiz-choice" type="button" data-quiz-choice data-answer="删除测试会失去证据，并不修复问题。">C. 可以，只要把失败测试删掉</button></div><p class="feedback" data-quiz-feedback hidden></p><details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。不同命令证明不同性质，没有一条短命令能替代全部验证。</p></details></div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-07-tooling"><span><strong>我能解释 Node、npm、vinext、Vite、Worker 和测试链各做什么</strong><br>并会根据失败阶段缩小问题范围。</span></label>
+        </section>
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="06-backend.html">← 上一课：后端与安全</a><a href="08-maintenance.html">下一课：维护闭环 →</a></nav>
+      </article>
+    </main><noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>

@@ -50,5 +50,37 @@
       keywords: ["data/anime.js", "lib/calendar.js", "app/api", "D1", "架构", "生成文件"],
       summary: "判断静态事实、纯算法、React、API 和个人数据应位于哪一层。",
     },
+    {
+      id: "learn-calendar",
+      title: "05 日历核心算法",
+      path: "learn/05-calendar.html",
+      section: "系统课程",
+      keywords: ["layoutBroadcast", "eventsForWeek", "凌晨", "04:59", "先行", "时间轴", "贪心"],
+      summary: "把日期边界、集数展开和时间轴分栏写成输入、输出与不变量。",
+    },
+    {
+      id: "learn-backend",
+      title: "06 后端、数据库与安全",
+      path: "learn/06-backend.html",
+      section: "系统课程",
+      keywords: ["API", "D1", "Drizzle", "db.batch", "PBKDF2", "getSessionUser", "Cookie"],
+      summary: "理解认证、运行时校验、原子写入、单集键和数据库迁移。",
+    },
+    {
+      id: "learn-tooling",
+      title: "07 工具链与运行时",
+      path: "learn/07-tooling.html",
+      section: "系统课程",
+      keywords: ["Node", "npm", "typecheck", "vinext", "Vite", "Cloudflare Worker", "build", "node --test"],
+      summary: "沿 Node、vinext、Vite 与 Worker 流水线理解开发、构建和测试。",
+    },
+    {
+      id: "learn-maintenance",
+      title: "08 安全维护闭环",
+      path: "learn/08-maintenance.html",
+      section: "系统课程",
+      keywords: ["复现", "回归测试", "最小修复", "验证", "git diff --check", "TDD"],
+      summary: "用反例、测试、最小改动和新鲜证据完成一次可审查的修复。",
+    },
   ];
 })(typeof window === "undefined" ? globalThis : window);

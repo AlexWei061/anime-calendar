@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="理解番剧日历 API、D1、Drizzle、认证会话、原子批量写入与安全不变量。">
+    <title>06 后端、数据库与安全｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css"><script src="../search-index.js" defer></script><script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-backend">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a><nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav><div class="header-actions" data-enhancement-actions></div></header>
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>06 后端与安全</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide><div class="lesson-kicker"><span class="tag accent">LESSON 06</span><span class="tag">约 75 分钟</span><span class="tag">API · D1 · Drizzle · Auth</span></div><h1>服务器的工作，<br>是守住边界</h1><p class="page-lead">后端并不只是“把数据存起来”。它要独立确认用户身份、输入合法性、写入原子性和秘密不可逆，再把明确的状态码返回浏览器。</p></header>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">ROUTE HANDLER</p><h2>一个 API 函数的标准证明顺序</h2>
+          <pre data-copy><code>export async function PUT(request: Request) {
+  const user = await getSessionUser();
+  if (!user) return Response.json(
+    { error: "Sign in required" },
+    { status: 401 },
+  );
+
+  // 解析并验证浏览器输入
+  // 使用 user.email 读写数据库
+  // 返回服务器接受后的结果
+}</code></pre>
+          <ol><li><strong>先认证：</strong>没有可信用户就立刻 401。</li><li><strong>再解析：</strong>JSON 可能损坏、类型错误或超出限制。</li><li><strong>再校验：</strong>ID 必须在 <code>allAnime</code> 白名单；集数必须是规范单集。</li><li><strong>最后写入：</strong>数据库操作失败返回 500，不把内部错误泄漏给浏览器。</li></ol>
+          <div class="invariant"><strong>身份不变量</strong><span>业务 API 使用 <code>getSessionUser()</code> 得到邮箱；绝不接受浏览器提交的 <code>userEmail</code> 作为身份。</span></div>
+          <div class="analogy">浏览器提交的是“主张”，服务器检查后才把它变成“事实”。这像证明题不能把结论当作前提。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">SCHEMA</p><h2>四张表，四种不变量</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>表</th><th>主键</th><th>保存什么</th><th>不能保存什么</th></tr></thead><tbody>
+            <tr><td><code>users</code></td><td><code>email</code></td><td>密码哈希、昵称、头像版本、创建时间</td><td>明文密码</td></tr>
+            <tr><td><code>auth_sessions</code></td><td><code>token_hash</code></td><td>令牌哈希、用户邮箱、过期时间</td><td>明文 Cookie token</td></tr>
+            <tr><td><code>anime_selections</code></td><td>邮箱 + 番剧 ID</td><td>追番集合</td><td>未知作品、浏览器身份</td></tr>
+            <tr><td><code>anime_episode_views</code></td><td>邮箱 + 番剧 ID + 两个单集字段</td><td>规范单集已看记录</td><td>任意非法范围</td></tr>
+          </tbody></table></div>
+          <p><code>db/schema.ts</code> 用 TypeScript 描述表，<code>drizzle/</code> 保存已生成的 SQL 迁移历史。两者必须一致。</p>
+          <pre class="search-command" data-copy><code>sed -n '1,220p' db/schema.ts
+ls drizzle</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">ATOMIC REPLACEMENT</p><h2>追番整表替换为什么必须一次 <code>db.batch()</code></h2>
+          <p>保存追番采用“该用户整表替换”：删旧集合，再插入新集合。若删除和插入分成独立请求，插入失败会留下空集合。</p>
+          <pre data-copy><code>await db.batch([
+  db.delete(animeSelections)
+    .where(eq(animeSelections.userEmail, user.email)),
+  ...selectionInsertBatches(animeIds).map((batch) =&gt;
+    db.insert(animeSelections).values(
+      batch.map((animeId) =&gt; ({
+        userEmail: user.email,
+        animeId,
+      })),
+    ),
+  ),
+]);</code></pre>
+          <div class="code-reading"><strong>D1 参数约束</strong><dl><div><dt>单条上限</dt><dd>最多 100 个绑定参数。</dd></div><div><dt>每条追番</dt><dd>邮箱 + ID，共 2 个参数。</dd></div><div><dt>安全批量</dt><dd>每批最多 50 个 ID。</dd></div><div><dt>原子性</dt><dd>删除和所有插入批次放进同一 batch。</dd></div></dl></div>
+          <div class="invariant"><strong>原子不变量</strong><span>新列表要么完整替换成功，要么旧列表完整保留；不能出现“删除成功、插入失败”的中间状态。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">WATCHED UNITS</p><h2>日历卡可合并，持久化必须按单集</h2>
+          <p>同一天先行 1–3 集可以显示为一张卡，但详情按钮和数据库记录分别表示第 1、2、3 集：</p>
+          <pre data-copy><code>export function episodeViewUnitsForRange({
+  episodeStart,
+  episode,
+}) {
+  const units = [];
+  for (let current = episodeStart; current &lt;= episode; current += 1) {
+    units.push({ episodeStart: current, episode: current });
+  }
+  return units;
+}</code></pre>
+          <p><code>validateEpisodeViewBatch</code> 最多接受 25 项、去重并要求 <code>episodeStart === episode</code>。读取旧版合法范围时，API 会展开为单集并迁移。</p>
+          <div class="analogy">显示层的区间压缩像 run-length encoding；数据库的单集键是规范表示。显示可以聚合，但身份与持久状态必须无歧义。</div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">PASSWORDS &amp; SESSIONS</p><h2>密码和会话 token 是两种秘密</h2>
+          <div class="compare-grid"><article class="concept-card"><h3>密码</h3><p>使用带随机 salt、100000 次迭代的 PBKDF2-SHA-256。验证时重新派生并常量时间比较。</p></article><article class="concept-card"><h3>会话 token</h3><p>浏览器 Cookie 持有随机明文；数据库只保存 SHA-256 哈希。泄漏数据库不能直接伪造 Cookie。</p></article></div>
+          <pre data-copy><code>password ──PBKDF2(salt, 100000)──► password_hash
+random token ─────SHA-256────────► token_hash in D1</code></pre>
+          <p>未知邮箱登录仍使用一个 dummy PBKDF2 hash 做同类计算，避免通过响应耗时轻易枚举账号。</p>
+          <div class="invariant"><strong>秘密不变量</strong><span>D1 中不得出现明文密码或明文会话令牌；日志和错误响应也不应泄漏它们。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">COOKIE ATTRIBUTES</p><h2>四个 Cookie 属性各守一道门</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>属性</th><th>作用</th><th>项目规则</th></tr></thead><tbody><tr><td><code>HttpOnly</code></td><td>阻止页面 JS 读取 token</td><td>始终保留</td></tr><tr><td><code>SameSite=Lax</code></td><td>降低跨站请求携带风险</td><td>始终保留</td></tr><tr><td><code>Path=/</code></td><td>整个站点 API 都可携带</td><td>始终保留</td></tr><tr><td><code>Secure</code></td><td>只通过 HTTPS 发送</td><td>仅请求 URL 是 HTTPS 时添加</td></tr></tbody></table></div>
+          <p>本地或局域网 HTTP 开发若错误地无条件添加 <code>Secure</code>，浏览器不会在后续 HTTP 请求携带 Cookie，于是登录响应成功而 <code>/api/auth/me</code> 仍 401。</p>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">MIGRATIONS</p><h2>数据库修改从 schema 开始</h2>
+          <ol><li>修改 <code>db/schema.ts</code>。</li><li>运行 <code>npm run db:generate</code>。</li><li>审查新 SQL 和 Drizzle 元数据。</li><li>本地应用迁移后验证 API。</li><li>提交 schema 与迁移，绝不只提交一边。</li></ol>
+          <pre data-copy><code>npm run db:generate
+git diff -- db/schema.ts drizzle</code></pre>
+          <div class="invariant"><strong>迁移不变量</strong><span>已有数据库只能通过可审计迁移从旧状态走到新状态；不要手写与 schema 不一致的 SQL，也不要提交真实资源 ID。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide><p class="eyebrow">CHECK YOUR MODEL</p><h2>小测：谁决定用户邮箱？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-backend"><h3 id="q-backend">浏览器 PUT 追番列表时，邮箱应来自哪里？</h3><div class="quiz-choices"><button class="quiz-choice" type="button" data-quiz-choice data-answer="浏览器可篡改 JSON；这样能写入别人的账号。">A. 请求 JSON 里的 userEmail</button><button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。服务器通过 ac_session 调用 getSessionUser，再使用可信 user.email。">B. <code>getSessionUser()</code> 返回的会话用户</button><button class="quiz-choice" type="button" data-quiz-choice data-answer="静态目录只描述番剧，不描述当前访问者。">C. <code>data/anime.js</code></button></div><p class="feedback" data-quiz-feedback hidden></p><details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。认证后的服务器身份是个人数据隔离的根。</p></details></div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-06-backend"><span><strong>我能解释认证、运行时校验、D1 原子写入和秘密哈希</strong><br>并知道 schema 与 drizzle/ 迁移要一起维护。</span></label>
+        </section>
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="05-calendar.html">← 上一课：日历算法</a><a href="07-tooling.html">下一课：工具链 →</a></nav>
+      </article>
+    </main><noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>
