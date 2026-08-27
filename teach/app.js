@@ -289,6 +289,72 @@
     });
   }
 
+  function initDebugLabs(document) {
+    document.querySelectorAll("[data-debug-lab]").forEach((lab) => {
+      const stages = [...lab.querySelectorAll("[data-debug-stage]")];
+      const completion = lab.querySelector("[data-debug-completion][data-progress-id]");
+      const reset = lab.querySelector("[data-debug-reset]");
+
+      function saveCompletion(complete) {
+        if (!completion) return;
+        completion.checked = complete;
+        completion.dispatchEvent(new global.Event("change", { bubbles: true }));
+      }
+
+      function setStageLocked(stage, locked) {
+        stage.hidden = locked;
+        stage.dataset.debugLocked = String(locked);
+      }
+
+      function resetLab() {
+        stages.forEach((stage, index) => {
+          setStageLocked(stage, index > 0);
+          stage.querySelectorAll("[data-debug-choice]").forEach((choice) => {
+            choice.setAttribute("aria-pressed", "false");
+          });
+          const feedback = stage.querySelector("[data-debug-feedback]");
+          if (feedback) {
+            feedback.hidden = true;
+            feedback.textContent = "";
+            delete feedback.dataset.result;
+          }
+        });
+        saveCompletion(false);
+      }
+
+      stages.forEach((stage, stageIndex) => {
+        setStageLocked(stage, stageIndex > 0 && !completion?.checked);
+        stage.querySelectorAll("[data-debug-choice]").forEach((choice) => {
+          choice.setAttribute("aria-pressed", "false");
+          choice.addEventListener("click", () => {
+            stage.querySelectorAll("[data-debug-choice]").forEach((candidate) => {
+              candidate.setAttribute("aria-pressed", String(candidate === choice));
+            });
+            const correct = choice.dataset.correct === "true";
+            const feedback = stage.querySelector("[data-debug-feedback]");
+            if (feedback) {
+              feedback.hidden = false;
+              feedback.dataset.result = correct ? "correct" : "incorrect";
+              feedback.textContent =
+                choice.dataset.answer || (correct ? "证据链成立，继续下一步。" : "这一步还没有直接检验当前假设。");
+            }
+            if (!correct) return;
+            const nextStage = stages[stageIndex + 1];
+            if (nextStage) {
+              setStageLocked(nextStage, false);
+              nextStage.scrollIntoView?.({ behavior: "smooth", block: "start" });
+            } else {
+              saveCompletion(true);
+            }
+          });
+        });
+      });
+
+      if (completion?.checked) stages.forEach((stage) => setStageLocked(stage, false));
+      reset?.addEventListener("click", resetLab);
+    });
+  }
+
   function isTypingTarget(target) {
     return target?.matches?.("input, textarea, select, button, [contenteditable='true']");
   }
@@ -370,6 +436,7 @@
     initCopyButtons(document);
     initQuizzes(document);
     initFlowControls(document);
+    initDebugLabs(document);
 
     document.addEventListener("keydown", (event) => {
       if (isTypingTarget(event.target)) return;
@@ -387,6 +454,7 @@
 
   const api = {
     init,
+    initDebugLabs,
     normalizeSearch,
     pagePath,
     readJson,

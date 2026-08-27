@@ -42,6 +42,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   min-width: 320px;
   scroll-behavior: smooth;
@@ -1495,6 +1499,12 @@ pre code {
   background: var(--danger-soft);
 }
 
+.risk-level.critical {
+  border-color: var(--danger);
+  color: var(--paper-strong);
+  background: var(--danger);
+}
+
 .sop-list {
   display: grid;
   gap: 0;
@@ -1578,6 +1588,179 @@ pre code {
   font-weight: 900;
 }
 
+.lab-index-section {
+  padding-block: 5rem;
+  border-top: 1px solid var(--line);
+}
+
+.lab-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.lab-card {
+  display: flex;
+  min-height: 330px;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+  box-shadow: 8px 8px 0 var(--accent-soft);
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.lab-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px);
+}
+
+.lab-card > span,
+.stage-number {
+  color: var(--accent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.lab-card > strong {
+  margin-top: auto;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 2rem;
+  line-height: 1.15;
+}
+
+.lab-card p {
+  color: var(--muted);
+}
+
+.lab-card em {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.primary-link {
+  display: inline-flex;
+  padding: 0.8rem 1.1rem;
+  border-radius: 999px;
+  color: var(--paper-strong);
+  background: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.debug-header {
+  border-bottom-color: var(--danger);
+}
+
+.incident {
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-strong);
+}
+
+.incident dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--line);
+}
+
+.incident dl > div {
+  padding: 1rem;
+  background: var(--paper-strong);
+}
+
+.incident dt {
+  color: var(--accent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.incident dd {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+}
+
+.debug-stage {
+  margin-block: 2rem;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent);
+  border-radius: 14px;
+  background: var(--paper-strong);
+  scroll-margin-top: 1.5rem;
+}
+
+.debug-stage h2 {
+  margin-top: 0.4rem;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 1.1;
+}
+
+.debug-choices {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.debug-choice {
+  width: 100%;
+  min-height: 54px;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--paper);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.debug-choice:hover,
+.debug-choice[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.debug-feedback {
+  margin: 1rem 0 0;
+  padding: 1rem;
+  border-left: 4px solid var(--danger);
+  background: var(--danger-soft);
+}
+
+.debug-feedback[data-result="correct"] {
+  border-left-color: var(--safe);
+  background: var(--safe-soft);
+}
+
+.secondary-button {
+  min-height: 42px;
+  margin-top: 1rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--paper-strong);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
 @media (max-width: 980px) {
   .site-header {
     align-items: flex-start;
@@ -1633,7 +1816,9 @@ pre code {
   .state-grid,
   .task-grid,
   .code-compare,
-  .code-reading dl {
+  .code-reading dl,
+  .lab-card-grid,
+  .incident dl {
     grid-template-columns: 1fr;
   }
 

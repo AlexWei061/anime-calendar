@@ -184,4 +184,52 @@ test("every maintenance handbook has the same operational safety structure", () 
   }
 });
 
+const debugScenarios = new Map([
+  [
+    "lab/midnight.html",
+    ["layoutBroadcast", "04:59", "05:00", "lib/calendar.js"],
+  ],
+  [
+    "lab/session.html",
+    ["Set-Cookie", "/api/auth/me", "Secure", "HttpOnly"],
+  ],
+  [
+    "lab/watched.html",
+    ["episodeViewUnitsForAnime", "单集", "刷新", "getSessionUser"],
+  ],
+]);
+
+test("debug lab teaches an evidence-first loop with gated decisions", () => {
+  const indexHtml = read("lab/index.html");
+  for (const path of debugScenarios.keys()) {
+    assert.match(indexHtml, new RegExp(path.split("/").at(-1)));
+  }
+
+  for (const [path, markers] of debugScenarios) {
+    const html = read(path);
+    for (const heading of ["现象", "假设", "证据", "最小复现", "回归测试", "修复边界"]) {
+      assert.match(html, new RegExp(heading));
+    }
+    for (const marker of markers) {
+      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+
+    const stages = html.match(/<section[^>]+data-debug-stage[\s\S]*?<\/section>/g) ?? [];
+    assert.ok(stages.length >= 2, `${path} should have at least two decision stages`);
+    for (const stage of stages) {
+      const choices = stage.match(/data-debug-choice/g) ?? [];
+      const correctChoices = stage.match(/data-correct="true"/g) ?? [];
+      assert.ok(choices.length >= 3, "each stage should offer at least three hypotheses");
+      assert.equal(correctChoices.length, 1, "each stage should have exactly one best next step");
+    }
+    assert.match(html, /data-debug-reset/);
+    assert.match(html, /data-progress-id=/);
+  }
+});
+
+test("the shared script exposes the debug-lab enhancement", () => {
+  const context = loadClassicScript("app.js");
+  assert.equal(typeof context.AnimeCalendarTeach.initDebugLabs, "function");
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };

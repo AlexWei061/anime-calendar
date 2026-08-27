@@ -138,5 +138,37 @@
       keywords: ["git", "commit", "push", "Sites", "部署", "回滚"],
       summary: "建立本地验证、精确提交、远端祖先与 Sites 版本一致的证据链。",
     },
+    {
+      id: "lab-index",
+      title: "Debug 实验室",
+      path: "lab/index.html",
+      section: "交互实验",
+      keywords: ["现象", "假设", "证据", "最小复现", "回归测试"],
+      summary: "用三个真实故障练习证据优先的调试闭环。",
+    },
+    {
+      id: "lab-midnight",
+      title: "实验：凌晨番剧跑错日期",
+      path: "lab/midnight.html",
+      section: "交互实验",
+      keywords: ["凌晨", "04:59", "05:00", "layoutBroadcast", "calendar"],
+      summary: "用相邻边界值区分原始排期错误与共享日期算法错误。",
+    },
+    {
+      id: "lab-session",
+      title: "实验：登录成功却仍是 401",
+      path: "lab/session.html",
+      section: "交互实验",
+      keywords: ["401", "Set-Cookie", "Secure", "LAN", "HttpOnly", "会话"],
+      summary: "沿浏览器、Cookie、API 与 D1 的会话链路逐跳取证。",
+    },
+    {
+      id: "lab-watched",
+      title: "实验：连播已看刷新后丢失",
+      path: "lab/watched.html",
+      section: "交互实验",
+      keywords: ["已看", "单集", "episodeViewUnitsForAnime", "刷新", "乐观更新"],
+      summary: "区分连播展示卡、规范单集写入与服务器永久状态。",
+    },
   ];
 })(typeof window === "undefined" ? globalThis : window);
