@@ -232,4 +232,51 @@ test("the shared script exposes the debug-lab enhancement", () => {
   assert.equal(typeof context.AnimeCalendarTeach.initDebugLabs, "function");
 });
 
+test("the public page inventory is complete and searchable", () => {
+  const indexContext = loadClassicScript("search-index.js");
+  const entries = indexContext.ANIME_CALENDAR_TEACH_INDEX;
+  assert.equal(pages.length, 22);
+  assert.equal(entries.length, pages.length);
+  assert.equal(new Set(entries.map((entry) => entry.id)).size, entries.length);
+  assert.deepEqual(
+    [...entries.map((entry) => entry.path)].sort(),
+    [...pages].sort(),
+  );
+
+  for (const path of pages) {
+    assert.equal(existsSync(join(teachRoot, path)), true, `${path} should exist`);
+    const html = read(path);
+    assert.match(html, /<!doctype html>/i);
+    assert.match(html, /<html lang="zh-CN"/);
+    assert.match(html, /<meta\s+[^>]*name="description"/);
+    assert.match(html, /<body data-page-id="[^"]+"/);
+    assert.match(html, /styles\.css/);
+    assert.match(html, /search-index\.js/);
+    assert.match(html, /app\.js/);
+  }
+});
+
+test("finished site stays local and every annotated project path resolves", () => {
+  for (const path of pages) {
+    const html = read(path);
+    assert.doesNotMatch(html, /https?:\/\//);
+    assert.doesNotMatch(html, /teach__\//);
+    const projectPaths = [...html.matchAll(/data-project-path="([^"]+)"/g)].map(
+      (match) => match[1],
+    );
+    for (const projectPath of projectPaths) {
+      assert.equal(
+        existsSync(join(repoRoot, projectPath)),
+        true,
+        `${path} references missing project path ${projectPath}`,
+      );
+    }
+  }
+  for (const path of ["app.js", "search-index.js", "styles.css"]) {
+    const source = read(path);
+    assert.doesNotMatch(source, /https?:\/\//);
+    assert.doesNotMatch(source, /teach__\//);
+  }
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };

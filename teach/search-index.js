@@ -170,5 +170,13 @@
       keywords: ["已看", "单集", "episodeViewUnitsForAnime", "刷新", "乐观更新"],
       summary: "区分连播展示卡、规范单集写入与服务器永久状态。",
     },
+    {
+      id: "reference",
+      title: "项目速查表",
+      path: "reference.html",
+      section: "参考",
+      keywords: ["术语", "命令", "状态码", "文件定位", "症状", "红线", "Bug 模板"],
+      summary: "随手查询 Web 词汇、验证命令、症状分诊、数据顺序和维护红线。",
+    },
   ];
 })(typeof window === "undefined" ? globalThis : window);
