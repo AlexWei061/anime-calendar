@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN" data-root=".">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="用八层项目地图和三条真实数据流理解番剧日历各目录、模块与运行边界。"
+    >
+    <title>项目地图｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="search-index.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body data-page-id="map">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="番剧日历维护学院首页">
+        <span class="brand-mark" aria-hidden="true">∑</span>
+        <span><strong>番剧日历维护学院</strong><small>Project Map</small></span>
+      </a>
+      <nav aria-label="主导航">
+        <a href="map.html" aria-current="page">项目地图</a>
+        <a href="learn/01-language.html">系统学习</a>
+        <a href="handbook/ui.html">立即做事</a>
+        <a href="lab/index.html">Debug 实验室</a>
+        <a href="reference.html">速查</a>
+      </nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
+
+    <main id="main" class="page-shell map-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="index.html">首页</a><span>/</span><span>项目地图</span></nav>
+
+      <header class="page-intro" data-slide>
+        <p class="eyebrow">PROJECT MAP</p>
+        <h1>不要从 2111 行的页面开读，<br>先建立地图</h1>
+        <p class="page-lead">
+          看懂项目不是记住每一行代码，而是能回答三个问题：
+          <strong>这份信息从哪里来？谁加工它？谁有权修改它？</strong>
+        </p>
+        <div class="invariant">
+          <strong>总不变量</strong>
+          <span>静态排期留在代码里；个人状态经过认证 API 进入 D1；浏览器不能替服务器决定用户身份。</span>
+        </div>
+      </header>
+
+      <section class="flow-lab" aria-labelledby="flow-title" data-slide>
+        <div class="section-heading">
+          <p class="eyebrow">TRACE A REAL REQUEST</p>
+          <h2 id="flow-title">先选择一条真实数据流</h2>
+          <p>节点高亮后，沿箭头读一遍。以后排错时，就按同样顺序寻找“第一个错误层”。</p>
+        </div>
+        <div class="flow-controls" aria-label="选择要高亮的数据流">
+          <button class="flow-control" type="button" data-flow-control="calendar">
+            <strong>显示一周日历</strong><span>静态数据如何变成屏幕上的卡片</span>
+          </button>
+          <button class="flow-control" type="button" data-flow-control="selection">
+            <strong>保存追番列表</strong><span>浏览器状态如何经过认证后写入 D1</span>
+          </button>
+          <button class="flow-control" type="button" data-flow-control="session">
+            <strong>登录并恢复会话</strong><span>Cookie 如何让服务器重新认出用户</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="layer-map" aria-labelledby="layer-title" data-slide>
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">EIGHT LAYERS</p>
+          <h2 id="layer-title">八层，不是八种技术</h2>
+          <p>每层都只做一类事。点击卡片展开“输入—输出—依赖—故障”。</p>
+        </div>
+
+        <div class="layer-chain">
+          <details class="layer-card" data-layer="browser" data-flows="calendar selection session" open>
+            <summary>
+              <span class="layer-code">L1</span>
+              <span><strong>浏览器</strong><small>URL · Cookie · localStorage · DevTools</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>接收点击、保存设备偏好、携带 Cookie、显示服务器响应。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>用户操作、HTML/CSS/JS、HTTP 响应</dd></div><div><dt>输出</dt><dd>请求、页面状态、可见界面</dd></div></dl>
+              <p><strong>项目入口：</strong><code>?page=mine</code>、<code>localStorage ac-theme</code>、<code>ac_session</code> Cookie。</p>
+              <p class="fault"><strong>常见故障：</strong>URL 状态不同步、Cookie 没有被保存、旧本地状态影响复现。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓</span>
+
+          <details class="layer-card" data-layer="data" data-flows="calendar">
+            <summary>
+              <span class="layer-code">L2</span>
+              <span><strong>静态番剧数据</strong><small>事实、来源与生成结果</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>描述有哪些作品、哪天首播、几点播、多少集、封面在哪里。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>YUC、AniList、しょぼい快照</dd></div><div><dt>输出</dt><dd>统一季度目录与封面映射</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="data/anime.js">data/anime.js</code>、生成的 <code>data/yuc-history-&lt;year&gt;.js</code>、<code data-project-path="data/cover-sprites.js">data/cover-sprites.js</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>手改生成物、来源优先级反了、给未公布的网络配信猜时间。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓</span>
+
+          <details class="layer-card" data-layer="lib" data-flows="calendar">
+            <summary>
+              <span class="layer-code">L3</span>
+              <span><strong>纯算法层</strong><small>输入固定，输出可测试</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>把目录变成每周事件，并完成日期、集数、搜索、统计和校验。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>番剧记录、周一日期、已看集合</dd></div><div><dt>输出</dt><dd>事件、布局位置、合法单集单元</dd></div></dl>
+              <p><strong>搜索这些函数：</strong><code>eventsForWeek</code>、<code>dateOnlyEventsForWeek</code>、<code>layoutTimelineEvents</code>、<code>episodeViewUnitsForAnime</code>。</p>
+              <p><strong>核心文件：</strong><code data-project-path="lib/calendar.js">lib/calendar.js</code>、<code data-project-path="lib/anime-episode-views.js">lib/anime-episode-views.js</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>04:59/05:00 边界、先行 N 集与后续周播重复、连播范围没有拆成单集。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓</span>
+
+          <details class="layer-card" data-layer="react" data-flows="calendar selection">
+            <summary>
+              <span class="layer-code">L4</span>
+              <span><strong>React 状态与界面</strong><small><code>UI = f(state)</code></small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>维护当前页、周、季度、用户、追番和已看状态，并把计算结果渲染为桌面或移动界面。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>静态目录、算法结果、API 响应、用户操作</dd></div><div><dt>输出</dt><dd>JSX 界面与下一次请求</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="app/page.tsx">app/page.tsx</code>。先搜索 <code>useState</code>、<code>useEffect</code>、<code>fetch(</code> 和最终 <code>return</code>，不要从第一行顺读到最后。</p>
+              <p class="fault"><strong>常见故障：</strong>乐观更新失败后未回滚、桌面和移动端行为不一致、React 状态与 URL 状态脱节。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓ HTTP ↑</span>
+
+          <details class="layer-card" data-layer="api" data-flows="selection session">
+            <summary>
+              <span class="layer-code">L5</span>
+              <span><strong>API 边界</strong><small>认证 · 校验 · 状态码</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>接收 JSON，请服务器确认用户和数据合法性，再读写持久状态。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>HTTP 方法、Cookie、JSON 请求体</dd></div><div><dt>输出</dt><dd>JSON、状态码、Set-Cookie</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="app/api/anime-selections/route.ts">app/api/anime-selections/route.ts</code>、<code data-project-path="app/api/anime-episode-views/route.ts">app/api/anime-episode-views/route.ts</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>忘记认证、相信浏览器提交的任意 ID、先删除再单独插入导致旧数据丢失。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓</span>
+
+          <details class="layer-card" data-layer="auth" data-flows="selection session">
+            <summary>
+              <span class="layer-code">L6</span>
+              <span><strong>认证与安全</strong><small>密码哈希 · 会话哈希 · Cookie</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>证明请求属于哪个账号，并确保密码和会话令牌不以明文进入数据库。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>邮箱、密码或 <code>ac_session</code></dd></div><div><dt>输出</dt><dd>服务器可信的用户对象或 401</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="app/auth.ts">app/auth.ts</code>、<code data-project-path="lib/auth.js">lib/auth.js</code>；搜索 <code>getSessionUser</code>、<code>PBKDF2</code> 和 <code>SHA-256</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>本地 HTTP 错误使用 <code>Secure</code>、Cookie 未携带、会话过期或数据库迁移缺失。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓</span>
+
+          <details class="layer-card" data-layer="d1" data-flows="selection session">
+            <summary>
+              <span class="layer-code">L7</span>
+              <span><strong>D1 数据库</strong><small>用户、会话、追番、已看</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>永久保存每个账号的个人状态；不保存番剧排期目录。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>经过认证与校验的查询或写入</dd></div><div><dt>输出</dt><dd>行记录、约束错误、事务结果</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="db/schema.ts">db/schema.ts</code>、<code data-project-path="db/index.ts">db/index.ts</code>、<code data-project-path="drizzle">drizzle/</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>绑定 <code>DB</code> 不可用、schema 与迁移不同步、批量参数超过 D1 限制。</p>
+            </div>
+          </details>
+
+          <span class="layer-connector" aria-hidden="true">↓ 打包与运行</span>
+
+          <details class="layer-card" data-layer="build" data-flows="calendar session">
+            <summary>
+              <span class="layer-code">L8</span>
+              <span><strong>构建与部署</strong><small>vinext · Vite · Worker · Sites</small></span>
+            </summary>
+            <div class="layer-detail">
+              <p><strong>职责：</strong>把 Next/React 源码变成 Cloudflare Worker 可运行的 ESM，并携带 Sites 元数据和迁移。</p>
+              <dl class="io-list"><div><dt>输入</dt><dd>源代码、静态资源、逻辑绑定声明</dd></div><div><dt>输出</dt><dd>Worker 产物与部署包</dd></div></dl>
+              <p><strong>核心文件：</strong><code data-project-path="worker/index.ts">worker/index.ts</code>、<code data-project-path="vite.config.ts">vite.config.ts</code>、<code data-project-path="build/sites-vite-plugin.ts">build/sites-vite-plugin.ts</code>。</p>
+              <p class="fault"><strong>常见故障：</strong>Node 构建时顶层导入 Cloudflare 专用模块、真实资源 ID 进入仓库、发布的不是刚验证的提交。</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="reading-order" aria-labelledby="reading-title" data-slide>
+        <div class="section-heading">
+          <p class="eyebrow">FIRST REPOSITORY TOUR</p>
+          <h2 id="reading-title">第一次读项目，按这个顺序</h2>
+        </div>
+        <ol class="reading-steps">
+          <li><strong>先读 README 和 AGENTS.md</strong><span>知道产品目标、不能破坏的约定和验证命令。</span></li>
+          <li><strong>再读小而纯的 <code>lib/</code></strong><span>从函数输入输出建立信心，优先看 <code>calendar.js</code> 的测试。</span></li>
+          <li><strong>再看 API + schema</strong><span>把 HTTP、认证和数据库连成一条线。</span></li>
+          <li><strong>最后拆解 <code>app/page.tsx</code></strong><span>按 imports → types → state → derived values → effects → handlers → JSX 分段读。</span></li>
+        </ol>
+        <div class="next-actions">
+          <a class="button primary" href="learn/01-language.html">进入系统课程</a>
+          <a class="button secondary" href="handbook/ui.html">按任务反查文件</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer page-shell"><p>地图不是用来背的，而是用来定位第一个错误层。</p><a href="index.html">返回首页</a></footer>
+    <noscript><p class="noscript-note">交互高亮需要 JavaScript；全部节点内容仍可展开阅读。</p></noscript>
+  </body>
+</html>

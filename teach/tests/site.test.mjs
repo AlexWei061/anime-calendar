@@ -103,4 +103,14 @@ test("storage helpers fail closed without throwing", () => {
   assert.equal(context.AnimeCalendarTeach.writeJson(brokenStorage, "x", []), false);
 });
 
+test("project map exposes all layers and three data flows", () => {
+  const html = read("map.html");
+  for (const layer of ["browser", "data", "lib", "react", "api", "auth", "d1", "build"]) {
+    assert.match(html, new RegExp(`data-layer="${layer}"`));
+  }
+  for (const flow of ["calendar", "selection", "session"]) {
+    assert.match(html, new RegExp(`data-flow-control="${flow}"`));
+  }
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };
