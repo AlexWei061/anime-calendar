@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="从 C++ 和 Python 的已有知识迁移到番剧日历使用的 JavaScript 与 TypeScript。">
+    <title>01 语言迁移｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../search-index.js" defer></script>
+    <script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-language">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a>
+      <nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
+
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>01 语言迁移</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide>
+          <div class="lesson-kicker"><span class="tag accent">LESSON 01</span><span class="tag">约 45 分钟</span><span class="tag">C++ / Python → JS / TS</span></div>
+          <h1>语法不是墙，<br>只是换了记号</h1>
+          <p class="page-lead">你不需要先“学完 JavaScript”。目标是看到本项目的代码时，能把陌生写法翻译回已经掌握的数据结构、函数和控制流。</p>
+        </header>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">MENTAL MODEL</p>
+          <h2>先别学完整门语言</h2>
+          <p>这个仓库主要使用 JavaScript、TypeScript 和 JSX。它们共享一套运行语义：TypeScript 在运行前提供类型检查，最后仍由 JavaScript 引擎执行。</p>
+          <div class="analogy">把 TypeScript 想成更强的赛前静态检查器：它能证明“一类写法不可能正确”，但不能代替测试证明程序在所有输入上正确。</div>
+          <div class="invariant"><strong>阅读不变量</strong><span>先认出数据形状与控制流，再查语法；不要因为一个关键字陌生，就暂停理解整个函数。</span></div>
+          <div class="concept-grid">
+            <article class="concept-card"><h3><code>const</code></h3><p>变量名不能重新指向别的值；对象内部仍然可以变化。不是 C++ 的深度常量。</p></article>
+            <article class="concept-card"><h3><code>let</code></h3><p>变量之后需要重新赋值。项目中能用 <code>const</code> 时通常不用 <code>let</code>。</p></article>
+            <article class="concept-card"><h3><code>===</code></h3><p>严格相等，不做隐式类型转换。维护项目时几乎总该用它。</p></article>
+            <article class="concept-card"><h3><code>null</code> / <code>undefined</code></h3><p><code>null</code> 常表示明确“没有值”；<code>undefined</code> 常表示字段未提供。</p></article>
+          </div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">DATA SHAPES</p>
+          <h2>对象和数组：你每天都在用</h2>
+          <div class="code-compare">
+            <div class="code-panel"><span class="code-label">C++</span><pre data-copy><code>struct Anime {
+  string id;
+  string titleZh;
+  int episodeCount;
+};</code></pre></div>
+            <div class="code-panel"><span class="code-label">TypeScript</span><pre data-copy><code>type Anime = {
+  id: string;
+  titleZh: string;
+  episodeCount: number;
+};</code></pre></div>
+          </div>
+          <p>两边都在描述同一个“记录的形状”。区别是 TypeScript 的类型通常不会变成运行时对象；它只在检查阶段帮助你。</p>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>熟悉的概念</th><th>JavaScript / TypeScript</th><th>项目中的例子</th></tr></thead><tbody>
+            <tr><td><code>struct</code> / Python <code>dict</code></td><td>object</td><td>一条番剧记录</td></tr>
+            <tr><td><code>vector</code> / list</td><td>array</td><td><code>allAnime</code>、一周事件</td></tr>
+            <tr><td><code>unordered_map</code> / dict</td><td><code>Map</code></td><td><code>animeById</code></td></tr>
+            <tr><td><code>set</code></td><td><code>Set</code></td><td>已选 ID、日期集合、去重键</td></tr>
+            <tr><td>列表推导</td><td><code>map</code> / <code>filter</code> / <code>flatMap</code></td><td>由季度记录构建索引</td></tr>
+          </tbody></table></div>
+          <pre class="search-command" data-copy><code>rg -n "new Map|new Set|\.flatMap\(" app/page.tsx lib</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">FUNCTIONS</p>
+          <h2>函数可以像整数一样被传递</h2>
+          <pre data-copy><code>const seasonIndexByAnimeId = new Map(
+  seasons.flatMap((season, seasonIndex) =&gt;
+    season.anime.map((record) =&gt; [record.id, seasonIndex]),
+  ),
+);</code></pre>
+          <div class="code-reading"><strong>不要逐字符读。按四个问题拆：</strong><dl>
+            <div><dt>输入</dt><dd><code>seasons</code> 季度数组。</dd></div>
+            <div><dt>局部变换</dt><dd>每部作品变成 <code>[id, seasonIndex]</code>。</dd></div>
+            <div><dt>合并</dt><dd><code>flatMap</code> 把多季二维结果摊平。</dd></div>
+            <div><dt>输出</dt><dd>按稳定 ID 查询季度下标的 <code>Map</code>。</dd></div>
+          </dl></div>
+          <p>箭头函数 <code>(x) =&gt; y</code> 就是短函数。函数作为参数传给 <code>map</code>、<code>filter</code> 和事件监听器，是这个项目最常见的写法之一。</p>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">MODULES &amp; NULLABILITY</p>
+          <h2>从 import 块读出依赖图</h2>
+          <pre data-copy><code>import { matchesAnimeTitle } from "../lib/anime-search.js";
+import {
+  eventsForWeek,
+  layoutTimelineEvents,
+} from "../lib/calendar.js";</code></pre>
+          <p>这两行已经告诉你：页面不自己实现搜索和排期算法，它依赖 <code>lib/</code>。阅读大文件时，import 比 JSX 更适合当第一站。</p>
+          <div class="concept-grid">
+            <article class="concept-card"><h3><code>record?.field</code></h3><p>如果 <code>record</code> 是空值，整个表达式得到 <code>undefined</code>，不会继续访问字段。</p></article>
+            <article class="concept-card"><h3><code>value ?? fallback</code></h3><p>只有值为 <code>null</code> 或 <code>undefined</code> 才使用后备值；0 和空字符串不会被误判。</p></article>
+            <article class="concept-card"><h3><code>{ ...record, date }</code></h3><p>复制对象字段，并用后面的同名字段覆盖前面的值。</p></article>
+            <article class="concept-card"><h3><code>as Anime[]</code></h3><p>告诉类型检查器“把它视为这个类型”；它不会在运行时验证数据。</p></article>
+          </div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">ASYNC</p>
+          <h2>为什么代码里有满屏的 <code>await</code></h2>
+          <div class="analogy">算法题里读入通常立刻完成；网络和数据库像把查询交给远处评测机。<code>await</code> 表示“这个异步函数在这里暂停，事件循环可以继续处理别的工作”。</div>
+          <p>只有标记为 <code>async</code> 的函数才能直接使用 <code>await</code>；它总会返回一个 Promise。</p>
+          <pre data-copy><code>const response = await fetch("/api/auth/me");
+if (!response.ok) return;
+const user = await response.json();
+setCurrentUser(user);</code></pre>
+          <ol>
+            <li><code>fetch</code> 发请求，返回 Promise。</li>
+            <li>第一个 <code>await</code> 等响应头和响应对象。</li>
+            <li><code>response.json()</code> 仍是异步读取与解析。</li>
+            <li><code>setCurrentUser</code> 改 React 状态，触发下一次渲染。</li>
+          </ol>
+          <div class="invariant"><strong>异常边界</strong><span><code>await</code> 不等于自动处理失败。仍要检查 <code>response.ok</code>，必要时使用 <code>try/catch</code>，并处理组件卸载后的旧响应。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">CHECK YOUR MODEL</p>
+          <h2>小测：别猜语法，追踪值</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-language">
+            <h3 id="q-language">下面哪句话正确？</h3>
+            <div class="quiz-choices">
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="const 只阻止变量名重新赋值；对象内部仍可改变。">A. <code>const</code> 会让对象彻底不可变</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。const 约束绑定，不自动冻结对象。">B. <code>const</code> 阻止变量名重新指向别的值</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="TypeScript 类型多数在编译后被擦除，并不会自动验证运行时 JSON。">C. TypeScript 类型会在服务器上自动验证所有 JSON</button>
+            </div>
+            <p class="feedback" data-quiz-feedback hidden></p>
+            <details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。若需要运行时验证，项目仍要显式检查 payload，例如 <code>validateEpisodeViewBatch</code>。</p></details>
+          </div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-01-language"><span><strong>我能把常见 JS/TS 写法翻译回已有知识</strong><br>并知道类型检查不等于运行时验证。</span></label>
+        </section>
+
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="../index.html">← 返回学习入口</a><a href="02-web.html">下一课：网站如何运行 →</a></nav>
+      </article>
+    </main>
+    <noscript><p class="noscript-note">交互测验需要 JavaScript；答案仍可通过 details 展开。</p></noscript>
+  </body>
+</html>

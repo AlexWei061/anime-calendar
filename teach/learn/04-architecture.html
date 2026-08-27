@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="从静态目录、纯算法、React、API 与 D1 的边界理解番剧日历项目架构。">
+    <title>04 项目架构｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../search-index.js" defer></script>
+    <script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-architecture">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a>
+      <nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
+
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>04 项目架构</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide>
+          <div class="lesson-kicker"><span class="tag accent">LESSON 04</span><span class="tag">约 50 分钟</span><span class="tag">边界 · 依赖 · 数据流</span></div>
+          <h1>架构就是：<br>什么放在哪里</h1>
+          <p class="page-lead">这个项目没有神秘的“魔法层”。它只是把静态事实、纯计算、界面状态、服务器边界和个人数据分开。维护时先找正确层，改动自然会变小。</p>
+        </header>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">THE MOST IMPORTANT SPLIT</p>
+          <h2>番剧事实与个人状态不是同一种数据</h2>
+          <div class="compare-grid">
+            <article class="concept-card"><h3>静态番剧目录</h3><p>所有用户共享。位于 <code>data/anime.js</code> 和历史生成目录；发布时随代码打包。</p></article>
+            <article class="concept-card"><h3>个人账号数据</h3><p>按邮箱隔离。由认证 API 读写 D1，包括会话、追番与单集已看。</p></article>
+          </div>
+          <div class="analogy">前者像竞赛题面和官方数据，所有选手共享；后者像每位选手的提交记录，必须由服务端按身份隔离。</div>
+          <div class="invariant"><strong>存储不变量</strong><span>排期不是运行时从 D1 查询；用户身份也不能从静态目录或浏览器 JSON 得出。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">DIRECTORY MAP</p>
+          <h2>目录不是按文件后缀分，而是按责任分</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>区域</th><th>回答的问题</th><th>典型文件</th></tr></thead><tbody>
+            <tr><td><code>data/</code></td><td>事实是什么？</td><td><code>data/anime.js</code>、生成目录、封面图集映射</td></tr>
+            <tr><td><code>lib/</code></td><td>如何纯计算或校验？</td><td><code>lib/calendar.js</code>、搜索、统计、认证密码工具</td></tr>
+            <tr><td><code>app/</code></td><td>页面显示什么、请求如何进入？</td><td><code>app/page.tsx</code>、<code>app/api/</code>、<code>app/auth.ts</code></td></tr>
+            <tr><td><code>db/</code> + <code>drizzle/</code></td><td>个人数据如何持久化？</td><td>schema、连接、迁移历史</td></tr>
+            <tr><td><code>scripts/</code></td><td>静态数据如何生成？</td><td>AniList/YUC/Syoboi/封面脚本</td></tr>
+            <tr><td><code>worker/</code> + 构建配置</td><td>代码如何成为线上 Worker？</td><td>Worker 入口、Vite、Sites 打包插件</td></tr>
+            <tr><td><code>tests/</code></td><td>哪些行为和约束不能退化？</td><td>算法、数据、认证、渲染后 HTML 测试</td></tr>
+          </tbody></table></div>
+          <pre class="search-command" data-copy><code>rg --files app lib data db scripts tests | sed -n '1,160p'</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">GENERATED FILES</p>
+          <h2>先判断“这是源码还是产物”</h2>
+          <div class="task-grid">
+            <article class="task-card"><h3>可直接维护</h3><p><code>app/</code>、<code>lib/</code>、schema、脚本和手工维护的当前季目录。</p></article>
+            <article class="task-card"><h3>通过脚本更新</h3><p><code>data/yuc-history-&lt;year&gt;.js</code>、<code>data/syoboi-history-&lt;year&gt;.js</code>、<code>data/cover-sprites.js</code> 和图集。</p></article>
+            <article class="task-card"><h3>构建产物</h3><p><code>dist/</code>、<code>.next/</code>、<code>.wrangler/</code>。不手改、不提交秘密或本地状态。</p></article>
+            <article class="task-card"><h3>迁移历史</h3><p><code>drizzle/</code> 由 schema 生成后提交。能审查，但不能与 schema 脱节。</p></article>
+          </div>
+          <div class="invariant"><strong>生成不变量</strong><span>如果文件的权威来源是脚本或 schema，修复应发生在来源或生成流程，而不是只修最终产物。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">IMPORTS AS GRAPH</p>
+          <h2>import 块就是局部依赖图</h2>
+          <pre data-copy><code>app/page.tsx
+ ├─ data/anime.js              静态目录
+ ├─ data/cover-sprites.js      封面映射
+ ├─ lib/calendar.js            日期与布局
+ ├─ lib/anime-statistics.js    进度与今日统计
+ └─ lib/anime-episode-views.js 单集已看规则</code></pre>
+          <p>如果页面 import 了一个函数，它是消费者；函数真正的规则通常应在被 import 的文件中维护。反过来，如果 JSX 里重新写日期或集数算法，就产生了两份规则。</p>
+          <div class="analogy">依赖图像有向图：边 <code>A → B</code> 表示 A 需要 B。修 B 可能影响所有入边消费者；修 A 的显示通常不该改变 B 的数学定义。</div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">TRACE THREE FLOWS</p>
+          <h2>三个功能，三条不同路径</h2>
+          <div class="code-reading"><strong>显示一周日历</strong><dl>
+            <div><dt>事实</dt><dd><code>data/anime.js</code></dd></div><div><dt>计算</dt><dd><code>lib/calendar.js</code></dd></div><div><dt>状态</dt><dd>当前周与页面</dd></div><div><dt>输出</dt><dd>桌面时间轴或移动议程</dd></div>
+          </dl></div>
+          <div class="code-reading"><strong>保存追番</strong><dl>
+            <div><dt>浏览器</dt><dd>新的 ID 数组</dd></div><div><dt>API</dt><dd>认证、白名单、分批</dd></div><div><dt>D1</dt><dd>一次原子整表替换</dd></div><div><dt>响应</dt><dd>服务器接受后的 ID</dd></div>
+          </dl></div>
+          <div class="code-reading"><strong>恢复登录</strong><dl>
+            <div><dt>浏览器</dt><dd>请求自动携带 Cookie</dd></div><div><dt>认证</dt><dd>哈希 token，查会话和用户</dd></div><div><dt>D1</dt><dd>验证记录与过期时间</dd></div><div><dt>React</dt><dd>更新 <code>currentUser</code></dd></div>
+          </dl></div>
+          <p><a href="../map.html">在可交互地图中高亮这三条路径</a>。</p>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">WHERE SHOULD IT LIVE?</p>
+          <h2>新代码应该放哪一层</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>需求</th><th>首选位置</th><th>原因</th></tr></thead><tbody>
+            <tr><td>计算某周应出现的集数</td><td><code>lib/calendar.js</code></td><td>纯计算，可独立测试，桌面与移动复用</td></tr>
+            <tr><td>改变卡片颜色或间距</td><td><code>app/globals.css</code></td><td>只属于视觉层，并需同时维护两套主题 token</td></tr>
+            <tr><td>拒绝未知番剧 ID</td><td>API 调用的 <code>lib/</code> 校验</td><td>不能信任浏览器；规则也应可单测</td></tr>
+            <tr><td>新增数据库列</td><td><code>db/schema.ts</code> + 生成迁移</td><td>schema 与迁移共同构成历史</td></tr>
+            <tr><td>修历史季度生成结果</td><td>导入脚本或来源映射</td><td>下次生成不能把修复覆盖掉</td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">CHECK YOUR MODEL</p>
+          <h2>小测：搜索逻辑该放哪里？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-architecture">
+            <h3 id="q-architecture">中文、日文标题规范化匹配需要被搜索页复用并单独测试，最佳位置是？</h3>
+            <div class="quiz-choices">
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="CSS 只能控制显示，不能负责字符串匹配。">A. <code>app/globals.css</code></button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="可以在 JSX 调用，但不应把可复用规则直接写进 JSX。">B. 直接写在搜索结果 JSX 里</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。纯字符串规则属于 lib，并由页面消费。项目实际使用 lib/anime-search.js。">C. <code>lib/anime-search.js</code></button>
+            </div>
+            <p class="feedback" data-quiz-feedback hidden></p>
+            <details><summary>无 JavaScript 时查看答案</summary><p>答案是 C。页面负责状态和渲染，匹配规则留在可独立测试的纯函数中。</p></details>
+          </div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-04-architecture"><span><strong>我能区分静态事实、纯算法、界面、API 和个人数据</strong><br>并能判断新代码应放在哪一层。</span></label>
+        </section>
+
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="03-react.html">← 上一课：React 心智模型</a><a href="05-calendar.html">下一课：日历核心算法 →</a></nav>
+      </article>
+    </main>
+    <noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>

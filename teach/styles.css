@@ -1174,6 +1174,283 @@ body.is-presenting > main > [data-slide].is-current-slide {
   margin-top: 2rem;
 }
 
+.lesson-page {
+  padding-bottom: 6rem;
+}
+
+.lesson {
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.lesson-header {
+  display: grid;
+  align-content: center;
+  min-height: 520px;
+  padding-block: 4rem;
+}
+
+.lesson-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--paper-strong);
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.tag.accent {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.lesson-header h1 {
+  max-width: 920px;
+  margin: 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: clamp(3rem, 7vw, 6.2rem);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.lesson-header .page-lead {
+  max-width: 760px;
+}
+
+.lesson-section {
+  padding-block: 4.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.lesson-section h2 {
+  margin: 0 0 1.2rem;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  line-height: 1.12;
+}
+
+.lesson-section h3 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.lesson-section > p,
+.lesson-section > ul,
+.lesson-section > ol {
+  max-width: 780px;
+}
+
+.concept-grid,
+.compare-grid,
+.state-grid,
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.concept-card,
+.analogy,
+.code-reading,
+.quiz,
+.practice-card,
+.state-card,
+.task-card {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper-strong);
+}
+
+.concept-card h3,
+.state-card h3,
+.task-card h3 {
+  margin: 0 0 0.45rem;
+}
+
+.concept-card p,
+.state-card p,
+.task-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.analogy {
+  margin: 1.5rem 0;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.analogy::before {
+  content: "你已经会的 → 新概念";
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--accent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.code-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+
+.code-panel {
+  min-width: 0;
+}
+
+.code-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+pre {
+  position: relative;
+  margin: 0;
+  padding: 1.2rem;
+  overflow: auto;
+  border: 1px solid #25344b;
+  border-radius: 12px;
+  color: #dfe8f5;
+  background: var(--code);
+  font: 0.86rem/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+pre code {
+  font: inherit;
+}
+
+.code-reading {
+  margin: 1.5rem 0;
+}
+
+.code-reading dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.code-reading dl div {
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.code-reading dt {
+  color: var(--accent);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.code-reading dd {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper-strong);
+}
+
+.table-scroll {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data-table th {
+  color: var(--muted);
+  background: var(--paper);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.quiz {
+  margin: 1.5rem 0;
+}
+
+.quiz h3 {
+  margin-top: 0;
+}
+
+.quiz details {
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.progress-check {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--safe);
+  border-radius: 12px;
+  background: var(--safe-soft);
+  cursor: pointer;
+}
+
+.progress-check input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--safe);
+}
+
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.lesson-nav a {
+  max-width: 48%;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.search-command {
+  margin-top: 1rem;
+}
+
 @media (max-width: 980px) {
   .site-header {
     align-items: flex-start;
@@ -1223,7 +1500,13 @@ body.is-presenting > main > [data-slide].is-current-slide {
   .start-grid,
   .progress-layout,
   .flow-lab .flow-controls,
-  .io-list {
+  .io-list,
+  .concept-grid,
+  .compare-grid,
+  .state-grid,
+  .task-grid,
+  .code-compare,
+  .code-reading dl {
     grid-template-columns: 1fr;
   }
 
@@ -1255,6 +1538,26 @@ body.is-presenting > main > [data-slide].is-current-slide {
 
   .search-result-meta {
     grid-row: auto;
+  }
+
+  .lesson-header {
+    min-height: 460px;
+  }
+
+  .lesson-header h1 {
+    font-size: clamp(2.8rem, 15vw, 4.6rem);
+  }
+
+  .lesson-section {
+    padding-block: 3.5rem;
+  }
+
+  .lesson-nav {
+    flex-direction: column;
+  }
+
+  .lesson-nav a {
+    max-width: none;
   }
 
   .route-section,

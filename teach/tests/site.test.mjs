@@ -113,4 +113,24 @@ test("project map exposes all layers and three data flows", () => {
   }
 });
 
+const foundationalLearningMarkers = new Map([
+  ["learn/01-language.html", ["const", "async", "TypeScript", "C++"]],
+  ["learn/02-web.html", ["HTTP", "Cookie", "JSON", "401"]],
+  ["learn/03-react.html", ["UI = f(state)", "useState", "useEffect", "app/page.tsx"]],
+  ["learn/04-architecture.html", ["data/anime.js", "lib/calendar.js", "app/api", "D1"]],
+]);
+
+test("foundational modules connect concepts to this repository", () => {
+  for (const [path, markers] of foundationalLearningMarkers) {
+    const html = read(path);
+    for (const marker of markers) {
+      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    assert.match(html, /class="analogy"/);
+    assert.match(html, /class="invariant"/);
+    assert.match(html, /data-progress-id=/);
+    assert.match(html, /data-quiz/);
+  }
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="用函数、状态和同步的数学视角拆解 React 与项目中的大型 Home 组件。">
+    <title>03 React 心智模型｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../search-index.js" defer></script>
+    <script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-react">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a>
+      <nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
+
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>03 React</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide>
+          <div class="lesson-kicker"><span class="tag accent">LESSON 03</span><span class="tag">约 55 分钟</span><span class="tag">组件 · state · effect</span></div>
+          <h1><code>UI = f(state)</code></h1>
+          <p class="page-lead">React 最重要的不是 JSX 语法，而是声明式关系：给定当前状态，组件返回此刻应该显示的界面。状态改变，React 再调用这个函数。</p>
+        </header>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">THE EQUATION</p>
+          <h2>这个等式对在哪里，又错在哪里</h2>
+          <pre data-copy><code>界面 = Home(当前页, 当前周, 当前用户, 追番列表, 已看记录, ...)</code></pre>
+          <div class="analogy">像研究一个参数化函数：state 是输入，JSX 是输出。你不直接命令“把第三个 div 改成粉色”，而是改变决定颜色的状态，让函数重新计算。</div>
+          <div class="invariant"><strong>渲染不变量</strong><span>组件渲染阶段应当像纯函数：不要在 JSX 计算过程中发请求、写数据库或修改外部对象。</span></div>
+          <p>这个类比的边界：真实组件还要和浏览器、网络、计时器等外部世界同步；这些动作由事件处理器和 <code>useEffect</code> 承担。</p>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">COMPONENTS &amp; JSX</p>
+          <h2>组件就是返回界面描述的函数</h2>
+          <div class="code-compare">
+            <div class="code-panel"><span class="code-label">数学式</span><pre data-copy><code>CoverArt : Anime × Variant → UI</code></pre></div>
+            <div class="code-panel"><span class="code-label">项目代码的形状</span><pre data-copy><code>function CoverArt({ anime, variant }) {
+  const sprite = coverSpriteFor(
+    anime.coverUrl,
+    variant,
+  );
+  if (!sprite) return null;
+  return &lt;span role="img" /&gt;;
+}</code></pre></div>
+          </div>
+          <p>JSX 看起来像 HTML，但它是 JavaScript 表达式。花括号里可以放值、条件、数组映射和组件。浏览器最终看到的是 React 创建的 DOM。</p>
+          <div class="concept-grid">
+            <article class="concept-card"><h3><code>{condition &amp;&amp; &lt;X /&gt;}</code></h3><p>条件为真才渲染 X。先问 condition 是由哪个 state 或派生值决定的。</p></article>
+            <article class="concept-card"><h3><code>items.map(...)</code></h3><p>每个数据项生成一段 JSX；稳定 <code>key</code> 帮 React 识别同一项。</p></article>
+            <article class="concept-card"><h3><code>onClick={handler}</code></h3><p>传入函数本身，不是立刻调用它。点击发生时浏览器再调用。</p></article>
+            <article class="concept-card"><h3><code>&lt;Component prop={x} /&gt;</code></h3><p>父组件把输入传给子组件；子组件不应偷偷修改父组件 state。</p></article>
+          </div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">STATE INVENTORY</p>
+          <h2>先给 20 多个 state 分组</h2>
+          <p><code>app/page.tsx</code> 的 <code>Home</code> 很长，但 state 不是随机堆积。按职责分组后，就像读一张变量表：</p>
+          <div class="state-grid">
+            <article class="state-card"><h3>导航与日期</h3><p><code>activePage</code>、<code>activeWeekStart</code>、<code>activeMobileDate</code>、季度筛选。</p></article>
+            <article class="state-card"><h3>详情与搜索</h3><p><code>selected</code>、<code>animeQuery</code>、统计折叠状态。</p></article>
+            <article class="state-card"><h3>追番与已看</h3><p><code>selectedAnimeIds</code>、<code>watchedEpisodes</code>、保存中键和错误。</p></article>
+            <article class="state-card"><h3>账号</h3><p><code>currentUser</code>、<code>authLoaded</code>、弹窗模式、头像与账户提示。</p></article>
+          </div>
+          <pre class="search-command" data-copy><code>rg -n "const \[.*useState" app/page.tsx</code></pre>
+          <div class="invariant"><strong>state 判断法</strong><span>只有“会变化，并且变化后需要重新渲染”的值才应是 state；能从现有 state 计算出的值通常直接派生。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">EFFECTS</p>
+          <h2><code>useEffect</code> 是同步外部世界</h2>
+          <p>effect 不是“组件里任何复杂逻辑的收纳箱”。项目中的 effect 主要处理：</p>
+          <ul>
+            <li>读取当前用户、追番和已看 API；</li>
+            <li>监听浏览器 <code>popstate</code>；</li>
+            <li>同步对话框打开与焦点；</li>
+            <li>订阅系统主题或时间变化；</li>
+            <li>在依赖变化或组件卸载时取消旧任务。</li>
+          </ul>
+          <pre data-copy><code>useEffect(() =&gt; {
+  let cancelled = false;
+
+  async function loadUser() {
+    const response = await fetch("/api/auth/me");
+    if (!response.ok || cancelled) return;
+    setCurrentUser(await response.json());
+  }
+
+  loadUser();
+  return () =&gt; { cancelled = true; };
+}, []);</code></pre>
+          <div class="code-reading"><strong>从依赖数组读 effect：</strong><dl>
+            <div><dt><code>[]</code></dt><dd>挂载时建立一次同步，卸载时清理。</dd></div>
+            <div><dt><code>[a, b]</code></dt><dd>a 或 b 变化时重新同步。</dd></div>
+            <div><dt>没有数组</dt><dd>每次渲染后运行，通常要格外警惕。</dd></div>
+            <div><dt>cleanup</dt><dd>撤销监听、计时器或标记旧请求失效。</dd></div>
+          </dl></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">REQUEST LOOP</p>
+          <h2>一次点击如何绕一圈回来</h2>
+          <ol class="reading-steps">
+            <li><strong>用户点击已看方框</strong><span>事件处理器根据旧 state 计算乐观的新数组。</span></li>
+            <li><strong>React 立即重渲染</strong><span>用户先看到响应，不必等网络往返。</span></li>
+            <li><strong><code>fetch()</code> 调 API</strong><span>服务器认证、验证单集键并写 D1。</span></li>
+            <li><strong>响应决定保留或回滚</strong><span>成功保留；失败恢复仍然适用的旧状态并显示错误。</span></li>
+          </ol>
+          <div class="analogy">乐观更新像先假设一次操作能成功，再等服务端给证明。如果反例出现，就必须回滚；而并发操作意味着不能粗暴恢复整份陈旧快照。</div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">URL IS STATE</p>
+          <h2>为什么页面状态不能只放 React 里</h2>
+          <p>“播出表”“我的番剧”“统计”和“搜索”分别映射到 URL 的 <code>?page=</code>。切换时使用 <code>history.pushState</code>，浏览器前进/后退通过 <code>popstate</code> 同步回 React。</p>
+          <div class="invariant"><strong>导航不变量</strong><span>如果一个界面是用户认为的“页面”，它通常需要能被 URL 表达，否则刷新、分享和后退行为会出错。</span></div>
+          <pre class="search-command" data-copy><code>rg -n "pushState|popstate|searchParams" app/page.tsx</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">READ THE BIG FILE</p>
+          <h2>拆解 2111 行 <code>Home</code> 的阅读顺序</h2>
+          <ol>
+            <li>imports：页面依赖哪些算法与数据；</li>
+            <li>types：页面操纵哪些数据形状；</li>
+            <li><code>useState</code>：哪些量会变化；</li>
+            <li>派生值：哪些结果能由 state 计算；</li>
+            <li><code>useEffect</code>：和哪些外部系统同步；</li>
+            <li>事件处理器：用户动作如何改 state 或发请求；</li>
+            <li>最终 JSX：不同 <code>activePage</code> 渲染什么。</li>
+          </ol>
+          <pre data-copy><code>rg -n "^function |useState|useEffect|fetch\(|return \(" app/page.tsx</code></pre>
+          <p>目标不是一次记住全部，而是每次带一个问题进入，例如“追番列表在哪里加载”，只沿相关 state 和 effect 追踪。</p>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">CHECK YOUR MODEL</p>
+          <h2>小测：哪些值不该再建 state？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-react">
+            <h3 id="q-react">已经有 <code>selectedAnimeIds</code> 和 <code>allAnime</code>，还需要单独保存 <code>selectedAnimeRecords</code> 吗？</h3>
+            <div class="quiz-choices">
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="两份 state 会产生同步问题：ID 更新了，记录数组可能忘记更新。">A. 需要，两份 state 越多越清楚</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。它能由现有输入 filter 得到，应作为派生值。">B. 通常不需要，直接由 ID 集合过滤得到</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="useEffect 适合同步外部系统，不应用来维持本可直接计算的冗余 state。">C. 需要，并用 useEffect 保持两者同步</button>
+            </div>
+            <p class="feedback" data-quiz-feedback hidden></p>
+            <details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。减少冗余 state 就是在减少需要证明的一致性条件。</p></details>
+          </div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-03-react"><span><strong>我能用 state、派生值、effect 和事件处理器拆解 React 页面</strong><br>并知道 URL 也是页面状态的一部分。</span></label>
+        </section>
+
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="02-web.html">← 上一课：网站如何运行</a><a href="04-architecture.html">下一课：项目架构 →</a></nav>
+      </article>
+    </main>
+    <noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>

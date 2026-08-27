@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN" data-root="..">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="理解浏览器、HTTP、JSON、Cookie、前后端与数据库在番剧日历中的分工。">
+    <title>02 网站如何运行｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../search-index.js" defer></script>
+    <script src="../app.js" defer></script>
+  </head>
+  <body data-page-id="learn-web">
+    <a class="skip-link" href="#main">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">∑</span><span><strong>番剧日历维护学院</strong><small>Systematic Path</small></span></a>
+      <nav aria-label="主导航"><a href="../map.html">项目地图</a><a href="01-language.html" aria-current="page">系统学习</a><a href="../handbook/ui.html">立即做事</a><a href="../lab/index.html">Debug 实验室</a><a href="../reference.html">速查</a></nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
+
+    <main id="main" class="page-shell lesson-page">
+      <nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">首页</a><span>/</span><span>系统学习</span><span>/</span><span>02 网站如何运行</span></nav>
+      <article class="lesson">
+        <header class="lesson-header" data-slide>
+          <div class="lesson-kicker"><span class="tag accent">LESSON 02</span><span class="tag">约 45 分钟</span><span class="tag">浏览器 · HTTP · Cookie</span></div>
+          <h1>网站不是一个程序，<br>而是一场对话</h1>
+          <p class="page-lead">番剧日历同时运行在浏览器和 Cloudflare Worker 中；D1 只在服务器一侧。维护它的关键不是背协议，而是永远知道当前代码在哪台“机器”上执行。</p>
+        </header>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">THREE RUNTIMES</p>
+          <h2>先把三台机器分开</h2>
+          <div class="concept-grid">
+            <article class="concept-card"><h3>浏览器</h3><p>运行 React 客户端代码，处理点击、URL、localStorage、Cookie 携带和页面显示。</p></article>
+            <article class="concept-card"><h3>Cloudflare Worker</h3><p>接收请求，运行 API、服务端渲染和认证逻辑，并访问云端绑定。</p></article>
+            <article class="concept-card"><h3>D1 数据库</h3><p>保存账号、会话、追番和已看记录；浏览器不能直接连接它。</p></article>
+            <article class="concept-card"><h3>静态文件</h3><p>番剧目录、CSS、封面图集和打包后的脚本由站点直接提供。</p></article>
+          </div>
+          <div class="analogy">把浏览器看成选手电脑、Worker 看成 OJ 服务端、D1 看成评测系统数据库。选手只能提交规定格式的请求，不能直接改排行榜数据库。</div>
+          <div class="invariant"><strong>权限不变量</strong><span>浏览器可以表达“我想修改什么”，但服务器必须独立判断“你是谁”和“这个修改合法吗”。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">HTTP</p>
+          <h2>请求与响应：一次明确的函数调用</h2>
+          <p>可以暂时把 HTTP 请求看成一个跨机器函数调用：</p>
+          <pre data-copy><code>Response = API(method, path, headers, body)</code></pre>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>方法</th><th>项目中的含义</th><th>真实路径示例</th></tr></thead><tbody>
+            <tr><td><code>GET</code></td><td>读取当前状态</td><td><code>/api/auth/me</code>、<code>/api/anime-selections</code></td></tr>
+            <tr><td><code>POST</code></td><td>执行一次动作或创建资源</td><td><code>/api/auth/login</code>、<code>/api/auth/logout</code></td></tr>
+            <tr><td><code>PUT</code></td><td>把一项状态更新成指定值</td><td>整表保存追番、更新已看</td></tr>
+          </tbody></table></div>
+          <div class="code-compare">
+            <div class="code-panel"><span class="code-label">浏览器发出 JSON</span><pre data-copy><code>await fetch("/api/anime-selections", {
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ animeIds }),
+});</code></pre></div>
+            <div class="code-panel"><span class="code-label">API 解析并返回 JSON</span><pre data-copy><code>const payload = await request.json();
+const animeIds = filterKnownAnimeIds(
+  payload.animeIds,
+  validAnimeIds,
+);
+return Response.json({ animeIds });</code></pre></div>
+          </div>
+          <p><strong>JSON</strong> 只是跨边界传输数据的文本格式。它没有 TypeScript 类型，所以服务器仍需在运行时验证。</p>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">STATUS CODES</p>
+          <h2>状态码是控制流，不是装饰</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>状态</th><th>本项目中的解释</th><th>排错第一步</th></tr></thead><tbody>
+            <tr><td><code>200</code></td><td>读取或动作成功</td><td>继续检查返回 JSON 是否符合预期</td></tr>
+            <tr><td><code>201</code></td><td>注册成功并创建账号</td><td>检查响应中的 <code>Set-Cookie</code></td></tr>
+            <tr><td><code>400</code></td><td>请求体或字段不合法</td><td>检查浏览器发出的 JSON 和验证函数</td></tr>
+            <tr><td><code>401</code></td><td>没有有效会话</td><td>检查 Cookie 是否存在、携带、过期</td></tr>
+            <tr><td><code>409</code></td><td>注册邮箱已存在</td><td>这是业务冲突，不是服务器崩溃</td></tr>
+            <tr><td><code>500</code></td><td>服务器或绑定发生异常</td><td>检查 Worker 日志、D1/R2 绑定与迁移</td></tr>
+          </tbody></table></div>
+          <div class="invariant"><strong>分层不变量</strong><span>401 先查身份链；400 先查输入；500 才优先怀疑服务器内部或云端资源。不要一看到“请求失败”就改 React。</span></div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">COOKIE VS STORAGE</p>
+          <h2>Cookie 和 localStorage 都能“记住”，但权力不同</h2>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th></th><th><code>ac_session</code> Cookie</th><th><code>ac-theme</code> localStorage</th><th>教学站进度</th></tr></thead><tbody>
+            <tr><td>用途</td><td>证明会话身份</td><td>记住亮暗主题</td><td>记住课程完成情况</td></tr>
+            <tr><td>自动随请求发送</td><td>是，同源请求</td><td>否</td><td>否</td></tr>
+            <tr><td>JavaScript 可读</td><td>否，因 <code>HttpOnly</code></td><td>是</td><td>是</td></tr>
+            <tr><td>服务器信任</td><td>验证哈希和过期后才信任</td><td>不用于身份</td><td>不用于主应用</td></tr>
+          </tbody></table></div>
+          <p>教学站只使用以 <code>anime-calendar-teach:</code> 开头的 localStorage 键，不会接触主应用的 <code>ac-theme</code> 或 Cookie。</p>
+          <div class="analogy">Cookie 像盖章的准考证：浏览器自动带上，但服务器仍要验真伪与有效期。localStorage 更像你桌上的便签，方便但不能证明身份。</div>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">DEVTOOLS</p>
+          <h2>浏览器开发者工具就是 Web 的调试器</h2>
+          <div class="task-grid">
+            <article class="task-card"><h3>Network</h3><p>请求有没有发出？方法、状态码、请求体、响应体、Cookie 和 Set-Cookie 是什么？</p></article>
+            <article class="task-card"><h3>Application</h3><p><code>ac_session</code> Cookie 和 localStorage 键是否存在、域和过期时间是否合理？</p></article>
+            <article class="task-card"><h3>Console</h3><p>运行时错误和你临时打印的状态。先读第一条真正的异常和调用栈。</p></article>
+            <article class="task-card"><h3>Elements</h3><p>DOM、CSS、可访问属性是否符合预期。它证明显示结果，不证明数据源正确。</p></article>
+          </div>
+          <pre class="search-command" data-copy><code>rg -n "fetch\(|Response\.json|status: 401|Set-Cookie" app</code></pre>
+        </section>
+
+        <section class="lesson-section" data-slide>
+          <p class="eyebrow">CHECK YOUR MODEL</p>
+          <h2>小测：401 应该先查哪一层？</h2>
+          <div class="quiz" data-quiz aria-labelledby="q-web">
+            <h3 id="q-web">登录请求显示成功，但随后 <code>/api/auth/me</code> 返回 401。第一批证据是什么？</h3>
+            <div class="quiz-choices">
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="CSS 只影响显示，不能导致服务器判定会话无效。">A. 先检查按钮颜色和 CSS</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。先沿 Set-Cookie → Cookie 存储 → me 请求携带 → 服务端查会话的链条取证。">B. 检查 Set-Cookie、Cookie 存储和 me 请求</button>
+              <button class="quiz-choice" type="button" data-quiz-choice data-answer="清空数据库会扩大破坏面，也没有证明根因在数据库。">C. 先清空 D1 再重新注册</button>
+            </div>
+            <p class="feedback" data-quiz-feedback hidden></p>
+            <details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。按网络链逐段确认，能找到会话首次消失的位置。</p></details>
+          </div>
+          <label class="progress-check"><input type="checkbox" data-progress-id="learn-02-web"><span><strong>我能区分浏览器、Worker、D1 和静态文件</strong><br>并会用 HTTP 状态码决定排错起点。</span></label>
+        </section>
+
+        <nav class="lesson-nav" aria-label="课程前后导航"><a href="01-language.html">← 上一课：语言迁移</a><a href="03-react.html">下一课：React 心智模型 →</a></nav>
+      </article>
+    </main>
+    <noscript><p class="noscript-note">交互测验需要 JavaScript；正文与答案仍可阅读。</p></noscript>
+  </body>
+</html>
