@@ -56,4 +56,51 @@ test("the home page identifies both learning routes", () => {
   assert.match(html, /fa0b83c/);
 });
 
+test("search normalizes case, spaces, hyphens, and slashes", () => {
+  const context = loadClassicScript("app.js");
+  const { normalizeSearch } = context.AnimeCalendarTeach;
+  assert.equal(normalizeSearch(" App/API  Anime-Selections "), "app api anime selections");
+});
+
+test("search matches title, keywords, summary, and path", () => {
+  const context = loadClassicScript("app.js");
+  const { searchEntries } = context.AnimeCalendarTeach;
+  const entries = [
+    {
+      title: "登录",
+      path: "handbook/auth.html",
+      section: "维护",
+      keywords: ["cookie"],
+      summary: "排查 401",
+    },
+    {
+      title: "时间轴",
+      path: "learn/05-calendar.html",
+      section: "课程",
+      keywords: ["凌晨"],
+      summary: "日期布局",
+    },
+  ];
+  assert.equal(searchEntries(entries, "COOKIE")[0].title, "登录");
+  assert.equal(searchEntries(entries, "401")[0].title, "登录");
+  assert.equal(searchEntries(entries, "calendar")[0].title, "时间轴");
+});
+
+test("storage helpers fail closed without throwing", () => {
+  const context = loadClassicScript("app.js");
+  const brokenStorage = {
+    getItem() {
+      throw new Error("blocked");
+    },
+    setItem() {
+      throw new Error("blocked");
+    },
+  };
+  assert.equal(
+    JSON.stringify(context.AnimeCalendarTeach.readJson(brokenStorage, "x", ["fallback"])),
+    JSON.stringify(["fallback"]),
+  );
+  assert.equal(context.AnimeCalendarTeach.writeJson(brokenStorage, "x", []), false);
+});
+
 export { loadClassicScript, pages, read, repoRoot, teachRoot };
