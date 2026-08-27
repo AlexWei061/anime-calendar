@@ -1,175 +1,207 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>学习路线图｜番剧日历 · 教学站</title>
-<link rel="stylesheet" href="style.css">
-<script src="app.js" defer></script>
-</head>
-<body data-chapter="index">
-<main>
-<h1>从“看得懂 C++”到“hold 住这个项目”</h1>
-<p class="lead">这个网站是专门为你（数学系学生 · 会 C++/Python 基础语法 · 打过信息学竞赛）量身定制的番剧日历项目教程。所有内容都基于项目里的<strong>真实代码</strong>，学完你就能看懂、维护和修 bug。</p>
-<div class="chapter-meta">
-  <span class="badge hot">起点</span>
-  <span class="badge">建议总时长 4～6 小时，可分多次</span>
-  <span class="badge">前置：会 C++ / Python 基础语法即可</span>
-</div>
-<nav class="chapter-toc" data-auto-toc></nav>
+<!doctype html>
+<html lang="zh-CN" data-root=".">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="为具备 C++、Python 和算法基础的学习者定制的番剧日历项目课程、维护手册与 Debug 实验室。"
+    >
+    <title>学习与维护入口｜番剧日历维护学院</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="search-index.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body data-page-id="home">
+    <a class="skip-link" href="#main">跳到正文</a>
 
-<section id="s1">
-<h2><span class="sec-num">1</span>这个网站怎么用</h2>
-<div class="grid grid3">
-  <div class="card">
-    <div class="num">①</div>
-    <h4>按顺序学（推荐）</h4>
-    <p>从第 01 章开始，沿着下面的路线图一页页读。每页末尾勾选“本节我已掌握”，进度会自动保存在浏览器里。</p>
-  </div>
-  <div class="card">
-    <div class="num">②</div>
-    <h4>当手册查</h4>
-    <p>遇到具体任务（比如“怎么加一部新番”“这个报错什么意思”），直接翻第 10 章维护手册或附录的报错速查表。</p>
-  </div>
-  <div class="card">
-    <div class="num">③</div>
-    <h4>演示模式当 PPT</h4>
-    <p>点右上角 <span class="kbd">📽</span> 按钮，页面会变成一屏一屏的幻灯片，用 <span class="kbd">←</span><span class="kbd">→</span> 翻页，<span class="kbd">Esc</span> 退出。</p>
-  </div>
-</div>
-<ul>
-  <li>每章里有<strong>选择题测验</strong>：提交后即时判分，并给出“为什么对、为什么错”的讲解——像刷题一样刷概念。</li>
-  <li>平时浏览时，按 <span class="kbd">→</span> 进入下一章、<span class="kbd">←</span> 回到上一章；右上角 <span class="kbd">🌙</span> 切换深色模式。</li>
-  <li>所有代码块都可以一键<strong>复制</strong>；架构图都是可缩放的矢量图。</li>
-</ul>
-<div class="callout tip"><strong>建议的学习姿势：</strong>开两个窗口，左边本教程，右边项目代码。教程里出现的每个文件路径（像 <span class="filepath">lib/calendar.js</span> 这样），都到项目里打开原文对照着读。只读教程不看代码，和只看题解不写题一样，学不会。</div>
-</section>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="番剧日历维护学院首页">
+        <span class="brand-mark" aria-hidden="true">∑</span>
+        <span>
+          <strong>番剧日历维护学院</strong>
+          <small>Anime Calendar Field Manual</small>
+        </span>
+      </a>
+      <nav aria-label="主导航">
+        <a href="map.html">项目地图</a>
+        <a href="learn/01-language.html">系统学习</a>
+        <a href="handbook/ui.html">立即做事</a>
+        <a href="lab/index.html">Debug 实验室</a>
+        <a href="reference.html">速查</a>
+      </nav>
+      <div class="header-actions" data-enhancement-actions></div>
+    </header>
 
-<section id="s2">
-<h2><span class="sec-num">2</span>先盘点：你已经会的，比你想象的多</h2>
-<p>这个项目在“算法和逻辑”层面没有任何超过信息学竞赛省二水平的东西。真正的门槛只是<strong>Web 领域的黑话</strong>。下表把新概念翻译成你已有的知识：</p>
-<div class="table-wrap">
-<table>
-  <tr><th>你已有的知识</th><th>在这个项目里的对应物</th><th>在哪一章补细节</th></tr>
-  <tr><td>C++/Python 的变量、函数、循环、递归</td><td>JavaScript 语法 90% 相同，只是写法更自由</td><td>第 01 章</td></tr>
-  <tr><td><code>struct</code> / <code>dict</code></td><td>JS 对象（object），就是键值对的集合</td><td>第 01 章</td></tr>
-  <tr><td><code>#include</code> / <code>import</code></td><td>JS 的 <code>import</code>/<code>export</code> 模块机制</td><td>第 01 章</td></tr>
-  <tr><td>编译期报错</td><td>TypeScript 的类型检查（<code>tsc</code>）</td><td>第 01、09 章</td></tr>
-  <tr><td>读入输入 → 计算 → 输出</td><td>HTTP 请求 → 服务器处理 → 响应（类比：提交代码给 OJ，评测机返回 AC/WA）</td><td>第 02 章</td></tr>
-  <tr><td>函数：输入 → 输出</td><td>React 组件：状态 → 界面，即 <strong>UI = f(state)</strong></td><td>第 03 章</td></tr>
-  <tr><td>哈希表 <code>map</code>/<code>unordered_map</code></td><td>JS 的 <code>Map</code>/<code>Set</code>，项目里到处都是（按 ID 建索引）</td><td>第 04 章</td></tr>
-  <tr><td>区间/日期/排序算法</td><td><span class="filepath">lib/calendar.js</span> 里的周历展开、时间轴裁切</td><td>第 06 章</td></tr>
-  <tr><td>对拍、手造数据</td><td>单元测试（<code>tests/*.test.mjs</code>）</td><td>第 09 章</td></tr>
-  <tr><td>单步调试、printf 大法</td><td>浏览器 DevTools 断点、<code>console.log</code></td><td>第 11 章</td></tr>
-</table>
-</div>
-<div class="callout analogy"><strong>类比：</strong>做算法题时，你的程序从运行到结束只活几毫秒；而一个网站是<strong>一直活着的程序</strong>：它同时面对成千上万个用户，在浏览器、服务器、数据库三台“机器”之间来回传消息。新增的两个核心概念：<strong>网络</strong>（消息怎么传）和<strong>状态</strong>（程序记着什么）。</div>
-</section>
+    <main id="main">
+      <section class="hero page-shell" data-slide>
+        <div class="hero-copy">
+          <p class="eyebrow">为数学系学生定制 · 不从“前端大全”开始</p>
+          <h1>从会写算法，<br>到能接管这座网站</h1>
+          <p class="hero-lead">
+            你已经有 C++、Python 和信息学竞赛的底子。这里不把你当编程新手，
+            而是把陌生的 Web 黑话翻译成你熟悉的<strong>函数、状态、不变量、反例与证明</strong>。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="learn/01-language.html">开始系统学习</a>
+            <a class="button secondary" href="handbook/ui.html">我现在就要做事</a>
+          </div>
+          <p class="baseline-note">
+            <span class="status-dot" aria-hidden="true"></span>
+            教程代码基线 <code>fa0b83c</code> · 2026-08-27
+          </p>
+        </div>
 
-<section id="s3">
-<h2><span class="sec-num">3</span>学习路线图（四阶段）</h2>
-<div class="grid grid2">
-  <div class="card">
-    <div class="num">阶段一</div>
-    <h4>补地基 · 约 1.5 小时</h4>
-    <p><a href="01-jsts.html">01 JS/TS 速通</a> → <a href="02-web.html">02 网页是怎么跑起来的</a> → <a href="03-react.html">03 React：视图 = 状态的函数</a></p>
-  </div>
-  <div class="card">
-    <div class="num">阶段二</div>
-    <h4>认识项目 · 约 1.5 小时</h4>
-    <p><a href="04-architecture.html">04 项目全景图</a> → <a href="05-data.html">05 数据层：番剧数据从哪来</a> → <a href="06-algorithms.html">06 核心算法精讲</a></p>
-  </div>
-  <div class="card">
-    <div class="num">阶段三</div>
-    <h4>深入机制 · 约 1.5 小时</h4>
-    <p><a href="07-backend.html">07 后端与数据库</a> → <a href="08-auth.html">08 账号与会话安全</a> → <a href="09-tooling.html">09 工具链与测试</a></p>
-  </div>
-  <div class="card">
-    <div class="num">阶段四</div>
-    <h4>实战能力 · 约 1～2 小时</h4>
-    <p><a href="10-maintenance.html">10 维护手册 SOP</a> → <a href="11-debug.html">11 修 bug 方法论</a> → <a href="12-exercises.html">12 练习题与自测</a> → <a href="appendix.html">附录</a></p>
-  </div>
-</div>
-<p>阶段一解决“看不懂代码”，阶段二解决“看得懂这个项目”，阶段三解决“知道它为什么这样设计”，阶段四解决“我自己能改”。附录随时可查。</p>
-<div class="callout warn"><strong>给竞赛选手的忠告：</strong>不要试图先“系统学完 JavaScript 和 React”再来看项目——那会让你迷失在细节里。这个项目的代码风格相当克制（没有花哨的框架技巧），<strong>边看项目边查教程</strong>，遇到什么学什么，效率最高。</div>
-</section>
+        <aside class="hero-notebook" aria-label="你的已有能力与即将补齐的能力">
+          <div class="notebook-heading">
+            <span>你的能力迁移式</span>
+            <span aria-hidden="true">№ 01</span>
+          </div>
+          <p class="equation">
+            <span>算法能力</span>
+            <span aria-hidden="true">+</span>
+            <span>Web 心智模型</span>
+            <span aria-hidden="true">=</span>
+            <strong>可维护的软件</strong>
+          </p>
+          <dl class="translation-list">
+            <div><dt>bug</dt><dd>推翻正确性的反例</dd></div>
+            <div><dt>测试</dt><dd>永久保存的反例集合</dd></div>
+            <div><dt>React</dt><dd><code>UI = f(state)</code></dd></div>
+            <div><dt>API</dt><dd>长期运行的输入输出边界</dd></div>
+          </dl>
+        </aside>
+      </section>
 
-<section id="s4">
-<h2><span class="sec-num">4</span>60 秒看懂这个项目是干嘛的</h2>
-<p><strong>一句话：</strong>这是一个按北京时间展示 2020～2026 年番剧的<strong>周历网站</strong>，每周七天排成时间轴；注册登录后可以维护自己的追番列表，并永久记录“每一集看没看过”。</p>
-<div class="diagram">
-<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e75480"/>
-    </marker>
-  </defs>
-  <rect class="dg-box accent" x="20" y="20" width="200" height="90" rx="12"/>
-  <text class="dg-title" x="120" y="52" text-anchor="middle">浏览器（用户这端）</text>
-  <text class="dg-text" x="120" y="74" text-anchor="middle">日历界面 · 登录 · 已看标记</text>
-  <text class="dg-text" x="120" y="92" text-anchor="middle">React 组件在 app/page.tsx</text>
-  <rect class="dg-box" x="300" y="20" width="200" height="90" rx="12"/>
-  <text class="dg-title" x="400" y="52" text-anchor="middle">服务器（云端）</text>
-  <text class="dg-text" x="400" y="74" text-anchor="middle">Cloudflare Worker</text>
-  <text class="dg-text" x="400" y="92" text-anchor="middle">处理 API 请求 app/api/</text>
-  <rect class="dg-box plain" x="580" y="20" width="160" height="90" rx="12"/>
-  <text class="dg-title" x="660" y="52" text-anchor="middle">数据库 D1</text>
-  <text class="dg-text" x="660" y="74" text-anchor="middle">账号 · 会话</text>
-  <text class="dg-text" x="660" y="92" text-anchor="middle">追番 · 已看</text>
-  <rect class="dg-box plain" x="300" y="150" width="200" height="70" rx="12"/>
-  <text class="dg-title" x="400" y="178" text-anchor="middle">静态数据 data/</text>
-  <text class="dg-text" x="400" y="196" text-anchor="middle">番剧目录（打包进代码）</text>
-  <rect class="dg-box plain" x="300" y="240" width="200" height="50" rx="12"/>
-  <text class="dg-title" x="400" y="268" text-anchor="middle">算法 lib/</text>
-  <path class="dg-edge" d="M 220 65 L 296 65" marker-end="url(#arr)"/>
-  <path class="dg-edge" d="M 500 65 L 576 65" marker-end="url(#arr)"/>
-  <path class="dg-edge muted" d="M 400 110 L 400 146" marker-end="url(#arr)"/>
-  <path class="dg-edge muted" d="M 400 220 L 400 236" marker-end="url(#arr)"/>
-</svg>
-</div>
-<p>数据流一句话：<strong>静态目录（data/）经算法（lib/）加工，由 React（app/）画成日历；只有“你的账号数据”走网络存进数据库（D1）</strong>。详细版在 <a href="04-architecture.html">第 04 章</a>。</p>
-</section>
+      <section class="route-section page-shell" aria-labelledby="route-title" data-slide>
+        <div class="section-heading">
+          <p class="eyebrow">同一份知识，两条入口</p>
+          <h2 id="route-title">按你的当前目标选择路线</h2>
+          <p>第一次可以系统建立地图；半年后遇到问题，可以直接从任务或症状反查。</p>
+        </div>
 
-<section id="s5">
-<h2><span class="sec-num">5</span>摸底小测（答错没关系，正好暴露知识盲区）</h2>
-<form class="quiz" data-answer="B">
-  <p class="quiz-q">1. 这个网站的番剧排期数据（哪部番周几几点播），运行时主要从哪里来？</p>
-  <label class="quiz-opt"><input type="radio" name="q1" value="A"><span>A. 每次打开页面时从日本网站实时抓取</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q1" value="B"><span>B. 项目里 <span class="filepath">data/</span> 目录下的 JS 数据文件，打包进网站</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q1" value="C"><span>C. 由每个访问者自己输入</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q1" value="D"><span>D. 从数据库 D1 里查出来</span><span class="mark"></span></label>
-  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
-  <div class="quiz-feedback" hidden><span class="verdict"></span><p>排期是<strong>静态数据</strong>：用脚本定期从 AniList / YUC / しょぼいカレンダー抓取后生成 <span class="filepath">data/</span> 下的 JS 文件，发布时打包进网站。数据库 D1 里只存<strong>用户个人数据</strong>（账号、追番、已看）。这是本项目最重要的设计之一，详见第 05 章。</p></div>
-</form>
-<form class="quiz" data-answer="B">
-  <p class="quiz-q">2. 这个项目的界面框架 React 的核心思想，用数学等式表达是？</p>
-  <label class="quiz-opt"><input type="radio" name="q2" value="A"><span>A. 界面 = f(数据库)</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q2" value="B"><span>B. 界面 = f(状态)，UI = f(state)</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q2" value="C"><span>C. 界面 = f(网络请求)</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q2" value="D"><span>D. 界面 = f(CSS 样式表)</span><span class="mark"></span></label>
-  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
-  <div class="quiz-feedback" hidden><span class="verdict"></span><p>React 里每个组件都是一个函数：输入 state（状态），输出界面。状态变了，函数重新执行，界面自动更新。你不需要手动改 DOM，只需要改状态——这就是“声明式”。第 03 章会把它讲透。</p></div>
-</form>
-<form class="quiz" data-answer="B">
-  <p class="quiz-q">3. 项目里 <span class="kbd">npm test</span> 一条命令实际做了什么？</p>
-  <label class="quiz-opt"><input type="radio" name="q3" value="A"><span>A. 只运行 tests/ 下的测试文件</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q3" value="B"><span>B. 先做 TypeScript 类型检查，再构建整个网站，最后跑测试</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q3" value="C"><span>C. 只构建生产版本</span><span class="mark"></span></label>
-  <label class="quiz-opt"><input type="radio" name="q3" value="D"><span>D. 检查代码格式是否符合规范</span><span class="mark"></span></label>
-  <div class="quiz-actions"><button type="submit" class="btn">提交答案</button><button type="button" class="quiz-reset" hidden>再做一次</button></div>
-  <div class="quiz-feedback" hidden><span class="verdict"></span><p><span class="filepath">package.json</span> 里写得很清楚：<code>test = typecheck &amp;&amp; build &amp;&amp; node --test tests/*.test.mjs</code>。三步全过才算健康——这就是你以后每次改完代码的“交卷”动作，详见第 09 章。</p></div>
-</form>
-</section>
+        <div class="route-grid">
+          <article class="route-card learn-route">
+            <div class="route-number" aria-hidden="true">01</div>
+            <p class="route-label">SYSTEMATIC PATH</p>
+            <h3>系统学习</h3>
+            <p>从语言迁移、浏览器和 React 开始，逐步走到日历算法、数据库、安全、测试与发布。</p>
+            <ol class="compact-steps">
+              <li>补齐 Web 心智模型</li>
+              <li>沿真实代码追踪数据流</li>
+              <li>用练习证明自己真正理解</li>
+            </ol>
+            <a class="text-link" href="learn/01-language.html">从第 01 课开始 <span aria-hidden="true">→</span></a>
+          </article>
 
-<section id="s6">
-<h2><span class="sec-num">6</span>关于这个教学站本身</h2>
-<ul>
-  <li>它就是几个纯静态网页（HTML + CSS + JS），<strong>没有任何依赖和构建步骤</strong>：双击 <span class="filepath">teach/index.html</span> 就能打开。</li>
-  <li>你的学习进度、勾选记录、主题选择都存在你自己浏览器的 localStorage 里，不会上传任何东西。</li>
-  <li>彩蛋：学完第 01～03 章后再回头看这个站的源码（<span class="filepath">teach/app.js</span>、<span class="filepath">teach/style.css</span>），你会发现自己已经能读懂一个网页是怎么做出来的了。</li>
-</ul>
-<div class="callout tip"><strong>好，现在出发：</strong>从 <a href="01-jsts.html">第 01 章 · JS/TS 速通</a> 开始，或者按 <span class="kbd">→</span> 键直接翻到下一章。</div>
-</section>
-</main>
-</body>
+          <article class="route-card work-route">
+            <div class="route-number" aria-hidden="true">02</div>
+            <p class="route-label">FIELD MANUAL</p>
+            <h3>立即做事</h3>
+            <p>从“我要改什么”或“哪里坏了”进入，获得文件路径、最小步骤、测试和停止条件。</p>
+            <ol class="compact-steps">
+              <li>改界面、排期或个人数据</li>
+              <li>排查登录、已看与凌晨日期</li>
+              <li>验证、提交与发布前自查</li>
+            </ol>
+            <a class="text-link" href="handbook/ui.html">打开维护任务台 <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+      </section>
+
+      <section class="pipeline-section" aria-labelledby="pipeline-title" data-slide>
+        <div class="page-shell">
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">60 秒项目全景</p>
+            <h2 id="pipeline-title">先记住这一条主链</h2>
+            <p>番剧排期主要是静态事实；只有账号、追番与已看等个人状态进入数据库。</p>
+          </div>
+
+          <div class="project-pipeline" data-project-pipeline aria-label="番剧日历项目的五层数据流">
+            <article class="pipeline-node" data-kind="fact">
+              <span class="node-index">A</span>
+              <strong><code>data/</code></strong>
+              <small>静态事实</small>
+              <p>作品、季度、排期、封面映射</p>
+            </article>
+            <span class="pipeline-arrow" aria-hidden="true">→</span>
+            <article class="pipeline-node" data-kind="logic">
+              <span class="node-index">B</span>
+              <strong><code>lib/</code></strong>
+              <small>纯计算</small>
+              <p>日期、集数、布局、校验</p>
+            </article>
+            <span class="pipeline-arrow" aria-hidden="true">→</span>
+            <article class="pipeline-node" data-kind="view">
+              <span class="node-index">C</span>
+              <strong><code>app/page.tsx</code></strong>
+              <small>状态与界面</small>
+              <p>React 把数据画成可交互页面</p>
+            </article>
+            <span class="pipeline-arrow" aria-hidden="true">⇄</span>
+            <article class="pipeline-node" data-kind="boundary">
+              <span class="node-index">D</span>
+              <strong><code>app/api/</code></strong>
+              <small>身份与写入</small>
+              <p>认证、验证请求、返回响应</p>
+            </article>
+            <span class="pipeline-arrow" aria-hidden="true">⇄</span>
+            <article class="pipeline-node" data-kind="state">
+              <span class="node-index">E</span>
+              <strong>D1</strong>
+              <small>个人数据</small>
+              <p>账号、会话、追番与已看</p>
+            </article>
+          </div>
+
+          <p class="pipeline-caption">
+            以后遇到 bug，第一步不是改代码，而是先问：<strong>反例最早在哪一层出现？</strong>
+            <a href="map.html">打开可交互项目地图</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="start-section page-shell" aria-labelledby="start-title" data-slide>
+        <div class="section-heading">
+          <p class="eyebrow">今天可以从这里开始</p>
+          <h2 id="start-title">三个低风险入口</h2>
+        </div>
+        <div class="start-grid">
+          <a class="start-card" href="map.html">
+            <span class="start-symbol" aria-hidden="true">⌘</span>
+            <span><strong>认识仓库</strong><small>先知道每类文件负责什么</small></span>
+          </a>
+          <a class="start-card" href="lab/midnight.html">
+            <span class="start-symbol" aria-hidden="true">05</span>
+            <span><strong>破解凌晨日期 bug</strong><small>把边界情况当作算法反例</small></span>
+          </a>
+          <a class="start-card" href="learn/08-maintenance.html">
+            <span class="start-symbol" aria-hidden="true">✓</span>
+            <span><strong>掌握安全修改闭环</strong><small>复现、测试、最小修复、验证</small></span>
+          </a>
+        </div>
+      </section>
+
+      <section class="progress-band" aria-labelledby="progress-title" data-slide>
+        <div class="page-shell progress-layout">
+          <div>
+            <p class="eyebrow">你的本地学习记录</p>
+            <h2 id="progress-title">这是一门可以反复回来的课程</h2>
+            <p>进度只保存在当前浏览器，不会接触番剧日历账号、Cookie 或数据库。</p>
+          </div>
+          <div class="progress-panel" data-progress-summary aria-live="polite">
+            <strong>尚未开始</strong>
+            <span>完成知识节点后，这里会显示你的进度。</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer page-shell">
+      <p>番剧日历维护学院 · 课程、任务手册与 Debug 实验共用同一张项目地图。</p>
+      <a href="reference.html">打开速查页</a>
+    </footer>
+
+    <noscript><p class="noscript-note">交互功能需要 JavaScript；正文与普通链接仍可使用。</p></noscript>
+  </body>
 </html>
