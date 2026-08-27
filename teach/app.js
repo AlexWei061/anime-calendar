@@ -376,18 +376,27 @@
     `;
     document.body.append(toolbar);
 
+    function availableSlides() {
+      return slides.filter((slide) => !slide.hidden);
+    }
+
     function render() {
-      slides.forEach((slide, slideIndex) => {
-        slide.classList.toggle("is-current-slide", slideIndex === index);
-      });
-      toolbar.querySelector("[data-presentation-status]").textContent = `${index + 1} / ${slides.length}`;
+      const visibleSlides = availableSlides();
+      index = Math.max(0, Math.min(visibleSlides.length - 1, index));
+      slides.forEach((slide) => slide.classList.remove("is-current-slide"));
+      visibleSlides[index]?.classList.add("is-current-slide");
+      toolbar.querySelector("[data-presentation-status]").textContent = `${index + 1} / ${visibleSlides.length}`;
       toolbar.querySelector("[data-presentation-previous]").disabled = index === 0;
-      toolbar.querySelector("[data-presentation-next]").disabled = index === slides.length - 1;
+      toolbar.querySelector("[data-presentation-next]").disabled = index === visibleSlides.length - 1;
     }
 
     function enter() {
+      const visibleSlides = availableSlides();
       previousScroll = global.scrollY || 0;
-      index = Math.max(0, slides.findIndex((slide) => slide.getBoundingClientRect().top >= 0));
+      index = Math.max(
+        0,
+        visibleSlides.findIndex((slide) => slide.getBoundingClientRect().bottom > 0),
+      );
       document.body.classList.add("is-presenting");
       toolbar.hidden = false;
       render();
@@ -402,7 +411,7 @@
     }
 
     function move(delta) {
-      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      index = Math.max(0, Math.min(availableSlides().length - 1, index + delta));
       render();
     }
 

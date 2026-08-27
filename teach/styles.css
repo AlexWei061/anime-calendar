@@ -902,12 +902,17 @@ body.is-presenting {
 
 body.is-presenting > .site-header,
 body.is-presenting > .site-footer,
-body.is-presenting > main > [data-slide]:not(.is-current-slide),
-body.is-presenting > main > :not([data-slide]) {
+body.is-presenting .breadcrumbs,
+body.is-presenting .lesson-nav,
+body.is-presenting [data-slide]:not(.is-current-slide) {
   display: none !important;
 }
 
-body.is-presenting > main > [data-slide].is-current-slide {
+body.is-presenting main {
+  width: 100%;
+}
+
+body.is-presenting [data-slide].is-current-slide {
   display: grid;
   width: min(1180px, calc(100% - 48px));
   min-height: 100vh;
@@ -1716,7 +1721,7 @@ pre code {
   margin-top: 1.4rem;
 }
 
-.debug-choice {
+[data-debug-choice] {
   width: 100%;
   min-height: 54px;
   padding: 0.85rem 1rem;
@@ -1730,8 +1735,8 @@ pre code {
   cursor: pointer;
 }
 
-.debug-choice:hover,
-.debug-choice[aria-pressed="true"] {
+[data-debug-choice]:hover,
+[data-debug-choice][aria-pressed="true"] {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
@@ -2040,5 +2045,89 @@ pre code {
   *::before,
   *::after {
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    color-scheme: light;
+    --paper: #fff;
+    --paper-strong: #fff;
+    --ink: #111827;
+    --muted: #4b5563;
+    --line: #cbd5e1;
+    --accent: #9f1239;
+    --accent-soft: #fff1f2;
+    --safe: #0f766e;
+    --safe-soft: #f0fdfa;
+    --warn: #92400e;
+    --warn-soft: #fffbeb;
+    --danger: #991b1b;
+    --danger-soft: #fef2f2;
+    --code: #111827;
+    --shadow: none;
+  }
+
+  body {
+    background: #fff;
+    font-size: 10.5pt;
+  }
+
+  .site-header nav,
+  .header-actions,
+  .presentation-toolbar,
+  .copy-button,
+  .quiz-choices,
+  .debug-choices,
+  .secondary-button,
+  .progress-check input,
+  .skip-link {
+    display: none !important;
+  }
+
+  .site-header {
+    min-height: 52px;
+  }
+
+  .page-shell,
+  .site-header,
+  body.is-presenting [data-slide].is-current-slide {
+    width: 100%;
+  }
+
+  .lesson-header,
+  .handbook-header,
+  .page-intro {
+    min-height: 0;
+    padding-block: 2rem;
+  }
+
+  .lesson-section,
+  .reference-section,
+  .route-section,
+  .pipeline-section,
+  .start-section {
+    padding-block: 1.5rem;
+  }
+
+  details > :not(summary) {
+    display: block !important;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .task-card,
+  .route-card,
+  .lab-card,
+  .debug-stage,
+  .invariant,
+  pre,
+  table,
+  tr {
+    break-inside: avoid;
   }
 }

@@ -114,7 +114,7 @@
               <button class="quiz-choice" type="button" data-quiz-choice data-answer="可以在 JSX 调用，但不应把可复用规则直接写进 JSX。">B. 直接写在搜索结果 JSX 里</button>
               <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。纯字符串规则属于 lib，并由页面消费。项目实际使用 lib/anime-search.js。">C. <code>lib/anime-search.js</code></button>
             </div>
-            <p class="feedback" data-quiz-feedback hidden></p>
+            <p class="feedback" data-quiz-feedback aria-live="polite" hidden></p>
             <details><summary>无 JavaScript 时查看答案</summary><p>答案是 C。页面负责状态和渲染，匹配规则留在可独立测试的纯函数中。</p></details>
           </div>
           <label class="progress-check"><input type="checkbox" data-progress-id="learn-04-architecture"><span><strong>我能区分静态事实、纯算法、界面、API 和个人数据</strong><br>并能判断新代码应放在哪一层。</span></label>

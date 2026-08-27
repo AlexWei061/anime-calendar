@@ -128,7 +128,7 @@ setCurrentUser(user);</code></pre>
               <button class="quiz-choice" type="button" data-quiz-choice data-correct="true" data-answer="正确。const 约束绑定，不自动冻结对象。">B. <code>const</code> 阻止变量名重新指向别的值</button>
               <button class="quiz-choice" type="button" data-quiz-choice data-answer="TypeScript 类型多数在编译后被擦除，并不会自动验证运行时 JSON。">C. TypeScript 类型会在服务器上自动验证所有 JSON</button>
             </div>
-            <p class="feedback" data-quiz-feedback hidden></p>
+            <p class="feedback" data-quiz-feedback aria-live="polite" hidden></p>
             <details><summary>无 JavaScript 时查看答案</summary><p>答案是 B。若需要运行时验证，项目仍要显式检查 payload，例如 <code>validateEpisodeViewBatch</code>。</p></details>
           </div>
           <label class="progress-check"><input type="checkbox" data-progress-id="learn-01-language"><span><strong>我能把常见 JS/TS 写法翻译回已有知识</strong><br>并知道类型检查不等于运行时验证。</span></label>

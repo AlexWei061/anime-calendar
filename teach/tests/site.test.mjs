@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 
@@ -277,6 +277,53 @@ test("finished site stays local and every annotated project path resolves", () =
     assert.doesNotMatch(source, /https?:\/\//);
     assert.doesNotMatch(source, /teach__\//);
   }
+});
+
+test("every page has a single accessible title, skip link, and valid local links", () => {
+  for (const path of pages) {
+    const html = read(path);
+    assert.equal((html.match(/<h1\b/g) ?? []).length, 1, `${path} needs exactly one h1`);
+    assert.match(html, /<a class="skip-link" href="#main">/);
+    assert.match(html, /<main[^>]+id="main"/);
+    assert.doesNotMatch(html, /href="\s*"/);
+
+    const links = [...html.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map((match) => match[1]);
+    for (const href of links) {
+      const [targetPart, fragment] = href.split("#");
+      const absoluteTarget = targetPart
+        ? resolve(dirname(join(teachRoot, path)), targetPart)
+        : join(teachRoot, path);
+      assert.equal(
+        relative(teachRoot, absoluteTarget).startsWith(".."),
+        false,
+        `${path} link escapes teach/: ${href}`,
+      );
+      assert.equal(existsSync(absoluteTarget), true, `${path} has broken link ${href}`);
+      if (fragment) {
+        const targetHtml = read(relative(teachRoot, absoluteTarget));
+        assert.match(targetHtml, new RegExp(`id=["']${fragment}["']`), `${href} anchor should exist`);
+      }
+    }
+  }
+});
+
+test("quiz and debug feedback is announced to assistive technology", () => {
+  for (const path of pages) {
+    const html = read(path);
+    const feedbackNodes = html.match(/<[^>]+data-(?:quiz-)?feedback[^>]*>/g) ?? [];
+    for (const node of feedbackNodes) {
+      assert.match(node, /aria-live="polite"/, `${path} feedback should be announced`);
+    }
+  }
+});
+
+test("shared styles cover focus, responsive, motion, nested presentation, and print", () => {
+  const css = read("styles.css");
+  assert.match(css, /:focus-visible/);
+  assert.match(css, /@media \(max-width: 760px\)/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(css, /body\.is-presenting \[data-slide\]:not\(\.is-current-slide\)/);
+  assert.match(css, /@media print/);
 });
 
 export { loadClassicScript, pages, read, repoRoot, teachRoot };
