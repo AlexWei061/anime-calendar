@@ -244,11 +244,12 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.deepEqual(season, {
     label: "2026 年 7 月番",
     timeZoneLabel: "北京时间（UTC+8）",
-    updatedAt: "2026-07-16",
+    updatedAt: "2026-09-01",
     catalogCount: 66,
     sourceName: "YUC 2026年7月新番表",
     sourceUrl: "https://yuc.wiki/202607/",
   });
+  assert.equal(seasons.some(({ id }) => id === "2026-october"), false);
   assert.equal(season.timeZoneLabel, "北京时间（UTC+8）");
   assert.equal(season.catalogCount, 66);
   assert.equal(anime.length, 66);
@@ -425,12 +426,12 @@ test("keeps July YUC schedules ahead of Syoboi television schedules", () => {
   );
 });
 
-test("uses AniList episode totals without replacing July YUC schedules", () => {
+test("keeps AniList identity without replacing July YUC episode totals or schedules", () => {
   const yumeMita = anime.find(({ id }) => id === "yume-mita");
 
   assert.equal(yumeMita?.anilistId, 198376);
   assert.equal(yumeMita?.episodeCount, 13);
-  assert.equal(yumeMita?.episodeCountSource, "AniList");
+  assert.equal(yumeMita?.episodeCountSource, "YUC");
   assert.equal(yumeMita?.premiereDateSource, "YUC");
   assert.equal(yumeMita?.scheduleWeekdaySource, "YUC");
   assert.equal(yumeMita?.beijingTimeSource, "YUC");
@@ -478,12 +479,57 @@ test("keeps historical YUC network releases ahead of later Syoboi television run
   assert.deepEqual(eventsForWeek([ragnarok], "2021-09-27"), []);
 });
 
-test("uses YUC episode totals when available and defaults every other show to 12 episodes", () => {
-  assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount)), true);
-  assert.equal(anime.every(({ episodeCount }) => episodeCount > 0), true);
+test("uses current YUC July episode totals as the highest-priority source", () => {
+  const yucEpisodeCounts = {
+    "grow-up-show": 13,
+    "yume-mita": 13,
+    "ghost-in-the-shell": 10,
+    "bleach-tybw-kashin": 10,
+    "clevatess-2": 13,
+    "hanazakari-2": 13,
+    "seihantai-kimi-boku": 13,
+    "world-is-dancing": 13,
+    "reiwa-no-darasan": 13,
+    "uchioto": 24,
+    "kimi-shinu-koi": 13,
+    "futsutsuka-akujo": 11,
+    "mushoku-3": 14,
+    "victoria": 9,
+    "tsuiho-juki": 26,
+    "20th-century-electric-catalog": 13,
+  };
+
+  assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount) && episodeCount > 0), true);
+  for (const [id, episodeCount] of Object.entries(yucEpisodeCounts)) {
+    const record = anime.find((candidate) => candidate.id === id);
+    assert.deepEqual(
+      {
+        episodeCount: record?.episodeCount,
+        episodeCountSource: record?.episodeCountSource,
+        episodeCountStatus: record?.episodeCountStatus,
+      },
+      { episodeCount, episodeCountSource: "YUC", episodeCountStatus: "exact" },
+      id,
+    );
+  }
+
+  assert.equal(anime.filter(({ episodeCountSource }) => episodeCountSource === "YUC").length, 64);
+  assert.deepEqual(
+    ["100-girlfriends-3", "hellmode-2"].map((id) => {
+      const record = anime.find((candidate) => candidate.id === id);
+      return {
+        id,
+        episodeCount: record?.episodeCount,
+        episodeCountSource: record?.episodeCountSource,
+      };
+    }),
+    [
+      { id: "100-girlfriends-3", episodeCount: 12, episodeCountSource: "AniList" },
+      { id: "hellmode-2", episodeCount: 12, episodeCountSource: "estimated" },
+    ],
+  );
   assert.equal(anime.find(({ id }) => id === "yume-mita")?.premiereEpisodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "mushoku-3")?.premiereEpisodeCount, 2);
-  assert.equal(anime.find(({ id }) => id === "baki-dou-2")?.episodeCount, 12);
   assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);
 });
@@ -517,6 +563,28 @@ test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunda
     })),
     [{ episode: 4, broadcastDate: "2026-07-19", time: "23:00" }],
   );
+});
+
+test("schedules Skeleton Knight's timed premiere before its weekly Monday run", () => {
+  const skeletonKnight = anime.find(({ id }) => id === "skeleton-knight-2");
+  const compactEvents = (weekStart) =>
+    eventsForWeek([skeletonKnight], weekStart).map(({ episodeStart, episode, broadcastDate, time }) => ({
+      episodeStart,
+      episode,
+      broadcastDate,
+      time,
+    }));
+
+  assert.equal(skeletonKnight?.scheduleSourceName, "YUC 2026年7月新番表");
+  assert.deepEqual(compactEvents("2026-06-29"), [
+    { episodeStart: 1, episode: 1, broadcastDate: "2026-07-04", time: "19:30" },
+  ]);
+  assert.deepEqual(compactEvents("2026-07-06"), [
+    { episodeStart: 2, episode: 2, broadcastDate: "2026-07-06", time: "21:00" },
+  ]);
+  assert.deepEqual(compactEvents("2026-07-13"), [
+    { episodeStart: 3, episode: 3, broadcastDate: "2026-07-13", time: "21:00" },
+  ]);
 });
 
 test("audits every published catalog entry through Syoboi", async () => {

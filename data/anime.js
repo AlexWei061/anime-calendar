@@ -11,7 +11,7 @@ import { syoboiHistory2026 } from "./syoboi-history-2026.js";
 export const season = {
   "label": "2026 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-07-16",
+  "updatedAt": "2026-09-01",
   "catalogCount": 66,
   "sourceName": "YUC 2026年7月新番表",
   "sourceUrl": "https://yuc.wiki/202607/"
@@ -46,7 +46,7 @@ const yucAnime = [
   },
   {
     "id": "grow-up-show",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "GrowUpShow向日葵马戏团",
     "titleJa": "グロウアップショウ ～ひまわりのサーカス団～",
     "coverUrl": "/covers/yuc/grow-up-show.webp",
@@ -59,7 +59,7 @@ const yucAnime = [
   },
   {
     "id": "yume-mita",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "premiereEpisodeCount": 3,
     "titleZh": "BanG Dream! YUME∞MITA",
     "titleJa": "バンドリ！ ゆめ∞みた",
@@ -99,7 +99,7 @@ const yucAnime = [
   },
   {
     "id": "ghost-in-the-shell",
-    "episodeCount": 12,
+    "episodeCount": 10,
     "titleZh": "新 攻壳机动队",
     "titleJa": "攻殻機動隊 THE GHOST IN THE SHELL",
     "coverUrl": "/covers/yuc/ghost-in-the-shell.webp",
@@ -126,7 +126,7 @@ const yucAnime = [
   },
   {
     "id": "bleach-tybw-kashin",
-    "episodeCount": 12,
+    "episodeCount": 10,
     "titleZh": "死神 千年血战篇 Part.4 祸进谭",
     "titleJa": "BLEACH 千年血戦篇-禍進譚-",
     "coverUrl": "/covers/yuc/bleach-tybw-kashin.webp",
@@ -166,7 +166,7 @@ const yucAnime = [
   },
   {
     "id": "clevatess-2",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "Clevatess 第2期 魔兽之王与虚假的勇者传承",
     "titleJa": "クレバテスⅡ-魔獣の王と偽りの勇者伝承-",
     "coverUrl": "/covers/yuc/clevatess-2.webp",
@@ -205,7 +205,7 @@ const yucAnime = [
   },
   {
     "id": "hanazakari-2",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "花样少年少女 第2期",
     "titleJa": "花ざかりの君たちへ 第2期",
     "coverUrl": "/covers/yuc/hanazakari-2.webp",
@@ -218,7 +218,7 @@ const yucAnime = [
   },
   {
     "id": "seihantai-kimi-boku",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "相反的你和我 第2期",
     "titleJa": "正反対な君と僕 第2期",
     "coverUrl": "/covers/yuc/seihantai-kimi-boku.webp",
@@ -322,7 +322,7 @@ const yucAnime = [
   },
   {
     "id": "world-is-dancing",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "世界舞动",
     "titleJa": "ワールド イズ ダンシング",
     "coverUrl": "/covers/yuc/world-is-dancing.webp",
@@ -374,7 +374,7 @@ const yucAnime = [
   },
   {
     "id": "reiwa-no-darasan",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "令和的斑小姐",
     "titleJa": "令和のタラさん",
     "coverUrl": "/covers/yuc/reiwa-no-darasan.webp",
@@ -452,7 +452,7 @@ const yucAnime = [
   },
   {
     "id": "uchioto",
-    "episodeCount": 12,
+    "episodeCount": 24,
     "titleZh": "我家的弟弟们真是让您费心了",
     "titleJa": "うちの弟どもがすみません",
     "coverUrl": "/covers/yuc/uchioto.webp",
@@ -520,7 +520,7 @@ const yucAnime = [
   },
   {
     "id": "kimi-shinu-koi",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "与你相恋到生命尽头",
     "titleJa": "きみが死ぬまで恋をしたい",
     "coverUrl": "/covers/yuc/kimi-shinu-koi.webp",
@@ -559,7 +559,7 @@ const yucAnime = [
   },
   {
     "id": "mushoku-3",
-    "episodeCount": 12,
+    "episodeCount": 14,
     "premiereEpisodeCount": 2,
     "titleZh": "无职转生 第3期",
     "titleJa": "無職転生 ～異世界行ったら本気だす～ 第3期",
@@ -614,14 +614,36 @@ const yucAnime = [
   {
     "id": "skeleton-knight-2",
     "episodeCount": 12,
+    "premiereEpisodeCount": 1,
+    "regularBroadcastStartDateBeijing": "2026-07-06",
     "titleZh": "骸骨骑士大人异世界冒险中 第2期",
     "titleJa": "骸骨騎士様、只今異世界へお出掛け中 第2期",
     "coverUrl": "/covers/yuc/skeleton-knight-2.webp",
     "coverAlt": "骸骨骑士大人异世界冒险中 第2期 主视觉",
     "premiereDateBeijing": "2026-07-04",
-    "scheduleWeekday": "Sat",
-    "beijingTime": "19:30",
+    "scheduleWeekday": "Mon",
+    "beijingTime": "21:00",
     "station": "YUC 周表",
+    "episodeSchedules": [
+      {
+        "episodeStart": 1,
+        "episodeEnd": 1,
+        "broadcastDateBeijing": "2026-07-04",
+        "beijingTime": "19:30",
+        "intervalDays": 0
+      },
+      {
+        "episodeStart": 2,
+        "episodeEnd": 12,
+        "broadcastDateBeijing": "2026-07-06",
+        "beijingTime": "21:00",
+        "intervalDays": 7
+      }
+    ],
+    "episodeSchedulesSource": "YUC",
+    "scheduleSourceName": "YUC 2026年7月新番表",
+    "scheduleSourceUrl": "https://yuc.wiki/202607/",
+    "scheduleChannel": "YUC 周表",
     "sourceUrl": "https://yuc.wiki/202607/"
   },
   {
@@ -665,7 +687,7 @@ const yucAnime = [
   },
   {
     "id": "tsuiho-juki",
-    "episodeCount": 12,
+    "episodeCount": 26,
     "titleZh": "被追放的转生重骑士 用游戏知识开无双",
     "titleJa": "追放された転生重騎士はゲーム知識で無双する",
     "coverUrl": "/covers/yuc/tsuiho-juki.webp",
@@ -743,7 +765,7 @@ const yucAnime = [
   },
   {
     "id": "futsutsuka-akujo",
-    "episodeCount": 12,
+    "episodeCount": 11,
     "titleZh": "虽然我是不完美恶女",
     "titleJa": "ふつつかな悪女ではございますが～雛宮蝶鼠とりかえ伝～",
     "coverUrl": "/covers/yuc/futsutsuka-akujo.webp",
@@ -821,7 +843,7 @@ const yucAnime = [
   },
   {
     "id": "victoria",
-    "episodeCount": 12,
+    "episodeCount": 9,
     "titleZh": "底牌很多的维多利亚",
     "titleJa": "手札が多めのビクトリア",
     "coverUrl": "/covers/yuc/victoria.webp",
@@ -873,7 +895,7 @@ const yucAnime = [
   },
   {
     "id": "20th-century-electric-catalog",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "二十世纪电气目录",
     "titleJa": "二十世紀電氣目録 -ユーレカ・エヴリカ-",
     "coverUrl": "/covers/yuc/20th-century-electric-catalog.webp",
@@ -896,12 +918,12 @@ for (const record of summer2026.anime) {
   julyAniListByTitle.set(title, julyAniListByTitle.has(title) ? null : record);
 }
 
-const yucExactEpisodeCountIds = new Set(["cyborg-009-nemesis", "rezero-4-part-2"]);
+const yucUnconfirmedEpisodeCountIds = new Set(["100-girlfriends-3", "hellmode-2"]);
 const verifiedJulySchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
 
 function withYucSources(record) {
   const aniList = julyAniListByTitle.get(normalizeTitle(record.titleJa));
-  const yucEpisodeCount = yucExactEpisodeCountIds.has(record.id);
+  const yucEpisodeCount = !yucUnconfirmedEpisodeCountIds.has(record.id);
   const episodeCount = yucEpisodeCount ? record.episodeCount : aniList?.episodeCount ?? record.episodeCount;
   const episodeCountSource = yucEpisodeCount ? "YUC" : aniList ? "AniList" : "estimated";
 
