@@ -85,15 +85,15 @@ test("auth routes exist and business routes use session auth", async () => {
   assert.match(register, /Set-Cookie/);
   assert.match(login, /status: 401/);
   assert.match(login, /verifyPassword/);
-  assert.match(login, /createSession\(user\.email, request\.url\)/);
-  assert.match(register, /createSession\(email, request\.url\)/);
+  assert.match(login, /createSession\(user\.email, request\.url, user\.passwordHash\)/);
+  assert.match(register, /prepareSession\(email, request\.url\)/);
   assert.match(logout, /destroySession/);
   assert.match(logout, /destroySession\(request\.url\)/);
   assert.match(me, /getSessionUser/);
   assert.match(me, /status: 401/);
   assert.match(selections, /getSessionUser/);
   assert.match(episodeViews, /getSessionUser/);
-  assert.match(appAuth, /sessionCookieAttributes\(requestUrl, SESSION_MAX_AGE_SECONDS\)/);
+  assert.match(appAuth, /sessionCookieAttributes\(appOrigin\(new URL\(requestUrl\)\.origin\), SESSION_MAX_AGE_SECONDS\)/);
   assert.doesNotMatch(selections + episodeViews + appAuth, /getChatGPTUser|oai-authenticated-user/);
 });
 
@@ -128,19 +128,18 @@ test("changing a password verifies the current password and revokes every sessio
   assert.match(route, /validatePassword\(payload\.newPassword\)/);
   assert.match(route, /verifyPassword\(currentPassword, storedPasswordHash\)/);
   assert.match(route, /hashPassword\(newPassword\)/);
-  assert.match(route, /db\.batch\(\[/);
-  assert.match(route, /db\.update\(users\)[\s\S]*db\.delete\(authSessions\)/);
+  assert.match(route, /db\.transaction\(\(tx\) =>/);
+  assert.match(route, /tx\.update\(users\)[\s\S]*tx\.delete\(authSessions\)/);
   assert.match(route, /eq\(authSessions\.userEmail, user\.email\)/);
-  assert.match(route, /"Set-Cookie": expiredSessionCookie\(request\.url\)/);
+  assert.match(route, /const cookie = expiredSessionCookie\(request\.url\)/);
   assert.match(appAuth, /export function expiredSessionCookie\(requestUrl: string\)/);
 });
 
 test("declares authenticated avatar storage and profile responses", async () => {
-  const [schema, hosting, workerTypes, appAuth, login, register, me, avatarRoute] =
+  const [schema, storage, appAuth, login, register, me, avatarRoute] =
     await Promise.all([
       readFile(new URL("../db/schema.ts", import.meta.url), "utf8"),
-      readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"),
-      readFile(new URL("../cloudflare-workers.d.ts", import.meta.url), "utf8"),
+      readFile(new URL("../lib/server/avatar-storage.js", import.meta.url), "utf8"),
       readFile(new URL("../app/auth.ts", import.meta.url), "utf8"),
       readFile(new URL("../app/api/auth/login/route.ts", import.meta.url), "utf8"),
       readFile(new URL("../app/api/auth/register/route.ts", import.meta.url), "utf8"),
@@ -148,14 +147,14 @@ test("declares authenticated avatar storage and profile responses", async () => 
       readFile(new URL("../app/api/auth/avatar/route.ts", import.meta.url), "utf8"),
     ]);
   assert.match(schema, /avatarVersion: text\("avatar_version"\)/);
-  assert.equal(JSON.parse(hosting).r2, "AVATARS");
-  assert.match(workerTypes, /AVATARS\?/);
+  assert.match(storage, /getDataDirectory/);
+  assert.match(storage, /constants\.O_NOFOLLOW/);
   assert.match(appAuth, /avatarUrl/);
   assert.match(login, /avatarUrl/);
   assert.match(register, /avatarUrl/);
   assert.match(me, /avatarUrl/);
   assert.match(avatarRoute, /getSessionUser\(\)/);
-  assert.match(avatarRoute, /await import\("cloudflare:workers"\)/);
-  assert.doesNotMatch(avatarRoute, /^import \{ env \} from "cloudflare:workers";/m);
+  assert.match(avatarRoute, /replaceAvatar\(user\.email/);
+  assert.doesNotMatch(avatarRoute, /cloudflare:workers/);
   assert.doesNotMatch(avatarRoute, /payload\.email|searchParams\.get\("email"\)/);
 });

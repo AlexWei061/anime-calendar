@@ -1,0 +1,336 @@
+/* 主题切换做成常驻浮动按钮：所有页面、任意滚动位置都固定在右下角。 */
+.theme-toggle {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 4;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-raise);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+  transition: border-color var(--transition), box-shadow var(--transition), color var(--transition), transform var(--transition);
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  background: var(--card);
+}
+
+.calendar-page {
+  width: min(1680px, 100%);
+  margin: 0 auto;
+  padding: 1.65rem clamp(1rem, 2.5vw, 2.5rem) 2rem;
+}
+
+.page-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+  align-items: center;
+  gap: 0.8rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-heading-copy {
+  min-width: 0;
+}
+
+.page-summary {
+  margin: 0;
+  color: var(--muted-ink);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.page-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 0.7rem 1.5rem;
+  grid-column: 1;
+  margin: 0.65rem 0 0;
+}
+
+.page-metrics > div {
+  min-width: 0;
+}
+
+.page-metrics dt {
+  color: var(--muted-ink);
+  font-size: 0.75rem;
+}
+
+.page-metrics dd {
+  margin: 0.2rem 0 0;
+  color: var(--ink);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.page-heading-controls {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.personal-progress-metric {
+  min-width: 8rem;
+}
+
+.personal-progress-metric dd {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 1rem;
+}
+
+.personal-progress-bar {
+  width: 100%;
+  height: 0.4rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--line));
+}
+
+.personal-progress-bar::-webkit-progress-bar {
+  background: color-mix(in srgb, var(--accent-soft) 58%, var(--line));
+}
+
+.personal-progress-bar::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.personal-progress-bar::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.calendar-header,
+.section-heading,
+.detail-dialog-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.calendar-header {
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.page-search {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.page-search-field {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.page-search-field input {
+  width: 100%;
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  transition: border-color var(--transition);
+}
+
+.page-search-field input:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+}
+
+.page-search > button {
+  min-height: 2.4rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-control);
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: pointer;
+  font-weight: 800;
+  transition: filter var(--transition);
+}
+
+.page-search > button:hover {
+  filter: brightness(1.08);
+}
+
+.calendar-header-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.9rem;
+}
+
+.anime-search-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.anime-search {
+  max-width: 32rem;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.anime-search input {
+  width: 100%;
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  transition: border-color var(--transition);
+}
+
+.anime-search input:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+}
+
+.anime-search-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-panel);
+  color: var(--muted-ink);
+  text-align: center;
+}
+
+.season-picker {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.season-picker select {
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.season-picker select:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+}
+
+.season-picker span,
+.pilot-note {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.pilot-note {
+  margin: 0.6rem 0 0;
+}
+
+.season-kicker,
+.section-kicker {
+  width: fit-content;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  color: var(--muted-ink);
+  font-size: 0.73rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+strong {
+  font-family: var(--font-display);
+}
+
+h1 {
+  margin-bottom: 0.35rem;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 2.1vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.35;
+}
+
+.intro,
+.section-heading > p,
+.calendar-footer,
+.network-section > div > p {
+  color: var(--muted-ink);
+}
+
+.intro {
+  max-width: 44rem;
+  margin-bottom: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.source-link,
+.detail-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-bottom: 1px solid currentColor;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.weekly-section {
+  --week-pager-height: 4rem;
+  scroll-margin-top: calc(var(--site-nav-offset) + 1rem);
+  padding: 0 0 1.5rem;
+}
+
+.site-shell .week-pager {
+  top: var(--site-nav-offset);
+}
+
+.site-shell .timeline-corner,
+.site-shell .timeline-day-header {
+  top: calc(var(--site-nav-offset) + var(--week-pager-height));
+}
+

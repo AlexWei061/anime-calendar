@@ -3,58 +3,44 @@ import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
 import { filterKnownAnimeIds, selectionInsertBatches } from "../../../lib/anime-selections.js";
+import { errorResponse, invalidRequest, privateJson, readJson, requireSameOrigin } from "../../../lib/server/http.js";
 import { getSessionUser } from "../../auth";
 
 const validAnimeIds = new Set(allAnime.map(({ id }) => id));
 
-async function currentUser() {
-  return getSessionUser();
-}
-
 export async function GET() {
-  const user = await currentUser();
-  if (!user) {
-    return Response.json({ error: "Sign in required" }, { status: 401 });
-  }
-
   try {
-    const rows = await (await getDb())
-      .select({ animeId: animeSelections.animeId })
-      .from(animeSelections)
-      .where(eq(animeSelections.userEmail, user.email));
-    return Response.json({
-      animeIds: filterKnownAnimeIds(rows.map(({ animeId }) => animeId), validAnimeIds),
-    });
-  } catch {
-    return Response.json({ error: "Unable to load anime selections" }, { status: 500 });
+    const user = await getSessionUser();
+    if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const rows = (await getDb()).select({ animeId: animeSelections.animeId }).from(animeSelections)
+      .where(eq(animeSelections.userEmail, user.email)).all();
+    return privateJson({ animeIds: filterKnownAnimeIds(rows.map(({ animeId }) => animeId), validAnimeIds) });
+  } catch (error) {
+    return errorResponse(error, "Unable to load anime selections");
   }
 }
 
 export async function PUT(request: Request) {
-  const user = await currentUser();
-  if (!user) {
-    return Response.json({ error: "Sign in required" }, { status: 401 });
-  }
-
-  let animeIds: string[];
   try {
-    const payload = (await request.json()) as { animeIds?: unknown };
-    animeIds = filterKnownAnimeIds(payload.animeIds, validAnimeIds);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid animeIds";
-    return Response.json({ error: message }, { status: 400 });
-  }
-
-  try {
+    requireSameOrigin(request);
+    const user = await getSessionUser();
+    if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    let animeIds: string[];
+    try {
+      const payload = await readJson(request);
+      animeIds = filterKnownAnimeIds(payload.animeIds, validAnimeIds);
+    } catch (error) {
+      return invalidRequest(error, "Invalid animeIds");
+    }
     const db = await getDb();
-    await db.batch([
-      db.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)),
-      ...selectionInsertBatches(animeIds).map((batch: string[]) =>
-        db.insert(animeSelections).values(batch.map((animeId) => ({ userEmail: user.email, animeId }))),
-      ),
-    ]);
-    return Response.json({ animeIds });
-  } catch {
-    return Response.json({ error: "Unable to save anime selections" }, { status: 500 });
+    db.transaction((tx) => {
+      tx.delete(animeSelections).where(eq(animeSelections.userEmail, user.email)).run();
+      for (const batch of selectionInsertBatches(animeIds)) {
+        tx.insert(animeSelections).values(batch.map((animeId: string) => ({ userEmail: user.email, animeId }))).run();
+      }
+    });
+    return privateJson({ animeIds });
+  } catch (error) {
+    return errorResponse(error, "Unable to save anime selections");
   }
 }

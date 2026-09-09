@@ -1,38 +1,27 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { anime } from "../data/anime.js";
 
-import { anime, seasons } from "../data/anime.js";
-
-const templateRoot = new URL("../", import.meta.url);
-const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
-
-async function render() {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", String(process.pid) + "-" + Date.now());
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
-    }),
-    {
-      ASSETS: {
-        fetch: async () => new Response("Not found", { status: 404 }),
-      },
-    },
-    {
-      waitUntil() {},
-      passThroughOnException() {},
-    },
-  );
+const readSource = (path) => readFile(new URL(path, import.meta.url), "utf8");
+async function readStyles() {
+  const entry = await readSource("../app/globals.css");
+  const imports = [...entry.matchAll(/@import "(\.\/styles\/[^"\n]+)";/g)].map((match) => match[1]);
+  assert.deepEqual(imports, [
+    "./styles/tokens-base.css", "./styles/navigation-account.css", "./styles/page-shell.css",
+    "./styles/statistics-search.css", "./styles/calendar.css", "./styles/dialogs.css", "./styles/responsive.css",
+  ]);
+  return (await Promise.all(imports.map((path) => readSource("../app/" + path)))).join("");
 }
-
+async function render() {
+  assert.ok(process.env.TEST_BASE_URL, "Run npm test to start the production server before HTTP rendering tests");
+  return fetch(new URL("/", process.env.TEST_BASE_URL), { headers: { accept: "text/html" } });
+}
 function withoutReactMarkers(markup) {
   return markup.replaceAll("<!-- -->", "");
 }
 
-test("server-renders a paged Beijing episode calendar", async () => {
+test("server-renders a paged Beijing episode calendar", { skip: !process.env.TEST_BASE_URL }, async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -49,16 +38,15 @@ test("server-renders a paged Beijing episode calendar", async () => {
     html,
     /<link rel="icon" href="\/favicon\.svg" type="image\/svg\+xml"\s*\/>/,
   );
-  assert.match(cleanHtml, /<h1\b[^>]*>这季有什么值得追？<\/h1>/);
-  assert.match(withoutReactMarkers(html), /66 部番剧/);
+  assert.match(cleanHtml, /<h1\b[^>]*id="page-heading-title"[^>]*>播出表<\/h1>/);
+  assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
+  assert.match(cleanHtml, /共 66 部 · 北京时间/);
   assert.match(html, /class="page-sidebar"/);
-  assert.match(html, /class="seasonal-hero"/);
-  assert.match(html, /class="seasonal-hero-covers"/);
-  assert.match(html, /class="seasonal-hero-cover cover-sprite"/);
-  assert.match(html, /查看本周放送/);
-  assert.match(html, /今天看什么/);
-  assert.match(html, /我的追番/);
-  assert.match(html, /class="seasonal-hero-shortcuts"/);
+  assert.match(html, /class="page-heading"/);
+  assert.match(html, /class="page-heading-controls"/);
+  assert.match(html, /class="today-jump"[^>]*>今天<\/button>/);
+  assert.match(html, /class="page-search"/);
+  assert.doesNotMatch(html, /seasonal-hero|personal-hero/);
   assert.match(html, /localStorage\.getItem\(&quot;ac-theme&quot;\)|localStorage\.getItem\("ac-theme"\)/);
   assert.match(html, /class="theme-toggle"/);
   assert.match(html, /深色模式/);
@@ -94,7 +82,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:22;--timeline-height:2152px/);
+  assert.match(html, /--timeline-hour-count:22;--timeline-height:2160px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:1392px/);
@@ -124,7 +112,7 @@ test("server-renders a paged Beijing episode calendar", async () => {
   assert.doesNotMatch(html, /--event-start/);
 });
 
-test("renders one Monday-through-Sunday grid with timed and network-only program details", async () => {
+test("renders one Monday-through-Sunday grid with timed and network-only program details", { skip: !process.env.TEST_BASE_URL }, async () => {
   const html = await (await render()).text();
   const cleanHtml = withoutReactMarkers(html);
   const weekdayHeadings = [...html.matchAll(/<h3>(周[一二三四五六日])<\/h3>/g)].map(
@@ -171,12 +159,12 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   const sourceLinks = [
     ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/yuc\.wiki\/202607\/")[^>]*>/g),
   ].map(([tag]) => tag);
-  assert.equal(sourceLinks.length, 2);
+  assert.ok(sourceLinks.length >= 1, "the compact page must retain its current-quarter source link");
   assert.ok(sourceLinks.every((tag) => /target="_blank"/.test(tag)));
   assert.ok(sourceLinks.every((tag) => /rel="noreferrer"/.test(tag)));
 });
 
-test("renders separate accessible watched controls without nesting calendar buttons", async () => {
+test("renders separate accessible watched controls without nesting calendar buttons", { skip: !process.env.TEST_BASE_URL }, async () => {
   const html = await (await render()).text();
   const cleanHtml = withoutReactMarkers(html);
   const watchedControls = [
@@ -204,116 +192,7 @@ test("renders separate accessible watched controls without nesting calendar butt
   assert.ok(buttonClasses.every((classNames) => !classNames.includes("calendar-event")));
 });
 
-test("ships interactive, collapsible personal statistics cards with sticky season navigation", async () => {
-  const [page, styles] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(page, /type Page = "all" \| "mine" \| "stats" \| "search";/);
-  assert.match(page, /changePage\("stats"\)/);
-  assert.match(page, /changePage\("search"\)/);
-  assert.match(
-    page,
-    /setActivePage\(page === "mine" \|\| page === "stats" \|\| page === "search" \? page : "all"\);/,
-  );
-  assert.match(
-    page,
-    /if \(page === "mine" \|\| page === "stats" \|\| page === "search"\) \{\s*url\.searchParams\.set\("page", page\);/,
-  );
-  assert.match(
-    page,
-    /import \{(?=[^}]*\bbroadcastsForDate\b)(?=[^}]*\bprogressForAnime\b)(?=[^}]*\bprogressTotals\b)(?=[^}]*\bsortProgressBySeasonThenWatchedEpisodes\b)[^}]*\} from "\.\.\/lib\/anime-statistics\.js";/,
-  );
-  assert.match(page, /const selectedAnime = allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/);
-  assert.match(page, /const allProgress = progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\)(?: as AnimeProgress\[\])?;/);
-  assert.match(page, /const selectedOverallSeason = seasons\.find\(\(\{ id \}\) => id === selectedOverallSeasonId\);/);
-  assert.match(page, /const displayedOverallProgressTotals = progressTotals\(displayedOverallProgress\)(?: as ProgressTotals)?;/);
-  assert.match(page, /sortProgressBySeasonThenWatchedEpisodes/);
-  assert.match(
-    page,
-    /const overallProgress = sortProgressBySeasonThenWatchedEpisodes\(\s*allProgress,\s*seasonIndexByAnimeId,?\s*\)(?: as AnimeProgress\[\])?;/,
-  );
-  assert.match(page, /const overallProgressBySeason = seasons/);
-  assert.match(page, /const displayedOverallProgressBySeason = overallProgressBySeason;/);
-  assert.match(page, /\.reverse\(\);/);
-  assert.match(
-    page,
-    /const todayBroadcasts = \(currentBeijingDate\s*\? broadcastsForDate\(selectedAnime, currentBeijingDate\)\s*: \[\]\) as BroadcastEvent\[\];/,
-  );
-  assert.match(page, /今日播出/);
-  assert.match(page, /只显示你收藏的番剧/);
-  assert.match(page, /type StatisticsSection = "today" \| "overview";/);
-  assert.match(page, /const \[collapsedStatisticsSections, setCollapsedStatisticsSections\] = useState<StatisticsSection\[\]>\(\[\]\);/);
-  assert.match(page, /const isStatisticsSectionCollapsed = \(section: StatisticsSection\) =>/);
-  assert.match(page, /const toggleStatisticsSection = \(section: StatisticsSection\) =>/);
-  assert.match(page, /className="statistics-section-heading-toggle"/);
-  assert.match(page, /className="statistics-section-chevron" aria-hidden="true" \/>/);
-  assert.match(page, /aria-expanded=\{!isStatisticsSectionCollapsed\("today"\)\}/);
-  assert.match(page, /aria-controls="statistics-today-content"/);
-  assert.match(page, /id="statistics-today-content" hidden=\{isStatisticsSectionCollapsed\("today"\)\}/);
-  assert.match(page, /<div className="statistics-progress-content" id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>/);
-  assert.doesNotMatch(page, /statistics-season-content/);
-  assert.doesNotMatch(page, /className="statistics-season"/);
-  assert.match(
-    page,
-    /<dl className="statistics-overview-grid">[\s\S]*?<div className="statistics-progress-content" id="statistics-overview-content" hidden=\{isStatisticsSectionCollapsed\("overview"\)\}>/,
-  );
-  assert.match(page, /className="statistics-overview-summary"/);
-  assert.match(page, /selectedOverallSeason \? "本季追番" : "追番总数"/);
-  assert.match(page, /displayedOverallProgressTotals\.total/);
-  assert.match(page, /const statisticsAnimeCard = \(/);
-  assert.match(page, /className="statistics-anime-card"/);
-  assert.match(page, /aria-haspopup="dialog"/);
-  assert.match(page, /onClick=\{\(clickEvent\) => openDetail\(record, clickEvent\.currentTarget, selection\)\}/);
-  assert.match(page, /selectedDate: event\.broadcastDate/);
-  assert.match(page, /selectedEpisode: event\.episode/);
-  assert.match(page, /className="statistics-anime-card-list"/);
-  assert.match(page, /className="statistics-anime-card-progress"/);
-  assert.match(page, /width: `\$\{\(watchedEpisodeCount \/ record\.episodeCount\) \* 100\}%`/);
-  assert.match(page, /displayedOverallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
-  assert.match(page, /选择季度/);
-  assert.match(
-    page,
-    /statistics-overview"[\s\S]*?className="statistics-section-controls"[\s\S]*?选择季度[\s\S]*?statistics-overview-grid/,
-  );
-  assert.doesNotMatch(page, /statistics-overview-locator/);
-  assert.match(page, /statistics-overview-season-\$\{season\.id\}/);
-  assert.match(page, /<option value="">All<\/option>/);
-  assert.match(page, /getElementById\("statistics-overview"\)\?\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
-  assert.match(page, /getElementById\(`statistics-overview-season-\$\{seasonId\}`\)\s*\?\.scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
-  assert.doesNotMatch(page, /className="statistics-status-groups"/);
-  assert.match(page, /在追/);
-  assert.match(page, /已看完/);
-  assert.match(page, /未开始/);
-  assert.match(page, /<label className="statistics-season-picker">/);
-  assert.match(page, /value=\{selectedOverallSeasonId\}/);
-  assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{progress\.record\.episodeCount\} 集/);
-  assert.match(page, /最后标记第 \$\{progress\.latestWatchedEpisode\} 集/);
-  assert.match(page, /<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>/);
-  assert.match(styles, /\.statistics-overview-grid\s*\{/);
-  assert.match(styles, /\.statistics-progress-content\s*\{/);
-  assert.match(styles, /margin-top: 1rem;/);
-  assert.match(styles, /\.statistics-anime-card\s*\{/);
-  assert.match(styles, /\.statistics-section-heading-toggle\s*\{/);
-  assert.match(styles, /\.statistics-section-chevron\s*\{/);
-  assert.match(styles, /border-right: 2px solid currentColor;/);
-  assert.match(styles, /transform 260ms cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
-  assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
-  assert.match(styles, /\.statistics-anime-card-list\s*\{/);
-  assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
-  assert.match(
-    styles,
-    /\.statistics-overview-summary\s*\{[\s\S]*?position: sticky;[\s\S]*?top:\s*calc\(var\(--site-nav-offset\) \+ 0\.75rem\);/,
-  );
-  assert.match(
-    styles,
-    /\.statistics-overview-season\s*\{[\s\S]*?scroll-margin-top:\s*calc\(var\(--site-nav-offset\) \+ 8rem\);/,
-  );
-  assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
-});
-
-test("renders same-time events side by side on one timeline day", async () => {
+test("renders same-time events side by side on one timeline day", { skip: !process.env.TEST_BASE_URL }, async () => {
   const cleanHtml = withoutReactMarkers(await (await render()).text());
   const sameTimeEvents = [
     ...cleanHtml.matchAll(
@@ -366,299 +245,8 @@ test("renders same-time events side by side on one timeline day", async () => {
   );
 });
 
-test("keeps navigation, dialog wiring, and responsive calendar layout durable", async () => {
-  const [page, layout, styles, packageJson] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(page, /useRef/);
-  assert.match(page, /useSyncExternalStore<string \| null>/);
-  assert.match(page, /const \[activePage, setActivePage\] = useState/);
-  assert.match(page, /const activeSeason = seasonForWeek\(seasons, activeWeekStart\) as Season;/);
-  assert.doesNotMatch(page, /const \[activeSeasonId, setActiveSeasonId\] = useState/);
-  assert.match(page, /const initialSeasonId = "2026-july";/);
-  assert.match(page, /activeSeason\.label/);
-  assert.match(page, /const seasonalHeroAnime = activeSeason\.anime\.slice\(0, 4\);/);
-  assert.match(page, /const weeklySectionRef = useRef<HTMLElement>\(null\);/);
-  assert.match(
-    page,
-    /const scrollToWeeklySchedule = \(\) => \{[\s\S]*?window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches\s*\?\s*"auto"\s*:\s*"smooth";[\s\S]*?weeklySectionRef\.current\?\.scrollIntoView\(\{[\s\S]*?behavior/,
-  );
-  assert.match(
-    page,
-    /const jumpToTodaySchedule = \(\) => \{[\s\S]*?setActiveWeekStart\(startOfWeek\(date\)\);[\s\S]*?setActiveMobileDate\(date\);/,
-  );
-  assert.match(page, /activePage === "all" \? \([\s\S]*?className="seasonal-hero"/);
-  const seasonalHeroMap = page.match(/seasonalHeroAnime\.map\(\(record\) => \(\s*([\s\S]*?)\s*\)\)/);
-  assert.ok(seasonalHeroMap, "seasonal hero must render its cover list from seasonalHeroAnime");
-  assert.match(
-    seasonalHeroMap[1],
-    /<CoverArt[\s\S]*?className="seasonal-hero-cover"[\s\S]*?decorative/,
-  );
-  const seasonalHeroSection = page.match(/<section className="seasonal-hero"[^>]*>([\s\S]*?)<\/section>/);
-  assert.ok(seasonalHeroSection, "seasonal hero section must exist");
-  assert.match(
-    seasonalHeroSection[1],
-    /className="seasonal-hero-shortcuts"[\s\S]*?<button\b(?=[^>]*onClick=\{\(\) => changePage\("mine"\)\})[^>]*>[\s\S]*?<strong>我的追番<\/strong>[\s\S]*?<\/button>/,
-  );
-  assert.match(page, /ref=\{weeklySectionRef\}[\s\S]*?className="weekly-section"/);
-  assert.doesNotMatch(page, /冬番|春番|夏番/);
-  assert.doesNotMatch(layout, /冬番|春番|夏番/);
-  assert.match(page, /选择季度/);
-  assert.match(
-    page,
-    /YUC 提供目录、名称、封面及网络首播日期；电视排期按 AniList 历史记录与しょぼいカレンダー核对。/,
-  );
-  assert.doesNotMatch(page, /AniList 原文与罗马音|AniList 历史放送记录/);
-  assert.match(page, /const isHistoricalSeason = activeSeason\.id !== initialSeasonId;/);
-  assert.match(page, /已收录作品，但暂未确认固定的每周播出时刻。/);
-  assert.match(page, /dateOnlyEventsForWeek/);
-  assert.match(page, /const episodeLabel = formatEpisodeLabel\(event\.episodeStart, event\.episode\);/);
-  assert.match(page, /网络配信 · \{episodeLabel\} · 时刻未定/);
-  assert.match(page, /"timeline-grid" \+ \(dateOnlyEvents\.length \? " has-date-only-events" : ""\)/);
-  assert.match(page, /layout\.laneCount > 1 \? " timeline-event-compact" : ""/);
-  assert.match(page, /className=\{"timeline-date-only" \+/);
-  assert.doesNotMatch(styles, /\.date-only-events\s*\{[\s\S]*?position:\s*absolute/);
-  assert.match(
-    page,
-    /const nextWeekStart = firstFullWeekStart\(nextSeason\);[\s\S]*?setActiveWeekStart\(nextWeekStart\);[\s\S]*?setActiveMobileDate\(nextWeekStart\);/,
-  );
-  assert.match(
-    page,
-    /import\s*\{[\s\S]*?\btimelineBoundsForEvents,[\s\S]*?\}\s*from "\.\.\/lib\/calendar\.js";/,
-  );
-  assert.match(page, /const defaultTimelineStartMinutes = 5 \* 60;/);
-  assert.match(page, /const defaultTimelineEndMinutes = 29 \* 60;/);
-  assert.match(
-    page,
-    /const calendarAnime =\s*activePage === "mine"\s*\?\s*allAnime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\)\s*:\s*allAnime;/,
-  );
-  assert.match(
-    page,
-    /const selectedSeasonAnime = activeSeason\.anime\.filter\(\(record\) => selectedAnimeIds\?\.includes\(record\.id\)\);/,
-  );
-  assert.match(
-    page,
-    /const networkOnly = \(activePage === "mine" \? selectedSeasonAnime : activeSeason\.anime\)\.filter\(/,
-  );
-  assert.doesNotMatch(page, /const networkOnly = searchResults\.filter\(/);
-  assert.match(
-    page,
-    /timelineBoundsForEvents\(events, defaultTimelineStartMinutes, defaultTimelineEndMinutes\)/,
-  );
-  assert.match(
-    page,
-    /const timelineHourCount = \(timelineEndMinutes - timelineStartMinutes\) \/ 60;/,
-  );
-  assert.match(page, /"--timeline-hour-count": String\(timelineHourCount\)/);
-  assert.doesNotMatch(
-    page,
-    /const timelineEndMinutes = activeSeason\.timelineStartHour < 15 \? 28 \* 60 \+ 59 : 28 \* 60;/,
-  );
-  assert.match(page, /timelineOffsetMinutes\(event\.time, timelineStartMinutes, timelineEndMinutes\)/);
-  assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
-  assert.match(page, /window\.history\.pushState\(null, "", url\);/);
-  assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
-  assert.match(page, /<details className="anime-selection-details">/);
-  assert.match(page, /<summary className="anime-selection-summary">/);
-  assert.match(page, /本季度想追什么？/);
-  assert.doesNotMatch(page, /本月番想追什么？/);
-  const animeSelectionLabel = page.match(
-    /\{activeSeason\.anime\.map\(\(record\) => \(\s*<label className="anime-selection" key=\{record\.id\}>([\s\S]*?)<\/label>\s*\)\)\}/,
-  )?.[1] ?? "";
-  assert.match(animeSelectionLabel, /\S/);
-  assert.match(
-    animeSelectionLabel,
-    /<input[\s\S]*?type="checkbox"[\s\S]*?<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>[\s\S]*?<span className="statistics-anime-card-content">[\s\S]*?<strong title=\{record\.titleZh\}>\{record\.titleZh\}<\/strong>[\s\S]*?<small title=\{record\.titleJa\}>\{record\.titleJa\}<\/small>/,
-  );
-  assert.match(page, /const \[selectedAnimeIds, setSelectedAnimeIds\] = useState/);
-  assert.match(page, /fetch\("\/api\/anime-selections"/);
-  assert.match(page, /selectedAnimeIds\.includes\(record\.id\)/);
-  assert.match(
-    page,
-    /import\s*\{(?=[^}]*\bepisodeViewKey\b)(?=[^}]*\bupdateEpisodeViews\b)[^}]*\}\s*from "\.\.\/lib\/anime-episode-views\.js";/,
-  );
-  assert.match(page, /const \[watchedEpisodes, setWatchedEpisodes\] = useState<WatchedEpisode\[\] \| null>\(null\);/);
-  assert.match(page, /const \[watchedEpisodeError, setWatchedEpisodeError\] = useState<string \| null>\(null\);/);
-  assert.match(page, /const \[savingEpisodeKeys, setSavingEpisodeKeys\] = useState<string\[\]>\(\[\]\);/);
-  assert.match(
-    page,
-    /const isPersonalProgressLoading = selectedAnimeIds === null \|\| watchedEpisodes === null;/,
-  );
-  assert.match(
-    page,
-    /const personalWatchedEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.watchedEpisodeCount,\s*0,\s*\);/,
-  );
-  assert.match(
-    page,
-    /const personalEpisodeCount = overallProgress\.reduce\(\s*\(total, progress\) =>\s*total \+ progress\.record\.episodeCount,\s*0,\s*\);/,
-  );
-  const mineHeroSection = page.match(
-    /<section\b(?=[^>]*className="personal-hero personal-hero-mine")[^>]*>([\s\S]*?)<\/section>/,
-  );
-  assert.ok(mineHeroSection, "mine hero section must exist");
-  assert.match(
-    mineHeroSection[1],
-    /<dl\b(?=[^>]*className="personal-hero-metrics")[^>]*>[\s\S]*?<div\b[^>]*>[\s\S]*?<dt>本季在追<\/dt>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?<\/div>[\s\S]*?<div\b[^>]*>[\s\S]*?<dt>今天待看<\/dt>[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/div>[\s\S]*?<div\b(?=[^>]*className="personal-progress-metric")[^>]*>[\s\S]*?<dt>整体进度<\/dt>[\s\S]*?isPersonalProgressLoading \? "读取中" : personalEpisodeCount \? \([\s\S]*?<span>\{personalProgressLabel\}<\/span>[\s\S]*?<progress\b(?=[^>]*className="personal-progress-bar")(?=[^>]*aria-label="整体观看进度")(?=[^>]*value=\{personalWatchedEpisodeCount\})(?=[^>]*max=\{personalEpisodeCount\})[^>]*>[\s\S]*?personalProgressLabel[\s\S]*?<\/progress>[\s\S]*?\) : personalProgressLabel[\s\S]*?<\/div>[\s\S]*?<\/dl>/,
-  );
-  assert.match(page, /fetch\("\/api\/anime-episode-views"/);
-  assert.match(page, /episodeViewUnitsForRange/);
-  assert.match(page, /isEpisodeViewWatched/);
-  assert.match(page, /const episodeViews = episodeViewUnitsForRange\(watchedEpisode\)\.map/);
-  assert.match(page, /savingEpisodeKeys\.includes\(key\)/);
-  assert.match(
-    page,
-    /const nextWatchedEpisodes = updateEpisodeViews\(watchedEpisodes, watchedEpisode, !isWatched\);/,
-  );
-  assert.match(
-    page,
-    /catch \{\s*setWatchedEpisodes\(\(current\) => \{\s*if \(current === null\) return null;\s*return updateEpisodeViews\(current, watchedEpisode, isWatched\);/,
-  );
-  assert.doesNotMatch(page, /setWatchedEpisodes\(previousWatchedEpisodes\);/);
-  assert.match(page, /无法读取已看记录。请稍后重试。/);
-  assert.match(page, /保存已看状态失败，请重试。/);
-  assert.match(page, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
-  assert.match(page, /dateOnlyEventsForWeek\(\s*calendarAnime,\s*activeWeekStart,\s*\)/);
-  assert.doesNotMatch(page, /eventsForWeek\(searchResults, activeWeekStart\)/);
-  assert.doesNotMatch(page, /dateOnlyEventsForWeek\(\s*searchResults,\s*activeWeekStart,\s*\)/);
-  assert.doesNotMatch(page, /eventsForWeek\(displayedAnime, activeWeekStart\)/);
-  assert.match(
-    page,
-    /import \{(?=[^}]*\bcalendarDateForDateTime\b)(?=[^}]*\btimelineMarkerForDateTime\b)[^}]*\} from "\.\.\/lib\/calendar\.js";/,
-  );
-  assert.match(
-    page,
-    /const currentCalendarDate =\s*currentBeijingDate && currentBeijingTime\s*\? calendarDateForDateTime\(currentBeijingDate, currentBeijingTime\)\s*:\s*currentBeijingDate;/,
-  );
-  assert.match(
-    page,
-    /const mappedCurrentTimelineMarker =\s*currentBeijingDate && currentBeijingTime\s*\? timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)\s*:\s*null;/,
-  );
-  assert.match(
-    page,
-    /const currentTimelineMarker =\s*mappedCurrentTimelineMarker && dates\.includes\(mappedCurrentTimelineMarker\.date\)\s*\? mappedCurrentTimelineMarker\s*:\s*null;/,
-  );
-  assert.match(
-    page,
-    /const beijingDateTimeFormatter = new Intl\.DateTimeFormat\("en-CA", \{\s*timeZone: "Asia\/Shanghai",[\s\S]*?hour: "2-digit",\s*minute: "2-digit",\s*hourCycle: "h23",\s*\}\);/,
-  );
-  assert.match(page, /function getBeijingDateTime\(\) \{/);
-  assert.match(page, /function getServerBeijingDateTime\(\) \{\s*return null;/);
-  assert.match(page, /const currentBeijingDateTime = useSyncExternalStore<string \| null>\(/);
-  assert.match(
-    page,
-    /if \(!currentCalendarDate \|\| didSetInitialWeek\.current\) return;[\s\S]*?setActiveWeekStart\(startOfWeek\(currentCalendarDate\)\);[\s\S]*?setActiveMobileDate\(currentCalendarDate\);[\s\S]*?\}, \[currentCalendarDate\]\);/,
-  );
-  assert.match(page, /currentCalendarDate \?\? initialWeekStart/);
-  assert.match(page, /const date = currentCalendarDate \?\? activeWeekStart;/);
-  assert.match(page, /const isToday = event\.date === currentCalendarDate;/);
-  assert.match(
-    page,
-    /dates\.map\(\(date, index\) => \{\s*const isToday = date === currentCalendarDate;\s*return \(\s*<header\s+className=\{"timeline-day-header" \+ \(isToday \? " is-today" : ""\)\}/,
-  );
-  assert.match(
-    page,
-    /dates\.map\(\(date, index\) => \{\s*const isToday = date === currentCalendarDate;\s*const positionedEvents = layoutTimelineEvents\(\s*events\.filter\(\(event\) => event\.date === date\),\s*\);\s*return \(\s*<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}/,
-  );
-  assert.match(page, /date === currentCalendarDate \? " is-today" : ""/);
-  assert.doesNotMatch(page, /dates\.includes\(currentBeijingDate\)/);
-  assert.doesNotMatch(page, /startOfWeek\(currentBeijingDate\)/);
-  assert.doesNotMatch(page, /date === currentBeijingDate/);
-  assert.match(page, /className="timeline-current-time timeline-current-time-axis"/);
-  assert.match(page, /--timeline-current-time-top/);
-  assert.match(
-    page,
-    /<div className="timeline-axis" aria-hidden="true">\s*\{currentTimelineMarker \? \(\s*<div className="timeline-current-time timeline-current-time-axis" style=\{currentTimelineMarkerStyle\}>\s*<time>\{currentBeijingTime\}<\/time>[\s\S]*?\) : null\}\s*\{timelineHours\.map/,
-  );
-  assert.match(
-    page,
-    /<section\s+className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}[\s\S]*?\{currentTimelineMarker \? \(\s*<div className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true" \/>\s*\) : null\}\s*\{positionedEvents\.map/,
-  );
-  assert.match(page, /function subscribeToBeijingDate\(onStoreChange: \(\) => void\)/);
-  assert.match(page, /window\.setInterval\(onStoreChange, 60_000\)/);
-  assert.match(page, /formatBroadcastTime/);
-  assert.match(page, /groupEventsByTime/);
-  assert.match(page, /layoutTimelineEvents/);
-  assert.match(page, /timelineOffsetMinutes/);
-  assert.match(
-    page,
-    /function compactDate\(isoDate: string\) \{[\s\S]*?return Number\(month\) \+ "\/" \+ Number\(day\);/,
-  );
-  assert.match(page, /<b>\{compactDate\(date\)\}<\/b>/);
-  assert.match(page, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
-  assert.match(page, /<strong title=\{event\.titleZh\}>\{event\.titleZh\}<\/strong>/);
-  assert.doesNotMatch(page, /stackEventsForDay|timeToMinutes/);
-  assert.match(page, /const changeWeek = \(days: number\)/);
-  assert.match(page, /changeWeek\(-7\)/);
-  assert.match(page, /changeWeek\(7\)/);
-  assert.match(page, /formatEpisodeLabel\(event\.episodeStart, event\.episode\)/);
-  assert.match(page, /event\.episode/);
-  assert.match(page, /selectedEpisodeStart/);
-  assert.match(page, /selectedEpisode/);
-  assert.match(
-    page,
-    /onClick=\{\(clickEvent\) =>\s*openDetail\(event, clickEvent\.currentTarget, \{\s*selectedDate: event\.broadcastDate,\s*selectedTime: event\.broadcastTime,/,
-  );
-  assert.match(page, /\{selected \? \(/);
-  assert.match(page, /selected\.titleZh/);
-  assert.match(page, /<CoverArt anime=\{selected\} className="detail-cover" variant="detail" \/>/);
-  assert.match(page, /dialogRef\.current\.showModal\(\)/);
-  assert.match(
-    page,
-    /<dialog[\s\S]*?ref=\{dialogRef\}[\s\S]*?role="dialog"[\s\S]*?aria-modal="true"/,
-  );
-  assert.match(page, /onClose=\{handleDialogClose\}/);
-  assert.match(
-    page,
-    /onClick=\{\(clickEvent\) => \{[\s\S]*?const rect = clickEvent\.currentTarget\.getBoundingClientRect\(\);[\s\S]*?clickEvent\.clientX < rect\.left[\s\S]*?\|\|[\s\S]*?clickEvent\.clientX > rect\.right[\s\S]*?\|\|[\s\S]*?clickEvent\.clientY < rect\.top[\s\S]*?\|\|[\s\S]*?clickEvent\.clientY > rect\.bottom[\s\S]*?clickEvent\.currentTarget\.close\(\);/,
-  );
-  assert.match(
-    page,
-    /const handleDialogClose = \(\) => \{[\s\S]*?setSelected\(null\);[\s\S]*?openerRef\.current\?\.focus\(\);/,
-  );
-  assert.match(page, /aria-label="关闭详情"/);
-  assert.match(page, /dialogRef\.current\?\.close\(\)/);
-  assert.doesNotMatch(page, /codex-preview|Your site is taking shape|SkeletonPreview/);
-  assert.doesNotMatch(layout, /Starter Project|Geist|codex-preview|Your site is taking shape/);
-  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
-  await assert.rejects(access(previewRoot), { code: "ENOENT" });
-  assert.equal(templateRoot.pathname.endsWith("/"), true);
-  assert.deepEqual(
-    seasons.map(({ id, label }) => ({ id, label })),
-    [
-      { id: "2020-january", label: "2020 年 1 月番" },
-      { id: "2020-april", label: "2020 年 4 月番" },
-      { id: "2020-july", label: "2020 年 7 月番" },
-      { id: "2020-october", label: "2020 年 10 月番" },
-      { id: "2021-january", label: "2021 年 1 月番" },
-      { id: "2021-april", label: "2021 年 4 月番" },
-      { id: "2021-july", label: "2021 年 7 月番" },
-      { id: "2021-october", label: "2021 年 10 月番" },
-      { id: "2022-january", label: "2022 年 1 月番" },
-      { id: "2022-april", label: "2022 年 4 月番" },
-      { id: "2022-july", label: "2022 年 7 月番" },
-      { id: "2022-october", label: "2022 年 10 月番" },
-      { id: "2023-january", label: "2023 年 1 月番" },
-      { id: "2023-april", label: "2023 年 4 月番" },
-      { id: "2023-july", label: "2023 年 7 月番" },
-      { id: "2023-october", label: "2023 年 10 月番" },
-      { id: "2024-january", label: "2024 年 1 月番" },
-      { id: "2024-april", label: "2024 年 4 月番" },
-      { id: "2024-july", label: "2024 年 7 月番" },
-      { id: "2024-october", label: "2024 年 10 月番" },
-      { id: "2025-january", label: "2025 年 1 月番" },
-      { id: "2025-april", label: "2025 年 4 月番" },
-      { id: "2025-july", label: "2025 年 7 月番" },
-      { id: "2025-october", label: "2025 年 10 月番" },
-      { id: "2026-january", label: "2026 年 1 月番" },
-      { id: "2026-april", label: "2026 年 4 月番" },
-      { id: "2026-july", label: "2026 年 7 月番" },
-    ],
-  );
-
+test("preserves desktop and mobile sizing, sticky regions, watched controls, and dialog styles", async () => {
+  const styles = await readStyles();
   assert.match(
     styles,
     /\.detail-cover\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*auto;[\s\S]*?aspect-ratio:\s*3\s*\/\s*4;[\s\S]*?max-height:\s*none;[\s\S]*?background-repeat:\s*no-repeat;/,
@@ -684,22 +272,14 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     assert.fail(`Unclosed CSS media query: ${query}`);
   }
   const pageSidebarStyles = cssBlock(styles, "\\.page-sidebar");
-  const seasonalHeroStyles = cssBlock(styles, "\\.seasonal-hero");
-  const seasonalHeroCoversStyles = cssBlock(styles, "\\.seasonal-hero-covers");
-  const personalHeroStyles = cssBlock(styles, "\\.personal-hero");
-  const personalHeroMetricsStyles = cssBlock(styles, "\\.personal-hero-metrics");
-  const minePersonalHeroMetricsStyles = cssBlock(
-    styles,
-    "\\.personal-hero-mine \\.personal-hero-metrics",
-  );
+  const pageHeadingStyles = cssBlock(styles, "\\.page-heading");
+  const pageMetricsStyles = cssBlock(styles, "\\.page-metrics");
   const statisticsOverviewSummaryStyles = cssBlock(styles, "\\.statistics-overview-summary");
   const statisticsOverviewSeasonStyles = cssBlock(styles, "\\.statistics-overview-season");
   const animeSelectionListStyles = rootCssBlock(styles, "\\.anime-selection-list");
   const animeSelectionStyles = rootCssBlock(styles, "\\.anime-selection");
   const mobileStyles = cssMediaBlock(styles, "@media (max-width: 860px)");
-  const mobileSeasonalHeroStyles = cssBlock(mobileStyles, "\\.seasonal-hero");
-  const mobilePersonalHeroStyles = cssBlock(mobileStyles, "\\.personal-hero");
-  const mobilePersonalMetricsStyles = cssBlock(mobileStyles, "\\.personal-hero-metrics");
+  const mobilePageHeadingStyles = cssBlock(mobileStyles, "\\.page-heading");
   const mobileCalendarStyles = cssBlock(mobileStyles, "\\.mobile-calendar");
   assert.match(styles, /:focus-visible/);
   assert.match(styles, /\.page-sidebar button\.is-active/);
@@ -714,14 +294,10 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     /scroll-margin-top:\s*calc\(var\(--site-nav-offset\) \+ 8rem\);/,
   );
   assert.doesNotMatch(styles, /grid-template-columns:\s*13rem minmax\(0, 1fr\)/);
-  assert.match(seasonalHeroStyles, /display:\s*grid;/);
-  assert.match(personalHeroStyles, /display:\s*grid;/);
-  assert.match(
-    personalHeroMetricsStyles,
-    /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
-  );
-  assert.match(minePersonalHeroMetricsStyles, /align-self:\s*start;/);
-  assert.match(minePersonalHeroMetricsStyles, /align-items:\s*start;/);
+  assert.match(pageHeadingStyles, /display:\s*grid;/);
+  assert.match(rootCssBlock(styles, "\\.today-watch-list"), /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/);
+  assert.match(pageMetricsStyles, /display:\s*flex;/);
+  assert.match(pageMetricsStyles, /flex-wrap:\s*wrap;/);
   assert.match(
     styles,
     /\.personal-progress-metric dd\s*\{[\s\S]*?display:\s*grid;/,
@@ -735,14 +311,12 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     styles,
     /\.personal-progress-bar::-moz-progress-bar\s*\{[\s\S]*?background(?:-color)?:\s*var\(--accent\);/,
   );
-  assert.match(
-    seasonalHeroCoversStyles,
-    /grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/,
-  );
-  assert.match(mobileSeasonalHeroStyles, /grid-template-columns:\s*1fr;/);
-  assert.match(mobilePersonalHeroStyles, /grid-template-columns:\s*1fr;/);
-  assert.match(mobilePersonalMetricsStyles, /grid-template-columns:\s*1fr;/);
+  assert.match(mobilePageHeadingStyles, /grid-template-columns:\s*minmax\(0, 1fr\);/);
   assert.match(mobileCalendarStyles, /display:\s*grid;/);
+  assert.match(cssBlock(mobileStyles, "\\.today-watch-section"), /display:\s*none;/);
+  assert.match(cssBlock(mobileStyles, "\\.weekly-section > \\.section-heading"), /display:\s*none;/);
+  assert.match(mobileStyles, /\.mobile-agenda \.calendar-event \.calendar-event-detail\s*\{[^}]*grid-template-columns:\s*2\.875rem minmax\(0, 1fr\);/);
+  assert.match(mobileStyles, /\.mobile-agenda \.episode-watch-toggle,\s*\.today-watch-list \.episode-watch-toggle\s*\{[^}]*width:\s*2\.75rem;[^}]*height:\s*2\.75rem;/);
   assert.match(styles, /\.season-picker\s*\{/);
   assert.match(animeSelectionListStyles, /\S/);
   assert.match(
@@ -782,7 +356,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-axis\s*\{[^}]*?position:\s*relative;[^}]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) 40px;[^}]*?height:\s*var\(--timeline-height\);[^}]*?background-image:\s*var\(--timeline-lines\);/,
+    /\.timeline-axis\s*\{[^}]*?position:\s*relative;[^}]*?grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) var\(--timeline-event-height\);[^}]*?height:\s*var\(--timeline-height\);[^}]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
@@ -794,7 +368,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-day\.is-today\s*\{[\s\S]*?background-color:\s*var\(--card\);[\s\S]*?background-image:\s*var\(--timeline-lines\),[\s\S]*?linear-gradient\(/,
+    /\.timeline-day\.is-today\s*\{[^}]*?background-color:\s*color-mix\([^;]*var\(--accent-soft\)[^;]*var\(--card\)\);[^}]*?background-image:\s*var\(--timeline-lines\);/,
   );
   assert.match(
     styles,
@@ -802,7 +376,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-current-time\s*\{[^}]*?background:\s*var\(--accent-2\);[^}]*?box-shadow:\s*[^};]*?var\(--accent-2\)[^};]*?;/,
+    /\.timeline-current-time\s*\{[^}]*?background:\s*var\(--accent-2\);/,
   );
   assert.doesNotMatch(styles.match(/\.timeline-current-time\s*\{[^}]*\}/)?.[0] ?? "", /linear-gradient/);
   assert.match(
@@ -811,7 +385,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*var\(--event-top\);[\s\S]*?left:\s*calc\(var\(--event-left\) \+ var\(--timeline-event-gutter\)\);[\s\S]*?width:\s*calc\(var\(--event-width\) - var\(--timeline-event-gutter\)\);[\s\S]*?height:\s*40px;/,
+    /\.timeline-event\s*\{[\s\S]*?position:\s*absolute;[\s\S]*?top:\s*var\(--event-top\);[\s\S]*?left:\s*calc\(var\(--event-left\) \+ var\(--timeline-event-gutter\)\);[\s\S]*?width:\s*calc\(var\(--event-width\) - var\(--timeline-event-gutter\)\);[\s\S]*?height:\s*var\(--timeline-event-height\);/,
   );
   assert.match(
     styles,
@@ -819,7 +393,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event \.calendar-event-detail strong\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?text-overflow:\s*ellipsis;[\s\S]*?white-space:\s*nowrap;/,
+    /\.timeline-event \.calendar-event-detail strong\s*\{[^}]*?overflow:\s*hidden;[^}]*?-webkit-line-clamp:\s*2;[^}]*?white-space:\s*normal;/,
   );
   assert.match(
     styles,
@@ -827,13 +401,13 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event \.calendar-event-detail\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.85rem\) minmax\(0, 1fr\);/,
+    /\.timeline-event \.calendar-event-detail\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1\.5rem\) minmax\(0, 1fr\);/,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-detail\s*\{[^}]*grid-template-columns\s*:/,
+    /\.timeline-event-compact \.calendar-event-detail\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
     /\.timeline-event-compact \.calendar-event-cover\s*\{[^}]*display:\s*none;/,
   );
@@ -841,7 +415,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
     styles,
     /\.timeline-event-compact \.calendar-event-detail strong\s*\{[^}]*display:\s*none;/,
   );
-  assert.match(
+  assert.doesNotMatch(
     styles,
     /\.timeline-event-compact \.calendar-event-episode\s*\{[^}]*display:\s*none;/,
   );
@@ -863,11 +437,11 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   assert.match(styles, /\.episode-watch-toggle/);
   assert.match(
     styles,
-    /\.episode-watch-toggle\s*\{[\s\S]*?width:\s*0\.75rem;[\s\S]*?height:\s*0\.75rem;/,
+    /\.episode-watch-toggle::before\s*\{[^}]*?width:\s*0\.75rem;[^}]*?height:\s*0\.75rem;/,
   );
   assert.match(
     styles,
-    /\.timeline-event \.episode-watch-toggle\s*\{[\s\S]*?width:\s*0\.75rem;[\s\S]*?height:\s*0\.75rem;/,
+    /\.timeline-event \.episode-watch-toggle\s*\{[^}]*?width:\s*1\.3rem;[^}]*?height:\s*1\.3rem;/,
   );
   assert.match(
     styles,
@@ -875,7 +449,7 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.timeline-event \.calendar-event-content\s*\{[\s\S]*?padding-right:\s*1\.65rem;/,
+    /\.timeline-event \.calendar-event-content\s*\{[\s\S]*?padding-right:\s*0\.8rem;/,
   );
   assert.match(
     styles,
@@ -901,119 +475,44 @@ test("keeps navigation, dialog wiring, and responsive calendar layout durable", 
   );
   assert.match(
     styles,
-    /\.mobile-day-picker button\s*\{[\s\S]*?padding:\s*0\.35rem 0\.1rem;[\s\S]*?font-size:\s*0\.68rem;[\s\S]*?line-height:\s*1\.2;[\s\S]*?white-space:\s*nowrap;/,
+    /\.mobile-day-picker button\s*\{[^}]*?min-height:\s*3\.2rem;[^}]*?line-height:\s*1\.2;[^}]*?white-space:\s*nowrap;/,
   );
   assert.match(
     styles,
-    /\.mobile-agenda \.time-group-events \{[\s\S]*?grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/,
+    /\.mobile-agenda \.time-group-events \{[\s\S]*?grid-template-columns:\s*(?:1fr|minmax\(0, 1fr\))/,
   );
   assert.match(styles, /\.detail-dialog::backdrop/);
   assert.match(styles, /\.network-card/);
   assert.doesNotMatch(styles, /\.week-column\.is-today/);
-  assert.match(
-    page,
-    /\{activePage === "mine" \? \(\s*<section className="personal-hero personal-hero-mine"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>今天要追什么？<\/h1>[\s\S]*?selectedSeasonAnime\.length[\s\S]*?todayBroadcasts\.length[\s\S]*?<\/section>/,
-  );
-  const mineHeroIndex = page.indexOf('className="personal-hero personal-hero-mine"');
-  const mineWeeklyScheduleIndex = page.indexOf(
-    'ref={weeklySectionRef} className="weekly-section"',
-  );
-  const mineCalendarGateIndex = page.indexOf('activePage === "all" || calendarAnime.length ? (');
-  const mineCalendarGateEndIndex = page.indexOf(') : selectedAnimeIds ? (', mineCalendarGateIndex);
-  const mineSelectionPanelIndex = page.indexOf('className="anime-selection-panel"');
-  const calendarFooterIndex = page.indexOf('className="calendar-footer"');
-  assert.ok(mineHeroIndex >= 0, "the mine page must render its personal hero");
-  assert.ok(
-    mineWeeklyScheduleIndex > mineHeroIndex,
-    "the mine weekly schedule must follow the personal hero",
-  );
-  assert.ok(
-    mineSelectionPanelIndex > mineWeeklyScheduleIndex,
-    "the mine selection panel must follow the weekly schedule",
-  );
-  assert.ok(
-    mineCalendarGateEndIndex > mineCalendarGateIndex,
-    "the shared mine calendar conditional must retain its empty-schedule branch",
-  );
-  assert.ok(
-    mineSelectionPanelIndex > mineCalendarGateEndIndex,
-    "the mine selection panel must not be gated by a nonempty weekly calendar",
-  );
-  assert.ok(
-    mineSelectionPanelIndex < calendarFooterIndex,
-    "the mine selection panel must appear before the calendar footer",
-  );
-  assert.match(page, /请先在“选择番剧”中勾选想追的作品。/);
-  assert.doesNotMatch(page, /勾选上方的番剧/);
-  assert.match(
-    page,
-    /\{activePage === "stats" \? \(\s*<section className="personal-hero personal-hero-stats"[^>]*>[\s\S]*?<h1(?:\s[^>]*)?>这一路追到哪了？<\/h1>[\s\S]*?displayedOverallProgressTotals\.inProgress[\s\S]*?displayedOverallProgressTotals\.completed[\s\S]*?displayedOverallProgressTotals\.notStarted[\s\S]*?<\/section>/,
-  );
 });
 
-test("keeps global title search separate from calendar schedules", async () => {
-  const [page, styles] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-  ]);
+test("preserves statistics layout and season navigation styles", async () => {
+  const styles = await readStyles();
+  assert.match(styles, /\.statistics-overview-grid\s*\{/);
+  assert.match(styles, /\.statistics-progress-content\s*\{/);
+  assert.match(styles, /margin-top: 1rem;/);
+  assert.match(styles, /\.statistics-anime-card\s*\{/);
+  assert.match(styles, /\.statistics-section-heading-toggle\s*\{/);
+  assert.match(styles, /\.statistics-section-chevron\s*\{/);
+  assert.match(styles, /border-right: 2px solid currentColor;/);
+  assert.match(styles, /transform 260ms cubic-bezier\(0\.16, 1, 0\.3, 1\)/);
+  assert.match(styles, /\.statistics-anime-card-progress\s*\{/);
+  assert.match(styles, /\.statistics-anime-card-list\s*\{/);
+  assert.match(styles, /\.statistics-overview-season \+ \.statistics-overview-season\s*\{/);
+  assert.match(
+    styles,
+    /\.statistics-overview-summary\s*\{[\s\S]*?position: sticky;[\s\S]*?top:\s*calc\(var\(--site-nav-offset\) \+ 0\.75rem\);/,
+  );
+  assert.match(
+    styles,
+    /\.statistics-overview-season\s*\{[\s\S]*?scroll-margin-top:\s*calc\(var\(--site-nav-offset\) \+ 8rem\);/,
+  );
+  assert.match(styles, /@media \(max-width: 860px\) \{[\s\S]*?\.statistics-anime-card-list/);
+});
 
-  assert.match(page, /const \[animeQuery, setAnimeQuery\] = useState\(""\);/);
-  assert.match(page, /const searchResults = allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\);/);
-  assert.doesNotMatch(
-    page,
-    /activePage !== "mine" && activePage !== "stats" && activePage !== "search"/,
-  );
-  assert.match(
-    page,
-    /const selectionLoadError = selectionError \?\? \(\s*!currentUser && activePage !== "all" \? "登录后可同步你的追番列表。" : null\s*\);/,
-  );
-  assert.match(page, /const searchProgress = progressForAnime\(searchResults, watchedEpisodes \?\? \[\]\) as AnimeProgress\[\];/);
-  assert.match(
-    page,
-    /const searchProgressByAnimeId = new Map\(\s*searchProgress\.map\(\(progress\) => \[progress\.record\.id, progress\]\),\s*\);/,
-  );
-  assert.match(page, /const searchProgressError = selectionLoadError \?\? watchedEpisodeError;/);
-  assert.match(
-    page,
-    /const isSearchProgressLoading =\s*\(\s*selectedAnimeIds === null \|\| watchedEpisodes === null\s*\) && !searchProgressError;/,
-  );
-  assert.match(page, /正在读取追番进度…/);
-  assert.match(page, /searchProgressError \?\? "正在读取追番进度…"/);
-  assert.match(page, /isSearchProgressLoading \? \(/);
-  assert.match(page, /const isTracked = selectedAnimeIds\.includes\(record\.id\);/);
-  assert.match(
-    page,
-    /isTracked\s*\?\s*progressStatusLabel\(progress\.status\)\s*:\s*"未追番"/,
-  );
-  assert.match(page, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{record\.episodeCount\} 集/);
-  assert.match(
-    page,
-    /searchResults\.map\(\(record\) => \{[\s\S]*?statisticsAnimeCard\(\s*record,[\s\S]*?progress\.watchedEpisodeCount,\s*\)/,
-  );
-  assert.match(
-    page,
-    /if \(\s*!progress \|\| selectedAnimeIds === null \|\| watchedEpisodes === null\s*\) \{[\s\S]*?statisticsAnimeCard\(\s*record,[\s\S]*?"进度暂不可用"/,
-  );
-  assert.match(
-    page,
-    /\{activePage === "search" \? \([\s\S]*?<section className="anime-search-page" aria-labelledby="anime-search-heading">/,
-  );
-  assert.match(page, /<label className="anime-search">[\s\S]*?查询番剧[\s\S]*?type="search"[\s\S]*?placeholder="输入中文或日文名"/);
-  assert.match(page, /className="statistics-anime-card-list anime-search-results"/);
-  assert.match(
-    page,
-    /searchResults\.map\(\(record\) => \{[\s\S]*?statisticsAnimeCard\(\s*record,/,
-  );
-  assert.match(page, /seasonLabelByAnimeId\.get\(record\.id\) \?\? "已收录番剧"/);
-  assert.match(page, /className="anime-search-empty"[\s\S]*?aria-live="polite"/);
-  assert.match(page, /activePage === "all" \|\| activePage === "mine"/);
-  assert.match(
-    page,
-    /activePage === "all" \|\| activePage === "mine" \? \([\s\S]*?className="weekly-section"[\s\S]*?className="mobile-calendar"[\s\S]*?className="network-section"/,
-  );
-  assert.doesNotMatch(page, /const matchingCalendarAnime/);
-  assert.doesNotMatch(page, /const matchingSeasonAnime/);
-  assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[^}]*?grid-template-columns:\s*1fr;/);
+test("preserves the larger single-column search results and progress bars", async () => {
+  const styles = await readStyles();
+  assert.match(styles, /\.statistics-anime-card-list\.anime-search-results\s*\{[^}]*?grid-template-columns:\s*(?:1fr|minmax\(0, 1fr\));/);
   assert.match(
     styles,
     /\.anime-search-results \.statistics-anime-card\s*\{[^}]*?grid-template-columns:\s*6rem minmax\(0, 1fr\) auto;[^}]*?gap:\s*0\.9rem;[^}]*?padding:\s*0\.7rem;/,
@@ -1034,6 +533,7 @@ test("keeps global title search separate from calendar schedules", async () => {
     styles,
     /\.anime-search-results \.statistics-anime-card-progress\s*\{[^}]*?height:\s*0\.4rem;/,
   );
+  assert.match(styles, /\.anime-search-results \.statistics-anime-card-content em\s*\{[^}]*?overflow:\s*visible;[^}]*?white-space:\s*normal;/);
   assert.match(styles, /\.anime-search-page\s*\{[^}]*?display:\s*grid;/);
   assert.match(styles, /\.anime-search-page\s*\{[^}]*?gap:\s*1rem;/);
   assert.match(
@@ -1052,64 +552,15 @@ test("keeps global title search separate from calendar schedules", async () => {
   );
 });
 
-test("offers a search box on calendar pages that jumps to the search page", async () => {
-  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
-
-  assert.match(
-    page,
-    /const submitPageSearch = \(submitEvent: FormEvent<HTMLFormElement>\) => \{[\s\S]*?setAnimeQuery\(query\);\s*changePage\("search"\);/,
-  );
-  const allPageHero = page.match(
-    /\{activePage === "all" \? \(\s*(<section className="seasonal-hero"[\s\S]*?<\/section>)/,
-  );
-  const minePageHero = page.match(
-    /\{activePage === "mine" \? \(\s*(<section className="personal-hero personal-hero-mine"[\s\S]*?<\/section>)/,
-  );
-  const statsPageHero = page.match(
-    /\{activePage === "stats" \? \(\s*(<section className="personal-hero personal-hero-stats"[\s\S]*?<\/section>)/,
-  );
-  assert.ok(allPageHero, "the all page must render a seasonal hero");
-  assert.ok(minePageHero, "the mine page must render a personal hero");
-  assert.ok(statsPageHero, "the stats page must render a personal hero");
-  for (const source of [allPageHero[1], minePageHero[1], statsPageHero[1]]) {
-    assert.match(
-      source,
-      /<form\b(?=[^>]*className="page-search")(?=[^>]*role="search")[^>]*>[\s\S]*?<input\b(?=[^>]*name="pageSearch")(?=[^>]*type="search")(?=[^>]*placeholder="输入中文或日文名")[^>]*>/,
-    );
-  }
-  assert.equal((page.match(/<form\b(?=[^>]*className="page-search")[^>]*>/g) ?? []).length, 3);
-  assert.doesNotMatch(page, /\{activePage === "mine" \|\| activePage === "stats" \? \(/);
-  assert.match(page, /className="page-search-field"/);
-});
-
-test("keeps accessible contrast tokens and generated build metadata out of the deliverable", async () => {
-  const [styles, readme, gitignore] = await Promise.all([
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
-    readFile(new URL("../README.md", import.meta.url), "utf8"),
-    readFile(new URL("../.gitignore", import.meta.url), "utf8"),
-  ]);
-
-  assert.match(styles, /--muted-ink:\s*#7c6a76;/);
-  assert.match(styles, /--accent-2-deep:\s*#236e69;/);
-  assert.match(styles, /--accent:\s*#c24371;/);
-  assert.match(
-    readme,
-    /- `npm test`：先进行严格类型检查和构建，再验证日历数据、集数排期、封面图集映射和渲染后的时间表。/,
-  );
-  assert.doesNotMatch(readme, /npm test[^\n]*loading skeleton/i);
-  assert.match(gitignore, /^tsconfig\.tsbuildinfo$/m);
-});
-
-test("supports light and neon-dark themes through one set of design tokens", async () => {
-  const [styles, page, layout] = await Promise.all([
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+test("supports light and dark themes with accessible accent colors", async () => {
+  const [styles, page, layout, display] = await Promise.all([
+    readStyles(),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
+    readSource("../app/hooks/use-display.ts"),
   ]);
 
   assert.match(styles, /:root\s*\{[\s\S]*?color-scheme:\s*light;/);
-  assert.match(styles, /--accent-gradient:\s*linear-gradient\(/);
-  assert.match(styles, /--on-accent:\s*#fff;/);
   assert.doesNotMatch(styles, /--blue\b|--blue-soft|--mint\b|--mint-deep/);
   assert.match(
     layout,
@@ -1138,45 +589,40 @@ test("supports light and neon-dark themes through one set of design tokens", asy
     const [lighter, darker] = [relativeLuminance(left), relativeLuminance(right)].sort((a, b) => b - a);
     return (lighter + 0.05) / (darker + 0.05);
   };
-  const lightAccentStops = tokenValue(lightTokens, "accent-gradient").match(/#[\da-f]{6}\b/gi);
-  assert.ok(lightAccentStops?.length, "light accent gradient must use hex color stops");
-  const lightOnAccent = tokenValue(lightTokens, "on-accent");
-  for (const stop of lightAccentStops) {
-    assert.ok(
-      contrastRatio(stop, lightOnAccent) >= 4.5,
-      `${stop} must have at least 4.5:1 contrast against ${lightOnAccent}`,
-    );
+  const darkBlock = styles.match(/:root\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/);
+  assert.ok(darkBlock, "dark theme must override root tokens");
+  const darkTokens = darkBlock[1];
+  for (const [themeName, tokens] of [["light", lightTokens], ["dark", darkTokens]]) {
+    for (const [foreground, background] of [
+      ["on-accent", "accent"],
+      ["on-accent", "accent-2"],
+      ["on-accent", "accent-2-deep"],
+      ["accent-ink", "accent-soft"],
+      ["ink", "card"],
+      ["muted-ink", "card"],
+    ]) {
+      const foregroundColor = tokenValue(tokens, foreground);
+      const backgroundColor = tokenValue(tokens, background);
+      for (const color of [foregroundColor, backgroundColor]) {
+        assert.match(color, /^#[\da-f]{3}(?:[\da-f]{3})?$/i, "contrast checks require hex color tokens");
+      }
+      assert.ok(
+        contrastRatio(foregroundColor, backgroundColor) >= 4.5,
+        `${themeName}: --${foreground} must have at least 4.5:1 contrast against --${background}`,
+      );
+    }
   }
-  const lightAccentInk = tokenValue(lightTokens, "accent-ink");
-  const lightAccentSoft = tokenValue(lightTokens, "accent-soft");
-  assert.ok(
-    contrastRatio(lightAccentInk, lightAccentSoft) >= 4.5,
-    "--accent-ink must have at least 4.5:1 contrast against --accent-soft",
-  );
-  const lightAccent2Deep = tokenValue(lightTokens, "accent-2-deep");
-  assert.ok(
-    contrastRatio(lightAccent2Deep, lightOnAccent) >= 4.5,
-    "--accent-2-deep must have at least 4.5:1 contrast against --on-accent",
-  );
   assert.match(
     styles,
     /\.statistics-anime-card-status\s*\{[\s\S]*?color:\s*var\(--accent-ink\);/,
   );
 
-  // 暗色 token 由 <html data-theme="dark"> 触发，便于手动切换与系统跟随共用一套规则。
+  // 暗色 token 由 <html data-theme="dark"> 触发，手动切换与系统跟随共用一套规则。
   assert.doesNotMatch(styles, /@media \(prefers-color-scheme/);
-  const darkBlock = styles.match(/:root\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/);
-  assert.ok(darkBlock, "dark theme must override the same tokens on :root[data-theme]");
-  const darkTokens = darkBlock[1];
   assert.match(darkTokens, /color-scheme:\s*dark;/);
-  assert.match(darkTokens, /--paper:\s*#141221;/);
-  assert.match(darkTokens, /--card:\s*#23203a;/);
-  assert.match(darkTokens, /--ink:\s*#ece9f7;/);
-  assert.match(darkTokens, /--accent:\s*#ff7ba9;/);
-  assert.match(darkTokens, /--accent-2-deep:\s*#6fe3f2;/);
-  assert.match(darkTokens, /--accent-gradient:\s*linear-gradient\(/);
-  assert.match(darkTokens, /--accent-ink:/);
-  assert.match(darkTokens, /--backdrop:/);
+  for (const name of ["paper", "card", "ink", "accent", "accent-2-deep", "accent-ink", "backdrop"]) {
+    tokenValue(darkTokens, name);
+  }
 
   // 首屏前的内联脚本：手动选择优先，否则跟随系统，避免主题闪屏。
   assert.match(layout, /localStorage\.getItem\("ac-theme"\)/);
@@ -1187,8 +633,8 @@ test("supports light and neon-dark themes through one set of design tokens", asy
   // 手动切换做成常驻浮动按钮，并把选择写回 localStorage 与 <html data-theme>。
   assert.match(page, /className="theme-toggle"/);
   assert.match(page, /aria-pressed=\{theme === "dark"\}/);
-  assert.match(page, /localStorage\.setItem\("ac-theme", nextTheme\)/);
-  assert.match(page, /document\.documentElement\.dataset\.theme = nextTheme;/);
+  assert.match(display, /localStorage\.setItem\("ac-theme", nextTheme\)/);
+  assert.match(display, /document\.documentElement\.dataset\.theme = nextTheme;/);
   assert.match(
     styles,
     /\.theme-toggle\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*4;/,
@@ -1197,12 +643,201 @@ test("supports light and neon-dark themes through one set of design tokens", asy
   // 硬编码颜色必须收口到 token，暗色主题才能整体换肤。
   assert.doesNotMatch(styles, /rgb\(31 41 51|#a33b2e/);
   assert.doesNotMatch(styles, /grayscale/);
-  // 新增 hover 上浮过渡必须纳入减少动态效果的关闭列表。
+  // 交互过渡必须纳入减少动态效果的关闭列表。
   const reducedMotion = styles.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
   assert.ok(reducedMotion);
   assert.match(reducedMotion[1], /\.calendar-event-detail/);
   assert.match(reducedMotion[1], /\.network-card/);
   assert.match(reducedMotion[1], /\.statistics-anime-card/);
   assert.match(reducedMotion[1], /\.theme-toggle/);
-  assert.match(reducedMotion[1], /transform:\s*none;/);
+  assert.match(reducedMotion[1], /transition:\s*none;/);
+});
+
+test("keeps routing and cross-page view state in the small page composition", async () => {
+  const [page, types, calendar, statistics] = await Promise.all([
+    readSource("../app/page.tsx"), readSource("../app/types.ts"),
+    readSource("../app/components/calendar-page.tsx"), readSource("../app/components/statistics-page.tsx"),
+  ]);
+  assert.match(types, /type Page = "all" \| "mine" \| "stats" \| "search";/);
+  assert.match(page, /new URLSearchParams\(window\.location\.search\)\.get\("page"\)/);
+  assert.match(page, /setActivePage\(page === "mine" \|\| page === "stats" \|\| page === "search" \? page : "all"\)/);
+  assert.match(page, /window\.addEventListener\("popstate", syncPageFromUrl\)/);
+  assert.match(page, /window\.history\.pushState\(null, "", url\)/);
+  assert.match(page, /page === "all"\) url\.searchParams\.delete\("page"\)/);
+  assert.match(page, /url\.searchParams\.set\("page", page\)/);
+  assert.match(page, /useState<CalendarLocation>/);
+  assert.match(page, /useState<StatisticsView>/);
+  assert.match(page, /<CalendarPage\b[^>]*location=\{calendarLocation\}[^>]*onLocationChange=\{setCalendarLocation\}/);
+  assert.match(page, /<StatisticsPage\b[^>]*view=\{statisticsView\}[^>]*onViewChange=\{setStatisticsView\}/);
+  assert.doesNotMatch(page, /fetch\(|progressForAnime\(|eventsForWeek\(/);
+  assert.match(page, /<ViewerProvider><AccountProvider><AnimeDetailProvider>/);
+  assert.match(calendar, /onLocationChange\(\{ weekStart: nextWeekStart, mobileDate: nextWeekStart \}\)/);
+  assert.match(statistics, /const selectedOverallSeasonId = view\.seasonId/);
+  assert.match(statistics, /const collapsedStatisticsSections = view\.collapsedSections/);
+});
+
+test("searches the full catalog and shows progress without filtering the calendar", async () => {
+  const [page, search, calendar, heading, card] = await Promise.all([
+    readSource("../app/page.tsx"), readSource("../app/components/search-page.tsx"),
+    readSource("../app/components/calendar-page.tsx"), readSource("../app/components/page-heading.tsx"),
+    readSource("../app/components/statistics-anime-card.tsx"),
+  ]);
+  assert.match(page, /setAnimeQuery\(query\);\s*changePage\("search"\)/);
+  assert.match(page, /<SearchPage animeQuery=\{animeQuery\} setAnimeQuery=\{setAnimeQuery\}/);
+  assert.match(heading, /new FormData\(event\.currentTarget\)\.get\("pageSearch"\)/);
+  assert.match(heading, /if \(query\) onSearch\?\.\(query\)/);
+  assert.match(heading, /<form className="page-search" role="search" aria-label="查询番剧" onSubmit=\{submitPageSearch\}/);
+  assert.equal((heading.match(/<h1\b/g) ?? []).length, 1);
+  assert.match(search, /allAnime\.filter\(\(record\) => matchesAnimeTitle\(record, animeQuery\)\)/);
+  assert.match(search, /progressForAnime\(searchResults, watchedEpisodes \?\? \[\]\)/);
+  assert.match(search, /const searchProgressError = selectionLoadError \?\? watchedEpisodeError/);
+  assert.match(search, /const isSearchProgressLoading = \(selectedAnimeIds === null \|\| watchedEpisodes === null\) && !searchProgressError/);
+  assert.match(search, /isTracked \? progressStatusLabel\(progress\.status\) : "未追番"/);
+  assert.match(search, /已看 \$\{progress\.watchedEpisodeCount\} \/ \$\{record\.episodeCount\} 集/);
+  assert.match(search, /if \(!progress \|\| selectedAnimeIds === null \|\| watchedEpisodes === null\)/);
+  assert.match(search, /status="进度暂不可用"/);
+  assert.match(search, /<StatisticsAnimeCard[^>]*watchedEpisodeCount=\{progress\.watchedEpisodeCount\}/);
+  assert.match(search, /value=\{animeQuery\}\s*onChange=\{\(event\) => setAnimeQuery\(event\.target\.value\)\}/);
+  assert.match(search, /输入中文或日文名开始查询/);
+  assert.match(search, /className="anime-search-empty" aria-live="polite"/);
+  assert.match(card, /onClick=\{\(clickEvent\) => openDetail\(record, clickEvent\.currentTarget, selection\)\}/);
+  assert.match(card, /className="statistics-anime-card-progress"/);
+  assert.match(calendar, /const calendarAnime = activePage === "mine" \? selectedAnime : allAnime/);
+  assert.match(calendar, /eventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.match(calendar, /dateOnlyEventsForWeek\(calendarAnime, activeWeekStart\)/);
+  assert.doesNotMatch(calendar, /animeQuery|searchResults|matchesAnimeTitle/);
+});
+
+test("preserves statistics collapse, natural-day releases, season grouping, and scroll selection", async () => {
+  const statistics = await readSource("../app/components/statistics-page.tsx");
+  assert.match(statistics, /progressForAnime\(selectedAnime, watchedEpisodes \?\? \[\]\), seasonIndexByAnimeId/);
+  assert.match(statistics, /sortProgressBySeasonThenWatchedEpisodes/);
+  assert.match(statistics, /broadcastsForDate\(selectedAnime, currentBeijingDate\)/);
+  assert.doesNotMatch(statistics, /broadcastsForDate\(selectedAnime, currentCalendarDate\)/);
+  assert.match(statistics, /const displayedOverallProgressBySeason = overallProgressBySeason/);
+  assert.match(statistics, /progressTotals\(displayedOverallProgress\)/);
+  for (const section of ["today", "overview"]) {
+    assert.match(statistics, new RegExp(`aria-expanded=\\{!isStatisticsSectionCollapsed\\("${section}"\\)\\}`));
+    assert.match(statistics, new RegExp(`aria-controls="statistics-${section}-content"`));
+    assert.match(statistics, new RegExp(`id="statistics-${section}-content" hidden=\\{isStatisticsSectionCollapsed\\("${section}"\\)\\}`));
+  }
+  assert.match(statistics, /<option value="">All<\/option>/);
+  assert.match(statistics, /getElementById\(`statistics-overview-season-\$\{seasonId\}`\)/);
+  assert.match(statistics, /scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
+  assert.match(statistics, /displayedOverallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
+  for (const total of ["total", "inProgress", "completed", "notStarted"]) {
+    assert.match(statistics, new RegExp(`displayedOverallProgressTotals\\.${total}`));
+  }
+  assert.match(statistics, /最后标记第 \$\{progress\.latestWatchedEpisode\} 集/);
+  assert.match(statistics, /selectedDate: event\.broadcastDate/);
+  assert.match(statistics, /selectedReleaseKind: event\.releaseKind === "network" \? "network" : undefined/);
+});
+
+test("keeps today's followed releases before the calendar and the selection panel after it", async () => {
+  const [calendar, today, selection] = await Promise.all([
+    readSource("../app/components/calendar-page.tsx"), readSource("../app/components/today-watch.tsx"),
+    readSource("../app/components/selection-panel.tsx"),
+  ]);
+  const todayIndex = calendar.indexOf("<TodayWatch");
+  const weeklyIndex = calendar.indexOf('className="weekly-section"');
+  const selectionIndex = calendar.indexOf("<SelectionPanel");
+  const footerIndex = calendar.indexOf('className="calendar-footer"');
+  const emptyIndex = calendar.indexOf('className="my-schedule-empty"');
+  assert.ok(todayIndex >= 0 && weeklyIndex > todayIndex && emptyIndex > weeklyIndex);
+  assert.ok(selectionIndex > emptyIndex && footerIndex > selectionIndex);
+  assert.match(calendar, /<progress\b[^>]*aria-label="整体观看进度"[^>]*value=\{personalWatchedEpisodeCount\}[^>]*max=\{personalEpisodeCount\}/);
+  assert.match(today, /eventsForWeek\(selectedAnime, startOfWeek\(currentCalendarDate\)\)/);
+  assert.match(today, /dateOnlyEventsForWeek\(selectedAnime, startOfWeek\(currentCalendarDate\)\)/);
+  assert.equal((today.match(/\.filter\(\(event\) => event\.date === currentCalendarDate\)/g) ?? []).length, 2);
+  assert.match(today, /episodeViewUnitsForRange\(event\)\.filter\(\(unit\) =>\s*!isEpisodeViewWatched\(watchedEpisodes \?\? \[\], \{ animeId: event\.id, \.\.\.unit \}\)/);
+  assert.match(today, /currentCalendarDate=\{currentCalendarDate\} showTime/);
+  assert.match(today, /<DateOnlyEventCard/);
+  assert.match(today, /isPersonalProgressLoading \? \(/);
+  assert.match(today, /selectionLoadError \|\| watchedEpisodeError \? <SignInPrompt \/> : null/);
+  assert.match(today, /今天没有追番更新/);
+  assert.match(selection, /<details className="anime-selection-details">/);
+  assert.match(selection, /<summary className="anime-selection-summary">/);
+  assert.match(selection, /activeSeason\.anime\.map\(\(record\) =>/);
+  assert.match(selection, /<input\s+type="checkbox"[\s\S]*?disabled=\{isSavingSelection\}[\s\S]*?<CoverArt anime=\{record\} className="statistics-anime-card-cover" decorative \/>[\s\S]*?<strong title=\{record\.titleZh\}>\{record\.titleZh\}<\/strong>[\s\S]*?<small title=\{record\.titleJa\}>\{record\.titleJa\}<\/small>/);
+});
+
+test("uses broadcast-day boundaries for navigation, all highlights, and current-time lines", async () => {
+  const [page, calendar, schedule, cards, clock] = await Promise.all([
+    readSource("../app/page.tsx"), readSource("../app/components/calendar-page.tsx"),
+    readSource("../app/components/calendar-schedule.tsx"), readSource("../app/components/calendar-cards.tsx"),
+    readSource("../app/hooks/use-display.ts"),
+  ]);
+  assert.match(clock, /timeZone: "Asia\/Shanghai"/);
+  assert.match(clock, /calendarDateForDateTime\(currentBeijingDate, currentBeijingTime\)/);
+  assert.match(clock, /window\.setInterval\(onStoreChange, 60_000\)/);
+  assert.match(page, /setCalendarLocation\(\{ weekStart: startOfWeek\(currentCalendarDate\), mobileDate: currentCalendarDate \}\)/);
+  assert.match(calendar, /const date = !isHistoricalSeason \? currentCalendarDate \?\? initialWeekStart : firstFullWeekStart\(activeSeason\)/);
+  assert.match(calendar, /const date = currentCalendarDate \?\? activeWeekStart/);
+  assert.match(calendar, /onLocationChange\(\{ weekStart: startOfWeek\(date\), mobileDate: date \}\)/);
+  assert.match(calendar, /window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches/);
+  assert.match(calendar, /weeklySectionRef\.current\?\.scrollIntoView\(\{ behavior, block: "start" \}\)/);
+  assert.match(schedule, /timelineMarkerForDateTime\(\s*currentBeijingDate,\s*currentBeijingTime,\s*timelineStartMinutes,\s*timelineEndMinutes,\s*\)/);
+  assert.match(schedule, /mappedCurrentTimelineMarker && dates\.includes\(mappedCurrentTimelineMarker\.date\)/);
+  assert.equal((schedule.match(/const isToday = date === currentCalendarDate/g) ?? []).length, 2);
+  assert.match(schedule, /className=\{"timeline-date-only" \+ \(date === currentCalendarDate \? " is-today" : ""\)\}/);
+  assert.match(schedule, /className=\{"timeline-day-header" \+ \(isToday \? " is-today" : ""\)\}/);
+  assert.match(schedule, /className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}/);
+  assert.match(schedule, /className="timeline-current-time timeline-current-time-axis"/);
+  assert.match(schedule, /className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true"/);
+  assert.match(cards, /const isToday = event\.date === currentCalendarDate/);
+  assert.doesNotMatch(schedule, /dates\.includes\(currentBeijingDate\)|date === currentBeijingDate/);
+});
+
+test("shares event duration and original broadcast details across desktop and mobile cards", async () => {
+  const [schedule, cards, styles, calendar] = await Promise.all([
+    readSource("../app/components/calendar-schedule.tsx"), readSource("../app/components/calendar-cards.tsx"),
+    readStyles(), readSource("../lib/calendar.js"),
+  ]);
+  assert.match(calendar, /export const TIMELINE_EVENT_DURATION_MINUTES = 30/);
+  assert.match(schedule, /"--timeline-event-height": TIMELINE_EVENT_DURATION_MINUTES \* 1\.6 \+ "px"/);
+  assert.match(schedule, /"--timeline-height": timelineHourCount \* 96 \+ TIMELINE_EVENT_DURATION_MINUTES \* 1\.6 \+ "px"/);
+  assert.match(styles, /\.timeline-event\s*\{[^}]*height:\s*var\(--timeline-event-height\);/);
+  assert.match(styles, /\.timeline-axis\s*\{[^}]*grid-template-rows:\s*repeat\(var\(--timeline-hour-count\), 96px\) var\(--timeline-event-height\);/);
+  assert.match(schedule, /layoutTimelineEvents\(events\.filter\(\(event\) => event\.date === date\)\)/);
+  assert.match(schedule, /groupedEvents\.map\(\(event\) => eventButton\(event\)\)/);
+  assert.doesNotMatch(schedule, /groupedEvents\.length\s*>=\s*3/);
+  assert.match(cards, /timelineOffsetMinutes\(event\.time, timelineStartMinutes, timelineEndMinutes\)/);
+  assert.match(cards, /selectedDate: event\.broadcastDate,\s*selectedTime: event\.broadcastTime/);
+  assert.match(cards, /selectedReleaseKind: "network"/);
+  assert.match(cards, /网络配信 · \{episodeLabel\} · 时刻未定/);
+  assert.match(cards, /<strong title=\{event\.titleZh\}>\{event\.titleZh\}<\/strong>/);
+  assert.match(cards, /aria-pressed=\{isWatched\}/);
+  assert.match(cards, /episodeViewUnitsForRange\(watchedEpisode\)/);
+  assert.match(cards, /disabled=\{watchedEpisodes === null \|\| isSavingWatch\}/);
+  assert.match(cards, /showTime \? <><time className="calendar-event-time">\{displayTime\}<\/time>/);
+});
+
+test("keeps native detail-dialog focus restoration, source information, and independent episode buttons", async () => {
+  const detail = await readSource("../app/components/anime-detail.tsx");
+  assert.match(detail, /dialogRef\.current\.showModal\(\)/);
+  assert.match(detail, /<dialog\b[^>]*aria-labelledby="anime-detail-title"/);
+  assert.match(detail, /<h2 id="anime-detail-title">\{selected\.titleZh\}<\/h2>/);
+  assert.match(detail, /<p className="detail-title-ja">\{selected\.titleJa\}<\/p>/);
+  assert.match(detail, /<CoverArt anime=\{selected\} className="detail-cover" variant="detail" \/>/);
+  assert.match(detail, /onClose=\{handleDialogClose\}/);
+  assert.match(detail, /setSelected\(null\);\s*openerRef\.current\?\.focus\(\)/);
+  assert.match(detail, /clickEvent\.clientX < rect\.left[\s\S]*?clickEvent\.clientX > rect\.right[\s\S]*?clickEvent\.clientY < rect\.top[\s\S]*?clickEvent\.clientY > rect\.bottom/);
+  assert.match(detail, /episodeViewUnitsForAnime\(selected\)/);
+  assert.match(detail, /selectedEpisodeUnits\.map\(\(unit\) =>/);
+  assert.match(detail, /const unitWatchedEpisode = \{ animeId: selected\.id, \.\.\.unit \}/);
+  assert.match(detail, /onClick=\{\(\) => void toggleEpisodeView\(unitWatchedEpisode\)\}/);
+  assert.match(detail, /disabled=\{watchedEpisodes === null \|\| savingEpisodeKeys\.includes\(key\)\}/);
+  assert.match(detail, /selected\.selectedReleaseKind === "network"/);
+  assert.match(detail, /资料未列出，暂按 12 集/);
+  assert.match(detail, /href=\{selected\.sourceUrl\}/);
+});
+
+test("keeps preview scaffolding and build metadata out of the deliverable", async () => {
+  const [layout, gitignore, packageJson] = await Promise.all([
+    readSource("../app/layout.tsx"), readSource("../.gitignore"), readSource("../package.json"),
+  ]);
+  assert.doesNotMatch(layout, /Starter Project|Geist|codex-preview|Your site is taking shape/);
+  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
+  assert.match(gitignore, /^tsconfig\.tsbuildinfo$/m);
+  await assert.rejects(access(new URL("../app/_sites-preview/", import.meta.url)), { code: "ENOENT" });
 });

@@ -164,6 +164,16 @@ test("trims weekly timeline bounds to the visual event range", () => {
   });
 });
 
+test("keeps the full 48px card inside the rounded timeline bounds", () => {
+  const { startMinutes, endMinutes } = timelineBoundsForEvents([{ time: "23:35" }], 5 * 60, 29 * 60);
+
+  assert.deepEqual({ startMinutes, endMinutes }, { startMinutes: 23 * 60, endMinutes: 25 * 60 });
+  assert.ok(
+    (endMinutes - startMinutes) * 1.6 >=
+      timelineOffsetMinutes("23:35", startMinutes, endMinutes) * 1.6 + 48,
+  );
+});
+
 test("keeps historical timeline bounds aligned to whole hours", () => {
   assert.deepEqual(timelineBoundsForEvents([{ time: "28:30" }], 5 * 60, 28 * 60 + 59), {
     startMinutes: 28 * 60,
@@ -203,10 +213,11 @@ test("keeps a 25:00 YUC label in its source Sunday column", () => {
 });
 
 test("passes an event's original broadcast time to the detail dialog", () => {
-  const pageSource = readFileSync(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const cards = readFileSync(new URL("../app/components/calendar-cards.tsx", import.meta.url), "utf8");
+  const detail = readFileSync(new URL("../app/components/anime-detail.tsx", import.meta.url), "utf8");
 
-  assert.match(pageSource, /selectedTime: event\.broadcastTime/);
-  assert.match(pageSource, /selected\.selectedTime \?\? selected\.beijingTime/);
+  assert.match(cards, /selectedTime: event\.broadcastTime/);
+  assert.match(detail, /selected\.selectedTime \?\? selected\.beijingTime/);
 });
 
 test("renders a midnight historical broadcast in the preceding visual day", () => {
@@ -423,6 +434,28 @@ test("lays out same-time timeline events in parallel lanes without shifting thei
       { id: "second", startMinutes: 1230, lane: 0, laneCount: 3 },
       { id: "first", startMinutes: 1230, lane: 1, laneCount: 3 },
       { id: "third", startMinutes: 1240, lane: 2, laneCount: 3 },
+    ],
+  );
+});
+
+test("separates timeline cards less than 48px apart and reuses a lane at 48px", () => {
+  const dayEvents = [
+    { ...weeklyShow, id: "first", time: "20:00" },
+    { ...weeklyShow, id: "overlapping", time: "20:29" },
+    { ...weeklyShow, id: "touching", time: "20:30" },
+  ];
+
+  assert.deepEqual(
+    layoutTimelineEvents(dayEvents).map(({ event, startMinutes, lane, laneCount }) => ({
+      id: event.id,
+      startMinutes,
+      lane,
+      laneCount,
+    })),
+    [
+      { id: "first", startMinutes: 1200, lane: 0, laneCount: 2 },
+      { id: "overlapping", startMinutes: 1229, lane: 1, laneCount: 2 },
+      { id: "touching", startMinutes: 1230, lane: 0, laneCount: 2 },
     ],
   );
 });

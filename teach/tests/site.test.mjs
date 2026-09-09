@@ -1,329 +1,149 @@
-import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
-import test from "node:test";
-import vm from "node:vm";
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { calendarDateForDateTime, layoutTimelineEvents, timelineMarkerForDateTime } from '../../lib/calendar.js';
+import { matchesAnimeTitle } from '../../lib/anime-search.js';
 
-const repoRoot = resolve(import.meta.dirname, "../..");
-const teachRoot = join(repoRoot, "teach");
+const teach = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const root = resolve(teach, '..');
+const read = name => readFileSync(resolve(teach, name), 'utf8');
+const context = vm.createContext({ window: {} });
+for (const name of ['snapshot.js', 'course.js', 'labs.js']) vm.runInContext(read(name), context, { filename: name });
+const { TEACH: course, TEACH_SOURCE: snapshot, TeachLabs: labs } = context.window;
+const html = course.lessons.flatMap(l => [l.task, ...l.sections.map(s => s.html)]).join('\n') + course.labHTML + course.toolboxHTML;
+const plain = value => JSON.parse(JSON.stringify(value));
 
-const pages = [
-  "index.html",
-  "map.html",
-  "reference.html",
-  "learn/01-language.html",
-  "learn/02-web.html",
-  "learn/03-react.html",
-  "learn/04-architecture.html",
-  "learn/05-calendar.html",
-  "learn/06-backend.html",
-  "learn/07-tooling.html",
-  "learn/08-maintenance.html",
-  "handbook/ui.html",
-  "handbook/schedule.html",
-  "handbook/data-pipeline.html",
-  "handbook/personal-data.html",
-  "handbook/auth.html",
-  "handbook/database.html",
-  "handbook/release.html",
-  "lab/index.html",
-  "lab/midnight.html",
-  "lab/session.html",
-  "lab/watched.html",
-];
+test('入口只加载存在的本地资源，全部脚本语法有效', () => {
+  for (const [,path] of read('index.html').matchAll(/(?:src|href)="([^"#]+)"/g)) {
+    assert.ok(!/^https?:/.test(path), `入口不应依赖远端资源：${path}`);
+    assert.ok(existsSync(resolve(teach, path)), path);
+  }
+  for (const name of ['snapshot.js', 'course.js', 'labs.js', 'app.js']) assert.doesNotThrow(() => new vm.Script(read(name), { filename: name }));
+});
 
-function read(relativePath) {
-  return readFileSync(join(teachRoot, relativePath), "utf8");
+test('八课、练习与内部路由完整，题目答案有解释', () => {
+  assert.equal(course.lessons.length, 8);
+  const routes = new Set(['home', 'lab', 'map', 'toolbox', ...course.lessons.map(l => l.id)]);
+  assert.equal(routes.size, 12);
+  for (const [,route] of html.matchAll(/href="#([^"]+)"/g)) assert.ok(routes.has(route), route);
+  for (const lesson of course.lessons) {
+    assert.ok(lesson.sections.length >= 4, lesson.id);
+    assert.ok(lesson.task.includes('验收') || lesson.task.includes('达标'), lesson.id);
+    assert.ok(lesson.quiz.answer >= 0 && lesson.quiz.answer < lesson.quiz.options.length);
+    assert.ok(lesson.quiz.explanation.length > 20);
+  }
+  assert.ok(existsSync(resolve(teach, 'exercises/repair.mjs')));
+  assert.ok(existsSync(resolve(teach, 'exercises/repair.test.mjs')));
+});
+
+test('所有源码片段与完整源码跳转的文件及行号都存在', () => {
+  let count = 0;
+  for (const [,path,start,end] of html.matchAll(/data-(?:snippet|source)="([^"]+)" data-start="(\d+)" data-end="(\d+)"/g)) {
+    assert.ok(snapshot.files[path], path);
+    const lines = snapshot.files[path].code.trimEnd().split('\n').length;
+    assert.ok(Number(start) >= 1 && Number(end) >= Number(start) && Number(end) <= lines, `${path}:${start}-${end} / ${lines}`);
+    count++;
+  }
+  assert.ok(count >= 25);
+});
+
+test('28个源码快照与当前工作区逐字相符，哈希正确', () => {
+  assert.equal(Object.keys(snapshot.files).length, 28);
+  for (const [path, file] of Object.entries(snapshot.files)) {
+    const current = readFileSync(resolve(root, path), 'utf8');
+    assert.equal(file.code, current, `源码已变化，请重生成并复核讲解：${path}`);
+    assert.equal(file.sha256, createHash('sha256').update(current).digest('hex'));
+  }
+});
+
+test('日期互动在跨月、闰日、年度与05:00边界上符合真实日历函数', () => {
+  for (const date of ['2026-08-01', '2026-01-01', '2024-03-01', '2026-03-01']) {
+    for (const time of ['00:00','04:59','05:00','06:00','23:59']) {
+      const demo = labs.broadcast(date,time);
+      assert.equal(demo.date,calendarDateForDateTime(date,time));
+      const real=timelineMarkerForDateTime(date,time,300,1740);
+      assert.equal(demo.time,real.time);
+      assert.equal(demo.originalDate,date);
+      assert.equal(demo.originalTime,time);
+    }
+  }
+});
+
+test('搜索互动对中日文、全角与空输入符合真实搜索函数', () => {
+  const record = {titleZh:'BanG Dream! YUME∞MITA',titleJa:'バンドリ！ ゆめ∞みた'};
+  for (const q of ['ｂａｎｇ','  BANG DREAM ','ゆめ','不存在','', '　']) {
+    const result=[record.titleZh,record.titleJa].some(t=>labs.normalize(t).includes(labs.normalize(q)));
+    assert.equal(result,matchesAnimeTitle(record,q),q);
+  }
+});
+
+test('分栏互动与真实算法一致，同一栏的视觉区间不相交', () => {
+  const cases = [[1200,1215,1220],[1200,1215,1230],[1200,1215,1260],[1200,1200,1200],[]];
+  for (let seed=1;seed<=20;seed++) cases.push(Array.from({length:12},(_,i)=>1200+((seed*17+i*13)%24)*5));
+  for (const starts of cases) {
+    const demo=plain(labs.lanes(starts.map((start,i)=>({id:String(i),start}))));
+    const real=layoutTimelineEvents(starts.map((start,i)=>({id:String(i),time:String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0')})));
+    assert.deepEqual(demo.map(e=>[e.id,e.start,e.lane,e.laneCount]),real.map(e=>[e.event.id,e.startMinutes,e.lane,e.laneCount]));
+    for(let i=0;i<demo.length;i++)for(let j=i+1;j<demo.length;j++)if(demo[i].lane===demo[j].lane)assert.ok(demo[j].start>=demo[i].start+30);
+  }
+});
+
+test('三个故障版各有一个真实失败，三个修复版全部通过', () => {
+  for (const kind of ['midnight','search','watched']) {
+    assert.equal(labs.bugResults(kind,false).filter(r=>r.actual===r.expected).length,1,kind);
+    assert.equal(labs.bugResults(kind,true).filter(r=>r.actual===r.expected).length,2,kind);
+  }
+});
+
+test('状态队列演示区分旧快照覆盖与函数式累计', () => {
+  assert.equal(labs.queueCount(0,false),1);
+  assert.equal(labs.queueCount(0,true),3);
+  assert.equal(labs.queueCount(7,false),8);
+  assert.equal(labs.queueCount(7,true),10);
+});
+
+// Lightweight app event harness. This checks routing/state, not layout or real browser APIs.
+function appHarness(hash = '#home', stored = '[]') {
+  const elements = new Map();
+  function element(id) {
+    if (!elements.has(id)) elements.set(id, {innerHTML:'',textContent:'',dataset:{},value:'',events:{},classList:{toggle(){return true;},add(){},remove(){}},querySelectorAll(){return [];},addEventListener(type,callback){this.events[type]=callback;},setAttribute(){},focus(){this.focused=true;}});
+    return elements.get(id);
+  }
+  const document = {title:'',querySelector:element,addEventListener(){}};
+  const window = { TEACH:course,TEACH_SOURCE:snapshot,TeachLabs:{mount(){}},events:{},addEventListener(type,callback){this.events[type]=callback;},scrollTo(){} };
+  const location = {hash};
+  const localStorage = {getItem(){return stored;},setItem(){}};
+  vm.runInNewContext(read('app.js'), {window,document,location,localStorage,FormData:class {}}, {filename:'app.js'});
+  return {window,document,location,element};
 }
 
-function loadClassicScript(relativePath, seed = {}) {
-  const context = vm.createContext({ ...seed });
-  vm.runInContext(read(relativePath), context, { filename: relativePath });
-  return context;
-}
-
-test("core teaching-site assets exist", () => {
-  for (const path of ["index.html", "styles.css", "search-index.js", "app.js"]) {
-    assert.equal(existsSync(join(teachRoot, path)), true, `${path} should exist`);
+test('首页、八课、实验室、地图、手册都能从hash直接渲染', () => {
+  for (const route of ['home','lab','map','toolbox',...course.lessons.map(l=>l.id)]) {
+    const app=appHarness('#'+route);
+    assert.match(app.element('main').innerHTML, /<h1>/);
+    assert.ok(app.element('main').innerHTML.length>1000,route);
+    assert.ok(app.document.title.includes('项目学习室'));
   }
 });
 
-test("the home page identifies both learning routes", () => {
-  const html = read("index.html");
-  assert.match(html, /系统学习/);
-  assert.match(html, /立即做事/);
-  assert.match(html, /data-project-pipeline/);
-  assert.match(html, /fa0b83c/);
+test('跳到正文不会离开当前课，浏览器前进后退可恢复课程', () => {
+  const app=appHarness('#calendar');
+  let prevented=false;
+  app.element('.skip').events.click({preventDefault(){prevented=true;}});
+  assert.equal(prevented,true);
+  assert.equal(app.location.hash,'#calendar');
+  assert.equal(app.element('main').focused,true);
+  app.location.hash='#backend';app.window.events.hashchange();
+  assert.ok(app.element('main').innerHTML.includes('刷新后还在'));
 });
 
-test("search normalizes case, spaces, hyphens, and slashes", () => {
-  const context = loadClassicScript("app.js");
-  const { normalizeSearch } = context.AnimeCalendarTeach;
-  assert.equal(normalizeSearch(" App/API  Anime-Selections "), "app api anime selections");
+test('损坏或旧版进度不会阻止页面打开，已完成课程可以恢复', () => {
+  assert.doesNotThrow(()=>appHarness('#home','broken json'));
+  assert.doesNotThrow(()=>appHarness('#home','{"not":"an array"}'));
+  const app=appHarness('#home','["language","calendar","obsolete"]');
+  assert.equal(app.element('#progress').value,2);
 });
-
-test("search matches title, keywords, summary, and path", () => {
-  const context = loadClassicScript("app.js");
-  const { searchEntries } = context.AnimeCalendarTeach;
-  const entries = [
-    {
-      title: "登录",
-      path: "handbook/auth.html",
-      section: "维护",
-      keywords: ["cookie"],
-      summary: "排查 401",
-    },
-    {
-      title: "时间轴",
-      path: "learn/05-calendar.html",
-      section: "课程",
-      keywords: ["凌晨"],
-      summary: "日期布局",
-    },
-  ];
-  assert.equal(searchEntries(entries, "COOKIE")[0].title, "登录");
-  assert.equal(searchEntries(entries, "401")[0].title, "登录");
-  assert.equal(searchEntries(entries, "calendar")[0].title, "时间轴");
-});
-
-test("storage helpers fail closed without throwing", () => {
-  const context = loadClassicScript("app.js");
-  const brokenStorage = {
-    getItem() {
-      throw new Error("blocked");
-    },
-    setItem() {
-      throw new Error("blocked");
-    },
-  };
-  assert.equal(
-    JSON.stringify(context.AnimeCalendarTeach.readJson(brokenStorage, "x", ["fallback"])),
-    JSON.stringify(["fallback"]),
-  );
-  assert.equal(context.AnimeCalendarTeach.writeJson(brokenStorage, "x", []), false);
-});
-
-test("project map exposes all layers and three data flows", () => {
-  const html = read("map.html");
-  for (const layer of ["browser", "data", "lib", "react", "api", "auth", "d1", "build"]) {
-    assert.match(html, new RegExp(`data-layer="${layer}"`));
-  }
-  for (const flow of ["calendar", "selection", "session"]) {
-    assert.match(html, new RegExp(`data-flow-control="${flow}"`));
-  }
-});
-
-const foundationalLearningMarkers = new Map([
-  ["learn/01-language.html", ["const", "async", "TypeScript", "C++"]],
-  ["learn/02-web.html", ["HTTP", "Cookie", "JSON", "401"]],
-  ["learn/03-react.html", ["UI = f(state)", "useState", "useEffect", "app/page.tsx"]],
-  ["learn/04-architecture.html", ["data/anime.js", "lib/calendar.js", "app/api", "D1"]],
-]);
-
-test("foundational modules connect concepts to this repository", () => {
-  for (const [path, markers] of foundationalLearningMarkers) {
-    const html = read(path);
-    for (const marker of markers) {
-      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-    }
-    assert.match(html, /class="analogy"/);
-    assert.match(html, /class="invariant"/);
-    assert.match(html, /data-progress-id=/);
-    assert.match(html, /data-quiz/);
-  }
-});
-
-const depthLearningMarkers = new Map([
-  [
-    "learn/05-calendar.html",
-    ["layoutBroadcast", "eventsForWeek", "dateOnlyEventsForWeek", "layoutTimelineEvents"],
-  ],
-  ["learn/06-backend.html", ["getSessionUser", "db.batch", "PBKDF2", "drizzle/"]],
-  ["learn/07-tooling.html", ["typecheck", "vinext", "Cloudflare Worker", "node --test"]],
-  ["learn/08-maintenance.html", ["复现", "回归测试", "最小修复", "git diff --check"]],
-]);
-
-test("project-depth modules explain current algorithms and operations", () => {
-  for (const [path, markers] of depthLearningMarkers) {
-    const html = read(path);
-    for (const marker of markers) {
-      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-    }
-    assert.match(html, /class="analogy"/);
-    assert.match(html, /class="invariant"/);
-    assert.match(html, /data-progress-id=/);
-    assert.match(html, /data-quiz/);
-  }
-});
-
-const handbookPages = [
-  "handbook/ui.html",
-  "handbook/schedule.html",
-  "handbook/data-pipeline.html",
-  "handbook/personal-data.html",
-  "handbook/auth.html",
-  "handbook/database.html",
-  "handbook/release.html",
-];
-
-test("every maintenance handbook has the same operational safety structure", () => {
-  for (const path of handbookPages) {
-    const html = read(path);
-    for (const heading of [
-      "成功标准",
-      "先读这些文件",
-      "最小修改顺序",
-      "回归测试",
-      "验证",
-      "停止并确认",
-    ]) {
-      assert.match(html, new RegExp(heading));
-    }
-    assert.match(html, /data-progress-id=/);
-    assert.match(html, /class="risk-level/);
-  }
-});
-
-const debugScenarios = new Map([
-  [
-    "lab/midnight.html",
-    ["layoutBroadcast", "04:59", "05:00", "lib/calendar.js"],
-  ],
-  [
-    "lab/session.html",
-    ["Set-Cookie", "/api/auth/me", "Secure", "HttpOnly"],
-  ],
-  [
-    "lab/watched.html",
-    ["episodeViewUnitsForAnime", "单集", "刷新", "getSessionUser"],
-  ],
-]);
-
-test("debug lab teaches an evidence-first loop with gated decisions", () => {
-  const indexHtml = read("lab/index.html");
-  for (const path of debugScenarios.keys()) {
-    assert.match(indexHtml, new RegExp(path.split("/").at(-1)));
-  }
-
-  for (const [path, markers] of debugScenarios) {
-    const html = read(path);
-    for (const heading of ["现象", "假设", "证据", "最小复现", "回归测试", "修复边界"]) {
-      assert.match(html, new RegExp(heading));
-    }
-    for (const marker of markers) {
-      assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-    }
-
-    const stages = html.match(/<section[^>]+data-debug-stage[\s\S]*?<\/section>/g) ?? [];
-    assert.ok(stages.length >= 2, `${path} should have at least two decision stages`);
-    for (const stage of stages) {
-      const choices = stage.match(/data-debug-choice/g) ?? [];
-      const correctChoices = stage.match(/data-correct="true"/g) ?? [];
-      assert.ok(choices.length >= 3, "each stage should offer at least three hypotheses");
-      assert.equal(correctChoices.length, 1, "each stage should have exactly one best next step");
-    }
-    assert.match(html, /data-debug-reset/);
-    assert.match(html, /data-progress-id=/);
-  }
-});
-
-test("the shared script exposes the debug-lab enhancement", () => {
-  const context = loadClassicScript("app.js");
-  assert.equal(typeof context.AnimeCalendarTeach.initDebugLabs, "function");
-});
-
-test("the public page inventory is complete and searchable", () => {
-  const indexContext = loadClassicScript("search-index.js");
-  const entries = indexContext.ANIME_CALENDAR_TEACH_INDEX;
-  assert.equal(pages.length, 22);
-  assert.equal(entries.length, pages.length);
-  assert.equal(new Set(entries.map((entry) => entry.id)).size, entries.length);
-  assert.deepEqual(
-    [...entries.map((entry) => entry.path)].sort(),
-    [...pages].sort(),
-  );
-
-  for (const path of pages) {
-    assert.equal(existsSync(join(teachRoot, path)), true, `${path} should exist`);
-    const html = read(path);
-    assert.match(html, /<!doctype html>/i);
-    assert.match(html, /<html lang="zh-CN"/);
-    assert.match(html, /<meta\s+[^>]*name="description"/);
-    assert.match(html, /<body data-page-id="[^"]+"/);
-    assert.match(html, /styles\.css/);
-    assert.match(html, /search-index\.js/);
-    assert.match(html, /app\.js/);
-  }
-});
-
-test("finished site stays local and every annotated project path resolves", () => {
-  for (const path of pages) {
-    const html = read(path);
-    assert.doesNotMatch(html, /https?:\/\//);
-    assert.doesNotMatch(html, /teach__\//);
-    const projectPaths = [...html.matchAll(/data-project-path="([^"]+)"/g)].map(
-      (match) => match[1],
-    );
-    for (const projectPath of projectPaths) {
-      assert.equal(
-        existsSync(join(repoRoot, projectPath)),
-        true,
-        `${path} references missing project path ${projectPath}`,
-      );
-    }
-  }
-  for (const path of ["app.js", "search-index.js", "styles.css"]) {
-    const source = read(path);
-    assert.doesNotMatch(source, /https?:\/\//);
-    assert.doesNotMatch(source, /teach__\//);
-  }
-});
-
-test("every page has a single accessible title, skip link, and valid local links", () => {
-  for (const path of pages) {
-    const html = read(path);
-    assert.equal((html.match(/<h1\b/g) ?? []).length, 1, `${path} needs exactly one h1`);
-    assert.match(html, /<a class="skip-link" href="#main">/);
-    assert.match(html, /<main[^>]+id="main"/);
-    assert.doesNotMatch(html, /href="\s*"/);
-
-    const links = [...html.matchAll(/<a\b[^>]*href="([^"]+)"/g)].map((match) => match[1]);
-    for (const href of links) {
-      const [targetPart, fragment] = href.split("#");
-      const absoluteTarget = targetPart
-        ? resolve(dirname(join(teachRoot, path)), targetPart)
-        : join(teachRoot, path);
-      assert.equal(
-        relative(teachRoot, absoluteTarget).startsWith(".."),
-        false,
-        `${path} link escapes teach/: ${href}`,
-      );
-      assert.equal(existsSync(absoluteTarget), true, `${path} has broken link ${href}`);
-      if (fragment) {
-        const targetHtml = read(relative(teachRoot, absoluteTarget));
-        assert.match(targetHtml, new RegExp(`id=["']${fragment}["']`), `${href} anchor should exist`);
-      }
-    }
-  }
-});
-
-test("quiz and debug feedback is announced to assistive technology", () => {
-  for (const path of pages) {
-    const html = read(path);
-    const feedbackNodes = html.match(/<[^>]+data-(?:quiz-)?feedback[^>]*>/g) ?? [];
-    for (const node of feedbackNodes) {
-      assert.match(node, /aria-live="polite"/, `${path} feedback should be announced`);
-    }
-  }
-});
-
-test("shared styles cover focus, responsive, motion, nested presentation, and print", () => {
-  const css = read("styles.css");
-  assert.match(css, /:focus-visible/);
-  assert.match(css, /@media \(max-width: 760px\)/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
-  assert.match(css, /body\.is-presenting \[data-slide\]:not\(\.is-current-slide\)/);
-  assert.match(css, /@media print/);
-});
-
-export { loadClassicScript, pages, read, repoRoot, teachRoot };

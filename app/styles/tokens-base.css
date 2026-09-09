@@ -1,0 +1,80 @@
+:root {
+  color-scheme: light;
+  --paper: #f5f6f8;
+  --paper-deep: #eceef2;
+  --card: #fff;
+  --ink: #272832;
+  --muted-ink: #6a6d79;
+  --line: #e6e7ed;
+  --accent: #b94e72;
+  --accent-soft: #f8eaf0;
+  --accent-ink: #a44364;
+  --accent-2: #b94e72;
+  --accent-2-deep: #a44364;
+  --on-accent: #fff;
+  --shadow-color: 50 30 45;
+  --backdrop: rgb(50 30 45 / 52%);
+  --danger: #c0432f;
+  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: var(--font-ui);
+  --radius-control: 0.55rem;
+  --radius-card: 0.7rem;
+  --radius-panel: 0.9rem;
+  --shadow-raise: 0 0.3rem 0.9rem rgb(var(--shadow-color) / 7%);
+  --transition: 150ms ease;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #141519;
+  --paper-deep: #24262e;
+  --card: #1c1d23;
+  --ink: #f0f0f4;
+  --muted-ink: #a5a7b2;
+  --line: #30323b;
+  --accent: #ef9cba;
+  --accent-soft: #382832;
+  --accent-ink: #efb2c8;
+  --accent-2: #ef9cba;
+  --accent-2-deep: #efb2c8;
+  --on-accent: #231921;
+  --shadow-color: 5 4 16;
+  --backdrop: rgb(10 8 20 / 62%);
+  --danger: #ff8a75;
+  --shadow-raise: 0 0.3rem 0.9rem rgb(var(--shadow-color) / 24%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent-2-deep);
+  outline-offset: 3px;
+}
+

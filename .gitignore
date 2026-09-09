@@ -15,3 +15,8 @@ node_modules/
 *.log
 coverage/
 .eslintcache
+storage/
+backups/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

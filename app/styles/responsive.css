@@ -1,0 +1,507 @@
+@media (max-width: 860px) {
+  .avatar-crop-dialog {
+    width: min(28rem, calc(100vw - 1rem));
+    max-height: calc(100vh - 1rem);
+  }
+
+  .avatar-crop-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .avatar-crop-area {
+    justify-self: center;
+  }
+
+  .avatar-preview-column {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    justify-items: start;
+    text-align: left;
+  }
+
+  .avatar-preview {
+    width: 4rem;
+    height: 4rem;
+    border-width: 3px;
+  }
+
+  .avatar-crop-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .avatar-crop-actions > span {
+    display: none;
+  }
+
+  .avatar-crop-actions > button:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .page-sidebar .avatar-crop-actions button {
+    width: 100%;
+  }
+
+  .week-pager {
+    position: static;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.55rem;
+    min-height: 0;
+    margin-bottom: 0;
+    padding: 0.75rem;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    background: var(--card);
+  }
+
+  .week-pager p {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    font-size: 0.95rem;
+    text-align: left;
+  }
+
+  .week-pager button {
+    min-height: 2.75rem;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.8rem;
+  }
+
+  .site-shell {
+    --site-nav-offset: 0rem;
+    grid-template-columns: 1fr;
+  }
+
+  .page-sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem 0.5rem;
+    min-height: 0;
+    padding: 0.75rem 1rem 0.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .site-name {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    font-size: 1.15rem;
+  }
+
+  .page-sidebar button {
+    min-height: 2.75rem;
+    padding: 0.55rem 0.4rem;
+    border-color: transparent;
+    border-radius: var(--radius-control);
+    background: transparent;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .page-sidebar button:hover {
+    background: var(--paper);
+  }
+
+  .page-sidebar button.is-active {
+    border-bottom-color: var(--accent);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .account-area {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    border-top: 0;
+  }
+
+  .page-sidebar .account-trigger {
+    max-width: 100%;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .page-sidebar > button {
+    grid-row: 2;
+    white-space: nowrap;
+  }
+
+  .calendar-page {
+    width: 100%;
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .calendar-header,
+  .section-heading,
+  .calendar-footer {
+    display: grid;
+  }
+
+  .calendar-header-controls {
+    justify-items: stretch;
+  }
+
+  .anime-search {
+    max-width: none;
+  }
+
+  .statistics-section-heading {
+    display: grid;
+  }
+
+  .statistics-section-controls {
+    justify-items: start;
+  }
+
+  .statistics-overview-summary {
+    position: static;
+  }
+
+  .statistics-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statistics-anime-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading > p {
+    text-align: left;
+  }
+
+  .timeline-grid {
+    display: none;
+  }
+
+  .mobile-calendar {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    background: var(--card);
+  }
+
+  .mobile-day-picker {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.2rem;
+    padding: 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-day-picker button {
+    display: grid;
+    gap: 0.3rem;
+    min-height: 3.2rem;
+    padding: 0.5rem 0.1rem;
+    border-color: transparent;
+    color: var(--muted-ink);
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: border-color var(--transition), background var(--transition), color var(--transition);
+  }
+
+  .mobile-day-picker button b {
+    color: var(--ink);
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mobile-day-picker button.is-selected {
+    border-color: transparent;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+
+  .mobile-agenda {
+    display: grid;
+    gap: 0;
+    min-height: 10rem;
+    overflow: hidden;
+    padding: 0 0.85rem 0.4rem;
+    border: 0;
+    border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    background: var(--card);
+  }
+
+  .mobile-agenda .time-group-events {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+  }
+
+  .mobile-agenda .calendar-event-cover {
+    width: 2.875rem;
+    height: 3.875rem;
+  }
+
+  .mobile-agenda .calendar-event-content {
+    gap: 0.35rem;
+    padding-right: 0;
+  }
+
+  .mobile-agenda .calendar-event-detail strong {
+    -webkit-line-clamp: 3;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .mobile-agenda > p {
+    align-self: center;
+    margin: 0;
+    color: var(--muted-ink);
+    text-align: center;
+  }
+
+  .network-list {
+    grid-template-columns: 1fr;
+  }
+
+  .anime-selection-list {
+    grid-template-columns: 1fr;
+  }
+
+  .page-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .page-heading-controls {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .page-metrics {
+    gap: 0.65rem 1.25rem;
+  }
+
+  .page-search-field input,
+  .page-search > button,
+  .auth-form input,
+  .auth-submit,
+  .detail-follow-button,
+  .detail-episode-button,
+  .dialog-close {
+    min-height: 2.75rem;
+  }
+
+  .page-search-field input,
+  .anime-search input,
+  .auth-form input {
+    font-size: 1rem;
+  }
+
+  .week-tools {
+    justify-content: space-between;
+  }
+
+  .week-tools .today-jump {
+    min-height: 2.75rem;
+  }
+
+  .week-tools .season-picker {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.75rem;
+  }
+
+  .week-tools .season-picker select {
+    flex: 1;
+    width: 0;
+    min-width: 0;
+    max-width: 12rem;
+    min-height: 2.75rem;
+  }
+
+  .mobile-agenda .time-group {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.65rem 0 0;
+  }
+
+  .mobile-agenda .time-group-label {
+    padding: 0.25rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted-ink);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .mobile-agenda .calendar-event {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-agenda .calendar-event:last-child {
+    border-bottom: 0;
+  }
+
+  .mobile-agenda .calendar-event .calendar-event-detail {
+    grid-template-columns: 2.875rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 2.15rem 0.65rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-agenda .calendar-event-episode {
+    font-size: 0.78rem;
+  }
+
+  .mobile-agenda .episode-watch-toggle,
+  .today-watch-list .episode-watch-toggle {
+    top: 0.7rem;
+    right: -0.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .today-watch-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .today-watch-section {
+    display: none;
+  }
+
+  .weekly-section > .section-heading {
+    display: none;
+  }
+
+  .today-watch-list .episode-watch-toggle {
+    right: 0.1rem;
+  }
+
+  .mobile-agenda .mobile-date-only-events {
+    padding: 0.65rem 0;
+  }
+
+  .mobile-date-only-events .date-only-event {
+    min-height: 2.75rem;
+    padding: 0.65rem;
+  }
+
+  .mobile-date-only-events .date-only-event strong {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .mobile-date-only-events .date-only-event span {
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+
+  .detail-dialog {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 0 1.25rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .detail-dialog {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    column-gap: 1rem;
+    width: calc(100% - 1rem);
+    max-height: calc(100vh - 1rem);
+    padding: 1.1rem;
+  }
+
+  .detail-dialog-heading {
+    margin-bottom: 1.15rem;
+  }
+
+  .detail-cover {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    width: 5.25rem;
+  }
+
+  .detail-dialog h2 {
+    font-size: 1.2rem;
+  }
+
+  .detail-title-ja {
+    margin-bottom: 1.25rem;
+    font-size: 0.78rem;
+  }
+
+  .detail-dialog dl,
+  .detail-actions,
+  .detail-watch,
+  .detail-auth-hint,
+  .detail-episodes,
+  .detail-source-link {
+    grid-column: 1 / -1;
+  }
+
+  .detail-actions {
+    margin-top: 0;
+  }
+
+  .anime-search-results .statistics-anime-card {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .anime-search-results .statistics-anime-card-status {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .network-section,
+  .anime-selection-panel {
+    padding: 1rem;
+  }
+}
+
+.mobile-date-only-events {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.55rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+/* 单列 grid 容器统一限定轨道宽度：长标题等不可断内容（最大内容宽度）
+   不再把容器撑出页面宽度，保持移动端议程与各面板不横向溢出。 */
+.statistics-page,
+.anime-search-page,
+.anime-selection-details,
+.network-section,
+.mobile-calendar,
+.mobile-agenda {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-search input,
+  .anime-selection,
+  .calendar-event-detail,
+  .date-only-event,
+  .dialog-close,
+  .episode-watch-toggle::before,
+  .mobile-day-picker button,
+  .page-search-field input,
+  .page-search > button,
+  .network-card,
+  .page-sidebar button,
+  .season-picker select,
+  .statistics-anime-card,
+  .statistics-season-picker select,
+  .statistics-section-chevron,
+  .theme-toggle,
+  .week-pager button {
+    transition: none;
+  }
+}

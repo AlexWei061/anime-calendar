@@ -1,0 +1,322 @@
+.statistics-page {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 0;
+}
+
+.statistics-today,
+.statistics-overview {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--card);
+}
+
+.statistics-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.statistics-section-heading-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.statistics-section-heading-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statistics-section-heading-copy .section-kicker {
+  display: block;
+  margin-bottom: 0;
+}
+
+.statistics-section-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.statistics-section-heading-note {
+  margin-left: auto;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+}
+
+.statistics-section-heading-copy + .statistics-section-chevron {
+  margin-left: auto;
+}
+
+.statistics-section-chevron {
+  display: block;
+  flex: 0 0 auto;
+  width: 0.58rem;
+  height: 0.58rem;
+  margin-right: 0.2rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--accent);
+  transform: rotate(45deg);
+  transition: color 150ms ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statistics-section-heading-toggle:hover .statistics-section-chevron,
+.statistics-section-heading-toggle:focus-visible .statistics-section-chevron {
+  color: color-mix(in srgb, var(--accent) 72%, var(--ink));
+}
+
+.statistics-section-heading-toggle[aria-expanded="false"] .statistics-section-chevron {
+  transform: rotate(-45deg);
+}
+
+.statistics-section-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+}
+
+.statistics-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.statistics-progress-content {
+  margin-top: 1rem;
+}
+
+.statistics-overview-summary {
+  position: sticky;
+  top: calc(var(--site-nav-offset) + 0.75rem);
+  z-index: 2;
+  margin: -0.5rem -0.6rem 1rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  box-shadow: var(--shadow-raise);
+}
+
+.statistics-overview-summary .statistics-section-heading {
+  margin-bottom: 0.8rem;
+}
+
+.statistics-overview-season {
+  scroll-margin-top: calc(var(--site-nav-offset) + 8rem);
+}
+
+.statistics-overview-season + .statistics-overview-season {
+  margin-top: 1.35rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.statistics-overview-season h3 {
+  margin: 0 0 0.65rem;
+  color: var(--accent);
+  font-size: 0.92rem;
+}
+
+.statistics-overview-grid div {
+  padding: 0.9rem;
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+
+.statistics-overview-grid dt {
+  color: var(--muted-ink);
+  font-size: 0.78rem;
+}
+
+.statistics-overview-grid dd {
+  margin: 0.35rem 0 0;
+  color: var(--ink);
+  font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.statistics-season-picker {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.statistics-season-picker select {
+  min-height: 2.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  cursor: pointer;
+  transition: border-color var(--transition);
+}
+
+.statistics-season-picker select:hover {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+}
+
+.statistics-anime-card-list {
+  display: grid;
+  gap: 0.65rem;
+  /* auto-fill 保留空轨道：不满一行的卡片与满行卡片同宽，不会被拉伸。 */
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+.statistics-anime-card-list.anime-search-results {
+  grid-template-columns: 1fr;
+}
+
+.anime-search-results .statistics-anime-card {
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  padding: 0.7rem;
+}
+
+.anime-search-results .statistics-anime-card-cover {
+  width: 6rem;
+}
+
+.anime-search-results .statistics-anime-card-content strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  white-space: normal;
+}
+
+.anime-search-results .statistics-anime-card-content small,
+.anime-search-results .statistics-anime-card-content em {
+  font-size: 0.82rem;
+}
+
+.anime-search-results .statistics-anime-card-content em {
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.anime-search-results .statistics-anime-card-progress {
+  width: min(20rem, 100%);
+  height: 0.4rem;
+}
+
+.statistics-anime-card-list > span {
+  display: grid;
+}
+
+.statistics-anime-card {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.statistics-anime-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
+  background: color-mix(in srgb, var(--paper) 45%, var(--card));
+}
+
+.statistics-anime-card-cover {
+  display: block;
+  width: 3rem;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.3rem;
+  background-repeat: no-repeat;
+  outline: 1px solid rgb(var(--shadow-color) / 10%);
+  outline-offset: -1px;
+}
+
+.statistics-anime-card-content {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.statistics-anime-card-content strong,
+.statistics-anime-card-content small,
+.statistics-anime-card-content em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statistics-anime-card-content strong {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.statistics-anime-card-content small,
+.statistics-anime-card-content em {
+  color: var(--muted-ink);
+  font-size: 0.73rem;
+  font-style: normal;
+}
+
+.statistics-anime-card-progress {
+  display: block;
+  height: 0.34rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.statistics-anime-card-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.statistics-anime-card-status {
+  align-self: start;
+  padding: 0.22rem 0.4rem;
+  border-radius: 0.35rem;
+  background: var(--paper);
+  color: var(--muted-ink);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statistics-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-card);
+  color: var(--muted-ink);
+  text-align: center;
+}
+

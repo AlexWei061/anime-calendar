@@ -1,116 +1,73 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
-import {
-  avatarObjectKey,
-  avatarUrl,
-  readAvatarUpload,
-} from "../../../../lib/avatar.js";
+import { avatarObjectKey, avatarUrl, readAvatarUpload } from "../../../../lib/avatar.js";
+import { deleteAvatarBestEffort, readAvatar, replaceAvatar } from "../../../../lib/server/avatar-storage.js";
+import { errorResponse, privateJson, requireSameOrigin } from "../../../../lib/server/http.js";
 import { getSessionUser } from "../../../auth";
 
-async function getAvatarBucket() {
-  const { env } = await import("cloudflare:workers");
-  if (!env.AVATARS) {
-    throw new Error("Cloudflare R2 binding `AVATARS` is unavailable.");
-  }
-  return env.AVATARS;
-}
-
-async function deleteObjectBestEffort(key: string | Promise<string>) {
+export async function GET(request: Request) {
   try {
-    await (await getAvatarBucket()).delete(await key);
-  } catch {
-    // The active D1 value remains authoritative; stale versions can be cleaned later.
-  }
-}
-
-export async function GET() {
-  const user = await getSessionUser();
-  if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
-  if (!user.avatarVersion) {
-    return Response.json({ error: "Avatar not found" }, { status: 404 });
-  }
-
-  try {
-    const object = await (await getAvatarBucket()).get(
-      await avatarObjectKey(user.email, user.avatarVersion),
-    );
-    if (!object) return Response.json({ error: "Avatar not found" }, { status: 404 });
-    return new Response(object.body, {
+    const user = await getSessionUser();
+    if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const requestedVersion = new URL(request.url).searchParams.get("v");
+    if (!user.avatarVersion || (requestedVersion !== null && requestedVersion !== user.avatarVersion)) {
+      return privateJson({ error: "Avatar not found" }, { status: 404 });
+    }
+    const bytes = await readAvatar(await avatarObjectKey(user.email, user.avatarVersion));
+    if (!bytes) return privateJson({ error: "Avatar not found" }, { status: 404 });
+    return new Response(new Uint8Array(bytes), {
       headers: {
         "Content-Type": "image/webp",
-        "Cache-Control": "private, max-age=31536000, immutable",
+        "Cache-Control": requestedVersion ? "private, max-age=31536000, immutable" : "private, no-store",
+        "Vary": "Cookie",
         "X-Content-Type-Options": "nosniff",
-        ...(object.httpEtag ? { ETag: object.httpEtag } : {}),
       },
     });
-  } catch {
-    return Response.json({ error: "Unable to load avatar" }, { status: 500 });
+  } catch (error) {
+    return errorResponse(error, "Unable to load avatar");
   }
 }
 
 export async function PUT(request: Request) {
-  const user = await getSessionUser();
-  if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
-
-  let bytes: Uint8Array;
   try {
-    bytes = await readAvatarUpload(request);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "头像格式不正确。";
-    const status = error instanceof RangeError ? 413 : 400;
-    return Response.json({ error: message }, { status });
-  }
-
-  try {
-    const bucket = await getAvatarBucket();
-    const version = crypto.randomUUID();
-    const key = await avatarObjectKey(user.email, version);
-    await bucket.put(key, bytes, {
-      httpMetadata: {
-        contentType: "image/webp",
-        cacheControl: "private, max-age=31536000, immutable",
-      },
-    });
-
+    requireSameOrigin(request);
+    const user = await getSessionUser();
+    if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    let bytes: Uint8Array;
     try {
-      await (await getDb())
-        .update(users)
-        .set({ avatarVersion: version })
-        .where(eq(users.email, user.email));
-    } catch {
-      await deleteObjectBestEffort(key);
-      return Response.json({ error: "Unable to save avatar" }, { status: 500 });
+      bytes = await readAvatarUpload(request);
+    } catch (error) {
+      const message = error instanceof TypeError || error instanceof RangeError ? error.message : "头像格式不正确。";
+      return privateJson({ error: message }, { status: error instanceof RangeError ? 413 : 400 });
     }
-
-    if (user.avatarVersion) {
-      await deleteObjectBestEffort(
-        avatarObjectKey(user.email, user.avatarVersion),
-      );
-    }
-    return Response.json({ avatarUrl: avatarUrl(version) });
-  } catch {
-    return Response.json({ error: "Unable to save avatar" }, { status: 500 });
+    const db = await getDb();
+    const version = await replaceAvatar(user.email, bytes, (next: string) => db.transaction((tx) => {
+      const previous = tx.select({ avatarVersion: users.avatarVersion }).from(users).where(eq(users.email, user.email)).get();
+      if (!previous) throw new Error("Avatar account unavailable");
+      tx.update(users).set({ avatarVersion: next }).where(eq(users.email, user.email)).run();
+      return previous.avatarVersion;
+    }));
+    return privateJson({ avatarUrl: avatarUrl(version) });
+  } catch (error) {
+    return errorResponse(error, "Unable to save avatar");
   }
 }
 
-export async function DELETE() {
-  const user = await getSessionUser();
-  if (!user) return Response.json({ error: "Sign in required" }, { status: 401 });
-  if (!user.avatarVersion) return Response.json({ avatarUrl: null });
-
+export async function DELETE(request: Request) {
   try {
-    await getAvatarBucket();
-    await (await getDb())
-      .update(users)
-      .set({ avatarVersion: null })
-      .where(eq(users.email, user.email));
-  } catch {
-    return Response.json({ error: "Unable to delete avatar" }, { status: 500 });
+    requireSameOrigin(request);
+    const user = await getSessionUser();
+    if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const db = await getDb();
+    const previous = db.transaction((tx) => {
+      const row = tx.select({ avatarVersion: users.avatarVersion }).from(users).where(eq(users.email, user.email)).get();
+      tx.update(users).set({ avatarVersion: null }).where(eq(users.email, user.email)).run();
+      return row?.avatarVersion;
+    });
+    if (previous) await deleteAvatarBestEffort(await avatarObjectKey(user.email, previous));
+    return privateJson({ avatarUrl: null });
+  } catch (error) {
+    return errorResponse(error, "Unable to delete avatar");
   }
-
-  await deleteObjectBestEffort(
-    avatarObjectKey(user.email, user.avatarVersion),
-  );
-  return Response.json({ avatarUrl: null });
 }

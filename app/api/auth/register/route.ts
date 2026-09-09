@@ -1,50 +1,43 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
-import { users } from "../../../../db/schema";
-import {
-  hashPassword,
-  normalizeDisplayName,
-  validateEmail,
-  validatePassword,
-} from "../../../../lib/auth.js";
-import { createSession } from "../../../auth";
+import { authSessions, users } from "../../../../db/schema";
+import { hashPassword, normalizeDisplayName, validateEmail, validatePassword } from "../../../../lib/auth.js";
+import { errorResponse, invalidRequest, limitAuth, privateJson, readJson, requireSameOrigin } from "../../../../lib/server/http.js";
+import { prepareSession } from "../../../auth";
 
 export async function POST(request: Request) {
-  let email: string;
-  let password: string;
-  let displayName: string;
   try {
-    const payload = (await request.json()) as {
-      email?: unknown;
-      password?: unknown;
-      displayName?: unknown;
-    };
-    email = validateEmail(payload.email);
-    password = validatePassword(payload.password);
-    displayName = normalizeDisplayName(payload.displayName, email);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid registration";
-    return Response.json({ error: message }, { status: 400 });
-  }
-
-  try {
-    const db = await getDb();
-    const existing = await db
-      .select({ email: users.email })
-      .from(users)
-      .where(eq(users.email, email));
-    if (existing.length > 0) {
-      return Response.json({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+    requireSameOrigin(request);
+    const limited = limitAuth(request);
+    if (limited) return limited;
+    let email: string;
+    let password: string;
+    let displayName: string;
+    try {
+      const payload = await readJson(request, 4096);
+      email = validateEmail(payload.email);
+      password = validatePassword(payload.password);
+      displayName = normalizeDisplayName(payload.displayName, email);
+    } catch (error) {
+      return invalidRequest(error, "Invalid registration");
     }
-
+    const accountLimited = limitAuth(request, email);
+    if (accountLimited) return accountLimited;
+    const db = await getDb();
+    if (db.select({ email: users.email }).from(users).where(eq(users.email, email)).get()) {
+      return privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+    }
     const passwordHash = await hashPassword(password);
-    await db.insert(users).values({ email, passwordHash, displayName, createdAt: Date.now() });
-    const sessionCookie = await createSession(email, request.url);
-    return Response.json(
-      { email, displayName, avatarUrl: null },
-      { status: 201, headers: { "Set-Cookie": sessionCookie } },
-    );
-  } catch {
-    return Response.json({ error: "Unable to register" }, { status: 500 });
+    const session = await prepareSession(email, request.url);
+    const created = db.transaction((tx) => {
+      const inserted = tx.insert(users).values({ email, passwordHash, displayName, createdAt: Date.now() }).onConflictDoNothing().run();
+      if (!inserted.changes) return false;
+      tx.insert(authSessions).values(session.record).run();
+      return true;
+    });
+    if (!created) return privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+    return privateJson({ email, displayName, avatarUrl: null }, { status: 201, headers: { "Set-Cookie": session.cookie } });
+  } catch (error) {
+    return errorResponse(error, "Unable to register");
   }
 }
