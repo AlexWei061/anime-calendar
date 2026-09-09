@@ -226,6 +226,12 @@ test("renders same-time events side by side on one timeline day", { skip: !proce
       /<strong\b(?=[^>]*title="[^"]+")[^>]*>[^<]+<\/strong>/.test(card),
     ),
   );
+  assert.ok(
+    sameTimeEvents.every(([, , card]) =>
+      /<button\b(?=[^>]*class="calendar-event-detail")(?=[^>]*title="[^"\n]+ · 第 \d+ 集")[^>]*>/.test(card),
+    ),
+    "compact covers must expose the title and episode when hovered",
+  );
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
   assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
   assert.ok(
@@ -409,16 +415,21 @@ test("preserves desktop and mobile sizing, sticky regions, watched controls, and
   );
   assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-cover\s*\{[^}]*display:\s*none;/,
+    /\.timeline-event-compact \.calendar-event-cover\s*\{[^}]*display:\s*block;[^}]*width:\s*min\(1\.8rem, 100%\);[^}]*height:\s*auto;/,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-detail strong\s*\{[^}]*display:\s*none;/,
+    /\.timeline-event-compact \.calendar-event-content\s*\{[^}]*display:\s*none;/,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
-    /\.timeline-event-compact \.calendar-event-episode\s*\{[^}]*display:\s*none;/,
+    /\.timeline-event-compact\s*\{[^}]*container-type:\s*inline-size;/,
   );
+  const compactWithTitle = cssMediaBlock(styles, "@container (min-width: 4.5rem)");
+  assert.match(cssBlock(compactWithTitle, "\\.timeline-event-compact \\.calendar-event-detail"), /grid-template-columns:\s*1\.5rem minmax\(0, 1fr\);/);
+  assert.match(cssBlock(compactWithTitle, "\\.timeline-event-compact \\.calendar-event-cover"), /width:\s*1\.5rem;/);
+  assert.match(cssBlock(compactWithTitle, "\\.timeline-event-compact \\.calendar-event-content"), /display:\s*grid;/);
+  assert.match(cssBlock(compactWithTitle, "\\.timeline-event-compact \\.calendar-event-episode"), /display:\s*none;/);
   assert.match(
     styles,
     /\.timeline-hour:first-child\s*\{[\s\S]*?transform:\s*translateY\(0/,

@@ -634,12 +634,43 @@
   white-space: nowrap;
 }
 
+.timeline-event-compact {
+  container-type: inline-size;
+}
+
 .timeline-event-compact .calendar-event-detail {
   grid-template-columns: minmax(0, 1fr);
 }
 
 .timeline-event-compact .calendar-event-cover {
+  align-self: center;
+  display: block;
+  width: min(1.8rem, 100%);
+  height: auto;
+}
+
+.timeline-event-compact .calendar-event-content {
   display: none;
+}
+
+@container (min-width: 4.5rem) {
+  .timeline-event-compact .calendar-event-detail {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: 0.2rem;
+  }
+
+  .timeline-event-compact .calendar-event-cover {
+    width: 1.5rem;
+  }
+
+  .timeline-event-compact .calendar-event-content {
+    align-self: center;
+    display: grid;
+  }
+
+  .timeline-event-compact .calendar-event-episode {
+    display: none;
+  }
 }
 
 .today-watch-section {

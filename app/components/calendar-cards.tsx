@@ -52,6 +52,7 @@ export function CalendarEventCard({ event, layout, showTime = false, currentCale
       <button
         className="calendar-event-detail"
         type="button"
+        title={layout && layout.laneCount > 1 ? `${event.titleZh} · ${episodeLabel}` : undefined}
         aria-haspopup="dialog"
         aria-label={
           "查看《" +
