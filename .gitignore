@@ -16,6 +16,7 @@ node_modules/
 coverage/
 .eslintcache
 storage/
+storage-before-restore-*/
 backups/
 *.sqlite
 *.sqlite-wal

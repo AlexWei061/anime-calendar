@@ -6,6 +6,107 @@ import { episodeViewKey, updateEpisodeViews } from "../lib/anime-episode-views.j
 
 const readSource = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
+function findElement(node, predicate) {
+  if (!node || typeof node !== "object") return undefined;
+  if (predicate(node)) return node;
+  return [node.props?.children].flat().map((child) => findElement(child, predicate)).find(Boolean);
+}
+
+async function accountDialogHarness(authenticate = async () => {}) {
+  const [{ default: ts }, { runInNewContext }] = await Promise.all([import("typescript"), import("node:vm")]);
+  const source = await readSource("../app/components/account.tsx");
+  const compiled = ts.transpileModule(source, { compilerOptions: {
+    module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
+  } }).outputText;
+  const slots = [];
+  let cursor = 0;
+  let tree;
+  const react = {
+    createContext: () => ({ Provider: "provider" }),
+    useEffect: () => {},
+    useState: (initial) => {
+      const index = cursor++;
+      if (!(index in slots)) slots[index] = initial;
+      return [slots[index], (value) => { slots[index] = value; }];
+    },
+    useRef: (initial) => {
+      const index = cursor++;
+      if (!(index in slots)) slots[index] = { current: initial };
+      return slots[index];
+    },
+  };
+  const jsx = (type, props) => ({ type, props });
+  const exports = {};
+  runInNewContext(compiled, {
+    exports, Error,
+    FormData: class { constructor(form) { return new Map(Object.entries(form)); } },
+    require: (name) => {
+      if (name === "react") return react;
+      if (name === "react/jsx-runtime") return { jsx, jsxs: jsx };
+      if (name === "../avatar-editor") return {};
+      if (name === "../hooks/use-viewer") return { useViewer: () => ({ authenticate, isChangingSession: false }) };
+      throw new Error(`Unexpected account dependency: ${name}`);
+    },
+  });
+  const dialog = {
+    open: false,
+    getBoundingClientRect: () => ({ left: 100, right: 500, top: 100, bottom: 500 }),
+    close: () => {
+      dialog.open = false;
+      findElement(tree, (node) => node.type === "dialog").props.onClose();
+    },
+  };
+  const render = () => {
+    cursor = 0;
+    tree = exports.AccountProvider({ children: null });
+    const element = findElement(tree, (node) => node.type === "dialog");
+    if (element) element.props.ref.current = dialog;
+    return tree;
+  };
+  render().props.value.openAuthDialog("login", { isConnected: false });
+  render();
+  dialog.open = true;
+  return { dialog, render };
+}
+
+test("keeps keyboard login inside the dialog, shows a failed password, and allows a successful retry", async () => {
+  let attempts = 0;
+  const host = await accountDialogHarness(async () => {
+    if (++attempts === 1) throw new Error("邮箱或密码不正确");
+  });
+  let tree = host.render();
+  const button = findElement(tree, (node) => node.props?.className === "auth-submit");
+  // Enter implicitly clicks the submit button with zero coordinates before submitting.
+  findElement(tree, (node) => node.type === "dialog").props.onClick({
+    target: button, currentTarget: host.dialog, clientX: 0, clientY: 0, detail: 0,
+  });
+  assert.equal(host.dialog.open, true, "keyboard activation must not dismiss the dialog as a backdrop click");
+  const submit = async () => {
+    findElement(host.render(), (node) => node.type === "form").props.onSubmit({
+      preventDefault() {}, currentTarget: { email: "test@example.com", password: "test-password" },
+    });
+    await new Promise((resolve) => setImmediate(resolve));
+    return host.render();
+  };
+  tree = await submit();
+  assert.equal(host.dialog.open, true);
+  assert.equal(findElement(tree, (node) => node.props?.role === "alert").props.children, "邮箱或密码不正确");
+  assert.equal(findElement(tree, (node) => node.props?.className === "auth-submit").props.disabled, false);
+  tree = await submit();
+  assert.equal(attempts, 2);
+  assert.equal(host.dialog.open, false);
+  assert.equal(findElement(tree, (node) => node.type === "dialog"), undefined);
+});
+
+test("keeps account dialog padding clicks open and still closes on a real backdrop click", async () => {
+  const host = await accountDialogHarness();
+  const onClick = findElement(host.render(), (node) => node.type === "dialog").props.onClick;
+  onClick({ target: host.dialog, currentTarget: host.dialog, clientX: 110, clientY: 110, detail: 1 });
+  assert.equal(host.dialog.open, true);
+  onClick({ target: host.dialog, currentTarget: host.dialog, clientX: 10, clientY: 10, detail: 1 });
+  assert.equal(host.dialog.open, false);
+});
+
 test("loads personal records for every signed-in page and ignores replaced sessions", async () => {
   const viewer = await readSource("../app/hooks/use-viewer.tsx");
   assert.doesNotMatch(viewer, /activePage/);

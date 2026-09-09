@@ -98,6 +98,7 @@ export function AccountProvider({ children }: { children: ReactNode; }) {
         aria-labelledby="auth-dialog-title"
         onClose={handleAuthDialogClose}
         onClick={(clickEvent) => {
+          if (clickEvent.target !== clickEvent.currentTarget) return;
           const rect = clickEvent.currentTarget.getBoundingClientRect();
           if (
             clickEvent.clientX < rect.left ||
