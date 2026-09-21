@@ -54,7 +54,7 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
   const activeMobileEventGroups = dayEventGroups[dates.indexOf(activeMobileDate)] ?? [];
   const activeMobileDateOnlyEvents = dayDateOnlyEvents[dates.indexOf(activeMobileDate)] ?? [];
   const eventButton = (event: CalendarEvent, layout?: { lane: number; laneCount: number; }) =>
-    <CalendarEventCard key={event.id + "-" + event.episodeStart + "-" + event.episode} event={event} layout={layout} currentCalendarDate={currentCalendarDate} timelineStartMinutes={timelineStartMinutes} timelineEndMinutes={timelineEndMinutes} />;
+    <CalendarEventCard key={event.id + "-" + event.episodeStart + "-" + event.episode} event={event} layout={layout} timelineStartMinutes={timelineStartMinutes} timelineEndMinutes={timelineEndMinutes} />;
   const dateOnlyEventButton = (event: DateOnlyEvent) => <DateOnlyEventCard key={event.id} event={event} />;
   return <>
     <div className="time-grid-scroll">
@@ -137,7 +137,10 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
       <div className="mobile-day-picker" role="tablist" aria-label="选择日期">
         {dates.map((date, index) => (
           <button
-            className={date === activeMobileDate ? "is-selected" : ""}
+            className={
+              (date === activeMobileDate ? "is-selected" : "") +
+              (date === currentCalendarDate ? " is-today" : "")
+            }
             key={date}
             type="button"
             role="tab"

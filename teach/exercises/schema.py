@@ -13,4 +13,4 @@ with sqlite3.connect(':memory:') as db:
     for table in tables:
         # Table identifiers above come from the repository migrations, not user input.
         print(table, ':', ', '.join(row[1] for row in db.execute(f'PRAGMA table_info({table})')))
-    print('内存实验结束。没有连接或修改应用的 D1 / .wrangler 数据。')
+    print('内存实验结束。没有连接或修改应用的 storage 数据；这里只执行 SQL，生产迁移的校验和由 db/sqlite.js 管理。')

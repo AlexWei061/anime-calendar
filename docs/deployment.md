@@ -25,12 +25,49 @@ sudo chmod 700 storage backups
 ```bash
 docker compose config --quiet
 docker compose build app
+```
+
+### 首次部署时带上 Mac 上已有的账号
+
+如果本地已有账号，先完成本节，再启动服务器应用。Git 已忽略数据库和头像，只上传源码不会带上账号。本节仅用于尚未启动过应用、`storage/` 为空的新服务器；已有数据的服务器使用第 5 节恢复流程。
+
+先暂停在本地网页修改数据，在 Mac 的项目根目录创建一份当前数据的新备份：
+
+```bash
+DATA_DIR="$PWD/storage" npm run data:backup -- backups/from-mac-20260909
+```
+
+每次换一个尚不存在的备份目录名。使用当前 `storage/`，不要重新导入旧 `.wrangler`，也不要使用改密码之前的迁移备份，否则会把账号恢复到旧状态。
+
+通过 SSH 的 SCP 或 SFTP 将整个 `backups/from-mac-20260909/` 上传到服务器项目的同名目录，包括数据库、头像和 `manifest.json`。如果 SSH 用户没有权限写入已经归 UID 1000 所有的 `backups/`，先上传到该 SSH 用户自己的目录，再用 `sudo mv` 移入项目的 `backups/`。随后在服务器项目目录执行：
+
+```bash
+(
+set -eu
+sudo chown -R 1000:1000 backups
+sudo chmod 700 backups
+docker compose run --rm --no-deps app node scripts/restore.mjs /app/backups/from-mac-20260909 /app/backups/ready-for-first-start
+sudo rmdir storage
+sudo mv backups/ready-for-first-start storage
+sudo chown -R 1000:1000 storage
+)
+```
+
+恢复会验证文件校验和并撤销旧会话；`rmdir` 只允许替换空目录，任何一步失败都会停止。账号、当前密码哈希、追番、已看和头像会保留。上传的备份也继续保留。
+
+### 启动并检查
+
+在服务器项目根目录执行：
+
+```bash
 docker compose up -d
 docker compose ps
 docker compose logs --tail=100 app caddy
 ```
 
 DNS 生效且 80/443 可达后，Caddy 自动申请并续期证书。浏览器打开 `https://你的域名`，验证注册、追番、刷新后进度以及手机访问。`/api/health` 返回成功表示应用实际读取了数据库。
+
+如果恢复了本地数据，用当前邮箱和密码重新登录，并核对追番、已看和头像。上线后数据库仍是 SQLite，但文件保存在云服务器的 `storage/`；服务器与 Mac 的数据库不会自动双向同步，后续日常使用以线上域名为准。
 
 只有 Caddy 发布宿主机端口；不要另外向公网映射应用的 3000 端口。Caddy 覆盖客户端提供的 `X-Real-IP` 后再转发，因此 Compose 中启用 `TRUST_PROXY=1` 才能安全地按客户端地址限制认证尝试。变更代理结构时应同步检查这一边界。
 

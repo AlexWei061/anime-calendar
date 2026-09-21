@@ -6,17 +6,16 @@ import { CoverArt } from "./cover-art";
 import { useAnimeDetail } from "./anime-detail";
 import type { CalendarEvent, DateOnlyEvent } from "../types";
 
-export function CalendarEventCard({ event, layout, showTime = false, currentCalendarDate, timelineStartMinutes = 5 * 60, timelineEndMinutes = 29 * 60 }: {
+export function CalendarEventCard({ event, layout, showTime = false, timelineStartMinutes = 5 * 60, timelineEndMinutes = 29 * 60 }: {
   event: CalendarEvent;
   layout?: { lane: number; laneCount: number; };
   showTime?: boolean;
-  currentCalendarDate: string | null;
   timelineStartMinutes?: number;
   timelineEndMinutes?: number;
 }) {
-  const { watchedEpisodes, savingEpisodeKeys, toggleEpisodeView } = useViewer();
+  const { watchedEpisodes, savingEpisodeKeys, toggleEpisodeView, selectedAnimeIds } = useViewer();
   const openDetail = useAnimeDetail();
-  const isToday = event.date === currentCalendarDate;
+  const isFollowed = selectedAnimeIds?.includes(event.id) ?? false;
   const displayTime = formatBroadcastTime(event.time);
   const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
   const watchedEpisode = {
@@ -43,7 +42,6 @@ export function CalendarEventCard({ event, layout, showTime = false, currentCale
         "calendar-event" +
         (layout ? " timeline-event" : "") +
         (layout && layout.laneCount > 1 ? " timeline-event-compact" : "") +
-        (isToday ? " is-today" : "") +
         (isWatched ? " is-watched" : "")
       }
       key={event.id + "-" + event.episodeStart + "-" + event.episode}
@@ -64,7 +62,8 @@ export function CalendarEventCard({ event, layout, showTime = false, currentCale
           "详情：" +
           event.date +
           " " +
-          displayTime
+          displayTime +
+          (isFollowed ? "，已追番" : "")
         }
         onClick={(clickEvent) =>
           openDetail(event, clickEvent.currentTarget, {
@@ -96,12 +95,15 @@ export function CalendarEventCard({ event, layout, showTime = false, currentCale
       >
         <span aria-hidden="true">{isWatched ? "✓" : null}</span>
       </button>
+      {isFollowed ? <span className="calendar-event-followed" title="已追番" aria-hidden="true" /> : null}
     </div>
   );
 }
 
 export function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
   const openDetail = useAnimeDetail();
+  const { selectedAnimeIds } = useViewer();
+  const isFollowed = selectedAnimeIds?.includes(event.id) ?? false;
   const episodeLabel = formatEpisodeLabel(event.episodeStart, event.episode);
 
   return <button
@@ -109,7 +111,7 @@ export function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
     key={event.id}
     type="button"
     aria-haspopup="dialog"
-    aria-label={`查看《${event.titleZh}／${event.titleJa}》网络配信首播 ${episodeLabel}：${event.date}`}
+    aria-label={`查看《${event.titleZh}／${event.titleJa}》网络配信首播 ${episodeLabel}：${event.date}${isFollowed ? "，已追番" : ""}`}
     onClick={(clickEvent) =>
       openDetail(event, clickEvent.currentTarget, {
         selectedDate: event.date,
@@ -119,6 +121,7 @@ export function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
       })
     }
   >
+    {isFollowed ? <span className="calendar-event-followed" title="已追番" aria-hidden="true" /> : null}
     <strong>{event.titleZh}</strong>
     <span>网络配信 · {episodeLabel} · 时刻未定</span>
   </button>;

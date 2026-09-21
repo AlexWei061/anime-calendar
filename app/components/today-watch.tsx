@@ -37,7 +37,7 @@ export function TodayWatch({ selectedAnime, currentCalendarDate }: { selectedAni
         </p>
       ) : todayCalendarEvents.length || todayCalendarDateOnlyEvents.length ? (
         <div className="today-watch-list">
-          {todayCalendarEvents.map((event) => <CalendarEventCard key={event.id + "-" + event.episodeStart + "-" + event.episode} event={event} currentCalendarDate={currentCalendarDate} showTime />)}
+          {todayCalendarEvents.map((event) => <CalendarEventCard key={event.id + "-" + event.episodeStart + "-" + event.episode} event={event} showTime />)}
           {todayCalendarDateOnlyEvents.map((event) => <DateOnlyEventCard key={event.id} event={event} />)}
         </div>
       ) : (

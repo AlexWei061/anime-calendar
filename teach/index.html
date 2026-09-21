@@ -5,21 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="从算法思维走进全栈开发：基于你的番剧日历源码的交互课程、调试实验与维护手册。">
   <title>读懂你的番剧日历 · 项目学习室</title>
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="snapshot.js"></script>
-  <script defer src="course.js"></script>
-  <script defer src="labs.js"></script>
-  <script defer src="app.js"></script>
+  <link rel="stylesheet" href="styles.css?v=20260917r2">
+  <script defer src="snapshot.js?v=20260917r2"></script>
+  <script defer src="course.js?v=20260917r2"></script>
+  <script defer src="foundations.js?v=20260917r2"></script>
+  <script defer src="node-http.js?v=20260917r2"></script>
+  <script defer src="operations.js?v=20260917r2"></script>
+  <script defer src="labs.js?v=20260917r2"></script>
+  <script defer src="app.js?v=20260917r2"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳到正文</a>
   <aside class="sidebar">
     <a class="brand" href="#home"><span class="brand-mark">∴</span><span>项目学习室<small>ANIME CALENDAR / FIELD NOTES</small></span></a>
     <label class="search-label" for="course-search">在教材中找一个概念</label>
-    <input type="search" id="course-search" placeholder="试试：state、凌晨、401" autocomplete="off">
+    <input type="search" id="course-search" placeholder="试试：Node、备份、403" autocomplete="off">
     <div id="search-results" aria-live="polite"></div>
     <nav aria-label="学习导航" id="navigation"></nav>
-    <div class="sidebar-bottom"><span id="progress-label">学习进度</span><progress id="progress" max="8" value="0"></progress><button class="text-button" id="print-course">打印整本教材 / 存为 PDF ↗</button><p>只在此设备记录进度 · 可离线阅读</p></div>
+    <div class="sidebar-bottom"><span id="progress-label">学习进度</span><progress id="progress" max="15" value="0"></progress><button class="text-button" id="print-course">打印整本教材 / 存为 PDF ↗</button><p>只在此设备记录进度 · 可离线阅读</p></div>
   </aside>
   <div class="workspace">
     <header class="topbar"><span>给数学系学生的全栈入门</span><div><span class="status-dot"></span> 基于你的真实项目 <button class="text-button" id="reading-mode" aria-pressed="false">专注阅读</button></div></header>

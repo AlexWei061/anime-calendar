@@ -471,6 +471,16 @@ test("preserves desktop and mobile sizing, sticky regions, watched controls, and
     /\.calendar-event\.is-watched \.calendar-event-cover\s*\{[\s\S]*?filter:\s*grayscale/,
   );
   assert.match(styles, /\.calendar-event-cover/);
+  assert.doesNotMatch(styles, /\.calendar-event\.is-today/);
+  assert.match(
+    styles,
+    /\.calendar-event-followed\s*\{[^}]*?width:\s*0\.5rem;[^}]*?background:\s*var\(--accent\);/,
+  );
+  assert.match(styles, /\.mobile-day-picker button\.is-today/);
+  assert.match(
+    styles,
+    /\.episode-watch-toggle\[aria-pressed="true"\]::before\s*\{[^}]*?box-shadow:[^;}]*var\(--accent-soft\)/,
+  );
   assert.doesNotMatch(styles, /\.time-axis/);
   assert.doesNotMatch(styles, /--event-start/);
   assert.doesNotMatch(styles, /--timeline-hours/);
@@ -761,7 +771,7 @@ test("keeps today's followed releases before the calendar and the selection pane
   assert.match(today, /dateOnlyEventsForWeek\(selectedAnime, startOfWeek\(currentCalendarDate\)\)/);
   assert.equal((today.match(/\.filter\(\(event\) => event\.date === currentCalendarDate\)/g) ?? []).length, 2);
   assert.match(today, /episodeViewUnitsForRange\(event\)\.filter\(\(unit\) =>\s*!isEpisodeViewWatched\(watchedEpisodes \?\? \[\], \{ animeId: event\.id, \.\.\.unit \}\)/);
-  assert.match(today, /currentCalendarDate=\{currentCalendarDate\} showTime/);
+  assert.match(today, /<CalendarEventCard key=\{event\.id \+ "-" \+ event\.episodeStart \+ "-" \+ event\.episode\} event=\{event\} showTime \/>/);
   assert.match(today, /<DateOnlyEventCard/);
   assert.match(today, /isPersonalProgressLoading \? \(/);
   assert.match(today, /selectionLoadError \|\| watchedEpisodeError \? <SignInPrompt \/> : null/);
@@ -795,7 +805,8 @@ test("uses broadcast-day boundaries for navigation, all highlights, and current-
   assert.match(schedule, /className=\{"timeline-day" \+ \(isToday \? " is-today" : ""\)\}/);
   assert.match(schedule, /className="timeline-current-time timeline-current-time-axis"/);
   assert.match(schedule, /className="timeline-current-time" style=\{currentTimelineMarkerStyle\} aria-hidden="true"/);
-  assert.match(cards, /const isToday = event\.date === currentCalendarDate/);
+  assert.match(schedule, /date === currentCalendarDate \? " is-today" : ""/);
+  assert.doesNotMatch(cards, /isToday|is-today/);
   assert.doesNotMatch(schedule, /dates\.includes\(currentBeijingDate\)|date === currentBeijingDate/);
 });
 
@@ -821,6 +832,9 @@ test("shares event duration and original broadcast details across desktop and mo
   assert.match(cards, /episodeViewUnitsForRange\(watchedEpisode\)/);
   assert.match(cards, /disabled=\{watchedEpisodes === null \|\| isSavingWatch\}/);
   assert.match(cards, /showTime \? <><time className="calendar-event-time">\{displayTime\}<\/time>/);
+  assert.match(cards, /selectedAnimeIds\?\.includes\(event\.id\) \?\? false/);
+  assert.equal((cards.match(/className="calendar-event-followed"/g) ?? []).length, 2);
+  assert.equal((cards.match(/，已追番/g) ?? []).length, 2);
 });
 
 test("keeps native detail-dialog focus restoration, source information, and independent episode buttons", async () => {

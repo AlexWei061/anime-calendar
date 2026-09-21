@@ -215,12 +215,12 @@
   --timeline-lines:
     repeating-linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--line) 55%, transparent) 0 1px,
+      color-mix(in srgb, var(--line) 38%, transparent) 0 1px,
       transparent 1px 48px
     ),
     repeating-linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--line) 95%, var(--ink)) 0 1px,
+      color-mix(in srgb, var(--line) 80%, var(--ink)) 0 1px,
       transparent 1px 96px
     );
   display: grid;
@@ -299,7 +299,7 @@
   color: var(--muted-ink);
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -484,11 +484,6 @@
   background: color-mix(in srgb, var(--paper) 45%, var(--card));
 }
 
-.calendar-event.is-today .calendar-event-detail {
-  border-color: color-mix(in srgb, var(--accent-2-deep) 50%, var(--line));
-  box-shadow: inset 0.14rem 0 0 var(--accent-2-deep);
-}
-
 .calendar-event.is-watched .calendar-event-detail {
   border-color: var(--line);
   background: color-mix(in srgb, var(--paper) 55%, var(--card));
@@ -538,6 +533,7 @@
 .episode-watch-toggle[aria-pressed="true"]::before {
   border-color: var(--accent);
   background: var(--accent);
+  box-shadow: 0 0 0 0.15rem var(--accent-soft);
 }
 
 .episode-watch-toggle[aria-pressed="true"]:hover::before {
@@ -559,6 +555,24 @@
 .episode-watch-toggle:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+/* 追番标识：封面左上角小圆点，不占用标题空间；已看卡片上保持可见。 */
+.calendar-event-followed {
+  position: absolute;
+  z-index: 1;
+  top: 0.3rem;
+  left: 0.3rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1.5px solid var(--card);
+  border-radius: 999px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+.date-only-event {
+  position: relative;
 }
 
 .timeline-event .episode-watch-toggle {
@@ -614,7 +628,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.25;
 }
 

@@ -85,4 +85,4 @@ npm run generate:cover-sprites
 - `lib/` 保留可独立测试的排期、观看状态和数据规则；`lib/server/` 处理请求边界与私有头像。
 - `db/` 与 `drizzle/` 管理 SQLite 连接和版本迁移；`scripts/` 管理目录生成、构建产物、备份与导入。
 
-`teach/` 是独立的历史教学材料，未随本次运行时迁移改写；其 Cloudflare 示例不能作为当前部署步骤。
+`teach/` 是面向有 C++ / Python 基础的学习者的独立教学网站，按当前 Node.js、SQLite、Docker 与 Caddy 架构讲解 Web 基础、源码、修改验证、部署与备份恢复。直接打开 [学习网站](teach/index.html)，或查看 [使用与练习说明](teach/README.md)。
