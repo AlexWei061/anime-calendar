@@ -21,7 +21,7 @@ export function CalendarPage({ activePage, location, onLocationChange, onSearch 
   onLocationChange: (location: CalendarLocation) => void;
   onSearch: (query: string) => void;
 }) {
-  const { selectedAnimeIds, selectionError, watchedEpisodes, watchedEpisodeError } = useViewer();
+  const { currentUser, selectedAnimeIds, selectionError, watchedEpisodes, watchedEpisodeError } = useViewer();
   const currentCalendarDate = useBeijingCalendarDate();
   const { weekStart: activeWeekStart, mobileDate: activeMobileDate } = location;
   const openDetail = useAnimeDetail();
@@ -189,9 +189,9 @@ export function CalendarPage({ activePage, location, onLocationChange, onSearch 
         : null}
     </> : selectedAnimeIds ? (
       <p className="my-schedule-empty">请先在“选择番剧”中勾选想追的作品。</p>
-    ) : selectionError || watchedEpisodeError ? null : (
+    ) : currentUser && !selectionError && !watchedEpisodeError ? (
       <p className="selection-status" aria-live="polite">正在读取你的追番和已看记录…</p>
-    )}
+    ) : null}
     {activePage === "mine" ? <SelectionPanel activeSeason={activeSeason} /> : null}
     <footer className="calendar-footer">
       <p>

@@ -113,6 +113,13 @@ test("server-renders a paged Beijing episode calendar", { skip: !process.env.TES
   assert.doesNotMatch(html, /--event-start/);
 });
 
+test("does not render a loading placeholder on the signed-out mine page", { skip: !process.env.TEST_BASE_URL }, async () => {
+  const response = await fetch(new URL("/?page=mine", process.env.TEST_BASE_URL), { headers: { accept: "text/html" } });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.doesNotMatch(html, /正在读取你的追番/);
+});
+
 test("renders one Monday-through-Sunday grid with timed and network-only program details", { skip: !process.env.TEST_BASE_URL }, async () => {
   const html = await (await render()).text();
   const cleanHtml = withoutReactMarkers(html);
@@ -768,6 +775,7 @@ test("keeps today's followed releases before the calendar and the selection pane
   assert.ok(todayIndex >= 0 && weeklyIndex > todayIndex && emptyIndex > weeklyIndex);
   assert.ok(selectionIndex > emptyIndex && footerIndex > selectionIndex);
   assert.match(calendar, /<progress\b[^>]*aria-label="整体观看进度"[^>]*value=\{personalWatchedEpisodeCount\}[^>]*max=\{personalEpisodeCount\}/);
+  assert.match(calendar, /currentUser && !selectionError && !watchedEpisodeError/);
   assert.match(today, /eventsForWeek\(selectedAnime, startOfWeek\(currentCalendarDate\)\)/);
   assert.match(today, /dateOnlyEventsForWeek\(selectedAnime, startOfWeek\(currentCalendarDate\)\)/);
   assert.equal((today.match(/\.filter\(\(event\) => event\.date === currentCalendarDate\)/g) ?? []).length, 2);
