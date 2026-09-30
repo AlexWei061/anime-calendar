@@ -138,7 +138,7 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
             <dd>
               {selected.premiereDateBeijing
                 ? selected.premiereDateBeijing +
-                ("premiereKind" in selected && selected.premiereKind === "network" ? " 网络配信" : "") +
+                (selected.premiereKind === "network" ? " 网络配信" : "") +
                 " " +
                 (selectedBroadcastTime
                   ? formatBroadcastTime(selectedBroadcastTime)
@@ -150,10 +150,7 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
             <dt>排期来源</dt>
             <dd>{selected.station ?? "待确认"}</dd>
           </div>
-          {"premiereKind" in selected &&
-            selected.premiereKind === "network" &&
-            "episodeSchedules" in selected &&
-            selected.episodeSchedules?.length ? (
+          {selected.premiereKind === "network" && selected.episodeSchedules?.length ? (
             <div>
               <dt>电视播出</dt>
               <dd>
@@ -161,7 +158,7 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
                   " " +
                   formatBroadcastTime(selected.episodeSchedules[0].beijingTime) +
                   " · " +
-                  ("scheduleChannel" in selected ? selected.scheduleChannel : selected.station ?? "待确认")}
+                  (selected.scheduleChannel ?? selected.station ?? "待确认")}
               </dd>
             </div>
           ) : null}
@@ -169,7 +166,7 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
             <dt>集数</dt>
             <dd>
               {selected.episodeCount} 集
-              {"episodeCountStatus" in selected && selected.episodeCountStatus === "estimated"
+              {selected.episodeCountStatus === "estimated"
                 ? "（资料未列出，暂按 12 集）"
                 : ""}
             </dd>
