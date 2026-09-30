@@ -42,7 +42,7 @@
 | 路径 | 职责 |
 | --- | --- |
 | `app/page.tsx` | 客户端入口和 Provider 组合；维护四页面 URL 状态、查询词、跨页面保留的周历位置与统计筛选状态。 |
-| `app/catalog.ts`、`app/types.ts`、`app/display.ts` | 前端目录索引、共享类型与日期／进度显示文案。 |
+| `app/catalog.ts`、`app/types.ts`、`app/display.ts` | 前端目录索引（数据来自生成的 `data/catalog-client.js`）、共享类型与日期／进度显示文案。 |
 | `app/components/calendar-page.tsx`、`app/components/calendar-schedule.tsx` | 季度与周导航、桌面时间轴、移动单日议程、网络放送列表。 |
 | `app/components/calendar-cards.tsx`、`app/components/cover-art.tsx` | 日历节目卡、逐集已看入口与本地封面图集渲染。 |
 | `app/components/today-watch.tsx`、`app/components/selection-panel.tsx` | 我的番剧今日播出与本季度追番选择。 |
@@ -61,15 +61,19 @@
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表原子替换。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的逐集已看读取、批量原子更新与旧连播范围迁移。 |
 | `app/api/health/route.ts` | 通过实际读取 SQLite 迁移表检查服务健康。 |
-| `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4 月季度入口、7 月与 10 月 YUC 当前季目录（含特殊先行排期）和统一的 `allAnime`。 |
-| `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
+| `data/anime.js` | 季度入口：组装 2020 年至 2025 年及 2026 年 1／4 月历史目录与当季生成物（2026 年 7 月／10 月番），导出统一的 `seasons` 与 `allAnime`。 |
+| `data/yuc-current-<yyyymm>.js` | 当季 YUC 目录生成物：页面原始排期提取，以及与 AniList／しょぼい合并后的最终数组（含 `*Source` 审计字段）；不得手工编辑。 |
+| `data/catalog-client.js`（及 `.d.ts`） | 前端精简目录生成物，只含前端实际消费的字段并自带类型；不得手工编辑。 |
+| `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料；也是当季目录生成器的合并输入。 |
 | `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
 | `data/syoboi-history-<year>.js` | 由しょぼい导入脚本生成的电视排期快照，供历史目录补空值；不得手工编辑。 |
 | `data/cover-sprites.js` | 逻辑封面路径到本地图集坐标的生成映射，支持缩略图／详情变体；不得手工编辑。 |
 | `scripts/generate-anilist-pilot.mjs` | 拉取指定年份的 AniList 首播、时刻与集数资料。 |
 | `scripts/generate-yuc-history-pilot.mjs`、`lib/catalog-identity.js` | 合并 YUC、AniList 与已有しょぼい快照，保留旧 ID／封面键，下载封面并生成历史目录。 |
+| `scripts/generate-yuc-current.mjs` | 解析当季 YUC 页面（或 `--input` 本地快照／`--remerge` 已归档季度的保留排期），合并 AniList／しょぼい、下载封面并生成 `data/yuc-current-<yyyymm>.js`；`--verify` 重放比对。 |
+| `scripts/generate-catalog-client.mjs` | 从 `data/anime.js` 完整目录推导前端精简目录 `data/catalog-client.js` 及其 `.d.ts`，支持 `--verify`。 |
 | `scripts/generate-syoboi-history.mjs` | 按当前历史目录匹配并抓取しょぼい电视排期，生成年度快照。 |
-| `scripts/convert-covers-to-webp.mjs` | 无损转换新增独立封面并同步目录的逻辑封面扩展名。 |
+| `scripts/convert-covers-to-webp.mjs` | 无损转换新增独立封面并同步目录与当季生成物的逻辑封面扩展名。 |
 | `scripts/generate-cover-sprites.mjs` | 从独立封面和已有图集重建详情／缩略图，完成后替换映射并清理旧产物。 |
 | `lib/calendar.js`、`lib/schedule.js` | ISO 日期、逐周排期、凌晨显示、时间轴布局，以及 JST 转北京时间。 |
 | `lib/anime-search.js`、`lib/anime-statistics.js`、`lib/anime-labels.js` | 全库标题匹配、观看进度／今日播出聚合、网络放送文案。 |
@@ -97,7 +101,7 @@
 - 图集必须能在独立封面已删除的正常仓库中重建：复用旧映射裁切已有详情图集并合入新封面，未变化的页直接保留原字节，避免重复有损压缩。生成器先准备全部文件，再用内容标识的新文件名发布图集并原子替换映射，成功后才删除旧图和独立封面；缺少输入或发布失败时必须保持旧映射及其图片可用。
 - 所有数据字段按来源逐项合并，优先级为 YUC → AniList → しょぼいカレンダー → 估算或 `null`；低优先级来源只能补空值，不能覆盖已有值。中文名和封面始终来自 YUC，并为已填入字段保留 `*Source` 审计标记。
 - 2026 年 7 月番与 10 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；YUC 未列总集数时用 AniList 补充。历史目录中的 YUC 网络首播日期优先于之后的电视台排期；AniList 缺少首播日期、周播日或分钟时刻时，才由しょぼい补齐。
-- 修改 2026 年 7 月或 10 月的 YUC 目录时，同时核对 YUC 周表和作品详情中的 `broadcast_r`。若详情写有“`M/D先行N话`”及之后的固定周播，必须写入 `premiereDateBeijing`、`premiereKind: "network"`、`premiereEpisodeCount` 和 `regularBroadcastStartDateBeijing`；先行段为第 1 至 N 集，固定周播从第 N+1 集开始。
+- 2026 年 7 月番与 10 月番的目录由 `npm run generate:yuc-current -- <yyyymm>` 生成：抓取线上 YUC 页面（或 `--input` 本地快照重放）解析周表／网络放送区／详情卡，与 AniList、しょぼい合并后写入 `data/yuc-current-<yyyymm>.js`，并补齐缺失封面。脚本逐条核对 YUC 周表和作品详情中的 `broadcast_r`：详情写有“`M/D先行N话`”及之后的固定周播时必须产出 `premiereDateBeijing`、`premiereKind: "network"`、`premiereEpisodeCount` 和 `regularBroadcastStartDateBeijing`（先行段为第 1 至 N 集，固定周播从第 N+1 集开始）；未在配置中登记的先行／连播写法或总集数标注会报错，核对页面后更新 `SEASON_CONFIGS` 再运行。slug 即条目 id，逐条登记在配置中，冲突或缺失一律报错，不能静默重编号。YUC 页面归档为完结表后（周表时刻不再可用），该季只能用 `--remerge` 以生成物中保留的原始排期重新合并；`--verify` 与 `tests/yuc-current-replay.test.mjs` 负责重放一致性。
 - 没有明确时刻的网络首播必须保留 `null`，由页面放入日期专属的“网络配信 · 时刻未定”区域，不能虚构时间；即使之后有固定电视周播，也要将先行集数与后续周播集数分开排期，不能把先行集数塞入之后的电视时段。
 - 凌晨 `00:00` 至 `04:59` 的节目在周历中显示在前一天栏目的“次日 HH:MM”时段；必须通过
   `formatBroadcastTime` 和现有日期布局逻辑处理，不要在页面中手工挪动日期。
@@ -164,6 +168,8 @@ npm run db:migrate                              # 对 DATA_DIR 执行 SQL 迁移
 npm run lint                                    # ESLint，忽略规则在 eslint.config.mjs 中维护
 npm test                                        # 类型检查、构建、真实 HTTP 服务及全部测试
 npm run test:unit                               # 无服务快速测试；HTTP/HTML 测试会跳过
+npm run generate:yuc-current -- <yyyymm>        # 当季 YUC 目录生成（--input/--remerge/--verify）
+npm run generate:catalog-client                 # 重新推导前端精简目录（--verify 校验同步）
 ```
 
 - 改 bug 先在对应的 `tests/*.test.mjs` 添加能失败的回归测试，再做最小修复。
