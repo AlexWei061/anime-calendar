@@ -4,8 +4,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import sharp from "sharp";
-import { allAnime } from "../data/anime.js";
+import { allAnime, seasons } from "../data/anime.js";
 import { createCatalogIdentityResolver } from "../lib/catalog-identity.js";
+import { clientCatalogFrom } from "../scripts/generate-catalog-client.mjs";
 import { generateCoverSprites } from "../scripts/generate-cover-sprites.mjs";
 import { convertCoversToWebp } from "../scripts/convert-covers-to-webp.mjs";
 
@@ -50,6 +51,14 @@ test("freezes all current catalog IDs and logical covers when the source is reor
     assert.equal(identity.coverUrl, existing.coverUrl);
   }
   resolver.assertComplete(allAnime.map(({ sourceUrl: url }) => url));
+});
+
+test("keeps the client catalog in sync with the full catalog", async () => {
+  const committed = await import("../data/catalog-client.js");
+  const derived = clientCatalogFrom(seasons);
+  assert.deepEqual(committed.seasons, derived.seasons);
+  assert.deepEqual(committed.allAnime, derived.seasons.flatMap(({ anime }) => anime));
+  assert.equal(committed.allAnime.length, allAnime.length);
 });
 
 async function fixture(t) {

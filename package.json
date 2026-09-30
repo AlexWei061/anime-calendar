@@ -22,6 +22,7 @@
     "generate:syoboi-history": "node scripts/generate-syoboi-history.mjs",
     "generate:yuc-history-pilot": "node scripts/generate-yuc-history-pilot.mjs",
     "generate:yuc-current": "node scripts/generate-yuc-current.mjs",
+    "generate:catalog-client": "node scripts/generate-catalog-client.mjs",
     "convert:covers-webp": "node scripts/convert-covers-to-webp.mjs",
     "generate:cover-sprites": "node scripts/generate-cover-sprites.mjs"
   },

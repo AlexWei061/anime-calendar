@@ -1,4 +1,4 @@
-import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/anime.js";
+import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/catalog-client.js";
 import type { Anime, Season } from "./types";
 
 export const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
