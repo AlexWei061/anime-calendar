@@ -27,9 +27,36 @@ function getServerBeijingDateTime() {
   return null;
 }
 
-function subscribeToBeijingDate(onStoreChange: () => void) {
-  const interval = window.setInterval(onStoreChange, 60_000);
-  return () => window.clearInterval(interval);
+// 所有时钟订阅者共享一个分钟级 interval；按值比较的字符串快照让
+// 日粒度订阅者只在日期变化时重渲染。
+const beijingClockListeners = new Set<() => void>();
+let beijingClockInterval: number | null = null;
+
+function notifyBeijingClockListeners() {
+  for (const listener of beijingClockListeners) listener();
+}
+
+function subscribeToBeijingClock(onStoreChange: () => void) {
+  beijingClockListeners.add(onStoreChange);
+  beijingClockInterval ??= window.setInterval(notifyBeijingClockListeners, 60_000);
+  return () => {
+    beijingClockListeners.delete(onStoreChange);
+    if (!beijingClockListeners.size && beijingClockInterval !== null) {
+      window.clearInterval(beijingClockInterval);
+      beijingClockInterval = null;
+    }
+  };
+}
+
+function getBeijingDate() {
+  return getBeijingDateTime().slice(0, 10);
+}
+
+function getBeijingCalendarDate() {
+  const currentBeijingDateTime = getBeijingDateTime();
+  const currentBeijingDate = currentBeijingDateTime.slice(0, 10);
+  const currentBeijingTime = currentBeijingDateTime.slice(11);
+  return calendarDateForDateTime(currentBeijingDate, currentBeijingTime);
 }
 
 // 主题保存在 <html data-theme>（由 layout 内联脚本在首屏前写入），这里用
@@ -67,7 +94,7 @@ function applyTheme(nextTheme: ThemeName, persist: boolean) {
 
 export function useBeijingClock() {
   const currentBeijingDateTime = useSyncExternalStore<string | null>(
-    subscribeToBeijingDate, getBeijingDateTime, getServerBeijingDateTime,
+    subscribeToBeijingClock, getBeijingDateTime, getServerBeijingDateTime,
   );
   const currentBeijingDate = currentBeijingDateTime?.slice(0, 10) ?? null;
   const currentBeijingTime = currentBeijingDateTime?.slice(11) ?? null;
@@ -75,6 +102,15 @@ export function useBeijingClock() {
     ? calendarDateForDateTime(currentBeijingDate, currentBeijingTime)
     : currentBeijingDate;
   return { currentBeijingDate, currentBeijingTime, currentCalendarDate };
+}
+
+// 日粒度订阅：快照是日期字符串，分钟跳动不会触发重渲染。
+export function useBeijingDate() {
+  return useSyncExternalStore(subscribeToBeijingClock, getBeijingDate, getServerBeijingDateTime);
+}
+
+export function useBeijingCalendarDate() {
+  return useSyncExternalStore(subscribeToBeijingClock, getBeijingCalendarDate, getServerBeijingDateTime);
 }
 
 export function useTheme() {

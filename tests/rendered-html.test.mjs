@@ -791,7 +791,7 @@ test("uses broadcast-day boundaries for navigation, all highlights, and current-
   ]);
   assert.match(clock, /timeZone: "Asia\/Shanghai"/);
   assert.match(clock, /calendarDateForDateTime\(currentBeijingDate, currentBeijingTime\)/);
-  assert.match(clock, /window\.setInterval\(onStoreChange, 60_000\)/);
+  assert.match(clock, /window\.setInterval\(notifyBeijingClockListeners, 60_000\)/);
   assert.match(page, /setCalendarLocation\(\{ weekStart: startOfWeek\(currentCalendarDate\), mobileDate: currentCalendarDate \}\)/);
   assert.match(calendar, /const date = !isHistoricalSeason \? currentCalendarDate \?\? initialWeekStart : firstFullWeekStart\(activeSeason\)/);
   assert.match(calendar, /const date = currentCalendarDate \?\? activeWeekStart/);

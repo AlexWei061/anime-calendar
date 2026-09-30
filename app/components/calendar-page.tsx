@@ -4,7 +4,7 @@ import { progressForAnime } from "../../lib/anime-statistics.js";
 import { networkBroadcastLabel } from "../../lib/anime-labels.js";
 import { allAnime, seasons, initialSeasonId, initialWeekStart } from "../catalog";
 import { weekLabel } from "../display";
-import { useBeijingClock } from "../hooks/use-display";
+import { useBeijingCalendarDate } from "../hooks/use-display";
 import { useViewer } from "../hooks/use-viewer";
 import { useAnimeDetail } from "./anime-detail";
 import { PageHeading } from "./page-heading";
@@ -21,8 +21,8 @@ export function CalendarPage({ activePage, location, onLocationChange, onSearch 
   onLocationChange: (location: CalendarLocation) => void;
   onSearch: (query: string) => void;
 }) {
-  const { selectedAnimeIds, watchedEpisodes, watchedEpisodeError } = useViewer();
-  const { currentCalendarDate, currentBeijingDate, currentBeijingTime } = useBeijingClock();
+  const { selectedAnimeIds, selectionError, watchedEpisodes, watchedEpisodeError } = useViewer();
+  const currentCalendarDate = useBeijingCalendarDate();
   const { weekStart: activeWeekStart, mobileDate: activeMobileDate } = location;
   const openDetail = useAnimeDetail();
   const weeklySectionRef = useRef<HTMLElement>(null);
@@ -151,8 +151,7 @@ export function CalendarPage({ activePage, location, onLocationChange, onSearch 
         </nav>
 
         <CalendarSchedule events={events} dateOnlyEvents={dateOnlyEvents} activeWeekStart={activeWeekStart}
-          activeMobileDate={activeMobileDate} setActiveMobileDate={(mobileDate) => onLocationChange({ ...location, mobileDate })}
-          currentCalendarDate={currentCalendarDate} currentBeijingDate={currentBeijingDate} currentBeijingTime={currentBeijingTime} />
+          activeMobileDate={activeMobileDate} setActiveMobileDate={(mobileDate) => onLocationChange({ ...location, mobileDate })} />
       </section>
       {networkOnly.length ? <section className="network-section" aria-labelledby="network-heading">
         <div>
@@ -188,7 +187,11 @@ export function CalendarPage({ activePage, location, onLocationChange, onSearch 
         </div>
       </section>
         : null}
-    </> : selectedAnimeIds ? <p className="my-schedule-empty">请先在“选择番剧”中勾选想追的作品。</p> : null}
+    </> : selectedAnimeIds ? (
+      <p className="my-schedule-empty">请先在“选择番剧”中勾选想追的作品。</p>
+    ) : selectionError || watchedEpisodeError ? null : (
+      <p className="selection-status" aria-live="polite">正在读取你的追番和已看记录…</p>
+    )}
     {activePage === "mine" ? <SelectionPanel activeSeason={activeSeason} /> : null}
     <footer className="calendar-footer">
       <p>

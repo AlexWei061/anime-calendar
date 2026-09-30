@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { startOfWeek } from "../lib/calendar.js";
 import { initialWeekStart } from "./catalog";
-import { useBeijingClock, useTheme } from "./hooks/use-display";
+import { useBeijingCalendarDate, useTheme } from "./hooks/use-display";
 import { ViewerProvider } from "./hooks/use-viewer";
 import { AccountControls, AccountProvider } from "./components/account";
 import { AnimeDetailProvider } from "./components/anime-detail";
@@ -21,7 +21,7 @@ function CalendarApp() {
   });
   const [statisticsView, setStatisticsView] = useState<StatisticsView>({ seasonId: "", collapsedSections: [] });
   const didSetInitialWeek = useRef(false);
-  const { currentCalendarDate } = useBeijingClock();
+  const currentCalendarDate = useBeijingCalendarDate();
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {

@@ -3,8 +3,8 @@ import { broadcastsForDate, progressForAnime, progressTotals, sortProgressBySeas
 import { isEpisodeViewWatched } from "../../lib/anime-episode-views.js";
 import { formatEpisodeLabel } from "../../lib/calendar.js";
 import { allAnime, seasons, seasonIndexByAnimeId } from "../catalog";
-import { shortDate, progressStatusLabel } from "../display";
-import { useBeijingClock } from "../hooks/use-display";
+import { shortDate, progressStatusLabel, selectionLoadErrorMessage } from "../display";
+import { useBeijingDate } from "../hooks/use-display";
 import { useViewer } from "../hooks/use-viewer";
 import { PageHeading } from "./page-heading";
 import { SignInPrompt } from "./account";
@@ -17,11 +17,11 @@ export function StatisticsPage({ onSearch, view, onViewChange }: {
   onViewChange: (view: StatisticsView) => void;
 }) {
   const { currentUser, selectedAnimeIds, selectionError, watchedEpisodes, watchedEpisodeError } = useViewer();
-  const { currentBeijingDate } = useBeijingClock();
+  const currentBeijingDate = useBeijingDate();
   const selectedOverallSeasonId = view.seasonId;
   const collapsedStatisticsSections = view.collapsedSections;
   const setSelectedOverallSeasonId = (seasonId: string) => onViewChange({ ...view, seasonId });
-  const selectionLoadError = selectionError ?? (!currentUser ? "登录后可同步你的追番列表。" : null);
+  const selectionLoadError = selectionLoadErrorMessage(currentUser, selectionError);
   const selectedAnime = useMemo(() => allAnime.filter((record) => selectedAnimeIds?.includes(record.id)), [selectedAnimeIds]);
   const overallProgress = useMemo(() => sortProgressBySeasonThenWatchedEpisodes(
     progressForAnime(selectedAnime, watchedEpisodes ?? []), seasonIndexByAnimeId,
