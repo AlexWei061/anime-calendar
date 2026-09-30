@@ -24,13 +24,14 @@ test("standalone package includes cover sprites and static assets", { skip: !pac
 });
 
 test("standalone package includes SQL migrations and meta journal", { skip: !packaged }, async () => {
-  const drizzle = await list("drizzle/");
-  assert.ok(
-    drizzle.some((name) => name.endsWith(".sql")),
-    "expected at least one SQL migration in drizzle/",
-  );
-  const meta = await list("drizzle/meta/");
-  assert.ok(meta.includes("_journal.json"), "expected drizzle/meta/_journal.json to be packaged");
+  const source = new URL("../drizzle/", import.meta.url);
+  const sourceSql = (await readdir(source)).filter((name) => name.endsWith(".sql")).sort();
+  const packagedSql = (await list("drizzle/")).filter((name) => name.endsWith(".sql")).sort();
+  assert.deepEqual(packagedSql, sourceSql, "standalone drizzle/ must package every source SQL migration");
+
+  const sourceMeta = (await readdir(new URL("meta/", source))).sort();
+  const packagedMeta = (await list("drizzle/meta/")).sort();
+  assert.deepEqual(packagedMeta, sourceMeta, "standalone drizzle/meta/ must match the source meta directory");
 });
 
 test("standalone package includes maintenance scripts", { skip: !packaged }, async () => {
