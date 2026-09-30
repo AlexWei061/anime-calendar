@@ -187,3 +187,20 @@ test("account auth buckets count only verification failures and are isolated per
   }
   assert.equal((await call("/api/auth/login", { method: "POST", json: victim })).status, 200, "register failures must not consume the login budget");
 });
+
+test("authenticated write endpoints share a loose per-account limit after sign-in", { skip: !origin }, async (t) => {
+  const call = await startIsolatedServer(t);
+  const writer = { email: "write-limit@example.test", password: "writer-password", displayName: "Writer" };
+  const registered = await call("/api/auth/register", { method: "POST", json: writer });
+  assert.equal(registered.status, 201);
+  const writerCookie = registered.headers.get("set-cookie")?.split(";", 1)[0];
+  assert.ok(writerCookie);
+
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    assert.equal((await call("/api/anime-selections", { method: "PUT", cookie: writerCookie, json: { animeIds: [] } })).status, 200);
+  }
+  const deniedWrite = await call("/api/anime-selections", { method: "PUT", cookie: writerCookie, json: { animeIds: [] } });
+  assert.equal(deniedWrite.status, 429);
+  assert.ok(deniedWrite.headers.get("retry-after"), "429 write responses carry Retry-After");
+  assert.equal((await call("/api/anime-selections", { method: "PUT", json: { animeIds: [] } })).status, 401, "unauthenticated writes stay 401 and never reach the bucket");
+});

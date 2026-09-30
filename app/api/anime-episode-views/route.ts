@@ -3,7 +3,7 @@ import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeEpisodeViews } from "../../../db/schema";
 import { episodeViewUnitsForRange, filterKnownEpisodeViews, isLegacyEpisodeViewForAnime, validateEpisodeViewBatch } from "../../../lib/anime-episode-views.js";
-import { errorResponse, invalidRequest, privateJson, readJson, requireSameOrigin } from "../../../lib/server/http.js";
+import { errorResponse, invalidRequest, limitWrites, privateJson, readJson, requireSameOrigin } from "../../../lib/server/http.js";
 import { getSessionUser } from "../../auth";
 
 type EpisodeView = { animeId: string; episodeStart: number; episode: number };
@@ -47,6 +47,8 @@ export async function PUT(request: Request) {
     requireSameOrigin(request);
     const user = await getSessionUser();
     if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const limited = limitWrites(user.email);
+    if (limited) return limited;
     let watchedEpisodes: EpisodeView[];
     let watched: boolean;
     try {

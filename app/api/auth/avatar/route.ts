@@ -3,7 +3,7 @@ import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
 import { avatarObjectKey, avatarUrl, readAvatarUpload } from "../../../../lib/avatar.js";
 import { deleteAvatarBestEffort, readAvatar, replaceAvatar } from "../../../../lib/server/avatar-storage.js";
-import { errorResponse, privateJson, requireSameOrigin } from "../../../../lib/server/http.js";
+import { errorResponse, limitWrites, privateJson, requireSameOrigin } from "../../../../lib/server/http.js";
 import { getSessionUser } from "../../../auth";
 
 export async function GET(request: Request) {
@@ -34,6 +34,8 @@ export async function PUT(request: Request) {
     requireSameOrigin(request);
     const user = await getSessionUser();
     if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const limited = limitWrites(user.email);
+    if (limited) return limited;
     let bytes: Uint8Array;
     try {
       bytes = await readAvatarUpload(request);
@@ -59,6 +61,8 @@ export async function DELETE(request: Request) {
     requireSameOrigin(request);
     const user = await getSessionUser();
     if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const limited = limitWrites(user.email);
+    if (limited) return limited;
     const db = await getDb();
     const previous = db.transaction((tx) => {
       const row = tx.select({ avatarVersion: users.avatarVersion }).from(users).where(eq(users.email, user.email)).get();

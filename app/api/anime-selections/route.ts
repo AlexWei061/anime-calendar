@@ -3,7 +3,7 @@ import { allAnime } from "../../../data/anime.js";
 import { getDb } from "../../../db";
 import { animeSelections } from "../../../db/schema";
 import { filterKnownAnimeIds, selectionInsertBatches } from "../../../lib/anime-selections.js";
-import { errorResponse, invalidRequest, privateJson, readJson, requireSameOrigin } from "../../../lib/server/http.js";
+import { errorResponse, invalidRequest, limitWrites, privateJson, readJson, requireSameOrigin } from "../../../lib/server/http.js";
 import { getSessionUser } from "../../auth";
 
 const validAnimeIds = new Set(allAnime.map(({ id }) => id));
@@ -25,6 +25,8 @@ export async function PUT(request: Request) {
     requireSameOrigin(request);
     const user = await getSessionUser();
     if (!user) return privateJson({ error: "Sign in required" }, { status: 401 });
+    const limited = limitWrites(user.email);
+    if (limited) return limited;
     let animeIds: string[];
     try {
       const payload = await readJson(request);
