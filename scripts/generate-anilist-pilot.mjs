@@ -123,6 +123,12 @@ function normalizeMedia(media, season, year) {
   };
 }
 
+function isUpcomingSeason(season, year) {
+  const now = new Date();
+  const currentYearMonth = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+  return `${year}-${seasonMonths[season]}` >= currentYearMonth;
+}
+
 async function fetchSeason(season, year) {
   const records = [];
   let page = 1;
@@ -148,7 +154,16 @@ async function fetchSeason(season, year) {
             media.seasonYear === year &&
             ["TV", "TV_SHORT", "ONA"].includes(media.format),
         )
-        .map((media) => normalizeMedia(media, season, year)),
+        .map((media) => {
+          try {
+            return normalizeMedia(media, season, year);
+          } catch (error) {
+            if (!isUpcomingSeason(season, year)) throw error;
+            console.warn(`Skipping incomplete AniList record ${media.id} (${media.title.native ?? media.title.romaji})`);
+            return null;
+          }
+        })
+        .filter(Boolean),
     );
     hasNextPage = result.pageInfo.hasNextPage;
     page += 1;
@@ -175,7 +190,7 @@ if (!Number.isInteger(year) || year < 2020 || year > 2026) {
   throw new RangeError("Year must be an integer from 2020 through 2026");
 }
 
-const seasonNames = year === 2026 ? ["WINTER", "SPRING", "SUMMER"] : ["WINTER", "SPRING", "SUMMER", "FALL"];
+const seasonNames = ["WINTER", "SPRING", "SUMMER", "FALL"];
 const catalogs = await Promise.all(
   seasonNames.map(async (season) => [season, await fetchSeason(season, year)]),
 );

@@ -29,7 +29,7 @@
 
 ## 项目定位
 
-这是一个展示 **2020 年至 2025 年四季及 2026 年 1 月、4 月与 7 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
+这是一个展示 **2020 年至 2025 年四季及 2026 年 1 月、4 月、7 月与 10 月番** 的中文番剧日历。前端按北京时间显示周时间轴，
 并允许连续跨季度前后翻周；移动端提供单日议程。注册登录账号的用户可以维护自己的追番列表，
 并永久保存逐集“已看”标记。
 
@@ -61,7 +61,7 @@
 | `app/api/anime-selections/route.ts` | 已登录用户的追番列表读取与整表原子替换。 |
 | `app/api/anime-episode-views/route.ts` | 已登录用户的逐集已看读取、批量原子更新与旧连播范围迁移。 |
 | `app/api/health/route.ts` | 通过实际读取 SQLite 迁移表检查服务健康。 |
-| `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4／7 月季度入口、7 月 YUC 目录（含特殊先行排期）和统一的 `allAnime`。 |
+| `data/anime.js` | 2020 年至 2025 年四季及 2026 年 1／4 月季度入口、7 月与 10 月 YUC 当前季目录（含特殊先行排期）和统一的 `allAnime`。 |
 | `data/anilist-<year>.js` | 由 AniList 导入脚本生成的历史排期原始资料。 |
 | `data/yuc-history-<year>.js` | 由 YUC 历史导入脚本生成的目录；不得手工编辑。 |
 | `data/syoboi-history-<year>.js` | 由しょぼい导入脚本生成的电视排期快照，供历史目录补空值；不得手工编辑。 |
@@ -96,8 +96,8 @@
 - 运行时封面由 `data/cover-sprites.js` 映射到 `public/covers/yuc/sprites/` 中每页最多 4×10 格的 WebP 图集。中间封面使用无损 WebP，详情图集使用 quality 90、缩略图集使用 quality 82；更新或新增封面后，依次运行 `npm run convert:covers-webp` 和 `npm run generate:cover-sprites`。不要手工编辑图集或映射文件，也不要恢复为每部番一个部署静态文件。
 - 图集必须能在独立封面已删除的正常仓库中重建：复用旧映射裁切已有详情图集并合入新封面，未变化的页直接保留原字节，避免重复有损压缩。生成器先准备全部文件，再用内容标识的新文件名发布图集并原子替换映射，成功后才删除旧图和独立封面；缺少输入或发布失败时必须保持旧映射及其图片可用。
 - 所有数据字段按来源逐项合并，优先级为 YUC → AniList → しょぼいカレンダー → 估算或 `null`；低优先级来源只能补空值，不能覆盖已有值。中文名和封面始终来自 YUC，并为已填入字段保留 `*Source` 审计标记。
-- 2026 年 7 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；YUC 未列总集数时用 AniList 补充。历史目录中的 YUC 网络首播日期优先于之后的电视台排期；AniList 缺少首播日期、周播日或分钟时刻时，才由しょぼい补齐。
-- 修改 2026 年 7 月的 YUC 目录时，同时核对 YUC 周表和作品详情中的 `broadcast_r`。若详情写有“`M/D先行N话`”及之后的固定周播，必须写入 `premiereDateBeijing`、`premiereKind: "network"`、`premiereEpisodeCount` 和 `regularBroadcastStartDateBeijing`；先行段为第 1 至 N 集，固定周播从第 N+1 集开始。
+- 2026 年 7 月番与 10 月番的 `premiereDateBeijing`、`scheduleWeekday` 和 `beijingTime` 直接来自 YUC 北京时间排期；YUC 未列总集数时用 AniList 补充。历史目录中的 YUC 网络首播日期优先于之后的电视台排期；AniList 缺少首播日期、周播日或分钟时刻时，才由しょぼい补齐。
+- 修改 2026 年 7 月或 10 月的 YUC 目录时，同时核对 YUC 周表和作品详情中的 `broadcast_r`。若详情写有“`M/D先行N话`”及之后的固定周播，必须写入 `premiereDateBeijing`、`premiereKind: "network"`、`premiereEpisodeCount` 和 `regularBroadcastStartDateBeijing`；先行段为第 1 至 N 集，固定周播从第 N+1 集开始。
 - 没有明确时刻的网络首播必须保留 `null`，由页面放入日期专属的“网络配信 · 时刻未定”区域，不能虚构时间；即使之后有固定电视周播，也要将先行集数与后续周播集数分开排期，不能把先行集数塞入之后的电视时段。
 - 凌晨 `00:00` 至 `04:59` 的节目在周历中显示在前一天栏目的“次日 HH:MM”时段；必须通过
   `formatBroadcastTime` 和现有日期布局逻辑处理，不要在页面中手工挪动日期。

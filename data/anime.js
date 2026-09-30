@@ -1,5 +1,5 @@
 import { april2026, january2026 } from "./yuc-history-2026.js";
-import { summer2026 } from "./anilist-2026.js";
+import { fall2026, summer2026 } from "./anilist-2026.js";
 import { april2025, january2025, july2025, october2025 } from "./yuc-history-2025.js";
 import { april2024, january2024, july2024, october2024 } from "./yuc-history-2024.js";
 import { april2023, january2023, july2023, october2023 } from "./yuc-history-2023.js";
@@ -919,13 +919,11 @@ for (const record of summer2026.anime) {
 }
 
 const yucUnconfirmedEpisodeCountIds = new Set(["100-girlfriends-3", "hellmode-2"]);
-const verifiedJulySchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
+const verifiedSyoboiSchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
 
-function withYucSources(record) {
-  const aniList = julyAniListByTitle.get(normalizeTitle(record.titleJa));
-  const yucEpisodeCount = !yucUnconfirmedEpisodeCountIds.has(record.id);
-  const episodeCount = yucEpisodeCount ? record.episodeCount : aniList?.episodeCount ?? record.episodeCount;
-  const episodeCountSource = yucEpisodeCount ? "YUC" : aniList ? "AniList" : "estimated";
+function applyYucSources(record, aniList, hasYucEpisodeCount) {
+  const episodeCount = hasYucEpisodeCount ? record.episodeCount : aniList?.episodeCount ?? record.episodeCount;
+  const episodeCountSource = hasYucEpisodeCount ? "YUC" : aniList ? "AniList" : "estimated";
 
   return {
     ...record,
@@ -942,6 +940,14 @@ function withYucSources(record) {
     ...(record.premiereEpisodeCount ? { premiereEpisodeCountSource: "YUC" } : {}),
     ...(record.regularBroadcastStartDateBeijing ? { regularBroadcastStartDateSource: "YUC" } : {}),
   };
+}
+
+function withYucSources(record) {
+  return applyYucSources(
+    record,
+    julyAniListByTitle.get(normalizeTitle(record.titleJa)),
+    !yucUnconfirmedEpisodeCountIds.has(record.id),
+  );
 }
 
 function weekdayForDate(isoDate) {
@@ -1009,15 +1015,7 @@ function withVerifiedYucPremiereTime(record, schedule) {
   };
 }
 
-export const anime = yucAnime.map((entry) => {
-  const record = withYucSources(entry);
-  const schedule = verifiedJulySchedules.get(record.id);
-  if (record.premiereKind === "network") return record;
-  if (record.premiereDateBeijing && record.scheduleWeekday && record.beijingTime) {
-    return withVerifiedYucPremiereTime(record, schedule);
-  }
-  if (!schedule?.episodeSchedules?.length) return record;
-
+function applyVerifiedSyoboiSchedule(record, schedule) {
   const episodeSchedules = appendKnownWeeklySchedule(record, schedule.episodeSchedules);
   const [firstSchedule] = episodeSchedules;
   const weeklySchedule = episodeSchedules
@@ -1050,7 +1048,977 @@ export const anime = yucAnime.map((entry) => {
     scheduleSourceUrl: schedule.sourceUrl,
     scheduleChannel: schedule.channel,
   };
-});
+}
+
+function buildYucSeasonCatalog(entries, withSources) {
+  return entries.map((entry) => {
+    const record = withSources(entry);
+    const schedule = verifiedSyoboiSchedules.get(record.id);
+    if (record.premiereKind === "network") return record;
+    if (record.premiereDateBeijing && record.scheduleWeekday && record.beijingTime) {
+      return withVerifiedYucPremiereTime(record, schedule);
+    }
+    if (!schedule?.episodeSchedules?.length) return record;
+    return applyVerifiedSyoboiSchedule(record, schedule);
+  });
+}
+
+export const anime = buildYucSeasonCatalog(yucAnime, withYucSources);
+
+export const octoberSeason = {
+  "label": "2026 年 10 月番",
+  "timeZoneLabel": "北京时间（UTC+8）",
+  "updatedAt": "2026-09-30",
+  "catalogCount": 69,
+  "sourceName": "YUC 2026年10月新番表",
+  "sourceUrl": "https://yuc.wiki/202610/"
+};
+
+const octoberYucAnime = [
+  {
+    "id": "vertex-force",
+    "episodeCount": 12,
+    "titleZh": "顶点武装",
+    "titleJa": "VERTEX FORCE",
+    "coverUrl": "/covers/yuc/vertex-force.webp",
+    "coverAlt": "顶点武装 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "22:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "dandivine",
+    "episodeCount": 12,
+    "titleZh": "兽王武神丹帝拜恩",
+    "titleJa": "獣王武神ダンデヴァイン",
+    "coverUrl": "/covers/yuc/dandivine.webp",
+    "coverAlt": "兽王武神丹帝拜恩 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "23:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "dark-machine",
+    "episodeCount": 12,
+    "titleZh": "黑暗机器",
+    "titleJa": "DARK MACHINE",
+    "coverUrl": "/covers/yuc/dark-machine.webp",
+    "coverAlt": "黑暗机器 主视觉",
+    "premiereDateBeijing": "2026-10-13",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "24:45",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tetsuryou",
+    "episodeCount": 12,
+    "titleZh": "铁旅 邂逅铁道少女",
+    "titleJa": "てつりょー！meet with 鉄道むすめ",
+    "coverUrl": "/covers/yuc/tetsuryou.webp",
+    "coverAlt": "铁旅 邂逅铁道少女 主视觉",
+    "premiereDateBeijing": "2026-10-08",
+    "scheduleWeekday": "Thu",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "lulutto-lilly-2",
+    "episodeCount": 12,
+    "titleZh": "魔法姐妹露露与莉莉 Part.2",
+    "titleJa": "魔法の姉妹ルルットリリィ 第2クール",
+    "coverUrl": "/covers/yuc/lulutto-lilly-2.webp",
+    "coverAlt": "魔法姐妹露露与莉莉 Part.2 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "21:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "battle-spirits-re",
+    "episodeCount": 12,
+    "titleZh": "战斗之魂 [Re] 绝界之空",
+    "titleJa": "Battle Spirits [Re] 絶界の空",
+    "coverUrl": "/covers/yuc/battle-spirits-re.webp",
+    "coverAlt": "战斗之魂 [Re] 绝界之空 主视觉",
+    "premiereDateBeijing": "2026-10-06",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "aoki-denshou",
+    "episodeCount": 12,
+    "titleZh": "苍蓝传承",
+    "titleJa": "蒼き伝承 ウェルシュ＆シェダー",
+    "coverUrl": "/covers/yuc/aoki-denshou.webp",
+    "coverAlt": "苍蓝传承 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "20:25",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "shin-keroro",
+    "episodeCount": 12,
+    "titleZh": "新 Keroro军曹",
+    "titleJa": "ケロロ軍曹☆",
+    "coverUrl": "/covers/yuc/shin-keroro.webp",
+    "coverAlt": "新 Keroro军曹 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "08:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "rayearth-2026",
+    "episodeCount": 12,
+    "titleZh": "新 魔法骑士Rayearth",
+    "titleJa": "魔法騎士レイアース",
+    "coverUrl": "/covers/yuc/rayearth-2026.webp",
+    "coverAlt": "新 魔法骑士Rayearth 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "22:45",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "ranma-3",
+    "episodeCount": 12,
+    "titleZh": "新 乱马1/2 第3期",
+    "titleJa": "らんま1/2 第3期",
+    "coverUrl": "/covers/yuc/ranma-3.webp",
+    "coverAlt": "新 乱马1/2 第3期 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "23:55",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "dragon-ball-super-beerus",
+    "episodeCount": 12,
+    "titleZh": "龙珠超 比鲁斯",
+    "titleJa": "ドラゴンボール超 ビルス",
+    "coverUrl": "/covers/yuc/dragon-ball-super-beerus.webp",
+    "coverAlt": "龙珠超 比鲁斯 主视觉",
+    "premiereDateBeijing": "2026-10-11",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "22:15",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "jojo-sbr-2nd-3rd",
+    "episodeCount": 11,
+    "titleZh": "JOJO奇妙冒险 飙马野郎 2nd&3rd STAGE",
+    "titleJa": "スティール・ボール・ラン ジョジョの奇妙な冒険",
+    "coverUrl": "/covers/yuc/jojo-sbr-2nd-3rd.webp",
+    "coverAlt": "JOJO奇妙冒险 飙马野郎 2nd&3rd STAGE 主视觉",
+    "premiereDateBeijing": "2026-09-25",
+    "premiereKind": "network",
+    "scheduleWeekday": null,
+    "beijingTime": null,
+    "station": "网络放送",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tenipuri-u17-kesshou",
+    "episodeCount": 12,
+    "titleZh": "新 网球王子 U-17世界杯决赛成员决定战",
+    "titleJa": "新テニスの王子様 U-17 WORLD CUP 決勝メンバー決定戦",
+    "coverUrl": "/covers/yuc/tenipuri-u17-kesshou.webp",
+    "coverAlt": "新 网球王子 U-17世界杯决赛成员决定战 主视觉",
+    "premiereDateBeijing": "2026-09-30",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "diamond-ace-act2-2",
+    "episodeCount": 12,
+    "titleZh": "钻石王牌 第4期 Part.2 (actⅡ 第2期 Part.2)",
+    "titleJa": "ダイヤのA actⅡ-SECOND SEASON- 第2クール",
+    "coverUrl": "/covers/yuc/diamond-ace-act2-2.webp",
+    "coverAlt": "钻石王牌 第4期 Part.2 (actⅡ 第2期 Part.2) 主视觉",
+    "premiereDateBeijing": "2026-10-11",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "16:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "aoashi-2",
+    "episodeCount": 12,
+    "titleZh": "青之芦苇 第2期",
+    "titleJa": "アオアシ Season2",
+    "coverUrl": "/covers/yuc/aoashi-2.webp",
+    "coverAlt": "青之芦苇 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "16:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "ao-no-hako-2",
+    "episodeCount": 12,
+    "titleZh": "青春之箱 第2期",
+    "titleJa": "アオのハコ Season2",
+    "coverUrl": "/covers/yuc/ao-no-hako-2.webp",
+    "coverAlt": "青春之箱 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "15:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tokyo-revengers-4",
+    "episodeCount": 12,
+    "titleZh": "东京复仇者 第4期 三天战争篇",
+    "titleJa": "東京リベンジャーズ 三天戦争編",
+    "coverUrl": "/covers/yuc/tokyo-revengers-4.webp",
+    "coverAlt": "东京复仇者 第4期 三天战争篇 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "24:23",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tougen-anki-2",
+    "episodeCount": 12,
+    "titleZh": "桃源暗鬼 第2期",
+    "titleJa": "桃源暗鬼～日光・華厳の滝編～",
+    "coverUrl": "/covers/yuc/tougen-anki-2.webp",
+    "coverAlt": "桃源暗鬼 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "23:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "black-clover-2",
+    "episodeCount": 12,
+    "titleZh": "黑色五叶草 第2期",
+    "titleJa": "ブラッククローバー 2nd Season",
+    "coverUrl": "/covers/yuc/black-clover-2.webp",
+    "coverAlt": "黑色五叶草 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kikansha-2",
+    "episodeCount": 12,
+    "titleZh": "归还者的魔法要特别 第2期",
+    "titleJa": "帰還者の魔法は特別です 第2期",
+    "coverUrl": "/covers/yuc/kikansha-2.webp",
+    "coverAlt": "归还者的魔法要特别 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "23:45",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "hotel-inhumans-2",
+    "episodeCount": 12,
+    "titleZh": "杀手旅店 第2期",
+    "titleJa": "HOTEL INHUMANS 第2期",
+    "coverUrl": "/covers/yuc/hotel-inhumans-2.webp",
+    "coverAlt": "杀手旅店 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "22:45",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "yozakura-2-part-2",
+    "episodeCount": 12,
+    "titleZh": "夜樱家的大作战 第2期 Part.2",
+    "titleJa": "夜桜さんちの大作戦 第2期 第2クール",
+    "coverUrl": "/covers/yuc/yozakura-2-part-2.webp",
+    "coverAlt": "夜樱家的大作战 第2期 Part.2 主视觉",
+    "premiereDateBeijing": "2026-10-11",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "16:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "koori-no-jouheki-2",
+    "episodeCount": 12,
+    "titleZh": "冰之城墙 第2期",
+    "titleJa": "氷の城壁 第2期",
+    "coverUrl": "/covers/yuc/koori-no-jouheki-2.webp",
+    "coverAlt": "冰之城墙 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-01",
+    "scheduleWeekday": "Thu",
+    "beijingTime": "22:56",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "fx-senshi-kurumi",
+    "episodeCount": 12,
+    "titleZh": "FX战士久留美",
+    "titleJa": "FX戦士くるみちゃん",
+    "coverUrl": "/covers/yuc/fx-senshi-kurumi.webp",
+    "coverAlt": "FX战士久留美 主视觉",
+    "premiereDateBeijing": "2026-10-01",
+    "scheduleWeekday": "Thu",
+    "beijingTime": "20:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "ojisan-kawaii",
+    "episodeCount": 12,
+    "titleZh": "大叔喜欢可爱小玩意",
+    "titleJa": "おじさんはカワイイものがお好き。",
+    "coverUrl": "/covers/yuc/ojisan-kawaii.webp",
+    "coverAlt": "大叔喜欢可爱小玩意 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "shuiro-no-kamen",
+    "episodeCount": 12,
+    "titleZh": "朱色假面",
+    "titleJa": "朱色の仮面",
+    "coverUrl": "/covers/yuc/shuiro-no-kamen.webp",
+    "coverAlt": "朱色假面 主视觉",
+    "premiereDateBeijing": "2026-10-10",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "16:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "psyren",
+    "episodeCount": 12,
+    "titleZh": "PSYREN 决战游戏",
+    "titleJa": "PSYREN -サイレン-",
+    "coverUrl": "/covers/yuc/psyren.webp",
+    "coverAlt": "PSYREN 决战游戏 主视觉",
+    "premiereDateBeijing": "2026-10-05",
+    "scheduleWeekday": "Mon",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "choujun",
+    "episodeCount": 12,
+    "titleZh": "超巡 超条前辈",
+    "titleJa": "超巡！超条先輩",
+    "coverUrl": "/covers/yuc/choujun.webp",
+    "coverAlt": "超巡 超条前辈 主视觉",
+    "premiereDateBeijing": "2026-10-06",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "zombie-sagashitemasu",
+    "episodeCount": 12,
+    "titleZh": "僵尸搜寻中",
+    "titleJa": "#ゾンビさがしてます",
+    "coverUrl": "/covers/yuc/zombie-sagashitemasu.webp",
+    "coverAlt": "僵尸搜寻中 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tank-chair",
+    "episodeCount": 12,
+    "titleZh": "战车椅子",
+    "titleJa": "TANK CHAIR-戦車椅子-",
+    "coverUrl": "/covers/yuc/tank-chair.webp",
+    "coverAlt": "战车椅子 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "22:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "fool-night",
+    "episodeCount": 12,
+    "titleZh": "愚者之夜",
+    "titleJa": "フールナイト",
+    "coverUrl": "/covers/yuc/fool-night.webp",
+    "coverAlt": "愚者之夜 主视觉",
+    "premiereDateBeijing": "2026-11-26",
+    "premiereKind": "network",
+    "scheduleWeekday": null,
+    "beijingTime": null,
+    "station": "网络放送",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "temppal",
+    "episodeCount": 12,
+    "titleZh": "装备我最强",
+    "titleJa": "テムパル～アイテムの力～",
+    "coverUrl": "/covers/yuc/temppal.webp",
+    "coverAlt": "装备我最强 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "22:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "ribo-barai",
+    "episodeCount": 12,
+    "titleZh": "借出去的魔力 要用【分期还款】强制收回",
+    "titleJa": "貸した魔力は【リボ払い】で強制徴収",
+    "coverUrl": "/covers/yuc/ribo-barai.webp",
+    "coverAlt": "借出去的魔力 要用【分期还款】强制收回 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "24:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tensei-goblin",
+    "episodeCount": 12,
+    "titleZh": "转生成哥布林有什么问题吗",
+    "titleJa": "転生ゴブリンだけど質問ある？",
+    "coverUrl": "/covers/yuc/tensei-goblin.webp",
+    "coverAlt": "转生成哥布林有什么问题吗 主视觉",
+    "premiereDateBeijing": "2026-10-05",
+    "scheduleWeekday": "Mon",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "marronnier-7",
+    "episodeCount": 12,
+    "titleZh": "七叶树王国的七名骑士",
+    "titleJa": "マロニエ王国の七人の騎士",
+    "coverUrl": "/covers/yuc/marronnier-7.webp",
+    "coverAlt": "七叶树王国的七名骑士 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "17:25",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "hotaru-no-yomeiri",
+    "episodeCount": 12,
+    "titleZh": "萤火虫的出嫁",
+    "titleJa": "ホタルの嫁入り",
+    "coverUrl": "/covers/yuc/hotaru-no-yomeiri.webp",
+    "coverAlt": "萤火虫的出嫁 主视觉",
+    "premiereDateBeijing": "2026-10-09",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "22:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kanata-kara",
+    "episodeCount": 12,
+    "titleZh": "来自远方",
+    "titleJa": "彼方から",
+    "coverUrl": "/covers/yuc/kanata-kara.webp",
+    "coverAlt": "来自远方 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "seitokai-ana",
+    "episodeCount": 12,
+    "titleZh": "脑洞学生会",
+    "titleJa": "生徒会にも穴はある！",
+    "coverUrl": "/covers/yuc/seitokai-ana.webp",
+    "coverAlt": "脑洞学生会 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "23:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kanojo-no-tomodachi",
+    "episodeCount": 12,
+    "titleZh": "女友的朋友",
+    "titleJa": "彼女の友達",
+    "coverUrl": "/covers/yuc/kanojo-no-tomodachi.webp",
+    "coverAlt": "女友的朋友 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "24:05",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "yukionna-noroi",
+    "episodeCount": 12,
+    "titleZh": "不擅交际的未亡人雪女与诅咒戒指",
+    "titleJa": "人付き合いが苦手な未亡人の雪女さんと呪いの指輪",
+    "coverUrl": "/covers/yuc/yukionna-noroi.webp",
+    "coverAlt": "不擅交际的未亡人雪女与诅咒戒指 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": null,
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "dark-summoner",
+    "episodeCount": 12,
+    "titleZh": "黑暗召唤师在地下恋爱中",
+    "titleJa": "ダークサモナーとデキている",
+    "coverUrl": "/covers/yuc/dark-summoner.webp",
+    "coverAlt": "黑暗召唤师在地下恋爱中 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "24:20",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "toaru-anbu-item",
+    "episodeCount": 12,
+    "titleZh": "某暗部的少女共栖",
+    "titleJa": "とある暗部の少女共棲",
+    "coverUrl": "/covers/yuc/toaru-anbu-item.webp",
+    "coverAlt": "某暗部的少女共栖 主视觉",
+    "premiereDateBeijing": "2026-10-09",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "21:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "mahou-ikusei-restart",
+    "episodeCount": 12,
+    "titleZh": "魔法少女育成计画restart",
+    "titleJa": "魔法少女育成計画restart",
+    "coverUrl": "/covers/yuc/mahou-ikusei-restart.webp",
+    "coverAlt": "魔法少女育成计画restart 主视觉",
+    "premiereDateBeijing": "2026-10-05",
+    "scheduleWeekday": "Mon",
+    "beijingTime": "25:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kusuriya-3",
+    "episodeCount": 12,
+    "titleZh": "药屋少女的呢喃 第3期",
+    "titleJa": "薬屋のひとりごと 第3期",
+    "coverUrl": "/covers/yuc/kusuriya-3.webp",
+    "coverAlt": "药屋少女的呢喃 第3期 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "yasei-lastboss-2",
+    "episodeCount": 12,
+    "titleZh": "野生的最终BOSS出现了 第2期",
+    "titleJa": "野生のラスボスが現れた！第2期",
+    "coverUrl": "/covers/yuc/yasei-lastboss-2.webp",
+    "coverAlt": "野生的最终BOSS出现了 第2期 主视觉",
+    "premiereDateBeijing": "2026-09-26",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "21:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tensei-ken-2",
+    "episodeCount": 12,
+    "titleZh": "转生成为魔剑 第2期",
+    "titleJa": "転生したら剣でしたⅡ",
+    "coverUrl": "/covers/yuc/tensei-ken-2.webp",
+    "coverAlt": "转生成为魔剑 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "23:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "hyouken-2",
+    "episodeCount": 12,
+    "titleZh": "冰剑的魔术师将要统一世界 第2期",
+    "titleJa": "冰剣の魔術師が世界を統べるⅡ",
+    "coverUrl": "/covers/yuc/hyouken-2.webp",
+    "coverAlt": "冰剑的魔术师将要统一世界 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-08",
+    "scheduleWeekday": "Thu",
+    "beijingTime": "24:28",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kantei-skill-3",
+    "episodeCount": 12,
+    "titleZh": "转生贵族靠着鉴定技能 一飞冲天 第3期",
+    "titleJa": "転生貴族、鑑定スキルで成り上がる 第3期",
+    "coverUrl": "/covers/yuc/kantei-skill-3.webp",
+    "coverAlt": "转生贵族靠着鉴定技能 一飞冲天 第3期 主视觉",
+    "premiereDateBeijing": "2026-09-27",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "sasaki-pii-2",
+    "episodeCount": 12,
+    "titleZh": "佐佐木与文鸟小哔 第2期",
+    "titleJa": "佐々木とピーちゃん Season2",
+    "coverUrl": "/covers/yuc/sasaki-pii-2.webp",
+    "coverAlt": "佐佐木与文鸟小哔 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tantei-wa-mou-2",
+    "episodeCount": 12,
+    "titleZh": "侦探已死 第2期",
+    "titleJa": "探偵はもう、死んでいる。 Season2",
+    "coverUrl": "/covers/yuc/tantei-wa-mou-2.webp",
+    "coverAlt": "侦探已死 第2期 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "chitose-kun-2",
+    "episodeCount": 12,
+    "titleZh": "弹珠汽水瓶里的千岁同学 Part.2",
+    "titleJa": "千歳くんはラムネ瓶のなか 第2クール",
+    "coverUrl": "/covers/yuc/chitose-kun-2.webp",
+    "coverAlt": "弹珠汽水瓶里的千岁同学 Part.2 主视觉",
+    "premiereDateBeijing": "2026-10-13",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "22:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "shiotaiou-satou",
+    "episodeCount": 12,
+    "titleZh": "冷淡的佐藤同学只对我撒娇",
+    "titleJa": "塩対応の佐藤さんが俺にだけ甘い",
+    "coverUrl": "/covers/yuc/shiotaiou-satou.webp",
+    "coverAlt": "冷淡的佐藤同学只对我撒娇 主视觉",
+    "premiereDateBeijing": "2026-10-06",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "21:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "horegusuri-majo",
+    "episodeCount": 12,
+    "titleZh": "你好 我是受心上人所托 来做恋爱药的魔女",
+    "titleJa": "どうも、好きな人に惚れ薬を依頼された魔女です。",
+    "coverUrl": "/covers/yuc/horegusuri-majo.webp",
+    "coverAlt": "你好 我是受心上人所托 来做恋爱药的魔女 主视觉",
+    "premiereDateBeijing": "2026-10-05",
+    "scheduleWeekday": "Mon",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "yowaki-max-reijou",
+    "episodeCount": 12,
+    "titleZh": "弱气MAX的大小姐居然 接受了铁腕未婚夫的赌约",
+    "titleJa": "弱気MAX令嬢なのに、辣腕婚約者様の賭けに乗ってしまった",
+    "coverUrl": "/covers/yuc/yowaki-max-reijou.webp",
+    "coverAlt": "弱气MAX的大小姐居然 接受了铁腕未婚夫的赌约 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "romeria-senki",
+    "episodeCount": 12,
+    "titleZh": "罗梅莉亚战记",
+    "titleJa": "ロメリア戦記",
+    "coverUrl": "/covers/yuc/romeria-senki.webp",
+    "coverAlt": "罗梅莉亚战记 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "20:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "sekai-saikyou-majo",
+    "episodeCount": 12,
+    "titleZh": "开始成为世界最强的魔女",
+    "titleJa": "世界最強の魔女、始めました",
+    "coverUrl": "/covers/yuc/sekai-saikyou-majo.webp",
+    "coverAlt": "开始成为世界最强的魔女 主视觉",
+    "premiereDateBeijing": "2026-10-07",
+    "scheduleWeekday": "Wed",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "nia-liston",
+    "episodeCount": 12,
+    "titleZh": "乱世千金 倪亚‧利斯顿 转生为娇弱千金的弑神武人华丽无双录",
+    "titleJa": "凶乱令嬢ニア・リストン 病弱令嬢に転生した神殺しの武人の華麗なる無双録",
+    "coverUrl": "/covers/yuc/nia-liston.webp",
+    "coverAlt": "乱世千金 倪亚‧利斯顿 转生为娇弱千金的弑神武人华丽无双录 主视觉",
+    "premiereDateBeijing": "2026-10-06",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "20:25",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tensei-daiseijo",
+    "episodeCount": 12,
+    "titleZh": "转生了的大圣女 拼死隐瞒自己身为圣女",
+    "titleJa": "転生した大聖女は、聖女であることをひた隠す",
+    "coverUrl": "/covers/yuc/tensei-daiseijo.webp",
+    "coverAlt": "转生了的大圣女 拼死隐瞒自己身为圣女 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "shinja-zero-megami",
+    "episodeCount": 12,
+    "titleZh": "和没有信徒的女神大人 一起攻略异世界",
+    "titleJa": "信者ゼロの女神サマと始める異世界攻略",
+    "coverUrl": "/covers/yuc/shinja-zero-megami.webp",
+    "coverAlt": "和没有信徒的女神大人 一起攻略异世界 主视觉",
+    "premiereDateBeijing": "2026-10-11",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "22:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "magical-explorer",
+    "episodeCount": 12,
+    "titleZh": "魔法★探险家 转生为成人游戏万年男二又怎样 我要活用游戏知识自由生活",
+    "titleJa": "マジカル★エクスプローラー エロゲの友人キャラに転生したけど、 ゲーム知識使って自由に生きる",
+    "coverUrl": "/covers/yuc/magical-explorer.webp",
+    "coverAlt": "魔法★探险家 转生为成人游戏万年男二又怎样 我要活用游戏知识自由生活 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "mezametara-saikyou",
+    "episodeCount": 12,
+    "titleZh": "一觉醒来坐拥神装和飞船 我决定以买一套独门独户的房子为目标作为佣兵自由地活下去",
+    "titleJa": "目覚めたら最強装備と宇宙船持ちだったので、 一戸建て目指して傭兵として自由に生きたい",
+    "coverUrl": "/covers/yuc/mezametara-saikyou.webp",
+    "coverAlt": "一觉醒来坐拥神装和飞船 我决定以买一套独门独户的房子为目标作为佣兵自由地活下去 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "20:30",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "cheat-fuyo-majutsushi",
+    "episodeCount": 12,
+    "titleZh": "被流放的超能附魔师 讴歌随心所欲的第二人生",
+    "titleJa": "追放されたチート付与魔術師は気ままなセカンドライフを謳歌する。",
+    "coverUrl": "/covers/yuc/cheat-fuyo-majutsushi.webp",
+    "coverAlt": "被流放的超能附魔师 讴歌随心所欲的第二人生 主视觉",
+    "premiereDateBeijing": "2026-10-06",
+    "scheduleWeekday": "Tue",
+    "beijingTime": "23:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "demons-crest",
+    "episodeCount": 12,
+    "titleZh": "恶魔纹章",
+    "titleJa": "デモンズ・クレスト",
+    "coverUrl": "/covers/yuc/demons-crest.webp",
+    "coverAlt": "恶魔纹章 主视觉",
+    "premiereDateBeijing": "2026-11-06",
+    "premiereKind": "network",
+    "scheduleWeekday": null,
+    "beijingTime": null,
+    "station": "网络放送",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "kyoufu-collector",
+    "episodeCount": 12,
+    "titleZh": "恐怖收集者",
+    "titleJa": "恐怖コレクター",
+    "coverUrl": "/covers/yuc/kyoufu-collector.webp",
+    "coverAlt": "恐怖收集者 主视觉",
+    "premiereDateBeijing": "2026-10-10",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "22:45",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "cyberpunk-edgerunners-2",
+    "episodeCount": 10,
+    "titleZh": "赛博朋克 边缘行者2",
+    "titleJa": "Cyberpunk：Edgerunners 2",
+    "coverUrl": "/covers/yuc/cyberpunk-edgerunners-2.webp",
+    "coverAlt": "赛博朋克 边缘行者2 主视觉",
+    "premiereDateBeijing": "2026-10-20",
+    "premiereKind": "network",
+    "scheduleWeekday": null,
+    "beijingTime": null,
+    "station": "网络放送",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "gensou-suikoden",
+    "episodeCount": 12,
+    "titleZh": "幻想水浒传",
+    "titleJa": "幻想水滸伝",
+    "coverUrl": "/covers/yuc/gensou-suikoden.webp",
+    "coverAlt": "幻想水浒传 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "21:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "shirotan",
+    "episodeCount": 12,
+    "titleZh": "海豹小白",
+    "titleJa": "しろたん",
+    "coverUrl": "/covers/yuc/shirotan.webp",
+    "coverAlt": "海豹小白 主视觉",
+    "premiereDateBeijing": "2026-10-03",
+    "scheduleWeekday": "Sat",
+    "beijingTime": "15:29",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "tanuki-to-kitsune",
+    "episodeCount": 12,
+    "titleZh": "小狸猫与小狐狸",
+    "titleJa": "タヌキとキツネ",
+    "coverUrl": "/covers/yuc/tanuki-to-kitsune.webp",
+    "coverAlt": "小狸猫与小狐狸 主视觉",
+    "premiereDateBeijing": "2026-10-04",
+    "scheduleWeekday": "Sun",
+    "beijingTime": "06:00",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  },
+  {
+    "id": "pan-dorobou",
+    "episodeCount": 12,
+    "titleZh": "神秘面包小子",
+    "titleJa": "パンどろぼう",
+    "coverUrl": "/covers/yuc/pan-dorobou.webp",
+    "coverAlt": "神秘面包小子 主视觉",
+    "premiereDateBeijing": "2026-10-02",
+    "scheduleWeekday": "Fri",
+    "beijingTime": "17:40",
+    "station": "YUC 周表",
+    "sourceUrl": "https://yuc.wiki/202610/"
+  }
+];
+
+const octoberAniListByTitle = new Map();
+for (const record of fall2026.anime) {
+  const title = normalizeTitle(record.titleZh);
+  octoberAniListByTitle.set(title, octoberAniListByTitle.has(title) ? null : record);
+}
+const octoberAniListById = new Map(
+  fall2026.anime.map((record) => [Number(record.id.slice("anilist-".length)), record]),
+);
+
+// YUC 日文标题与 AniList 条目不同时的显式对照（2026 年 10 月番）。
+const octoberAniListIdOverrides = new Map([
+  ["vertex-force", 209562],
+  ["dark-machine", 179876],
+  ["rayearth-2026", 178868],
+  ["ranma-3", 209872],
+  ["jojo-sbr-2nd-3rd", 210482],
+  ["aoashi-2", 191788],
+  ["black-clover-2", 195604],
+  ["hotel-inhumans-2", 199426],
+  ["tensei-ken-2", 159042],
+  ["sasaki-pii-2", 176314],
+  ["chitose-kun-2", 198727],
+  ["romeria-senki", 180894],
+  ["nia-liston", 206949],
+  ["cheat-fuyo-majutsushi", 207329],
+  ["cyberpunk-edgerunners-2", 195539],
+]);
+
+// YUC 页面标注了总集数的作品；其余作品的集数由 AniList 补充。
+const octoberYucEpisodeCountIds = new Set(["jojo-sbr-2nd-3rd", "cyberpunk-edgerunners-2"]);
+
+function withOctoberYucSources(record) {
+  const overrideId = octoberAniListIdOverrides.get(record.id);
+  const aniList =
+    overrideId === undefined
+      ? octoberAniListByTitle.get(normalizeTitle(record.titleJa))
+      : octoberAniListById.get(overrideId) ?? null;
+  return applyYucSources(record, aniList, octoberYucEpisodeCountIds.has(record.id));
+}
+
+export const octoberAnime = buildYucSeasonCatalog(octoberYucAnime, withOctoberYucSources);
 
 export const seasons = [
   {
@@ -1215,6 +2183,13 @@ export const seasons = [
     timelineStartHour: 15,
     ...season,
     anime,
+  },
+  {
+    id: "2026-october",
+    firstWeekStart: "2026-09-28",
+    timelineStartHour: 5,
+    ...octoberSeason,
+    anime: octoberAnime,
   },
 ];
 

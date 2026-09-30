@@ -2,8 +2,8 @@ import { allAnime as catalogAnime, seasons as catalogSeasons } from "../data/ani
 import type { Anime, Season } from "./types";
 
 export const weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-export const initialSeasonId = "2026-july";
-export const initialWeekStart = "2026-07-06";
+export const initialSeasonId = "2026-october";
+export const initialWeekStart = "2026-10-05";
 export const allAnime = catalogAnime as Anime[];
 export const seasons = catalogSeasons as Season[];
 export const seasonIndexByAnimeId = new Map(

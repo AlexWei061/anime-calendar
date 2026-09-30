@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { access, readdir, readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
-import { allAnime, anime, season, seasons } from "../data/anime.js";
+import { allAnime, anime, octoberAnime, octoberSeason, season, seasons } from "../data/anime.js";
 import { coverSpriteFor, coverSprites } from "../data/cover-sprites.js";
 import { addDays, dateOnlyEventsForWeek, eventsForWeek } from "../lib/calendar.js";
 import { groupByBeijingWeekday } from "../lib/schedule.js";
@@ -249,7 +249,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
     sourceName: "YUC 2026年7月新番表",
     sourceUrl: "https://yuc.wiki/202607/",
   });
-  assert.equal(seasons.some(({ id }) => id === "2026-october"), false);
+  assert.equal(seasons.some(({ id }) => id === "2026-october"), true);
   assert.equal(season.timeZoneLabel, "北京时间（UTC+8）");
   assert.equal(season.catalogCount, 66);
   assert.equal(anime.length, 66);
@@ -357,6 +357,216 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   ]) {
     assert.equal(ids.has(id), false, `unexpected non-YUC title: ${id}`);
   }
+});
+
+test("ships an auditable October 2026 TV anime snapshot", () => {
+  assert.deepEqual(octoberSeason, {
+    label: "2026 年 10 月番",
+    timeZoneLabel: "北京时间（UTC+8）",
+    updatedAt: "2026-09-30",
+    catalogCount: 69,
+    sourceName: "YUC 2026年10月新番表",
+    sourceUrl: "https://yuc.wiki/202610/",
+  });
+  assert.equal(octoberAnime.length, 69);
+  assert.equal(new Set(octoberAnime.map(({ id }) => id)).size, octoberAnime.length);
+  assert.equal(seasons.find(({ id }) => id === "2026-october")?.anime, octoberAnime);
+  assert.ok(octoberAnime.every(({ titleZh }) => typeof titleZh === "string" && titleZh.length > 0));
+  assert.ok(octoberAnime.every(({ titleJa }) => typeof titleJa === "string" && titleJa.length > 0));
+  assert.ok(octoberAnime.every(({ coverAlt }) => typeof coverAlt === "string" && coverAlt.length > 0));
+  assert.ok(octoberAnime.every(({ coverUrl }) => coverUrl.startsWith("/covers/yuc/") && coverUrl.endsWith(".webp")));
+  assert.ok(octoberAnime.every(({ sourceUrl }) => sourceUrl === octoberSeason.sourceUrl));
+
+  for (const record of octoberAnime) {
+    const baseKeys = [
+      "anilistId",
+      "beijingTime",
+      "coverSource",
+      "coverAlt",
+      "coverUrl",
+      "episodeCount",
+      "episodeCountSource",
+      "episodeCountStatus",
+      "id",
+      "premiereDateBeijing",
+      "scheduleWeekday",
+      "sourceUrl",
+      "station",
+      "stationSource",
+      "timeStatus",
+      "titleSource",
+      "titleJa",
+      "titleZh",
+    ];
+    assert.deepEqual(
+      Object.keys(record)
+        .filter(
+          (key) =>
+            ![
+              "premiereEpisodeCount",
+              "premiereEpisodeCountSource",
+              "regularBroadcastStartDateBeijing",
+              "regularBroadcastStartDateSource",
+            ].includes(key),
+        )
+        .sort(),
+      [
+        ...baseKeys,
+        ...(record.premiereDateSource ? ["premiereDateSource"] : []),
+        ...(record.scheduleWeekdaySource ? ["scheduleWeekdaySource"] : []),
+        ...(record.beijingTimeSource ? ["beijingTimeSource"] : []),
+        ...(record.premiereKind ? ["premiereKind"] : []),
+        ...(record.scheduleSourceName
+          ? [
+              "episodeSchedules",
+              "episodeSchedulesSource",
+              "scheduleChannel",
+              "scheduleSourceName",
+              "scheduleSourceUrl",
+            ]
+          : []),
+      ].sort(),
+    );
+  }
+
+  const ids = new Set(octoberAnime.map(({ id }) => id));
+  for (const id of [
+    "jojo-sbr-2nd-3rd",
+    "cyberpunk-edgerunners-2",
+    "kusuriya-3",
+    "ao-no-hako-2",
+    "black-clover-2",
+    "mahou-ikusei-restart",
+    "yukionna-noroi",
+    "pan-dorobou",
+  ]) {
+    assert.ok(ids.has(id), `missing YUC catalog title: ${id}`);
+  }
+  for (const titleZh of [
+    "天是红河岸",
+    "被追放的转生重骑士 用游戏知识开无双",
+    "小鲨鱼去郊游 第2期",
+    "名侦探 光之美少女",
+    "拜托了偶像公主",
+  ]) {
+    assert.ok(
+      octoberAnime.every((record) => record.titleZh !== titleZh),
+      `unexpected carry-over title in October catalog: ${titleZh}`,
+    );
+  }
+});
+
+test("uses YUC October episode totals when listed and AniList otherwise", () => {
+  const byId = new Map(octoberAnime.map((record) => [record.id, record]));
+
+  assert.deepEqual(
+    ["jojo-sbr-2nd-3rd", "cyberpunk-edgerunners-2"].map((id) => ({
+      episodeCount: byId.get(id)?.episodeCount,
+      episodeCountSource: byId.get(id)?.episodeCountSource,
+      episodeCountStatus: byId.get(id)?.episodeCountStatus,
+    })),
+    [
+      { episodeCount: 11, episodeCountSource: "YUC", episodeCountStatus: "exact" },
+      { episodeCount: 10, episodeCountSource: "YUC", episodeCountStatus: "exact" },
+    ],
+  );
+
+  const aniListEpisodeCounts = {
+    "aoashi-2": 24,
+    "tougen-anki-2": 24,
+    "romeria-senki": 24,
+    "shin-keroro": 24,
+    "marronnier-7": 20,
+    "dark-machine": 11,
+    "cheat-fuyo-majutsushi": 10,
+  };
+  for (const [id, episodeCount] of Object.entries(aniListEpisodeCounts)) {
+    assert.deepEqual(
+      {
+        episodeCount: byId.get(id)?.episodeCount,
+        episodeCountSource: byId.get(id)?.episodeCountSource,
+        episodeCountStatus: byId.get(id)?.episodeCountStatus,
+      },
+      { episodeCount, episodeCountSource: "AniList", episodeCountStatus: "exact" },
+      id,
+    );
+  }
+
+  assert.deepEqual(
+    {
+      episodeCount: byId.get("tanuki-to-kitsune")?.episodeCount,
+      episodeCountSource: byId.get("tanuki-to-kitsune")?.episodeCountSource,
+      episodeCountStatus: byId.get("tanuki-to-kitsune")?.episodeCountStatus,
+      anilistId: byId.get("tanuki-to-kitsune")?.anilistId,
+    },
+    { episodeCount: 12, episodeCountSource: "estimated", episodeCountStatus: "estimated", anilistId: null },
+  );
+  assert.equal(octoberAnime.filter(({ episodeCountSource }) => episodeCountSource === "YUC").length, 2);
+});
+
+test("keeps October YUC network and time-unlisted releases in the pending group", () => {
+  const { pending } = groupByBeijingWeekday(octoberAnime);
+
+  assert.deepEqual(
+    [...pending.map(({ id }) => id)].sort(),
+    ["cyberpunk-edgerunners-2", "demons-crest", "fool-night", "jojo-sbr-2nd-3rd", "yukionna-noroi"],
+  );
+  assert.equal(octoberAnime.filter(({ beijingTime }) => beijingTime !== null).length, 64);
+});
+
+test("puts October YUC network releases in their premiere-date calendar slots", () => {
+  const dateOnly = (weekStart) =>
+    dateOnlyEventsForWeek(octoberAnime, weekStart).map(({ id, date, premiereKind }) => ({ id, date, premiereKind }));
+
+  assert.deepEqual(dateOnly("2026-09-21"), [{ id: "jojo-sbr-2nd-3rd", date: "2026-09-25", premiereKind: "network" }]);
+  assert.deepEqual(dateOnly("2026-10-19"), [{ id: "cyberpunk-edgerunners-2", date: "2026-10-20", premiereKind: "network" }]);
+  assert.deepEqual(dateOnly("2026-11-02"), [{ id: "demons-crest", date: "2026-11-06", premiereKind: "network" }]);
+  assert.deepEqual(dateOnly("2026-11-23"), [{ id: "fool-night", date: "2026-11-26", premiereKind: "network" }]);
+});
+
+test("keeps the October time-unlisted Sunday record off the timed calendar without inventing a time", () => {
+  const yukionna = octoberAnime.find(({ id }) => id === "yukionna-noroi");
+
+  assert.equal(yukionna?.premiereDateBeijing, "2026-10-04");
+  assert.equal(yukionna?.scheduleWeekday, "Sun");
+  assert.equal(yukionna?.beijingTime, null);
+  assert.equal(yukionna?.beijingTimeSource, undefined);
+  assert.equal(yukionna?.timeStatus, "unknown");
+  assert.deepEqual(eventsForWeek([yukionna], "2026-09-28"), []);
+  assert.deepEqual(dateOnlyEventsForWeek([yukionna], "2026-09-28"), []);
+});
+
+test("keeps October YUC weekly schedules as the highest-priority time source", () => {
+  const psyren = octoberAnime.find(({ id }) => id === "psyren");
+
+  assert.deepEqual(
+    {
+      anilistId: psyren?.anilistId,
+      premiereDateBeijing: psyren?.premiereDateBeijing,
+      premiereDateSource: psyren?.premiereDateSource,
+      scheduleWeekday: psyren?.scheduleWeekday,
+      scheduleWeekdaySource: psyren?.scheduleWeekdaySource,
+      beijingTime: psyren?.beijingTime,
+      beijingTimeSource: psyren?.beijingTimeSource,
+      timeStatus: psyren?.timeStatus,
+      scheduleSourceName: psyren?.scheduleSourceName,
+    },
+    {
+      anilistId: 204011,
+      premiereDateBeijing: "2026-10-05",
+      premiereDateSource: "YUC",
+      scheduleWeekday: "Mon",
+      scheduleWeekdaySource: "YUC",
+      beijingTime: "22:00",
+      beijingTimeSource: "YUC",
+      timeStatus: "exact",
+      scheduleSourceName: undefined,
+    },
+  );
+  assert.deepEqual(
+    eventsForWeek([psyren], "2026-10-05").map(({ episode, broadcastDate, time }) => ({ episode, broadcastDate, time })),
+    [{ episode: 1, broadcastDate: "2026-10-05", time: "22:00" }],
+  );
 });
 
 test("keeps only YUC network releases without listed clock times in the pending group", () => {
@@ -701,6 +911,7 @@ test("ships YUC historical catalogs with release and television schedule details
     "2026-january",
     "2026-april",
     "2026-july",
+    "2026-october",
   ]);
   assert.deepEqual(
     seasons.map(({ label }) => label),
@@ -732,6 +943,7 @@ test("ships YUC historical catalogs with release and television schedule details
       "2026 年 1 月番",
       "2026 年 4 月番",
       "2026 年 7 月番",
+      "2026 年 10 月番",
     ],
   );
   assert.deepEqual(
@@ -770,7 +982,7 @@ test("ships YUC historical catalogs with release and television schedule details
     ],
   );
 
-  const historicalSeasons = seasons.filter(({ id }) => id !== "2026-july");
+  const historicalSeasons = seasons.filter(({ id }) => id !== "2026-july" && id !== "2026-october");
   const historicalAnime = historicalSeasons.flatMap(({ anime: records }) => records);
   assert.ok(historicalAnime.length > 0);
   assert.ok(historicalSeasons.every(({ catalogCount, anime: records }) => catalogCount === records.length));
@@ -1335,6 +1547,8 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   const septemberToOctoberEvents = eventsForWeek(allAnime, "2025-09-29");
   const marchToAprilEvents = eventsForWeek(allAnime, "2026-03-30");
   const juneToJulyEvents = eventsForWeek(allAnime, "2026-06-29");
+  const septemberToOctober2026Events = eventsForWeek(allAnime, "2026-09-28");
+  const october2026Events = eventsForWeek(allAnime, "2026-10-05");
 
   assert.ok(january2020Events.some(({ id, episode }) => id === "anilist-104051" && episode === 1));
   assert.ok(april2020Events.some(({ id, episode }) => id === "anilist-111310" && episode === 1));
@@ -1363,6 +1577,8 @@ test("keeps all recorded seasons available while navigating calendar weeks", () 
   assert.ok(marchToAprilEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 1));
   assert.ok(juneToJulyEvents.some(({ id, episode }) => id === "anilist-183231" && episode === 14));
   assert.ok(juneToJulyEvents.some(({ id, episode }) => id === "lets-go-kaiki" && episode === 1));
+  assert.ok(septemberToOctober2026Events.some(({ id, episode }) => id === "vertex-force" && episode === 1));
+  assert.ok(october2026Events.some(({ id, episode }) => id === "psyren" && episode === 1));
 });
 
 test("treats zero and ambiguous AniList title matches as YUC-only records", () => {

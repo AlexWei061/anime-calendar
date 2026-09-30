@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
-import { anime } from "../data/anime.js";
+import { octoberAnime } from "../data/anime.js";
 
 const readSource = (path) => readFile(new URL(path, import.meta.url), "utf8");
 async function readStyles() {
@@ -40,7 +40,7 @@ test("server-renders a paged Beijing episode calendar", { skip: !process.env.TES
   );
   assert.match(cleanHtml, /<h1\b[^>]*id="page-heading-title"[^>]*>播出表<\/h1>/);
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-  assert.match(cleanHtml, /共 66 部 · 北京时间/);
+  assert.match(cleanHtml, /共 69 部 · 北京时间/);
   assert.match(html, /class="page-sidebar"/);
   assert.match(html, /class="page-heading"/);
   assert.match(html, /class="page-heading-controls"/);
@@ -73,33 +73,34 @@ test("server-renders a paged Beijing episode calendar", { skip: !process.env.TES
   assert.match(html, /<option value="2025-october">2025 年 10 月番<\/option>/);
   assert.match(html, /<option value="2026-january">2026 年 1 月番<\/option>/);
   assert.match(html, /<option value="2026-april">2026 年 4 月番<\/option>/);
-  assert.match(html, /<option value="2026-july" selected="">2026 年 7 月番<\/option>/);
+  assert.match(html, /<option value="2026-july">2026 年 7 月番<\/option>/);
+  assert.match(html, /<option value="2026-october" selected="">2026 年 10 月番<\/option>/);
   assert.match(html, /北京时间/);
   assert.match(html, /上一周/);
   assert.match(html, /下一周/);
   assert.match(html, /回到本周/);
-  assert.match(cleanHtml, /2026年7月6日 — 7月12日/);
+  assert.match(cleanHtml, /2026年10月5日 — 10月11日/);
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:22;--timeline-height:2160px/);
+  assert.match(html, /--timeline-hour-count:20;--timeline-height:1968px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
-  assert.match(html, /--event-top:1392px/);
+  assert.match(html, /--event-top:1440px/);
   assert.match(html, /--event-width:50%/);
   assert.doesNotMatch(html, /class="time-grid"/);
-  assert.match(cleanHtml, /<time class="time-group-label">21:30<\/time>/);
+  assert.match(cleanHtml, /<time class="time-group-label">21:00<\/time>/);
   assert.match(cleanHtml, /次日 01:00/);
   assert.match(cleanHtml, /次日 02:00/);
   assert.match(html, /class="calendar-event/);
   assert.match(html, /class="calendar-event-cover cover-sprite"/);
   assert.match(html, /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+-thumb\.webp\)/);
   assert.match(cleanHtml, /第 1 集/);
-  assert.match(html, /与奔跑在透明之夜的你 谈一场看不见的恋爱/);
-  assert.match(html, /透明な夜に駆ける君と、目に見えない恋をした。/);
-  assert.match(html, /欺诈游戏/);
-  assert.match(html, /第 14 集/);
-  assert.match(html, /YUC 2026年7月新番表.*首播/);
+  assert.match(html, /转生成哥布林有什么问题吗/);
+  assert.match(html, /転生ゴブリンだけど質問ある？/);
+  assert.match(html, /被追放的转生重骑士/);
+  assert.match(html, /第 15 集/);
+  assert.match(html, /YUC 2026年10月新番表.*首播/);
   assert.match(html, /网络放送／固定时刻未列出/);
   assert.doesNotMatch(html, /class="week-grid"|class="week-column"|class="anime-card"/);
   assert.doesNotMatch(html, /codex-preview/i);
@@ -134,7 +135,7 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
     cleanHtml.indexOf('<div class="mobile-day-picker"'),
     cleanHtml.indexOf('<div class="mobile-agenda"'),
   );
-  assert.match(mobilePicker, /<b>7\/6<\/b>/);
+  assert.match(mobilePicker, /<b>10\/5<\/b>/);
   const mobileAgendaStart = html.indexOf('<div class="mobile-agenda"');
   assert.ok(mobileAgendaStart >= 0);
   const mobileAgenda = html.slice(
@@ -148,16 +149,16 @@ test("renders one Monday-through-Sunday grid with timed and network-only program
   const networkCards = [
     ...html.matchAll(/<button\b(?=[^>]*class="[^"]*\bnetwork-card\b[^"]*")[^>]*>[\s\S]*?<\/button>/g),
   ].map(([card]) => card);
-  const networkOnlyCount = anime.filter(
+  const networkOnlyCount = octoberAnime.filter(
     ({ scheduleWeekday, beijingTime }) => !scheduleWeekday || !beijingTime,
   ).length;
   assert.equal(networkCards.length, networkOnlyCount);
-  assert.match(networkCards.join(""), /刃牙道 Part\.2/);
+  assert.match(networkCards.join(""), /赛博朋克 边缘行者2/);
   assert.match(networkCards.join(""), /background-image:url\(\/covers\/yuc\/sprites\/cover-sheet-\d+-thumb\.webp\)/);
   assert.match(networkCards.join(""), /\bcover-sprite\b/);
 
   const sourceLinks = [
-    ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/yuc\.wiki\/202607\/")[^>]*>/g),
+    ...html.matchAll(/<a\b(?=[^>]*href="https:\/\/yuc\.wiki\/202610\/")[^>]*>/g),
   ].map(([tag]) => tag);
   assert.ok(sourceLinks.length >= 1, "the compact page must retain its current-quarter source link");
   assert.ok(sourceLinks.every((tag) => /target="_blank"/.test(tag)));
@@ -198,7 +199,7 @@ test("renders same-time events side by side on one timeline day", { skip: !proce
     ...cleanHtml.matchAll(
       /<div\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*style="([^"]*)")[^>]*>([\s\S]*?)<\/div>/g,
     ),
-  ].filter(([, , card]) => /aria-label="[^"]*2026-07-06 21:30/.test(card));
+  ].filter(([, , card]) => /aria-label="[^"]*2026-10-05 21:00/.test(card));
 
   assert.equal(sameTimeEvents.length, 2);
   assert.equal(
@@ -232,8 +233,8 @@ test("renders same-time events side by side on one timeline day", { skip: !proce
     ),
     "compact covers must expose the title and episode when hovered",
   );
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /暴怒千金誓要复仇/);
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /世界舞动/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /转生成哥布林有什么问题吗/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /你好 我是受心上人所托/);
   assert.ok(
     sameTimeEvents.every(([markup]) =>
       /class="[^"]*\btimeline-event-compact\b[^"]*"/.test(markup),

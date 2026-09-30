@@ -243,8 +243,18 @@ async function catalogForYear(year) {
   );
   if (year !== 2026) return historyCatalog;
 
-  const { anime: julyCatalog } = await import(new URL("../data/anime.js", import.meta.url));
-  return [...historyCatalog, ...julyCatalog.map((record) => ({ ...record, aniListTitleJa: null }))];
+  const { anime: julyCatalog, octoberAnime } = await import(new URL("../data/anime.js", import.meta.url));
+  const fallById = new Map(
+    aniListCatalogs.fall2026.anime.map((record) => [Number(record.id.replace("anilist-", "")), record]),
+  );
+  return [
+    ...historyCatalog,
+    ...julyCatalog.map((record) => ({ ...record, aniListTitleJa: null })),
+    ...octoberAnime.map((record) => ({
+      ...record,
+      aniListTitleJa: record.anilistId === null ? null : fallById.get(record.anilistId)?.titleJa ?? null,
+    })),
+  ];
 }
 
 async function main() {
