@@ -1000,21 +1000,31 @@ test("ships YUC historical catalogs with release and television schedule details
     ],
   );
 
-  const historicalSeasons = seasons.filter(({ id }) => id !== "2026-july" && id !== "2026-october");
+  const currentSeasonIds = new Set(["2026-july", "2026-october"]);
+  const historicalSeasons = seasons.filter(({ id }) => !currentSeasonIds.has(id));
   const historicalAnime = historicalSeasons.flatMap(({ anime: records }) => records);
   assert.ok(historicalAnime.length > 0);
-  assert.ok(historicalSeasons.every(({ catalogCount, anime: records }) => catalogCount === records.length));
+  assert.ok(seasons.every(({ catalogCount, anime: records }) => catalogCount === records.length));
   assert.ok(
-    historicalAnime.every(
+    allAnime.every(
       ({ titleZh, coverUrl }) =>
         typeof titleZh === "string" &&
         titleZh.length > 0 &&
         typeof coverUrl === "string" &&
-        /^\/covers\/yuc\/history-202[0123456]-/.test(coverUrl),
+        coverUrl.endsWith(".webp"),
     ),
   );
+  for (const season of seasons) {
+    const coverPattern = currentSeasonIds.has(season.id)
+      ? /^\/covers\/yuc\/(?!history-)[a-z0-9-]+\.webp$/
+      : /^\/covers\/yuc\/history-202[0123456]-/;
+    assert.ok(
+      season.anime.every(({ coverUrl }) => coverPattern.test(coverUrl)),
+      `${season.id} 存在不符合约定的封面路径`,
+    );
+  }
   await Promise.all(
-    historicalAnime.map(({ coverUrl }) =>
+    allAnime.map(({ coverUrl }) =>
       access(new URL(`../public${spriteUrlFor(coverUrl)}`, import.meta.url)),
     ),
   );
