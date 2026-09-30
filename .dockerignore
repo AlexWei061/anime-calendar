@@ -17,6 +17,8 @@ outputs
 work
 .site-archives
 dist
+build
+examples
 coverage
 tsconfig.tsbuildinfo
 .DS_Store

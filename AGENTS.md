@@ -161,14 +161,14 @@ npm run typecheck                               # TypeScript 严格类型检查
 npm run build                                   # Next standalone 构建与资源打包
 npm run start                                   # 运行已有 standalone 构建，读取 .env
 npm run db:migrate                              # 对 DATA_DIR 执行 SQL 迁移
-npm run lint -- --ignore-pattern .worktrees     # ESLint，忽略嵌套 worktree
+npm run lint                                    # ESLint，忽略规则在 eslint.config.mjs 中维护
 npm test                                        # 类型检查、构建、真实 HTTP 服务及全部测试
 npm run test:unit                               # 无服务快速测试；HTTP/HTML 测试会跳过
 ```
 
 - 改 bug 先在对应的 `tests/*.test.mjs` 添加能失败的回归测试，再做最小修复。
 - 涉及“先行多集 + 后续周播”的排期，回归测试必须同时断言：先行日显示正确的集数范围且没有虚构时刻，首个固定周播日从下一集开始。
-- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint -- --ignore-pattern .worktrees` 和 `npm test`。`npm test` 会先运行严格类型检查和构建，再由 `scripts/test.mjs` 在临时 `DATA_DIR`、回环端口启动真实 standalone 服务，执行 `tests/*.test.mjs`，结束后清理服务与数据；不能用只跑 TypeScript 或 `test:unit` 替代它。
+- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint`（忽略规则在 `eslint.config.mjs` 中维护）和 `npm test`。`npm test` 会先运行严格类型检查和构建，再由 `scripts/test.mjs` 在临时 `DATA_DIR`、回环端口启动真实 standalone 服务，执行 `tests/*.test.mjs`，结束后清理服务与数据；不能用只跑 TypeScript 或 `test:unit` 替代它。
 - 认证／数据库／头像改动需要保留真实 HTTP 的注册登录、账号隔离、请求来源与大小限制、事务故障注入、旧范围迁移、头像失败清理、改密撤销会话及退出验证。数据生成改动需要保留稳定 ID、图集可重建与发布失败保留旧产物的测试；备份导入改动需要验证还原后的记录、头像和校验清单。
 - 只改动与需求直接相关的文件。不要顺带格式化大文件、升级依赖、重写模板配置或删除历史设计文档。
 - 测试应验证用户可见行为和数据约束；不要为了让测试通过而削弱数据校验、认证或无障碍语义。

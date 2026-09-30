@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Build artifacts, archives and nested worktrees:
+    "dist/**",
+    ".wrangler/**",
+    ".worktrees/**",
+    "outputs/**",
+    "examples/**",
   ]),
 ]);
 
