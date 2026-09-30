@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { authSessions, users } from "../../../../db/schema";
 import { hashPassword, validatePassword, verifyPassword } from "../../../../lib/auth.js";
-import { errorResponse, invalidRequest, limitAuth, privateJson, readJson, RequestError, requireSameOrigin } from "../../../../lib/server/http.js";
+import { errorResponse, invalidRequest, limitAuth, privateJson, readJson, recordAuthFailure, RequestError, requireSameOrigin } from "../../../../lib/server/http.js";
 import { expiredSessionCookie, getSessionUser } from "../../../auth";
 
 export async function POST(request: Request) {
@@ -12,8 +12,6 @@ export async function POST(request: Request) {
     if (limited) return limited;
     const user = await getSessionUser();
     if (!user) return privateJson({ error: "请先登录" }, { status: 401 });
-    const accountLimited = limitAuth(request, user.email);
-    if (accountLimited) return accountLimited;
     let currentPassword: string;
     let newPassword: string;
     try {
@@ -27,7 +25,7 @@ export async function POST(request: Request) {
     const db = await getDb();
     const storedPasswordHash = db.select({ passwordHash: users.passwordHash }).from(users).where(eq(users.email, user.email)).get()?.passwordHash;
     if (!storedPasswordHash || !(await verifyPassword(currentPassword, storedPasswordHash))) {
-      return privateJson({ error: "当前密码不正确" }, { status: 401 });
+      return recordAuthFailure("change-password", user.email) ?? privateJson({ error: "当前密码不正确" }, { status: 401 });
     }
     const passwordHash = await hashPassword(newPassword);
     const cookie = expiredSessionCookie(request.url);

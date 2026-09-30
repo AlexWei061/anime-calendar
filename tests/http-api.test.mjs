@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
-import { readdir } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
+import { createServer } from "node:net";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import Database from "better-sqlite3";
 import sharp from "sharp";
 import test from "node:test";
@@ -8,6 +13,57 @@ import { allAnime } from "../data/anime.js";
 import { episodeViewUnitsForAnime } from "../lib/anime-episode-views.js";
 
 const origin = process.env.TEST_BASE_URL;
+
+// Rate-limit regression tests need more auth requests than the shared 30/15min
+// client bucket allows, so they run against a dedicated server with fresh buckets.
+async function startIsolatedServer(t) {
+  const socket = createServer();
+  socket.listen(0, "127.0.0.1");
+  await once(socket, "listening");
+  const port = socket.address().port;
+  await new Promise((resolve) => socket.close(resolve));
+  const dataDirectory = await mkdtemp(join(tmpdir(), "anime-calendar-rate-limit-"));
+  const isolatedOrigin = `http://127.0.0.1:${port}`;
+  const server = spawn(process.execPath, ["scripts/start.mjs"], {
+    env: {
+      ...process.env,
+      DATA_DIR: dataDirectory,
+      APP_ORIGIN: isolatedOrigin,
+      ALLOW_INSECURE_LOCALHOST: "1",
+      TRUST_PROXY: "0",
+      NEXT_TELEMETRY_DISABLED: "1",
+      HOSTNAME: "127.0.0.1",
+      PORT: String(port),
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  let serverOutput = "";
+  for (const stream of [server.stdout, server.stderr]) {
+    stream.on("data", (chunk) => { serverOutput = (serverOutput + chunk.toString()).slice(-10_000); });
+  }
+  t.after(async () => {
+    server.kill("SIGTERM");
+    await Promise.race([once(server, "exit"), delay(5000)]);
+    if (server.exitCode === null && server.signalCode === null) server.kill("SIGKILL");
+    await rm(dataDirectory, { recursive: true, force: true });
+  });
+  const deadline = Date.now() + 60_000;
+  while (true) {
+    if (server.exitCode !== null || server.signalCode !== null) {
+      throw new Error(`Isolated test server exited before becoming ready: ${serverOutput}`);
+    }
+    try {
+      if ((await fetch(`${isolatedOrigin}/api/health`, { signal: AbortSignal.timeout(1000) })).ok) break;
+    } catch { /* wait for the owned server to start */ }
+    if (Date.now() > deadline) throw new Error("Isolated test server did not become healthy within 60 seconds");
+    await delay(200);
+  }
+  return (path, { method = "GET", cookie, json } = {}) => fetch(isolatedOrigin + path, {
+    method,
+    headers: { ...(method !== "GET" ? { Origin: isolatedOrigin } : {}), ...(cookie ? { Cookie: cookie } : {}), ...(json !== undefined ? { "Content-Type": "application/json" } : {}) },
+    body: json !== undefined ? JSON.stringify(json) : undefined,
+  });
+}
 
 test("production HTTP APIs preserve accounts, atomic records, sessions and private avatars", { skip: !origin }, async (t) => {
   const db = new Database(join(process.env.TEST_DATA_DIR, "anime-calendar.sqlite"));
@@ -111,4 +167,23 @@ test("production HTTP APIs preserve accounts, atomic records, sessions and priva
   await expect(await call("/api/auth/me", { cookie: bobCookie }), 401);
   await expect(await call("/storage/anime-calendar.sqlite"), 404);
   await expect(await call("/backups/manifest.json"), 404);
+});
+
+test("account auth buckets count only verification failures and are isolated per route", { skip: !origin }, async (t) => {
+  const call = await startIsolatedServer(t);
+  const victim = { email: "rate-victim@example.test", password: "victim-password", displayName: "Victim" };
+  assert.equal((await call("/api/auth/register", { method: "POST", json: victim })).status, 201);
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    assert.equal((await call("/api/auth/login", { method: "POST", json: { ...victim, password: "wrong-password" } })).status, 401);
+  }
+  assert.equal((await call("/api/auth/login", { method: "POST", json: victim })).status, 200, "correct password is never rejected by the account bucket");
+  const deniedLogin = await call("/api/auth/login", { method: "POST", json: { ...victim, password: "wrong-password" } });
+  assert.equal(deniedLogin.status, 429);
+  assert.ok(deniedLogin.headers.get("retry-after"), "429 login responses keep Retry-After");
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    assert.equal((await call("/api/auth/register", { method: "POST", json: victim })).status, 409);
+  }
+  assert.equal((await call("/api/auth/login", { method: "POST", json: victim })).status, 200, "register failures must not consume the login budget");
 });

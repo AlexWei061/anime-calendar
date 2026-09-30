@@ -3,7 +3,7 @@ import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
 import { avatarUrl } from "../../../../lib/avatar.js";
 import { validateEmail, verifyPassword } from "../../../../lib/auth.js";
-import { errorResponse, limitAuth, privateJson, readJson, RequestError, requireSameOrigin } from "../../../../lib/server/http.js";
+import { errorResponse, limitAuth, privateJson, readJson, recordAuthFailure, RequestError, requireSameOrigin } from "../../../../lib/server/http.js";
 import { createSession } from "../../../auth";
 
 const DUMMY_PASSWORD_HASH = "pbkdf2$100000$00000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000";
@@ -24,14 +24,12 @@ export async function POST(request: Request) {
       if (error instanceof RequestError) return errorResponse(error, "Unable to sign in");
       return privateJson({ error: "邮箱或密码不正确" }, { status: 401 });
     }
-    const accountLimited = limitAuth(request, email);
-    if (accountLimited) return accountLimited;
     const user = (await getDb())
       .select({ email: users.email, passwordHash: users.passwordHash, displayName: users.displayName, avatarVersion: users.avatarVersion })
       .from(users).where(eq(users.email, email)).get();
     const passwordMatches = await verifyPassword(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
     if (!user || !passwordMatches) {
-      return privateJson({ error: "邮箱或密码不正确" }, { status: 401 });
+      return recordAuthFailure("login", email) ?? privateJson({ error: "邮箱或密码不正确" }, { status: 401 });
     }
     const sessionCookie = await createSession(user.email, request.url, user.passwordHash);
     return privateJson(

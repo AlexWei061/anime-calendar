@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { authSessions, users } from "../../../../db/schema";
 import { hashPassword, normalizeDisplayName, validateEmail, validatePassword } from "../../../../lib/auth.js";
-import { errorResponse, invalidRequest, limitAuth, privateJson, readJson, requireSameOrigin } from "../../../../lib/server/http.js";
+import { errorResponse, invalidRequest, limitAuth, privateJson, readJson, recordAuthFailure, requireSameOrigin } from "../../../../lib/server/http.js";
 import { prepareSession } from "../../../auth";
 
 export async function POST(request: Request) {
@@ -21,11 +21,9 @@ export async function POST(request: Request) {
     } catch (error) {
       return invalidRequest(error, "Invalid registration");
     }
-    const accountLimited = limitAuth(request, email);
-    if (accountLimited) return accountLimited;
     const db = await getDb();
     if (db.select({ email: users.email }).from(users).where(eq(users.email, email)).get()) {
-      return privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+      return recordAuthFailure("register", email) ?? privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
     }
     const passwordHash = await hashPassword(password);
     const session = await prepareSession(email, request.url);
@@ -35,7 +33,7 @@ export async function POST(request: Request) {
       tx.insert(authSessions).values(session.record).run();
       return true;
     });
-    if (!created) return privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
+    if (!created) return recordAuthFailure("register", email) ?? privateJson({ error: "该邮箱已注册，请直接登录" }, { status: 409 });
     return privateJson({ email, displayName, avatarUrl: null }, { status: 201, headers: { "Set-Cookie": session.cookie } });
   } catch (error) {
     return errorResponse(error, "Unable to register");

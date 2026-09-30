@@ -116,7 +116,7 @@ test("production origin and cookie policy use configured HTTPS, with an explicit
 });
 
 test("auth limiting separates trusted clients, ignores untrusted forwarding, and expires with Retry-After", async (t) => {
-  const { limitAuth } = await import("../lib/server/http.js");
+  const { limitAuth, recordAuthFailure } = await import("../lib/server/http.js");
   const original = process.env.TRUST_PROXY;
   t.after(() => { if (original === undefined) delete process.env.TRUST_PROXY; else process.env.TRUST_PROXY = original; });
   let now = 1_900_000_000_000;
@@ -128,14 +128,18 @@ test("auth limiting separates trusted clients, ignores untrusted forwarding, and
   assert.equal(denied.status, 429);
   assert.equal(denied.headers.get("retry-after"), "900");
   assert.equal(limitAuth(request("192.0.2.2")), null);
-  for (let index = 0; index < 10; index += 1) assert.equal(limitAuth(request("192.0.2.2"), "one@example.com"), null);
-  assert.equal(limitAuth(request("192.0.2.3"), "one@example.com").status, 429);
+  for (let index = 0; index < 10; index += 1) assert.equal(recordAuthFailure("login", "one@example.com"), null);
+  const deniedAccount = recordAuthFailure("login", "one@example.com");
+  assert.equal(deniedAccount.status, 429);
+  assert.equal(deniedAccount.headers.get("retry-after"), "900");
+  assert.equal(recordAuthFailure("register", "one@example.com"), null, "failure budgets are isolated per route");
+  assert.equal(recordAuthFailure("login", "two@example.com"), null, "failure budgets are isolated per account");
   delete process.env.TRUST_PROXY;
   for (let index = 0; index < 30; index += 1) assert.equal(limitAuth(request(`192.0.2.${index + 1}`)), null);
   assert.equal(limitAuth(request("192.0.2.200")).status, 429);
   now += 15 * 60_000;
   assert.equal(limitAuth(request("192.0.2.200")), null);
-  assert.equal(limitAuth(request("192.0.2.200"), "one@example.com"), null);
+  assert.equal(recordAuthFailure("login", "one@example.com"), null);
 });
 
 test("failed avatar filesystem writes never advance the stored version", async (t) => {
