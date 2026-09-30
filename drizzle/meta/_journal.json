@@ -29,6 +29,13 @@
       "when": 1787551608226,
       "tag": "0003_avatar_version",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1790747809104,
+      "tag": "0004_serious_tag",
+      "breakpoints": true
     }
   ]
 }

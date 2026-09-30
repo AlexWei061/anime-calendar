@@ -1,0 +1,1 @@
+CREATE INDEX `auth_sessions_user_email_idx` ON `auth_sessions` (`user_email`);

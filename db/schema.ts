@@ -1,4 +1,4 @@
-import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   email: text("email").primaryKey(),
@@ -8,11 +8,15 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at").notNull(),
 });
 
-export const authSessions = sqliteTable("auth_sessions", {
-  tokenHash: text("token_hash").primaryKey(),
-  userEmail: text("user_email").notNull(),
-  expiresAt: integer("expires_at").notNull(),
-});
+export const authSessions = sqliteTable(
+  "auth_sessions",
+  {
+    tokenHash: text("token_hash").primaryKey(),
+    userEmail: text("user_email").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+  },
+  (table) => [index("auth_sessions_user_email_idx").on(table.userEmail)],
+);
 
 export const animeSelections = sqliteTable(
   "anime_selections",

@@ -21,7 +21,7 @@ test("SQLite migrations are repeatable, checksum checked, and preserve stored da
     .run("one@example.com", "existing-password-hash", "One", 1);
   migrateDatabase(db);
   assert.equal(db.prepare("SELECT password_hash FROM users").get().password_hash, "existing-password-hash");
-  assert.equal(db.prepare("SELECT count(*) AS count FROM __app_migrations").get().count, 4);
+  assert.equal(db.prepare("SELECT count(*) AS count FROM __app_migrations").get().count, 5);
   assert.equal(db.pragma("journal_mode", { simple: true }), "wal");
   assert.equal(db.pragma("busy_timeout", { simple: true }), 5000);
   db.prepare("UPDATE __app_migrations SET checksum = 'changed' WHERE id = ?").run("0000_anime-selections");
@@ -161,5 +161,5 @@ test("a migration failure rolls back both schema changes and applied metadata", 
   t.after(() => db.close());
   assert.throws(() => migrateDatabase(db, migrations), /no such table/);
   assert.equal(db.prepare("SELECT name FROM sqlite_master WHERE name = 'rollback_probe'").get(), undefined);
-  assert.equal(db.prepare("SELECT count(*) AS count FROM __app_migrations").get().count, 4);
+  assert.equal(db.prepare("SELECT count(*) AS count FROM __app_migrations").get().count, 5);
 });
