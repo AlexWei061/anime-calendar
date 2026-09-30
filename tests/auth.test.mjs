@@ -16,13 +16,19 @@ test("hashPassword/verifyPassword round-trip with per-password salts", async () 
   const first = await hashPassword("correct horse battery staple");
   const second = await hashPassword("correct horse battery staple");
 
-  assert.match(first, /^pbkdf2\$100000\$[0-9a-f]{32}\$[0-9a-f]{64}$/);
+  assert.match(first, /^pbkdf2\$210000\$[0-9a-f]{32}\$[0-9a-f]{64}$/);
   assert.notEqual(first, second);
   assert.equal(await verifyPassword("correct horse battery staple", first), true);
   assert.equal(await verifyPassword("correct horse battery staple", second), true);
   assert.equal(await verifyPassword("wrong password", first), false);
   assert.equal(await verifyPassword("anything", "not-a-stored-hash"), false);
   assert.equal(await verifyPassword("anything", "pbkdf2$abc$zz$zz"), false);
+});
+
+test("hashes stored with lower legacy iteration counts still verify", async () => {
+  const legacy = "pbkdf2$100000$00112233445566778899aabbccddeeff$2a080fdedce213934a91e8142d2eb7165be949c295612ce4b7d87be90ae208b6";
+  assert.equal(await verifyPassword("correct horse battery staple", legacy), true);
+  assert.equal(await verifyPassword("wrong password", legacy), false);
 });
 
 test("validateEmail normalizes case and whitespace and rejects malformed input", () => {

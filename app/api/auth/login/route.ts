@@ -6,7 +6,7 @@ import { validateEmail, verifyPassword } from "../../../../lib/auth.js";
 import { errorResponse, limitAuth, privateJson, readJson, recordAuthFailure, RequestError, requireSameOrigin } from "../../../../lib/server/http.js";
 import { createSession } from "../../../auth";
 
-const DUMMY_PASSWORD_HASH = "pbkdf2$100000$00000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000";
+const DUMMY_PASSWORD_HASH = "pbkdf2$210000$00000000000000000000000000000000$0000000000000000000000000000000000000000000000000000000000000000";
 
 export async function POST(request: Request) {
   try {

@@ -131,7 +131,7 @@ test("keeps local account state when logout revocation fails", async () => {
 
 test("uses a dummy PBKDF2 hash for unknown-email login attempts", async () => {
   const login = await readSource("../app/api/auth/login/route.ts");
-  assert.match(login, /const DUMMY_PASSWORD_HASH = "pbkdf2\$100000\$0{32}\$0{64}";/);
+  assert.match(login, /const DUMMY_PASSWORD_HASH = "pbkdf2\$210000\$0{32}\$0{64}";/);
   assert.match(login, /const passwordMatches = await verifyPassword\(password, user\?\.passwordHash \?\? DUMMY_PASSWORD_HASH\);/);
   assert.match(login, /if \(!user \|\| !passwordMatches\) \{/);
 });
