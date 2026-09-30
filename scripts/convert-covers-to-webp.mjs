@@ -11,7 +11,7 @@ export async function convertCoversToWebp(projectRoot) {
   const dataFiles = [
     "data/anime.js",
     ...(await readdir(join(projectRoot, "data")))
-      .filter((file) => /^yuc-history-\d+\.js$/.test(file))
+      .filter((file) => /^yuc-(?:history|current)-\d+\.js$/.test(file))
       .map((file) => `data/${file}`),
   ];
 

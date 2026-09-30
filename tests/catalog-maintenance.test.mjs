@@ -79,10 +79,11 @@ test("converts newly downloaded PNGs and discovers future catalog years without 
   const source = JSON.stringify({ coverUrl: "/covers/yuc/new.png", yucCoverUrl: "https://images.test/new.png" });
   await writeFile(join(root, "data/anime.js"), source);
   await writeFile(join(root, "data/yuc-history-2027.js"), source);
+  await writeFile(join(root, "data/yuc-current-202701.js"), source);
   await sharp({ create: { width: 4, height: 5, channels: 3, background: "red" } })
     .png().toFile(join(root, "public/covers/yuc/new.png"));
   assert.equal(await convertCoversToWebp(root), 1);
-  for (const name of ["anime.js", "yuc-history-2027.js"]) {
+  for (const name of ["anime.js", "yuc-history-2027.js", "yuc-current-202701.js"]) {
     assert.deepEqual(JSON.parse(await readFile(join(root, "data", name), "utf8")), {
       coverUrl: "/covers/yuc/new.webp", yucCoverUrl: "https://images.test/new.png",
     });
