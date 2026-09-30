@@ -12,20 +12,21 @@ export type Anime = {
   coverUrl: string;
   coverAlt: string;
   episodeCount: number;
+  episodeCountStatus: "estimated" | "exact";
   premiereDateBeijing: string | null;
   scheduleWeekday: string | null;
   beijingTime: string | null;
-  station?: string;
+  station: string;
   sourceUrl: string;
   premiereKind?: "network";
-  episodeCountStatus?: "estimated" | "exact";
+  premiereEpisodeCount?: number;
+  regularBroadcastStartDateBeijing?: string;
   episodeSchedules?: EpisodeSchedule[];
   scheduleChannel?: string;
 };
 export type Season = {
   id: string;
   firstWeekStart: string;
-  timelineStartHour: number;
   label: string;
   timeZoneLabel: string;
   updatedAt: string;
