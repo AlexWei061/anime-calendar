@@ -9,7 +9,7 @@ import { useViewer } from "../hooks/use-viewer";
 import { PageHeading } from "./page-heading";
 import { SignInPrompt } from "./account";
 import { StatisticsAnimeCard } from "./statistics-anime-card";
-import type { AnimeProgress, BroadcastEvent, StatisticsSection, StatisticsView } from "../types";
+import type { AnimeProgress, BroadcastEvent, DetailSelection, StatisticsSection, StatisticsView } from "../types";
 
 export function StatisticsPage({ onSearch, view, onViewChange }: {
   onSearch: (query: string) => void;
@@ -39,6 +39,21 @@ export function StatisticsPage({ onSearch, view, onViewChange }: {
   const todayBroadcasts = useMemo(() => currentBeijingDate
     ? broadcastsForDate(selectedAnime, currentBeijingDate) as BroadcastEvent[]
     : [], [selectedAnime, currentBeijingDate]);
+  const todayBroadcastCards = useMemo(() => todayBroadcasts.map((event) => ({
+    event,
+    isWatched: isEpisodeViewWatched(watchedEpisodes ?? [], {
+      animeId: event.id,
+      episodeStart: event.episodeStart,
+      episode: event.episode,
+    }),
+    selection: {
+      selectedDate: event.broadcastDate,
+      selectedTime: event.broadcastTime,
+      selectedEpisodeStart: event.episodeStart,
+      selectedEpisode: event.episode,
+      selectedReleaseKind: event.releaseKind === "network" ? "network" : undefined,
+    } as DetailSelection,
+  })), [todayBroadcasts, watchedEpisodes]);
   const isStatisticsSectionCollapsed = (section: StatisticsSection) => collapsedStatisticsSections.includes(section);
   const toggleStatisticsSection = (section: StatisticsSection) => {
     onViewChange({
@@ -78,28 +93,13 @@ export function StatisticsPage({ onSearch, view, onViewChange }: {
               </button>
             </div>
             <div id="statistics-today-content" hidden={isStatisticsSectionCollapsed("today")}>
-              {todayBroadcasts.length ? (
+              {todayBroadcastCards.length ? (
                 <div className="statistics-anime-card-list">
-                  {todayBroadcasts.map((event) => {
-                    const watchedEpisode = {
-                      animeId: event.id,
-                      episodeStart: event.episodeStart,
-                      episode: event.episode,
-                    };
-                    const isWatched = isEpisodeViewWatched(watchedEpisodes, watchedEpisode);
-
-                    return (
-                      <span key={event.id + "-" + event.episodeStart + "-" + event.episode}>
-                        <StatisticsAnimeCard record={event} description={`${event.releaseKind === "network" ? "网络配信 · 时刻未定" : event.broadcastTime} · ${formatEpisodeLabel(event.episodeStart, event.episode)}`} status={isWatched ? "已看" : "待看"} selection={{
-                          selectedDate: event.broadcastDate,
-                          selectedTime: event.broadcastTime,
-                          selectedEpisodeStart: event.episodeStart,
-                          selectedEpisode: event.episode,
-                          selectedReleaseKind: event.releaseKind === "network" ? "network" : undefined,
-                        }} />
-                      </span>
-                    );
-                  })}
+                  {todayBroadcastCards.map(({ event, isWatched, selection }) => (
+                    <span key={event.id + "-" + event.episodeStart + "-" + event.episode}>
+                      <StatisticsAnimeCard record={event} description={`${event.releaseKind === "network" ? "网络配信 · 时刻未定" : event.broadcastTime} · ${formatEpisodeLabel(event.episodeStart, event.episode)}`} status={isWatched ? "已看" : "待看"} selection={selection} />
+                    </span>
+                  ))}
                 </div>
               ) : (
                 <p className="statistics-empty">今天没有已收藏番剧安排播出。</p>

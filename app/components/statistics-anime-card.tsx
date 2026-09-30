@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { CoverArt } from "./cover-art";
 import { useAnimeDetail } from "./anime-detail";
 import type { Anime, DetailSelection } from "../types";
 
-export function StatisticsAnimeCard({ record, description, status, selection = {}, watchedEpisodeCount }: {
+export const StatisticsAnimeCard = memo(function StatisticsAnimeCard({ record, description, status, selection = {}, watchedEpisodeCount }: {
   record: Anime;
   description: string;
   status?: string;
@@ -32,4 +33,4 @@ export function StatisticsAnimeCard({ record, description, status, selection = {
       {status ? <span className="statistics-anime-card-status">{status}</span> : null}
     </button>
   );
-}
+});

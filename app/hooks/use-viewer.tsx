@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { episodeViewKey, episodeViewUnitsForRange, isEpisodeViewWatched, updateEpisodeViews } from "../../lib/anime-episode-views.js";
 import { restoreEpisodeViews } from "./library-state.js";
 import type { AuthUser, WatchedEpisode } from "../types";
@@ -45,7 +45,7 @@ function useViewerState() {
   const [savingEpisodeKeys, setSavingEpisodeKeys] = useState<string[]>([]);
   const savingEpisodeKeysRef = useRef(new Set<string>());
 
-  const replaceSession = (user: AuthUser | null) => {
+  const replaceSession = useCallback((user: AuthUser | null) => {
     sessionVersionRef.current += 1;
     setSessionVersion(sessionVersionRef.current);
     setCurrentUser(user);
@@ -59,7 +59,7 @@ function useViewerState() {
     setIsSavingSelection(false);
     savingEpisodeKeysRef.current = new Set();
     setSavingEpisodeKeys([]);
-  };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -131,7 +131,7 @@ function useViewerState() {
 
   // Set-Cookie is applied before React can reject a stale response.
   // Repeated clicks and all account entry points must share the same lock.
-  const changeSession = async (request: () => Promise<void>) => {
+  const changeSession = useCallback(async (request: () => Promise<void>) => {
     if (sessionMutationRef.current) throw new Error("账号操作正在进行，请稍候。");
     sessionMutationRef.current = true;
     setIsChangingSession(true);
@@ -141,40 +141,40 @@ function useViewerState() {
       sessionMutationRef.current = false;
       setIsChangingSession(false);
     }
-  };
+  }, []);
 
-  const authenticate = (mode: "login" | "register", body: { email: string; password: string; displayName?: string; }) => changeSession(async () => {
+  const authenticate = useCallback((mode: "login" | "register", body: { email: string; password: string; displayName?: string; }) => changeSession(async () => {
     const version = sessionVersionRef.current;
     const user = parseUser(await accountRequest(mode, "POST", body));
     if (sessionVersionRef.current !== version) return;
     replaceSession(user);
-  });
+  }), [changeSession, replaceSession]);
 
-  const signOut = () => changeSession(async () => {
+  const signOut = useCallback(() => changeSession(async () => {
     const version = sessionVersionRef.current;
     await accountRequest("logout", "POST");
     if (sessionVersionRef.current === version) replaceSession(null);
-  });
+  }), [changeSession, replaceSession]);
 
-  const changePassword = (currentPassword: string, newPassword: string) => changeSession(async () => {
+  const changePassword = useCallback((currentPassword: string, newPassword: string) => changeSession(async () => {
     const version = sessionVersionRef.current;
     await accountRequest("change-password", "POST", { currentPassword, newPassword });
     if (sessionVersionRef.current === version) replaceSession(null);
-  });
+  }), [changeSession, replaceSession]);
 
-  const updateAvatar = (avatarUrl: string | null) => {
+  const updateAvatar = useCallback((avatarUrl: string | null) => {
     if (sessionVersionRef.current === sessionVersion) {
       setCurrentUser((user) => user ? { ...user, avatarUrl } : null);
     }
-  };
+  }, [sessionVersion]);
 
-  const deleteAvatar = async () => {
+  const deleteAvatar = useCallback(async () => {
     const version = sessionVersionRef.current;
     await accountRequest("avatar", "DELETE");
     if (sessionVersionRef.current === version) updateAvatar(null);
-  };
+  }, [updateAvatar]);
 
-  const toggleAnimeSelection = async (animeId: string) => {
+  const toggleAnimeSelection = useCallback(async (animeId: string) => {
     if (!selectedAnimeIds || selectionSavingRef.current) return;
     const version = sessionVersionRef.current;
     const previousAnimeIds = selectedAnimeIds;
@@ -203,9 +203,9 @@ function useViewerState() {
         setIsSavingSelection(false);
       }
     }
-  };
+  }, [selectedAnimeIds]);
 
-  const toggleEpisodeView = async (watchedEpisode: WatchedEpisode) => {
+  const toggleEpisodeView = useCallback(async (watchedEpisode: WatchedEpisode) => {
     const previous = watchedEpisodesRef.current;
     if (previous === null) return;
     const version = sessionVersionRef.current;
@@ -239,13 +239,17 @@ function useViewerState() {
         setSavingEpisodeKeys([...savingEpisodeKeysRef.current]);
       }
     }
-  };
+  }, []);
 
-  return {
+  return useMemo(() => ({
     currentUser, authLoaded, isChangingSession, authenticate, signOut, changePassword, updateAvatar, deleteAvatar,
     selectedAnimeIds, selectionError, isSavingSelection, toggleAnimeSelection,
     watchedEpisodes, watchedEpisodeError, savingEpisodeKeys, toggleEpisodeView,
-  };
+  }), [
+    currentUser, authLoaded, isChangingSession, authenticate, signOut, changePassword, updateAvatar, deleteAvatar,
+    selectedAnimeIds, selectionError, isSavingSelection, toggleAnimeSelection,
+    watchedEpisodes, watchedEpisodeError, savingEpisodeKeys, toggleEpisodeView,
+  ]);
 }
 
 const ViewerContext = createContext<ReturnType<typeof useViewerState> | null>(null);

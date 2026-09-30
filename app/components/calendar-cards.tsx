@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { memo, type CSSProperties } from "react";
 import { formatBroadcastTime, formatEpisodeLabel, timelineOffsetMinutes } from "../../lib/calendar.js";
 import { episodeViewKey, episodeViewUnitsForRange, isEpisodeViewWatched } from "../../lib/anime-episode-views.js";
 import { useViewer } from "../hooks/use-viewer";
@@ -6,7 +6,7 @@ import { CoverArt } from "./cover-art";
 import { useAnimeDetail } from "./anime-detail";
 import type { CalendarEvent, DateOnlyEvent } from "../types";
 
-export function CalendarEventCard({ event, layout, showTime = false, timelineStartMinutes = 5 * 60, timelineEndMinutes = 29 * 60 }: {
+export const CalendarEventCard = memo(function CalendarEventCard({ event, layout, showTime = false, timelineStartMinutes = 5 * 60, timelineEndMinutes = 29 * 60 }: {
   event: CalendarEvent;
   layout?: { lane: number; laneCount: number; };
   showTime?: boolean;
@@ -98,9 +98,9 @@ export function CalendarEventCard({ event, layout, showTime = false, timelineSta
       {isFollowed ? <span className="calendar-event-followed" title="已追番" aria-hidden="true" /> : null}
     </div>
   );
-}
+});
 
-export function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
+export const DateOnlyEventCard = memo(function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
   const openDetail = useAnimeDetail();
   const { selectedAnimeIds } = useViewer();
   const isFollowed = selectedAnimeIds?.includes(event.id) ?? false;
@@ -125,4 +125,4 @@ export function DateOnlyEventCard({ event }: { event: DateOnlyEvent; }) {
     <strong>{event.titleZh}</strong>
     <span>网络配信 · {episodeLabel} · 时刻未定</span>
   </button>;
-}
+});
