@@ -244,7 +244,7 @@ test("ships an auditable July 2026 TV anime snapshot", () => {
   assert.deepEqual(season, {
     label: "2026 年 7 月番",
     timeZoneLabel: "北京时间（UTC+8）",
-    updatedAt: "2026-09-01",
+    updatedAt: "2026-09-30",
     catalogCount: 66,
     sourceName: "YUC 2026年7月新番表",
     sourceUrl: "https://yuc.wiki/202607/",
@@ -707,6 +707,9 @@ test("uses current YUC July episode totals as the highest-priority source", () =
     "victoria": 9,
     "tsuiho-juki": 26,
     "20th-century-electric-catalog": 13,
+    "red-river": 24,
+    "hellmode-2": 13,
+    "100-girlfriends-3": 12,
   };
 
   assert.equal(anime.every(({ episodeCount }) => Number.isInteger(episodeCount) && episodeCount > 0), true);
@@ -723,7 +726,7 @@ test("uses current YUC July episode totals as the highest-priority source", () =
     );
   }
 
-  assert.equal(anime.filter(({ episodeCountSource }) => episodeCountSource === "YUC").length, 64);
+  assert.equal(anime.filter(({ episodeCountSource }) => episodeCountSource === "YUC").length, 66);
   assert.deepEqual(
     ["100-girlfriends-3", "hellmode-2"].map((id) => {
       const record = anime.find((candidate) => candidate.id === id);
@@ -734,14 +737,29 @@ test("uses current YUC July episode totals as the highest-priority source", () =
       };
     }),
     [
-      { id: "100-girlfriends-3", episodeCount: 12, episodeCountSource: "AniList" },
-      { id: "hellmode-2", episodeCount: 12, episodeCountSource: "estimated" },
+      { id: "100-girlfriends-3", episodeCount: 12, episodeCountSource: "YUC" },
+      { id: "hellmode-2", episodeCount: 13, episodeCountSource: "YUC" },
     ],
   );
   assert.equal(anime.find(({ id }) => id === "yume-mita")?.premiereEpisodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "mushoku-3")?.premiereEpisodeCount, 2);
   assert.equal(anime.find(({ id }) => id === "cyborg-009-nemesis")?.episodeCount, 3);
   assert.equal(anime.find(({ id }) => id === "rezero-4-part-2")?.episodeCount, 8);
+});
+
+test("extends Red River's weekly run into October with the corrected 24-episode total", () => {
+  const redRiver = anime.find(({ id }) => id === "red-river");
+
+  assert.equal(redRiver?.episodeCount, 24);
+  assert.equal(redRiver?.episodeCountSource, "YUC");
+  assert.deepEqual(
+    eventsForWeek([redRiver], "2026-09-28").map(({ episode, broadcastDate, time }) => ({ episode, broadcastDate, time })),
+    [{ episode: 13, broadcastDate: "2026-09-29", time: "24:35" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([redRiver], "2026-10-05").map(({ episode, broadcastDate, time }) => ({ episode, broadcastDate, time })),
+    [{ episode: 14, broadcastDate: "2026-10-06", time: "24:35" }],
+  );
 });
 
 test("schedules Mushoku Tensei's double-episode premiere before its weekly Sunday slot", () => {

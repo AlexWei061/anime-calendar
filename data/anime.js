@@ -11,7 +11,7 @@ import { syoboiHistory2026 } from "./syoboi-history-2026.js";
 export const season = {
   "label": "2026 年 7 月番",
   "timeZoneLabel": "北京时间（UTC+8）",
-  "updatedAt": "2026-09-01",
+  "updatedAt": "2026-09-30",
   "catalogCount": 66,
   "sourceName": "YUC 2026年7月新番表",
   "sourceUrl": "https://yuc.wiki/202607/"
@@ -309,7 +309,7 @@ const yucAnime = [
   },
   {
     "id": "red-river",
-    "episodeCount": 12,
+    "episodeCount": 24,
     "titleZh": "天是红河岸",
     "titleJa": "天は赤い河のほとり",
     "coverUrl": "/covers/yuc/red-river.webp",
@@ -648,7 +648,7 @@ const yucAnime = [
   },
   {
     "id": "hellmode-2",
-    "episodeCount": 12,
+    "episodeCount": 13,
     "titleZh": "地狱模式 喜欢速通游戏的玩家在废设定异世界无双 第2期",
     "titleJa": "ヘルモード ～やり込み好きのゲーマーは廃設定の異世界で無双する～",
     "coverUrl": "/covers/yuc/hellmode-2.webp",
@@ -918,7 +918,6 @@ for (const record of summer2026.anime) {
   julyAniListByTitle.set(title, julyAniListByTitle.has(title) ? null : record);
 }
 
-const yucUnconfirmedEpisodeCountIds = new Set(["100-girlfriends-3", "hellmode-2"]);
 const verifiedSyoboiSchedules = new Map(syoboiHistory2026.entries.map((entry) => [entry.recordId, entry]));
 
 function applyYucSources(record, aniList, hasYucEpisodeCount) {
@@ -943,11 +942,7 @@ function applyYucSources(record, aniList, hasYucEpisodeCount) {
 }
 
 function withYucSources(record) {
-  return applyYucSources(
-    record,
-    julyAniListByTitle.get(normalizeTitle(record.titleJa)),
-    !yucUnconfirmedEpisodeCountIds.has(record.id),
-  );
+  return applyYucSources(record, julyAniListByTitle.get(normalizeTitle(record.titleJa)), true);
 }
 
 function weekdayForDate(isoDate) {
