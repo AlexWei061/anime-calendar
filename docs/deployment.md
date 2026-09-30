@@ -83,6 +83,18 @@ docker compose exec -T app node scripts/backup.mjs /app/backups/2026-09-08-befor
 
 每次使用一个尚不存在的目录名。成功后把宿主机对应的 `backups/2026-09-08-before-upgrade/` 整个目录复制到另一台设备，并定期演练恢复。不要只复制运行中的 `.sqlite` 文件，因为 WAL 中可能还有已提交的数据。备份过程若遇到头像同时被更换／删除会失败并清理不完整产物，此时重新运行即可。
 
+### 定时备份
+
+日常备份可以交给宿主机 cron，每天自动执行一次在线备份，目录名按日期生成：
+
+```cron
+17 4 * * * cd /srv/anime-calendar && /usr/bin/docker compose exec -T app node scripts/backup.mjs "/app/backups/daily-$(date +\%Y-\%m-\%d)" >> /var/log/anime-calendar-backup.log 2>&1
+```
+
+把 `/srv/anime-calendar` 换成服务器上的实际项目路径。cron 的 `%` 需要转义为 `\%`，每日目录名因此不会重复；若某天备份失败，日志里能看到错误，第二天运行时换一个尚不存在的目录名即可。
+
+定时备份只解决"有备份"，还要自己决定保留多少份和放在哪里：例如只保留最近 14 份每日备份，用一条定时 `find backups -maxdepth 1 -name 'daily-*' -mtime +14 -exec rm -rf {} +` 清理更早的目录；并定期把 `backups/` 整个复制到另一台设备或对象存储，单台服务器上的备份挡不住整机故障。任何保留策略都不能替代定期演练恢复。
+
 升级容器不会删除 bind mount 数据。Caddy 证书保存在 `caddy_data` 和 `caddy_config` 命名卷中，正常停机使用 `docker compose down` 即可。
 
 ## 4. 更新与回退
