@@ -145,7 +145,7 @@ export function StatisticsPage({ onSearch, view, onViewChange }: {
                         });
                       }}
                     >
-                      <option value="">All</option>
+                      <option value="">全部</option>
                       {overallProgressBySeason.map(({ season }) => (
                         <option key={season.id} value={season.id}>
                           {season.label}

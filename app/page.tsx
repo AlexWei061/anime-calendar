@@ -47,6 +47,7 @@ function CalendarApp() {
     else url.searchParams.set("page", page);
     window.history.pushState(null, "", url);
     setActivePage(page);
+    window.scrollTo(0, 0);
   };
   const submitPageSearch = (query: string) => {
     setAnimeQuery(query);

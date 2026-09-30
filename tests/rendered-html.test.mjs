@@ -743,7 +743,7 @@ test("preserves statistics collapse, natural-day releases, season grouping, and 
     assert.match(statistics, new RegExp(`aria-controls="statistics-${section}-content"`));
     assert.match(statistics, new RegExp(`id="statistics-${section}-content" hidden=\\{isStatisticsSectionCollapsed\\("${section}"\\)\\}`));
   }
-  assert.match(statistics, /<option value="">All<\/option>/);
+  assert.match(statistics, /<option value="">全部<\/option>/);
   assert.match(statistics, /getElementById\(`statistics-overview-season-\$\{seasonId\}`\)/);
   assert.match(statistics, /scrollIntoView\(\{ behavior: "smooth", block: "start" \}\)/);
   assert.match(statistics, /displayedOverallProgressBySeason\.map\(\(\{ season, progress \}\) =>/);
