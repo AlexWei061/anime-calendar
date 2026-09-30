@@ -1,11 +1,12 @@
 import type { Season } from "../types";
+import { selectionLoadErrorMessage } from "../display";
 import { useViewer } from "../hooks/use-viewer";
 import { CoverArt } from "./cover-art";
 import { SignInPrompt } from "./account";
 
 export function SelectionPanel({ activeSeason }: { activeSeason: Season; }) {
   const { currentUser, selectedAnimeIds, selectionError, isSavingSelection, toggleAnimeSelection } = useViewer();
-  const selectionLoadError = selectionError ?? (!currentUser ? "登录后可同步你的追番列表。" : null);
+  const selectionLoadError = selectionLoadErrorMessage(currentUser, selectionError);
   return (
     <section className="anime-selection-panel" aria-labelledby="anime-selection-heading">
       <details className="anime-selection-details">

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { matchesAnimeTitle } from "../../lib/anime-search.js";
 import { progressForAnime } from "../../lib/anime-statistics.js";
 import { allAnime, seasonLabelByAnimeId } from "../catalog";
-import { progressStatusLabel } from "../display";
+import { progressStatusLabel, selectionLoadErrorMessage } from "../display";
 import { useViewer } from "../hooks/use-viewer";
 import { PageHeading } from "./page-heading";
 import { StatisticsAnimeCard } from "./statistics-anime-card";
@@ -16,7 +16,7 @@ export function SearchPage({ animeQuery, setAnimeQuery }: { animeQuery: string; 
   const searchProgressByAnimeId = useMemo(() => new Map(
     (progressForAnime(searchResults, watchedEpisodes ?? []) as AnimeProgress[]).map((progress) => [progress.record.id, progress]),
   ), [searchResults, watchedEpisodes]);
-  const selectionLoadError = selectionError ?? (!currentUser ? "登录后可同步你的追番列表。" : null);
+  const selectionLoadError = selectionLoadErrorMessage(currentUser, selectionError);
   const searchProgressError = selectionLoadError ?? watchedEpisodeError;
   const isSearchProgressLoading = (selectedAnimeIds === null || watchedEpisodes === null) && !searchProgressError;
   return <>

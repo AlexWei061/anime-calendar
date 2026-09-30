@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { dateOnlyEventsForWeek, eventsForWeek, startOfWeek } from "../../lib/calendar.js";
 import { episodeViewUnitsForRange, isEpisodeViewWatched } from "../../lib/anime-episode-views.js";
-import { shortDate } from "../display";
+import { shortDate, selectionLoadErrorMessage } from "../display";
 import { useViewer } from "../hooks/use-viewer";
 import { SignInPrompt } from "./account";
 import { CalendarEventCard, DateOnlyEventCard } from "./calendar-cards";
@@ -9,7 +9,7 @@ import type { Anime, CalendarEvent, DateOnlyEvent } from "../types";
 
 export function TodayWatch({ selectedAnime, currentCalendarDate }: { selectedAnime: Anime[]; currentCalendarDate: string | null; }) {
   const { currentUser, selectedAnimeIds, selectionError, watchedEpisodes, watchedEpisodeError } = useViewer();
-  const selectionLoadError = selectionError ?? (!currentUser ? "登录后可同步你的追番列表。" : null);
+  const selectionLoadError = selectionLoadErrorMessage(currentUser, selectionError);
   const isPersonalProgressLoading = selectedAnimeIds === null || watchedEpisodes === null;
   const todayCalendarEvents = useMemo(() => currentCalendarDate
     ? (eventsForWeek(selectedAnime, startOfWeek(currentCalendarDate)) as CalendarEvent[]).filter((event) => event.date === currentCalendarDate)

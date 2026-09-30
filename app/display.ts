@@ -1,3 +1,5 @@
+import type { AuthUser } from "./types";
+
 export function shortDate(isoDate: string) {
   const [, month, day] = isoDate.split("-");
   return Number(month) + "月" + Number(day) + "日";
@@ -27,4 +29,8 @@ export function progressStatusLabel(status: string) {
   if (status === "completed") return "已看完";
   if (status === "in-progress") return "在追";
   return "未开始";
+}
+
+export function selectionLoadErrorMessage(currentUser: AuthUser | null, selectionError: string | null) {
+  return selectionError ?? (!currentUser ? "登录后可同步你的追番列表。" : null);
 }
