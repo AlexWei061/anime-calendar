@@ -156,8 +156,8 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
               {currentTimelineMarker ? (
                 <div className="timeline-current-time" style={currentTimelineMarkerStyle} aria-hidden="true" />
               ) : null}
-              {positionedEvents.map(({ event, lane, laneCount }) =>
-                eventButton(event, { lane, laneCount }),
+              {positionedEvents.map((positioned) =>
+                eventButton(positioned.event, positioned),
               )}
             </section>
           );
