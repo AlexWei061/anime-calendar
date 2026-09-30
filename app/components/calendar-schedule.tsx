@@ -1,20 +1,51 @@
-import { useMemo, type CSSProperties } from "react";
+import { useMemo, useSyncExternalStore, type CSSProperties } from "react";
 import { TIMELINE_EVENT_DURATION_MINUTES, formatBroadcastTime, groupEventsByTime, layoutTimelineEvents, timelineBoundsForEvents, timelineMarkerForDateTime, weekDays } from "../../lib/calendar.js";
 import { weekdays } from "../catalog";
 import { shortDate, compactDate, weekLabel } from "../display";
+import { useBeijingClock } from "../hooks/use-display";
 import { CalendarEventCard, DateOnlyEventCard } from "./calendar-cards";
 import type { CalendarEvent, DateOnlyEvent } from "../types";
 
-export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, activeMobileDate, setActiveMobileDate, currentCalendarDate, currentBeijingDate, currentBeijingTime }: {
+type CalendarLayout = "both" | "desktop" | "mobile";
+
+let mobileLayoutQuery: MediaQueryList | null = null;
+
+function getMobileLayoutQuery() {
+  if (typeof window === "undefined") return null;
+  mobileLayoutQuery ??= window.matchMedia("(max-width: 860px)");
+  return mobileLayoutQuery;
+}
+
+function subscribeCalendarLayout(onStoreChange: () => void) {
+  const query = getMobileLayoutQuery();
+  query?.addEventListener("change", onStoreChange);
+  return () => query?.removeEventListener("change", onStoreChange);
+}
+
+function getCalendarLayoutSnapshot(): CalendarLayout {
+  return getMobileLayoutQuery()?.matches ? "mobile" : "desktop";
+}
+
+// 服务端与首次客户端渲染（hydration）都返回 "both"，SSR HTML 保持桌面＋移动两套
+// DOM 逐字节不变；挂载后 useSyncExternalStore 读到真实快照并收敛到匹配的一套，
+// 挂载前的 CSS display:none 规则保证首屏视觉不变。
+function getServerCalendarLayoutSnapshot(): CalendarLayout {
+  return "both";
+}
+
+function useCalendarLayout() {
+  return useSyncExternalStore(subscribeCalendarLayout, getCalendarLayoutSnapshot, getServerCalendarLayoutSnapshot);
+}
+
+export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, activeMobileDate, setActiveMobileDate }: {
   events: CalendarEvent[];
   dateOnlyEvents: DateOnlyEvent[];
   activeWeekStart: string;
   activeMobileDate: string;
   setActiveMobileDate: (date: string) => void;
-  currentCalendarDate: string | null;
-  currentBeijingDate: string | null;
-  currentBeijingTime: string | null;
 }) {
+  const { currentCalendarDate, currentBeijingDate, currentBeijingTime } = useBeijingClock();
+  const calendarLayout = useCalendarLayout();
   const dates = useMemo(() => weekDays(activeWeekStart), [activeWeekStart]);
   const defaultTimelineStartMinutes = 5 * 60;
   const defaultTimelineEndMinutes = 29 * 60;
@@ -57,6 +88,7 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
     <CalendarEventCard key={event.id + "-" + event.episodeStart + "-" + event.episode} event={event} layout={layout} timelineStartMinutes={timelineStartMinutes} timelineEndMinutes={timelineEndMinutes} />;
   const dateOnlyEventButton = (event: DateOnlyEvent) => <DateOnlyEventCard key={event.id} event={event} />;
   return <>
+    {calendarLayout !== "mobile" ? (
     <div className="time-grid-scroll">
       <div
         className={"timeline-grid" + (dateOnlyEvents.length ? " has-date-only-events" : "")}
@@ -132,9 +164,11 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
         })}
       </div>
     </div>
+    ) : null}
 
+    {calendarLayout !== "desktop" ? (
     <div className="mobile-calendar" aria-label="移动端日程">
-      <div className="mobile-day-picker" role="tablist" aria-label="选择日期">
+      <div className="mobile-day-picker" role="group" aria-label="选择日期">
         {dates.map((date, index) => (
           <button
             className={
@@ -143,8 +177,7 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
             }
             key={date}
             type="button"
-            role="tab"
-            aria-selected={date === activeMobileDate}
+            aria-current={date === activeMobileDate ? "date" : undefined}
             onClick={() => setActiveMobileDate(date)}
           >
             <span>{weekdays[index]}</span>
@@ -169,5 +202,6 @@ export function CalendarSchedule({ events, dateOnlyEvents, activeWeekStart, acti
         ) : null}
       </div>
     </div>
+    ) : null}
   </>;
 }
