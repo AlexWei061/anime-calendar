@@ -259,6 +259,8 @@ async function viewerRequestHarness() {
       if (!(index in slots)) slots[index] = { current: initial };
       return slots[index];
     },
+    useCallback: (fn) => fn,
+    useMemo: (factory) => factory(),
   };
   const exports = {};
   runInNewContext(compiled, {
