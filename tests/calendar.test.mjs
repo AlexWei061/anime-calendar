@@ -108,6 +108,59 @@ test("uses verified episode schedule segments without extrapolating the final se
   assert.equal(eventsForWeek([record], "2026-08-03").length, 0);
 });
 
+test("keeps a final episode that lands exactly on the week's first day", () => {
+  const mondayShow = {
+    ...weeklyShow,
+    premiereDateBeijing: "2026-07-06",
+    scheduleWeekday: "Mon",
+    beijingTime: "10:00",
+    episodeCount: 4,
+  };
+
+  assert.deepEqual(
+    eventsForWeek([mondayShow], "2026-07-27").map(({ episode, date }) => ({ episode, date })),
+    [{ episode: 4, date: "2026-07-27" }],
+  );
+  assert.deepEqual(eventsForWeek([mondayShow], "2026-08-03"), []);
+});
+
+test("keeps a premiere that lands exactly on the week's last day", () => {
+  const sundayPremiere = {
+    ...weeklyShow,
+    premiereDateBeijing: "2026-07-12",
+    scheduleWeekday: "Sun",
+    episodeCount: 2,
+  };
+
+  assert.deepEqual(
+    eventsForWeek([sundayPremiere], "2026-07-06").map(({ episode, date }) => ({ episode, date })),
+    [{ episode: 1, date: "2026-07-12" }],
+  );
+  assert.deepEqual(eventsForWeek([sundayPremiere], "2026-06-29"), []);
+});
+
+test("keeps every episode of a daily premiere run that crosses a week boundary", () => {
+  const record = {
+    ...weeklyShow,
+    id: "daily-premiere",
+    episodeSchedules: [
+      { episodeStart: 1, episodeEnd: 3, broadcastDateBeijing: "2026-07-05", beijingTime: "23:00", intervalDays: 1 },
+    ],
+  };
+
+  assert.deepEqual(
+    eventsForWeek([record], "2026-06-29").map(({ episode, broadcastDate }) => ({ episode, broadcastDate })),
+    [{ episode: 1, broadcastDate: "2026-07-05" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([record], "2026-07-06").map(({ episode, broadcastDate }) => ({ episode, broadcastDate })),
+    [
+      { episode: 2, broadcastDate: "2026-07-06" },
+      { episode: 3, broadcastDate: "2026-07-07" },
+    ],
+  );
+});
+
 test("formats single episodes and premiere episode ranges", () => {
   assert.equal(typeof calendar.formatEpisodeLabel, "function");
   assert.equal(calendar.formatEpisodeLabel(1, 3), "第 1-3 集");
