@@ -51,9 +51,15 @@
   max-height: none;
   margin-bottom: 0;
   border-radius: var(--radius-card);
+  background-color: var(--accent-soft);
   background-repeat: no-repeat;
   outline: 1px solid rgb(var(--shadow-color) / 12%);
   outline-offset: -1px;
+  transition: opacity var(--transition);
+}
+
+.detail-cover.is-loading {
+  opacity: 0.4;
 }
 
 .detail-title-ja {

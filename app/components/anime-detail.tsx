@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { episodeViewKey, episodeViewUnitsForAnime, isEpisodeViewWatched } from "../../lib/anime-episode-views.js";
 import { progressForAnime } from "../../lib/anime-statistics.js";
 import { formatBroadcastTime, formatEpisodeLabel } from "../../lib/calendar.js";
 import { progressStatusLabel } from "../display";
 import { useViewer } from "../hooks/use-viewer";
-import { CoverArt } from "./cover-art";
+import { CoverArt, detailCoverSheetUrl } from "./cover-art";
 import { SignInPrompt } from "./account";
 import type { Anime, AnimeProgress, DetailSelection, SelectedAnime } from "../types";
 
@@ -16,6 +16,19 @@ export function useAnimeDetail() {
   const open = useContext(AnimeDetailContext);
   if (!open) throw new Error("AnimeDetailProvider is missing");
   return open;
+}
+
+const loadedDetailCoverSheets = new Set<string>();
+
+function preloadDetailCoverSheet(coverUrl: string) {
+  const sheetUrl = detailCoverSheetUrl(coverUrl);
+  if (!sheetUrl || loadedDetailCoverSheets.has(sheetUrl)) return sheetUrl;
+  const image = new Image();
+  image.onload = image.onerror = () => {
+    loadedDetailCoverSheets.add(sheetUrl);
+  };
+  image.src = sheetUrl;
+  return sheetUrl;
 }
 export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
   const { currentUser, authLoaded, selectedAnimeIds, isSavingSelection, watchedEpisodes, savingEpisodeKeys, toggleAnimeSelection, toggleEpisodeView } = useViewer();
@@ -33,19 +46,37 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
     ? progressForAnime([selected], watchedEpisodes ?? [])[0] as AnimeProgress | undefined
     : null, [selected, watchedEpisodes]);
   const selectedEpisodeUnits = useMemo(() => selected ? episodeViewUnitsForAnime(selected) : [], [selected]);
+  const selectedCoverSheetUrl = selected ? detailCoverSheetUrl(selected.coverUrl) : null;
+  const [loadedCoverSheetUrl, setLoadedCoverSheetUrl] = useState<string | null>(null);
+  const isDetailCoverLoaded = !selectedCoverSheetUrl ||
+    loadedDetailCoverSheets.has(selectedCoverSheetUrl) || loadedCoverSheetUrl === selectedCoverSheetUrl;
   useEffect(() => {
     if (selected && dialogRef.current && !dialogRef.current.open) {
       dialogRef.current.showModal();
     }
   }, [selected]);
-  const openDetail = (
+  useEffect(() => {
+    if (!selectedCoverSheetUrl || loadedDetailCoverSheets.has(selectedCoverSheetUrl)) return;
+    let isCurrent = true;
+    const image = new Image();
+    image.onload = image.onerror = () => {
+      loadedDetailCoverSheets.add(selectedCoverSheetUrl);
+      if (isCurrent) setLoadedCoverSheetUrl(selectedCoverSheetUrl);
+    };
+    image.src = selectedCoverSheetUrl;
+    return () => {
+      isCurrent = false;
+    };
+  }, [selectedCoverSheetUrl]);
+  const openDetail = useCallback((
     record: Anime,
     opener: HTMLButtonElement,
     selection: DetailSelection = {},
   ) => {
     openerRef.current = opener;
+    preloadDetailCoverSheet(record.coverUrl);
     setSelected({ ...record, ...selection });
-  };
+  }, []);
   const handleDialogClose = () => {
     setSelected(null);
     openerRef.current?.focus();
@@ -85,7 +116,7 @@ export function AnimeDetailProvider({ children }: { children: ReactNode; }) {
             关闭
           </button>
         </div>
-        <CoverArt anime={selected} className="detail-cover" variant="detail" />
+        <CoverArt anime={selected} className={"detail-cover" + (isDetailCoverLoaded ? "" : " is-loading")} variant="detail" />
         <h2 id="anime-detail-title">{selected.titleZh}</h2>
         <p className="detail-title-ja">{selected.titleJa}</p>
         <div className="detail-actions">

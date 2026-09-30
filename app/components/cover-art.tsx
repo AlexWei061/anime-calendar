@@ -2,6 +2,10 @@ import type { CSSProperties } from "react";
 import type { Anime } from "../types";
 import { coverSpriteFor } from "../../data/cover-sprites.js";
 
+export function detailCoverSheetUrl(coverUrl: string) {
+  return coverSpriteFor(coverUrl, "detail")?.url ?? null;
+}
+
 export function CoverArt({
   anime,
   className,

@@ -844,7 +844,7 @@ test("keeps native detail-dialog focus restoration, source information, and inde
   assert.match(detail, /<dialog\b[^>]*aria-labelledby="anime-detail-title"/);
   assert.match(detail, /<h2 id="anime-detail-title">\{selected\.titleZh\}<\/h2>/);
   assert.match(detail, /<p className="detail-title-ja">\{selected\.titleJa\}<\/p>/);
-  assert.match(detail, /<CoverArt anime=\{selected\} className="detail-cover" variant="detail" \/>/);
+  assert.match(detail, /<CoverArt anime=\{selected\} className=\{"detail-cover" \+ \(isDetailCoverLoaded \? "" : " is-loading"\)\} variant="detail" \/>/);
   assert.match(detail, /onClose=\{handleDialogClose\}/);
   assert.match(detail, /setSelected\(null\);\s*openerRef\.current\?\.focus\(\)/);
   assert.match(detail, /clickEvent\.clientX < rect\.left[\s\S]*?clickEvent\.clientX > rect\.right[\s\S]*?clickEvent\.clientY < rect\.top[\s\S]*?clickEvent\.clientY > rect\.bottom/);
