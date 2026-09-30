@@ -40,6 +40,10 @@ for (const signal of ["SIGINT", "SIGTERM"]) {
   process.on(signal, () => { interrupted = true; testProcess?.kill(signal); server.kill(signal); });
 }
 
+async function testFiles(directory) {
+  return (await readdir(directory)).filter((name) => name.endsWith(".test.mjs")).sort().map((name) => join(directory, name));
+}
+
 try {
   const deadline = Date.now() + 60_000;
   while (true) {
@@ -54,7 +58,7 @@ try {
     await delay(200);
   }
   const files = process.argv.length > 2 ? process.argv.slice(2)
-    : (await readdir("tests")).filter((name) => name.endsWith(".test.mjs")).sort().map((name) => join("tests", name));
+    : [...await testFiles("tests"), ...await testFiles(join("teach", "tests"))];
   testProcess = spawn(process.execPath, ["--test", ...files], {
     env: { ...env, TEST_BASE_URL: origin, TEST_DATA_DIR: directory },
     stdio: "inherit",

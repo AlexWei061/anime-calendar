@@ -9,8 +9,10 @@ test("npm test runs every test file", async () => {
 
   assert.match(packageJson.scripts.test, /node scripts\/test\.mjs/);
   const runner = await readFile(new URL("../scripts/test.mjs", import.meta.url), "utf8");
-  assert.match(runner, /readdir\("tests"\)/);
+  assert.match(runner, /testFiles\("tests"\)/);
+  assert.match(runner, /testFiles\(join\("teach", "tests"\)\)/);
   assert.match(runner, /endsWith\("\.test\.mjs"\)/);
+  assert.match(packageJson.scripts["test:unit"], /teach\/tests\/\*\.test\.mjs/);
 });
 
 test("npm test includes strict typechecking", async () => {

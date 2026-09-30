@@ -84,7 +84,7 @@
 | `Dockerfile`、`compose.yaml`、`Caddyfile` | 非 root Node 容器、持久化目录、健康检查及域名 HTTPS 反向代理。 |
 | `scripts/storage.mjs`、`scripts/backup.mjs`、`scripts/restore.mjs`、`scripts/import-d1.mjs` | 数据库与当前头像的一致性备份、校验恢复，以及旧 D1 SQL／R2 对象的显式离线导入。 |
 | `public/covers/yuc/sprites/` | 运行时 WebP 图集；详情单格 600×750、缩略图单格 300×375，每页最多 4×10 格。 |
-| `scripts/test.mjs`、`tests/` | 数据与客户端回归、SQLite／文件故障测试，以及启动真实 standalone 服务后的 HTTP 和服务端 HTML 测试。 |
+| `scripts/test.mjs`、`tests/`、`teach/tests/` | 数据与客户端回归、SQLite／文件故障测试、teach 教学站快照与交互回归，以及启动真实 standalone 服务后的 HTTP 和服务端 HTML 测试。 |
 | `docs/deployment.md` | 自有域名服务器部署、环境配置、备份恢复和旧数据导入操作说明。 |
 | `docs/superpowers/` | 历史设计和实施计划，仅作决策背景，不是运行时代码。 |
 
@@ -174,7 +174,7 @@ npm run generate:catalog-client                 # 重新推导前端精简目录
 
 - 改 bug 先在对应的 `tests/*.test.mjs` 添加能失败的回归测试，再做最小修复。
 - 涉及“先行多集 + 后续周播”的排期，回归测试必须同时断言：先行日显示正确的集数范围且没有虚构时刻，首个固定周播日从下一集开始。
-- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint`（忽略规则在 `eslint.config.mjs` 中维护）和 `npm test`。`npm test` 会先运行严格类型检查和构建，再由 `scripts/test.mjs` 在临时 `DATA_DIR`、回环端口启动真实 standalone 服务，执行 `tests/*.test.mjs`，结束后清理服务与数据；不能用只跑 TypeScript 或 `test:unit` 替代它。
+- 数据、排期、UI、认证或数据库改动完成后，至少运行 `npm run lint`（忽略规则在 `eslint.config.mjs` 中维护）和 `npm test`。`npm test` 会先运行严格类型检查和构建，再由 `scripts/test.mjs` 在临时 `DATA_DIR`、回环端口启动真实 standalone 服务，执行 `tests/*.test.mjs` 与 `teach/tests/*.test.mjs`，结束后清理服务与数据；不能用只跑 TypeScript 或 `test:unit` 替代它。
 - 认证／数据库／头像改动需要保留真实 HTTP 的注册登录、账号隔离、请求来源与大小限制、事务故障注入、旧范围迁移、头像失败清理、改密撤销会话及退出验证。数据生成改动需要保留稳定 ID、图集可重建与发布失败保留旧产物的测试；备份导入改动需要验证还原后的记录、头像和校验清单。
 - 只改动与需求直接相关的文件。不要顺带格式化大文件、升级依赖、重写模板配置或删除历史设计文档。
 - 测试应验证用户可见行为和数据约束；不要为了让测试通过而削弱数据校验、认证或无障碍语义。
