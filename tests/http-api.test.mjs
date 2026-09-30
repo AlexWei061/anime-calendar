@@ -204,3 +204,14 @@ test("authenticated write endpoints share a loose per-account limit after sign-i
   assert.ok(deniedWrite.headers.get("retry-after"), "429 write responses carry Retry-After");
   assert.equal((await call("/api/anime-selections", { method: "PUT", json: { animeIds: [] } })).status, 401, "unauthenticated writes stay 401 and never reach the bucket");
 });
+
+test("cover sprites are served immutable with the security headers intact", { skip: !origin }, async () => {
+  const sprites = (await readdir("public/covers/yuc/sprites")).filter((name) => name.endsWith(".webp") && !name.endsWith("-thumb.webp"));
+  assert.ok(sprites.length > 0, "expected at least one committed cover sprite");
+  const response = await fetch(`${origin}/covers/yuc/sprites/${sprites[0]}`);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  assert.equal(response.headers.get("x-content-type-options"), "nosniff");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.equal(response.headers.get("referrer-policy"), "strict-origin-when-cross-origin");
+});
