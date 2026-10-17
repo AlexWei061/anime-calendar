@@ -363,7 +363,7 @@ test("ships an auditable October 2026 TV anime snapshot", () => {
   assert.deepEqual(octoberSeason, {
     label: "2026 年 10 月番",
     timeZoneLabel: "北京时间（UTC+8）",
-    updatedAt: "2026-09-30",
+    updatedAt: "2026-10-07",
     catalogCount: 69,
     sourceName: "YUC 2026年10月新番表",
     sourceUrl: "https://yuc.wiki/202610/",
@@ -504,14 +504,14 @@ test("uses YUC October episode totals when listed and AniList otherwise", () => 
   assert.equal(octoberAnime.filter(({ episodeCountSource }) => episodeCountSource === "YUC").length, 2);
 });
 
-test("keeps October YUC network and time-unlisted releases in the pending group", () => {
+test("keeps only October YUC network releases in the pending group", () => {
   const { pending } = groupByBeijingWeekday(octoberAnime);
 
   assert.deepEqual(
     [...pending.map(({ id }) => id)].sort(),
-    ["cyberpunk-edgerunners-2", "demons-crest", "fool-night", "jojo-sbr-2nd-3rd", "yukionna-noroi"],
+    ["cyberpunk-edgerunners-2", "demons-crest", "fool-night", "jojo-sbr-2nd-3rd"],
   );
-  assert.equal(octoberAnime.filter(({ beijingTime }) => beijingTime !== null).length, 64);
+  assert.equal(octoberAnime.filter(({ beijingTime }) => beijingTime !== null).length, 65);
 });
 
 test("puts October YUC network releases in their premiere-date calendar slots", () => {
@@ -524,16 +524,22 @@ test("puts October YUC network releases in their premiere-date calendar slots", 
   assert.deepEqual(dateOnly("2026-11-23"), [{ id: "fool-night", date: "2026-11-26", premiereKind: "network" }]);
 });
 
-test("keeps the October time-unlisted Sunday record off the timed calendar without inventing a time", () => {
+test("fills the October Sunday record's clock time from the updated YUC weekly table", () => {
   const yukionna = octoberAnime.find(({ id }) => id === "yukionna-noroi");
 
   assert.equal(yukionna?.premiereDateBeijing, "2026-10-04");
   assert.equal(yukionna?.scheduleWeekday, "Sun");
-  assert.equal(yukionna?.beijingTime, null);
-  assert.equal(yukionna?.beijingTimeSource, undefined);
-  assert.equal(yukionna?.timeStatus, "unknown");
-  assert.deepEqual(eventsForWeek([yukionna], "2026-09-28"), []);
-  assert.deepEqual(dateOnlyEventsForWeek([yukionna], "2026-09-28"), []);
+  assert.equal(yukionna?.beijingTime, "24:05");
+  assert.equal(yukionna?.beijingTimeSource, "YUC");
+  assert.equal(yukionna?.timeStatus, "exact");
+  assert.deepEqual(
+    eventsForWeek([yukionna], "2026-09-28").map(({ episode, broadcastDate, time }) => ({ episode, broadcastDate, time })),
+    [{ episode: 1, broadcastDate: "2026-10-04", time: "24:05" }],
+  );
+  assert.deepEqual(
+    eventsForWeek([yukionna], "2026-10-05").map(({ episode, broadcastDate, time }) => ({ episode, broadcastDate, time })),
+    [{ episode: 2, broadcastDate: "2026-10-11", time: "24:05" }],
+  );
 });
 
 test("keeps October YUC weekly schedules as the highest-priority time source", () => {

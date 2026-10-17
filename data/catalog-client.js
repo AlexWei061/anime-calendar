@@ -22825,7 +22825,7 @@ export const seasons = [
     "firstWeekStart": "2026-09-28",
     "label": "2026 年 10 月番",
     "timeZoneLabel": "北京时间（UTC+8）",
-    "updatedAt": "2026-09-30",
+    "updatedAt": "2026-10-07",
     "catalogCount": 69,
     "sourceName": "YUC 2026年10月新番表",
     "sourceUrl": "https://yuc.wiki/202610/",
@@ -22840,7 +22840,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-03",
         "scheduleWeekday": "Sat",
-        "beijingTime": "22:30",
+        "beijingTime": "24:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22854,7 +22854,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-07",
         "scheduleWeekday": "Wed",
-        "beijingTime": "23:30",
+        "beijingTime": "25:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22868,7 +22868,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-13",
         "scheduleWeekday": "Tue",
-        "beijingTime": "24:45",
+        "beijingTime": "26:15",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22882,7 +22882,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-08",
         "scheduleWeekday": "Thu",
-        "beijingTime": "23:00",
+        "beijingTime": "24:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22896,7 +22896,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": "21:30",
+        "beijingTime": "22:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22910,7 +22910,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-06",
         "scheduleWeekday": "Tue",
-        "beijingTime": "22:00",
+        "beijingTime": "22:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22938,7 +22938,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-03",
         "scheduleWeekday": "Sat",
-        "beijingTime": "08:30",
+        "beijingTime": "09:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -22952,7 +22952,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-07",
         "scheduleWeekday": "Wed",
-        "beijingTime": "22:45",
+        "beijingTime": "23:15",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23023,7 +23023,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-11",
         "scheduleWeekday": "Sun",
-        "beijingTime": "16:30",
+        "beijingTime": "17:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23093,7 +23093,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-03",
         "scheduleWeekday": "Sat",
-        "beijingTime": "22:00",
+        "beijingTime": "23:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23107,7 +23107,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-07",
         "scheduleWeekday": "Wed",
-        "beijingTime": "23:45",
+        "beijingTime": "25:15",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23135,7 +23135,7 @@ export const seasons = [
         "episodeCountStatus": "estimated",
         "premiereDateBeijing": "2026-10-11",
         "scheduleWeekday": "Sun",
-        "beijingTime": "16:00",
+        "beijingTime": "16:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23177,7 +23177,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": "21:00",
+        "beijingTime": "22:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23191,7 +23191,7 @@ export const seasons = [
         "episodeCountStatus": "estimated",
         "premiereDateBeijing": "2026-10-10",
         "scheduleWeekday": "Sat",
-        "beijingTime": "16:30",
+        "beijingTime": "17:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23219,7 +23219,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-06",
         "scheduleWeekday": "Tue",
-        "beijingTime": "22:00",
+        "beijingTime": "22:45",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23290,7 +23290,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-03",
         "scheduleWeekday": "Sat",
-        "beijingTime": "24:30",
+        "beijingTime": "26:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23332,7 +23332,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-09",
         "scheduleWeekday": "Fri",
-        "beijingTime": "22:30",
+        "beijingTime": "24:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23346,7 +23346,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": "23:00",
+        "beijingTime": "24:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23388,7 +23388,7 @@ export const seasons = [
         "episodeCountStatus": "estimated",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": null,
+        "beijingTime": "24:05",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23416,7 +23416,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-09",
         "scheduleWeekday": "Fri",
-        "beijingTime": "21:30",
+        "beijingTime": "23:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23430,7 +23430,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-05",
         "scheduleWeekday": "Mon",
-        "beijingTime": "25:00",
+        "beijingTime": "25:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23486,7 +23486,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-08",
         "scheduleWeekday": "Thu",
-        "beijingTime": "24:28",
+        "beijingTime": "24:58",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23528,7 +23528,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-07",
         "scheduleWeekday": "Wed",
-        "beijingTime": "21:00",
+        "beijingTime": "21:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23570,7 +23570,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-05",
         "scheduleWeekday": "Mon",
-        "beijingTime": "21:00",
+        "beijingTime": "20:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23584,7 +23584,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": "23:00",
+        "beijingTime": "22:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23626,7 +23626,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-06",
         "scheduleWeekday": "Tue",
-        "beijingTime": "20:25",
+        "beijingTime": "20:55",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23682,7 +23682,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-04",
         "scheduleWeekday": "Sun",
-        "beijingTime": "20:30",
+        "beijingTime": "22:00",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23696,7 +23696,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-06",
         "scheduleWeekday": "Tue",
-        "beijingTime": "23:00",
+        "beijingTime": "23:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },
@@ -23754,7 +23754,7 @@ export const seasons = [
         "episodeCountStatus": "exact",
         "premiereDateBeijing": "2026-10-03",
         "scheduleWeekday": "Sat",
-        "beijingTime": "21:00",
+        "beijingTime": "22:30",
         "station": "YUC 周表",
         "sourceUrl": "https://yuc.wiki/202610/"
       },

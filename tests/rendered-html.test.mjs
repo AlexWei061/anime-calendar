@@ -83,7 +83,7 @@ test("server-renders a paged Beijing episode calendar", { skip: !process.env.TES
   assert.match(html, /class="timeline-grid"/);
   assert.match(html, /class="timeline-axis"/);
   assert.match(html, /class="timeline-day"/);
-  assert.match(html, /--timeline-hour-count:20;--timeline-height:1968px/);
+  assert.match(html, /--timeline-hour-count:21;--timeline-height:2064px/);
   assert.match(html, /class="calendar-event timeline-event/);
   assert.match(html, /次日 01:00/);
   assert.match(html, /--event-top:1440px/);
@@ -206,7 +206,7 @@ test("renders same-time events side by side on one timeline day", { skip: !proce
     ...cleanHtml.matchAll(
       /<div\b(?=[^>]*class="[^"]*\btimeline-event\b[^"]*")(?=[^>]*style="([^"]*)")[^>]*>([\s\S]*?)<\/div>/g,
     ),
-  ].filter(([, , card]) => /aria-label="[^"]*2026-10-05 21:00/.test(card));
+  ].filter(([, , card]) => /aria-label="[^"]*2026-10-07 21:00/.test(card));
 
   assert.equal(sameTimeEvents.length, 2);
   assert.equal(
@@ -240,8 +240,8 @@ test("renders same-time events side by side on one timeline day", { skip: !proce
     ),
     "compact covers must expose the title and episode when hovered",
   );
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /转生成哥布林有什么问题吗/);
-  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /你好 我是受心上人所托/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /佐佐木与文鸟小哔 第2期/);
+  assert.match(sameTimeEvents.map(([, , card]) => card).join(""), /开始成为世界最强的魔女/);
   assert.ok(
     sameTimeEvents.every(([markup]) =>
       /class="[^"]*\btimeline-event-compact\b[^"]*"/.test(markup),
