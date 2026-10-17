@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   buildRawEntries,
   generateSeasonData,
+  mergeSeasonEntries,
   seasonConfigFor,
 } from "../scripts/generate-yuc-current.mjs";
 
@@ -35,6 +36,39 @@ test("remerges the archived July 2026 season from its preserved raw entries", as
   assert.deepEqual(generated.season, committed.july2026);
 
   await assert.rejects(generateSeasonData("202607", { inputHtml: "<html></html>" }), /已归档/);
+});
+
+test("preserves episode-count certainty and YUC priority when merging AniList records", () => {
+  const estimated = { id: "anilist-1", episodeCount: 12, episodeCountStatus: "estimated" };
+  for (const { aniList, yucCount, expected } of [
+    { aniList: estimated, yucCount: false, expected: { episodeCount: 12, episodeCountStatus: "estimated", episodeCountSource: "estimated" } },
+    { aniList: { ...estimated, episodeCount: 24, episodeCountStatus: "exact" }, yucCount: false, expected: { episodeCount: 24, episodeCountStatus: "exact", episodeCountSource: "AniList" } },
+    { aniList: estimated, yucCount: true, expected: { episodeCount: 13, episodeCountStatus: "exact", episodeCountSource: "YUC" } },
+    { aniList: null, yucCount: false, expected: { episodeCount: 12, episodeCountStatus: "estimated", episodeCountSource: "estimated" } },
+  ]) {
+    const [record] = mergeSeasonEntries([{ id: "count-case", episodeCount: yucCount ? 13 : 12, premiereKind: "network" }], {
+      matchAniList: () => aniList,
+      hasYucEpisodeCount: () => yucCount,
+      syoboiSchedules: new Map(),
+    });
+    assert.deepEqual({
+      episodeCount: record.episodeCount,
+      episodeCountStatus: record.episodeCountStatus,
+      episodeCountSource: record.episodeCountSource,
+    }, expected);
+  }
+});
+
+test("keeps unconfirmed October episode totals marked as estimates in the generated catalog", async () => {
+  const { october2026 } = await import("../data/yuc-current-202610.js");
+  const estimatedIds = ["yozakura-2-part-2", "shuiro-no-kamen", "tank-chair", "tensei-goblin", "yukionna-noroi", "demons-crest", "shirotan"];
+  for (const id of estimatedIds) {
+    const record = october2026.anime.find((entry) => entry.id === id);
+    assert.equal(record?.episodeCount, 12, id);
+    assert.equal(record.episodeCountStatus, "estimated", id);
+    assert.equal(record.episodeCountSource, "estimated", id);
+    assert.ok(record.anilistId, id);
+  }
 });
 
 test("parses the YUC advance-premiere rule into structured premiere fields", () => {

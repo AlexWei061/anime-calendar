@@ -47,6 +47,9 @@ const CLIENT_SEASON_FIELDS = [
 // 已知但不下发的审计字段。目录出现未登记的新字段时必须在这里或上表显式归类。
 const AUDIT_ONLY_ANIME_FIELDS = new Set([
   "anilistId",
+  "yucSourceId",
+  "yucSourceUrl",
+  "yucCoverUrl",
   "timeStatus",
   "titleSource",
   "coverSource",

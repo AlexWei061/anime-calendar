@@ -53,6 +53,29 @@ test("freezes all current catalog IDs and logical covers when the source is reor
   resolver.assertComplete(allAnime.map(({ sourceUrl: url }) => url));
 });
 
+test("syncs regenerated historical identities without sending source metadata to the client", () => {
+  const season = seasons[0];
+  const resolve = createCatalogIdentityResolver(allAnime);
+  const regenerated = {
+    ...season,
+    anime: season.anime.map((record) => ({
+      ...record,
+      ...resolve({
+        ...cardFor(record),
+        yucSourceId: record.id,
+        yucSourceUrl: `${record.sourceUrl}#${record.id}`,
+      }, record.sourceUrl, record.id),
+    })),
+  };
+  resolve.assertComplete([season.sourceUrl]);
+
+  assert.deepEqual(clientCatalogFrom([regenerated]), clientCatalogFrom([season]));
+  assert.throws(() => clientCatalogFrom([{
+    ...season,
+    anime: [{ ...regenerated.anime[0], unexpectedField: "unclassified" }],
+  }]), /未归类字段 unexpectedField/);
+});
+
 test("keeps the client catalog in sync with the full catalog", async () => {
   const committed = await import("../data/catalog-client.js");
   const derived = clientCatalogFrom(seasons);

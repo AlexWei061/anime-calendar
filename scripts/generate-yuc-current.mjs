@@ -386,7 +386,7 @@ function buildAniListMatcher(aniListAnime, config) {
 
 function applyYucSources(record, aniList, hasYucEpisodeCount) {
   const episodeCount = hasYucEpisodeCount ? record.episodeCount : aniList?.episodeCount ?? record.episodeCount;
-  const episodeCountSource = hasYucEpisodeCount ? "YUC" : aniList ? "AniList" : "estimated";
+  const episodeCountSource = hasYucEpisodeCount ? "YUC" : aniList?.episodeCountStatus === "exact" ? "AniList" : "estimated";
 
   return {
     ...record,
